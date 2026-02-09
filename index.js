@@ -7,7 +7,7 @@
     raymond: {
       name: 'Raymond',
       avatar: 'https://i.postimg.cc/50H4ky1R/5e22d430e6a72b4ad5bb75e11531c863(20260209-114057).jpg',
-      charId: null // 将在初始化时设置
+      charId: null
     },
     gaspard: {
       name: 'Gaspard',
@@ -16,9 +16,9 @@
     }
   };
 
-  let currentChat = 'raymond'; // 当前聊天对象
+  let currentChat = 'raymond';
 
-  // UI样式 - 修复适配问题
+  // UI样式
   const STYLE = `
     #rayFab{position:fixed;right:20px;bottom:20px;z-index:99999}
     #rayFab button{width:56px;height:56px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,.3);background:#1c1c1e;color:#fff;font-size:24px;cursor:pointer;transition:transform .2s}
@@ -281,7 +281,6 @@
           <span>⚡ 100%</span>
         </div>
         
-        <!-- 聊天列表 -->
         <div class="screen active" id="chatListScreen">
           <div class="chat-header">
             <div class="name">消息</div>
@@ -305,7 +304,6 @@
           </div>
         </div>
         
-        <!-- Raymond 聊天界面 -->
         <div class="screen" id="raymondScreen">
           <div class="chat-header">
             <button class="back" onclick="window.rayMobile.showList()">‹</button>
@@ -320,7 +318,6 @@
           </div>
         </div>
         
-        <!-- Gaspard 聊天界面 -->
         <div class="screen" id="gaspardScreen">
           <div class="chat-header">
             <button class="back" onclick="window.rayMobile.showList()">‹</button>
@@ -338,7 +335,6 @@
     `;
     document.body.appendChild(overlay);
 
-    // 绑定事件
     fab.querySelector('button').addEventListener('click', () => showPhone(true));
     
     overlay.querySelectorAll('.close').forEach(btn => {
@@ -355,7 +351,6 @@
     document.getElementById('raymondSend').addEventListener('click', () => sendMessage('raymond'));
     document.getElementById('gaspardSend').addEventListener('click', () => sendMessage('gaspard'));
     
-    // 回车发送
     document.getElementById('raymondInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -370,7 +365,6 @@
       }
     });
 
-    // 自动调整textarea高度
     ['raymondInput', 'gaspardInput'].forEach(id => {
       const textarea = document.getElementById(id);
       textarea.addEventListener('input', function() {
@@ -379,7 +373,6 @@
       });
     });
 
-    // 初始化角色ID
     initCharacters();
   }
 
@@ -430,71 +423,112 @@
     
     if (!message) return;
     
-    // 添加用户消息
     addMessage(chatType, message, true);
     input.value = '';
     input.style.height = 'auto';
     
-    // 调用SillyTavern API发送消息
     try {
       const context = S();
       const char = characters[chatType];
       
-      // 显示正在输入...
+      const messagesDiv = document.getElementById(`${chatType}Messages`);
       const typingDiv = document.createElement('div');
       typingDiv.className = 'message received';
-      typingDiv.id = 'typing-indicator';
+      typingDiv.id = `typing-${chatType}`;
       typingDiv.innerHTML = `
         <img class="avatar" src="${char.avatar}" alt="${char.name}">
         <div class="bubble" style="color:#8e8e93">正在输入...</div>
       `;
-      document.getElementById(`${chatType}Messages`).appendChild(typingDiv);
+      messagesDiv.appendChild(typingDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
       
-      // 发送消息到对应角色
-      // 注意：这里需要根据SillyTavern的实际API调整
-      // 以下是示例代码，可能需要修改
-      const response = await fetch('/api/chats/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_input: message,
-          character_id: char.charId
-        })
-      });
+      // 查找角色
+      const charData = context.characters.find(c => 
+        c.name.toLowerCase() === char.name.toLowerCase()
+      );
       
-      // 移除"正在输入"指示器
-      typingDiv.remove();
-      
-      if (response.ok) {
-        const data = await response.json();
-        // 添加AI回复
-        if (data.response) {
-          addMessage(chatType, data.response, false);
-        }
-      } else {
-        addMessage(chatType, '抱歉，发送失败了。请重试。', false);
+      if (!charData) {
+        typingDiv.remove();
+        addMessage(chatType, `未找到角色 ${char.name},请在酒馆中加载该角色`, false);
+        return;
       }
+      
+      // 切换到该角色
+      await context.selectCharacterById(charData.avatar);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 使用酒馆的发送功能
+      const textarea = document.getElementById('send_textarea');
+      const sendButton = document.getElementById('send_but');
+      
+      if (textarea && sendButton) {
+        textarea.value = message;
+        
+        // 触发输入事件
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        
+        // 点击发送
+        sendButton.click();
+        
+        // 等待回复
+        waitForResponse(chatType, typingDiv);
+      } else {
+        typingDiv.remove();
+        addMessage(chatType, '无法访问酒馆发送功能', false);
+      }
+      
     } catch (error) {
-      console.error('发送消息失败:', error);
-      document.getElementById('typing-indicator')?.remove();
-      addMessage(chatType, '连接出错，请检查网络。', false);
+      console.error('发送失败:', error);
+      document.getElementById(`typing-${chatType}`)?.remove();
+      addMessage(chatType, '发送出错: ' + error.message, false);
     }
   }
 
+  function waitForResponse(chatType, typingDiv) {
+    const context = S();
+    let checkCount = 0;
+    const maxChecks = 60;
+    
+    const interval = setInterval(() => {
+      checkCount++;
+      
+      // 检查是否还在生成
+      const isGenerating = context.streamingProcessor?.isGenerating || 
+                          context.generationInProgress;
+      
+      if (!isGenerating) {
+        // 获取最新消息
+        const chat = context.chat;
+        if (chat && chat.length > 0) {
+          const lastMsg = chat[chat.length - 1];
+          
+          if (!lastMsg.is_user && lastMsg.mes) {
+            clearInterval(interval);
+            typingDiv.remove();
+            addMessage(chatType, lastMsg.mes, false);
+            return;
+          }
+        }
+      }
+      
+      if (checkCount >= maxChecks) {
+        clearInterval(interval);
+        typingDiv.remove();
+        addMessage(chatType, '等待回复超时', false);
+      }
+    }, 500);
+  }
+
   function initCharacters() {
-    // 尝试从SillyTavern获取角色信息
     try {
       const context = S();
       const chars = context.characters || [];
       
-      // 查找对应的角色
       chars.forEach(char => {
         if (char.name === 'Raymond') {
-          characters.raymond.charId = char.id || char.avatar;
+          characters.raymond.charId = char.avatar;
         } else if (char.name === 'Gaspard') {
-          characters.gaspard.charId = char.id || char.avatar;
+          characters.gaspard.charId = char.avatar;
         }
       });
     } catch (error) {
@@ -508,14 +542,12 @@
     return div.innerHTML;
   }
 
-  // 暴露全局方法
   window.rayMobile = {
     showList,
     showChat,
     sendMessage
   };
 
-  // 挂载UI
   const { eventSource, event_types } = S();
   eventSource.on(event_types.APP_READY, mountUI);
 })();
