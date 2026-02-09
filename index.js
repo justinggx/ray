@@ -1,28 +1,261 @@
 (() => {
   const MODULE = 'ray_mobile';
-  const S = () => SillyTavern.getContext(); // 获取当前上下文
+  const S = () => SillyTavern.getContext();
 
-  // 设置头像和聊天内容
+  // 角色配置
   const characters = {
-    raymond: 'https://i.postimg.cc/50H4ky1R/5e22d430e6a72b4ad5bb75e11531c863(20260209-114057).jpg', // Raymond头像
-    gaspard: 'https://i.postimg.cc/RFjSrmZC/46296D95-1C47-41CE-8F60-694E5A452352(20260209-114.jpg)'  // Gaspard头像
+    raymond: {
+      name: 'Raymond',
+      avatar: 'https://i.postimg.cc/50H4ky1R/5e22d430e6a72b4ad5bb75e11531c863(20260209-114057).jpg',
+      charId: null // 将在初始化时设置
+    },
+    gaspard: {
+      name: 'Gaspard',
+      avatar: 'https://i.postimg.cc/RFjSrmZC/46296D95-1C47-41CE-8F60-694E5A452352(20260209-114.jpg',
+      charId: null
+    }
   };
 
-  // UI样式：适配屏幕，修复消息气泡显示问题
+  let currentChat = 'raymond'; // 当前聊天对象
+
+  // UI样式 - 修复适配问题
   const STYLE = `
-    #rayFab{position:fixed;right:18px;bottom:18px;z-index:99999}
-    #rayFab button{width:54px;height:54px;border-radius:9999px;border:none;box-shadow:0 10px 30px rgba(0,0,0,.35);background:#111;color:#e9e9ea;font-size:22px;cursor:pointer}
-    #rayPhone{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.35);backdrop-filter:saturate(110%) blur(4px);z-index:99998}
-    #rayPhone .phone{width:min(380px,92vw);aspect-ratio:9/19.5;border-radius:36px;background:#0f0f10;box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.06);position:relative;overflow:hidden;color:#e9e9ea;font-family:"Noto Sans SC",system-ui}
-    #rayPhone .status{position:absolute;inset:10px 14px auto 14px;height:24px;display:flex;align-items:center;justify-content:space-between;font-weight:600;font-size:13px}
-    #rayPhone .pill{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:110px;height:32px;border-radius:20px;background:#000;box-shadow:0 2px 12px rgba(0,0,0,.6)}
-    #rayPhone .screen{position:absolute;inset:56px 0 0 0;overflow:auto;padding-bottom:60px}
-    #rayPhone .chat{display:flex;flex-direction:column;gap:12px;padding:12px;overflow-y:auto;max-height:60vh;}
-    .chat-bubble{background-color:#151515;padding:12px 16px;border-radius:15px;max-width:70%;display:inline-block;word-wrap:break-word}
-    .raymond-bubble{background-color:#c9a14d;color:white;border-radius:15px 15px 0 15px;align-self:flex-start;}
-    .gaspard-bubble{background-color:#444;color:white;border-radius:15px 15px 15px 0;align-self:flex-end;}
-    .input-box{position:fixed;bottom:10px;width:calc(100% - 40px);padding:12px 16px;background:#333;border-radius:20px;color:white;border:none;resize:none;box-sizing:border-box;}
-    #sendBtn{background-color:#c9a14d;padding:8px 16px;border-radius:10px;color:white;cursor:pointer;border:none;}
+    #rayFab{position:fixed;right:20px;bottom:20px;z-index:99999}
+    #rayFab button{width:56px;height:56px;border-radius:50%;border:none;box-shadow:0 4px 12px rgba(0,0,0,.3);background:#1c1c1e;color:#fff;font-size:24px;cursor:pointer;transition:transform .2s}
+    #rayFab button:hover{transform:scale(1.05)}
+    
+    #rayPhone{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);z-index:99998}
+    #rayPhone.show{display:grid}
+    
+    #rayPhone .phone{
+      width:min(390px,95vw);
+      height:min(844px,90vh);
+      border-radius:40px;
+      background:#000;
+      box-shadow:0 20px 60px rgba(0,0,0,.8);
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    
+    #rayPhone .status-bar{
+      height:44px;
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 20px;
+      color:#fff;
+      font-size:15px;
+      font-weight:500;
+      position:relative;
+      z-index:10;
+    }
+    
+    #rayPhone .notch{
+      position:absolute;
+      top:0;
+      left:50%;
+      transform:translateX(-50%);
+      width:120px;
+      height:30px;
+      background:#000;
+      border-radius:0 0 20px 20px;
+    }
+    
+    #rayPhone .chat-header{
+      background:#1c1c1e;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      border-bottom:1px solid #2c2c2e;
+    }
+    
+    #rayPhone .chat-header .back{
+      background:none;
+      border:none;
+      color:#0a84ff;
+      font-size:20px;
+      cursor:pointer;
+      padding:4px;
+    }
+    
+    #rayPhone .chat-header .avatar{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      object-fit:cover;
+    }
+    
+    #rayPhone .chat-header .name{
+      flex:1;
+      color:#fff;
+      font-size:17px;
+      font-weight:600;
+    }
+    
+    #rayPhone .chat-header .close{
+      background:none;
+      border:none;
+      color:#ff3b30;
+      font-size:28px;
+      cursor:pointer;
+      padding:0;
+      line-height:1;
+      width:28px;
+      height:28px;
+    }
+    
+    #rayPhone .chat-list{
+      flex:1;
+      overflow-y:auto;
+      background:#000;
+    }
+    
+    #rayPhone .chat-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 16px;
+      border-bottom:1px solid #1c1c1e;
+      cursor:pointer;
+      transition:background .2s;
+    }
+    
+    #rayPhone .chat-item:hover{
+      background:#1c1c1e;
+    }
+    
+    #rayPhone .chat-item .avatar{
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      object-fit:cover;
+    }
+    
+    #rayPhone .chat-item .info{
+      flex:1;
+    }
+    
+    #rayPhone .chat-item .name{
+      color:#fff;
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    
+    #rayPhone .chat-item .preview{
+      color:#8e8e93;
+      font-size:14px;
+    }
+    
+    #rayPhone .messages{
+      flex:1;
+      overflow-y:auto;
+      padding:16px;
+      background:#000;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    
+    #rayPhone .message{
+      display:flex;
+      gap:8px;
+      max-width:75%;
+    }
+    
+    #rayPhone .message.received{
+      align-self:flex-start;
+    }
+    
+    #rayPhone .message.sent{
+      align-self:flex-end;
+      flex-direction:row-reverse;
+    }
+    
+    #rayPhone .message .avatar{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      object-fit:cover;
+      flex-shrink:0;
+    }
+    
+    #rayPhone .message .bubble{
+      padding:10px 14px;
+      border-radius:18px;
+      word-wrap:break-word;
+      font-size:15px;
+      line-height:1.4;
+    }
+    
+    #rayPhone .message.received .bubble{
+      background:#1c1c1e;
+      color:#fff;
+      border-top-left-radius:4px;
+    }
+    
+    #rayPhone .message.sent .bubble{
+      background:#0a84ff;
+      color:#fff;
+      border-top-right-radius:4px;
+    }
+    
+    #rayPhone .input-area{
+      padding:8px 12px 20px;
+      background:#1c1c1e;
+      display:flex;
+      align-items:flex-end;
+      gap:8px;
+    }
+    
+    #rayPhone .input-box{
+      flex:1;
+      background:#2c2c2e;
+      border:1px solid #3a3a3c;
+      border-radius:20px;
+      padding:8px 16px;
+      color:#fff;
+      font-size:15px;
+      resize:none;
+      max-height:100px;
+      min-height:36px;
+      outline:none;
+    }
+    
+    #rayPhone .send-btn{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:#0a84ff;
+      border:none;
+      color:#fff;
+      font-size:18px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+    
+    #rayPhone .send-btn:disabled{
+      background:#3a3a3c;
+      cursor:not-allowed;
+    }
+    
+    #rayPhone .screen{
+      display:none;
+      flex-direction:column;
+      flex:1;
+      overflow:hidden;
+    }
+    
+    #rayPhone .screen.active{
+      display:flex;
+    }
   `;
 
   function mountUI() {
@@ -35,77 +268,254 @@
 
     const fab = document.createElement('div');
     fab.id = 'rayFab';
-    fab.innerHTML = `<button title="Ray Mobile">📱</button>`;
+    fab.innerHTML = `<button title="打开消息">📱</button>`;
     document.body.appendChild(fab);
 
     const overlay = document.createElement('div');
     overlay.id = 'rayPhone';
     overlay.innerHTML = `
       <div class="phone">
-        <button class="close" title="关闭">×</button>
-        <div class="status"><span>9:41</span><span>LTE ▮▮▮▮  78%</span></div>
-        <div class="pill"></div>
-        <div class="screen">
-          <div class="chat" id="chatAreaRaymond">
-            <div class="chat-bubble raymond-bubble">
-              <img src="${characters.raymond}" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:10px;" />
-              <span>Raymond: 你好，我是Raymond。</span>
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="notch"></div>
+          <span>⚡ 100%</span>
+        </div>
+        
+        <!-- 聊天列表 -->
+        <div class="screen active" id="chatListScreen">
+          <div class="chat-header">
+            <div class="name">消息</div>
+            <button class="close" title="关闭">×</button>
+          </div>
+          <div class="chat-list">
+            <div class="chat-item" data-chat="raymond">
+              <img class="avatar" src="${characters.raymond.avatar}" alt="Raymond">
+              <div class="info">
+                <div class="name">Raymond</div>
+                <div class="preview">点击开始聊天...</div>
+              </div>
+            </div>
+            <div class="chat-item" data-chat="gaspard">
+              <img class="avatar" src="${characters.gaspard.avatar}" alt="Gaspard">
+              <div class="info">
+                <div class="name">Gaspard</div>
+                <div class="preview">点击开始聊天...</div>
+              </div>
             </div>
           </div>
-          <div class="chat" id="chatAreaGaspard">
-            <div class="chat-bubble gaspard-bubble">
-              <img src="${characters.gaspard}" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:10px;" />
-              <span>Gaspard: 嘿，Raymond！你怎么样了？</span>
-            </div>
+        </div>
+        
+        <!-- Raymond 聊天界面 -->
+        <div class="screen" id="raymondScreen">
+          <div class="chat-header">
+            <button class="back" onclick="window.rayMobile.showList()">‹</button>
+            <img class="avatar" src="${characters.raymond.avatar}" alt="Raymond">
+            <div class="name">Raymond</div>
+            <button class="close" title="关闭">×</button>
           </div>
-          <textarea class="input-box" id="userInput" placeholder="输入消息..."></textarea>
-          <button id="sendBtn">发送</button>
+          <div class="messages" id="raymondMessages"></div>
+          <div class="input-area">
+            <textarea class="input-box" id="raymondInput" placeholder="消息" rows="1"></textarea>
+            <button class="send-btn" id="raymondSend">↑</button>
+          </div>
+        </div>
+        
+        <!-- Gaspard 聊天界面 -->
+        <div class="screen" id="gaspardScreen">
+          <div class="chat-header">
+            <button class="back" onclick="window.rayMobile.showList()">‹</button>
+            <img class="avatar" src="${characters.gaspard.avatar}" alt="Gaspard">
+            <div class="name">Gaspard</div>
+            <button class="close" title="关闭">×</button>
+          </div>
+          <div class="messages" id="gaspardMessages"></div>
+          <div class="input-area">
+            <textarea class="input-box" id="gaspardInput" placeholder="消息" rows="1"></textarea>
+            <button class="send-btn" id="gaspardSend">↑</button>
+          </div>
         </div>
       </div>
     `;
     document.body.appendChild(overlay);
 
-    overlay.querySelector('#sendBtn').addEventListener('click', sendMessage);
-    overlay.querySelector('.close').addEventListener('click', () => show(false));
-    fab.querySelector('button').addEventListener('click', () => show(true));
+    // 绑定事件
+    fab.querySelector('button').addEventListener('click', () => showPhone(true));
+    
+    overlay.querySelectorAll('.close').forEach(btn => {
+      btn.addEventListener('click', () => showPhone(false));
+    });
+    
+    overlay.querySelectorAll('.chat-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        const chatType = e.currentTarget.dataset.chat;
+        showChat(chatType);
+      });
+    });
+
+    document.getElementById('raymondSend').addEventListener('click', () => sendMessage('raymond'));
+    document.getElementById('gaspardSend').addEventListener('click', () => sendMessage('gaspard'));
+    
+    // 回车发送
+    document.getElementById('raymondInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage('raymond');
+      }
+    });
+    
+    document.getElementById('gaspardInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage('gaspard');
+      }
+    });
+
+    // 自动调整textarea高度
+    ['raymondInput', 'gaspardInput'].forEach(id => {
+      const textarea = document.getElementById(id);
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+      });
+    });
+
+    // 初始化角色ID
+    initCharacters();
   }
 
-  function show(v) {
+  function showPhone(show) {
     const el = document.getElementById('rayPhone');
-    if (el) el.style.display = v ? 'grid' : 'none';
-  }
-
-  function sendMessage() {
-    const userMessage = document.getElementById('userInput').value.trim();
-    if (userMessage) {
-      const chatAreaRaymond = document.getElementById('chatAreaRaymond');
-      const chatAreaGaspard = document.getElementById('chatAreaGaspard');
-      const bubbleRaymond = document.createElement('div');
-      const bubbleGaspard = document.createElement('div');
-
-      // Send message to Raymond
-      bubbleRaymond.classList.add('chat-bubble', 'raymond-bubble');
-      bubbleRaymond.innerHTML = `
-        <img src="${characters.raymond}" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:10px;" />
-        <span>Raymond: ${userMessage}</span>
-      `;
-      chatAreaRaymond.appendChild(bubbleRaymond);
-      chatAreaRaymond.scrollTop = chatAreaRaymond.scrollHeight;
-
-      // Send message to Gaspard
-      bubbleGaspard.classList.add('chat-bubble', 'gaspard-bubble');
-      bubbleGaspard.innerHTML = `
-        <img src="${characters.gaspard}" style="width:30px;height:30px;border-radius:50%;vertical-align:middle;margin-right:10px;" />
-        <span>Gaspard: ${userMessage}</span>
-      `;
-      chatAreaGaspard.appendChild(bubbleGaspard);
-      chatAreaGaspard.scrollTop = chatAreaGaspard.scrollHeight;
-
-      document.getElementById('userInput').value = '';
+    if (el) {
+      if (show) {
+        el.classList.add('show');
+        showList();
+      } else {
+        el.classList.remove('show');
+      }
     }
   }
 
-  // 挂载UI与事件
+  function showList() {
+    document.querySelectorAll('#rayPhone .screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('chatListScreen').classList.add('active');
+  }
+
+  function showChat(chatType) {
+    document.querySelectorAll('#rayPhone .screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`${chatType}Screen`).classList.add('active');
+    currentChat = chatType;
+  }
+
+  function addMessage(chatType, text, isSent = false) {
+    const messagesDiv = document.getElementById(`${chatType}Messages`);
+    const char = characters[chatType];
+    
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+    
+    const avatar = isSent ? '' : `<img class="avatar" src="${char.avatar}" alt="${char.name}">`;
+    
+    msgDiv.innerHTML = `
+      ${avatar}
+      <div class="bubble">${escapeHtml(text)}</div>
+    `;
+    
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  async function sendMessage(chatType) {
+    const input = document.getElementById(`${chatType}Input`);
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // 添加用户消息
+    addMessage(chatType, message, true);
+    input.value = '';
+    input.style.height = 'auto';
+    
+    // 调用SillyTavern API发送消息
+    try {
+      const context = S();
+      const char = characters[chatType];
+      
+      // 显示正在输入...
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message received';
+      typingDiv.id = 'typing-indicator';
+      typingDiv.innerHTML = `
+        <img class="avatar" src="${char.avatar}" alt="${char.name}">
+        <div class="bubble" style="color:#8e8e93">正在输入...</div>
+      `;
+      document.getElementById(`${chatType}Messages`).appendChild(typingDiv);
+      
+      // 发送消息到对应角色
+      // 注意：这里需要根据SillyTavern的实际API调整
+      // 以下是示例代码，可能需要修改
+      const response = await fetch('/api/chats/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_input: message,
+          character_id: char.charId
+        })
+      });
+      
+      // 移除"正在输入"指示器
+      typingDiv.remove();
+      
+      if (response.ok) {
+        const data = await response.json();
+        // 添加AI回复
+        if (data.response) {
+          addMessage(chatType, data.response, false);
+        }
+      } else {
+        addMessage(chatType, '抱歉，发送失败了。请重试。', false);
+      }
+    } catch (error) {
+      console.error('发送消息失败:', error);
+      document.getElementById('typing-indicator')?.remove();
+      addMessage(chatType, '连接出错，请检查网络。', false);
+    }
+  }
+
+  function initCharacters() {
+    // 尝试从SillyTavern获取角色信息
+    try {
+      const context = S();
+      const chars = context.characters || [];
+      
+      // 查找对应的角色
+      chars.forEach(char => {
+        if (char.name === 'Raymond') {
+          characters.raymond.charId = char.id || char.avatar;
+        } else if (char.name === 'Gaspard') {
+          characters.gaspard.charId = char.id || char.avatar;
+        }
+      });
+    } catch (error) {
+      console.error('初始化角色失败:', error);
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // 暴露全局方法
+  window.rayMobile = {
+    showList,
+    showChat,
+    sendMessage
+  };
+
+  // 挂载UI
   const { eventSource, event_types } = S();
   eventSource.on(event_types.APP_READY, mountUI);
 })();
