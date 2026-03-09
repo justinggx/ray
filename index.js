@@ -139,7 +139,7 @@ const HTML = `
           <div id="rp-bubbles"></div>
           <div id="rp-composer">
             <input id="rp-input" type="text" placeholder="iMessage" autocomplete="off"/>
-            <button id="rp-send">↑</button>
+            <button id="rp-send" type="button">↑</button>
           </div>
         </div>
 
@@ -154,19 +154,20 @@ const HTML = `
         </div>
 
         <div id="rp-home-ind" style="display:none"></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- 添加好友弹窗 -->
-  <div id="rp-add-modal" style="display:none">
-    <div id="rp-add-form">
-      <h3>添加联系人</h3>
-      <input type="text" id="rp-add-name" placeholder="姓名" maxlength="30"/>
-      <input type="text" id="rp-add-initials" placeholder="缩写 (如: ZS)" maxlength="3"/>
-      <div id="rp-add-btns">
-        <button id="rp-add-cancel">取消</button>
-        <button id="rp-add-confirm">添加</button>
+        <!-- ✅ FIX3: 添加好友弹窗移至 #rp-screen 内部，使 position:absolute; inset:0 正确覆盖手机屏幕 -->
+        <div id="rp-add-modal" style="display:none">
+          <div id="rp-add-form">
+            <h3>添加联系人</h3>
+            <input type="text" id="rp-add-name" placeholder="姓名" maxlength="30"/>
+            <input type="text" id="rp-add-initials" placeholder="缩写 (如: ZS)" maxlength="3"/>
+            <div id="rp-add-btns">
+              <button id="rp-add-cancel" type="button">取消</button>
+              <button id="rp-add-confirm" type="button">添加</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -239,7 +240,8 @@ function bindUI() {
   $('#rp-input').on('keydown', e => { if (e.key === 'Enter') sendSMS(); });
 
   // 添加好友按钮
-  $('#rp-add-btn').on('click', () => {
+  $('#rp-add-btn').on('click', (e) => {
+    e.stopPropagation();
     $('#rp-add-name').val('');
     $('#rp-add-initials').val('');
     $('#rp-add-modal').show();
@@ -407,11 +409,14 @@ function sendSMS() {
   const mainText = ta.value.trim();
   const smsLine  = `*{{user}}拿起手机，给${th.name}发了一条短信：「${smsText}」*`;
 
-  // 3. 合并：对话框已有内容 + 手机短信内容
+  // ✅ FIX1: 注入场景判断指令，要求 AI 根据当前场景选择回复方式
+  const sceneNote = `[OOC指令：${th.name}，你收到了这条短信。请先判断你与{{user}}当前所在场景——若你们不在同一地点或同一房间（哪怕同一栋建筑的不同房间也视为不同场景），你必须通过手机回复，格式严格如下：<PHONE><SMS FROM="${th.name}" TIME="${ts}">你的回复内容</SMS></PHONE>；若你们确实在同一场景中，则可直接口头回复，无需手机格式。]`;
+
+  // 3. 合并：对话框已有内容 + 手机短信内容 + 场景指令
   if (mainText) {
-    ta.value = `${mainText}\n${smsLine}`;
+    ta.value = `${mainText}\n${smsLine}\n${sceneNote}`;
   } else {
-    ta.value = smsLine;
+    ta.value = `${smsLine}\n${sceneNote}`;
   }
 
   // 4. 触发 ST 发送

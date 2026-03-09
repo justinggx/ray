@@ -191,41 +191,57 @@
 .rp-bts  { font-size:10px; color:rgba(0,0,0,.4); padding:0 4px; }
 
 /* composer */
-#rp-composer { 
-  display:flex; align-items:center; gap:8px; 
-  padding:8px 12px 22px; 
-  border-top:1px solid rgba(0,0,0,.08); 
-  flex-shrink:0; 
+#rp-composer {
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:8px 12px 22px !important;
+  border-top:1px solid rgba(0,0,0,.08) !important;
+  flex-shrink:0 !important;
+  background:#fff !important;
 }
-#rp-input { 
-  flex:1; 
-  background:rgba(0,0,0,.04); 
-  border:1px solid rgba(0,0,0,.12); 
-  border-radius:22px; 
-  padding:9px 16px; 
-  color:#000; 
-  font-size:13px; 
-  outline:none; 
-  font-family:inherit; 
+#rp-input {
+  flex:1 !important;
+  background:rgba(0,0,0,.04) !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+  border-radius:22px !important;
+  padding:9px 16px !important;
+  color:#000 !important;
+  font-size:13px !important;
+  outline:none !important;
+  font-family:inherit !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
 }
 #rp-input::placeholder { color:rgba(0,0,0,.4); }
-#rp-send { 
-  width:32px; 
-  height:32px; 
-  border-radius:16px; 
-  background:#2563eb; 
-  border:none; 
-  color:#fff; 
-  font-size:16px; 
-  font-weight:700;
-  cursor:pointer; 
-  display:flex; 
-  align-items:center; 
-  justify-content:center; 
-  flex-shrink:0; 
-  transition:opacity .15s; 
+
+/* ✅ FIX2: 强制显示发送按钮，防止 SillyTavern 全局 CSS 覆盖 */
+#rp-send {
+  width:32px !important;
+  height:32px !important;
+  min-width:32px !important;
+  border-radius:16px !important;
+  background:#2563eb !important;
+  border:none !important;
+  color:#fff !important;
+  font-size:16px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-shrink:0 !important;
+  transition:opacity .15s;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  outline:none !important;
 }
-#rp-send:hover { opacity:.82; }
+#rp-send:hover { opacity:.82 !important; }
 
 /* ── NAV BAR (共用) ── */
 .rp-nav-bar {
@@ -236,13 +252,29 @@
   background:#fff;
 }
 .rp-nav-title { font-size:17px; font-weight:600; color:#000; }
-.rp-back { background:none; border:none; color:#2563eb; font-size:30px; line-height:1; cursor:pointer; padding:0 6px; font-family:inherit; }
-.rp-nav-add { background:none; border:none; color:#2563eb; font-size:28px; line-height:1; cursor:pointer; padding:0 6px; font-family:inherit; font-weight:300; }
+.rp-back {
+  background:none !important; border:none !important;
+  color:#2563eb !important; font-size:30px !important;
+  line-height:1 !important; cursor:pointer !important;
+  padding:0 6px !important; font-family:inherit !important;
+  display:inline-flex !important; visibility:visible !important;
+  opacity:1 !important; pointer-events:auto !important;
+}
+.rp-nav-add {
+  background:none !important; border:none !important;
+  color:#2563eb !important; font-size:28px !important;
+  line-height:1 !important; cursor:pointer !important;
+  padding:0 6px !important; font-family:inherit !important;
+  font-weight:300 !important; display:inline-flex !important;
+  visibility:visible !important; opacity:1 !important;
+  pointer-events:auto !important;
+}
 .rp-thread-hd { display:flex; flex-direction:column; align-items:center; gap:4px; }
 .rp-hd-av { width:32px; height:32px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
 .rp-hd-name { font-size:11px; color:rgba(0,0,0,.6); }
 
 /* ── ADD CONTACT MODAL ── */
+/* ✅ FIX3: modal 已移至 #rp-screen 内部，position:absolute; inset:0 现在正确覆盖手机屏幕 */
 #rp-add-modal {
   position:absolute; inset:0; z-index:600;
   background:rgba(0,0,0,.4); backdrop-filter:blur(8px);
@@ -268,13 +300,15 @@
   display:flex; gap:10px; margin-top:16px;
 }
 #rp-add-btns button {
-  flex:1; padding:10px; border:none; border-radius:10px;
-  font-size:14px; font-weight:600; cursor:pointer;
-  font-family:inherit; transition:opacity .15s;
+  flex:1 !important; padding:10px !important; border:none !important; border-radius:10px !important;
+  font-size:14px !important; font-weight:600 !important; cursor:pointer !important;
+  font-family:inherit !important; transition:opacity .15s;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  visibility:visible !important; opacity:1 !important; pointer-events:auto !important;
 }
-#rp-add-btns button:hover { opacity:.8; }
-#rp-add-cancel { background:#e9ecef; color:#000; }
-#rp-add-confirm { background:#2563eb; color:#fff; }
+#rp-add-btns button:hover { opacity:.8 !important; }
+#rp-add-cancel { background:#e9ecef !important; color:#000 !important; }
+#rp-add-confirm { background:#2563eb !important; color:#fff !important; }
 
 /* ── NOTIFICATION BANNER ── */
 #rp-notif-banner {
