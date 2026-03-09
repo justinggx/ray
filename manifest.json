@@ -1,0 +1,12 @@
+{
+  "display_name": "Raymond Phone",
+  "loading_order": 10,
+  "requires": [],
+  "optional": [],
+  "js": "index.js",
+  "css": "style.css",
+  "author": "",
+  "version": "1.0.0",
+  "homePage": "https://github.com/YOUR_NAME/raymond-phone",
+  "auto_update": true
+}
