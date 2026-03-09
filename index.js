@@ -314,7 +314,8 @@ function sendSMS() {
   const inject = `*{{user}}拿起手机，给${th.name}发了一条短信：「${text}」*`;
   const ta = document.querySelector('#send_textarea');
   if (ta) {
-    ta.value = inject;
+    const existing = ta.value.trim();
+ta.value = existing ? `${existing}\n${smsLine}` : smsLine;
     ta.dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector('#send_but')?.click();
   }
