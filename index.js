@@ -38,8 +38,29 @@ const STATE = {
   pendingMessages: [], // FIX3: 多条消息队列
 };
 
-// FIX2: 按 chatId 存储各窗口的手机状态
+// FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
 const CHAT_STORE = {};
+
+// ================================================================
+//  PERSISTENCE (localStorage)
+// ================================================================
+function saveState() {
+  if (!STATE.chatId) return;
+  try {
+    localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify({
+      threads: STATE.threads,
+      notifications: STATE.notifications,
+      sync: STATE.sync,
+    }));
+  } catch(e) { console.warn('[Raymond Phone] saveState failed', e); }
+}
+
+function loadState(chatId) {
+  try {
+    const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
 
 // ================================================================
 //  HTML
@@ -194,9 +215,17 @@ const HTML = `
 async function init() {
   $('body').append(HTML);
 
-  // FIX2: 记录初始 chatId
+  // FIX2: 记录初始 chatId 并从 localStorage 恢复状态
   const ctx = getContext();
   STATE.chatId = ctx?.chatId || `char_${ctx?.characterId}` || 'default';
+
+  const saved = loadState(STATE.chatId);
+  if (saved) {
+    STATE.threads = saved.threads;
+    STATE.notifications = saved.notifications || [];
+    STATE.sync = saved.sync || { stage: 1, progress: 0, status: '乖巧' };
+    console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
+  }
 
   updateClock();
   setInterval(updateClock, 1000);
@@ -204,6 +233,8 @@ async function init() {
   bindUI();
   makeDraggable();
   renderThreadList();
+  refreshWidget();
+  refreshLockNotifs();
 
   eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
   // FIX2: 监听聊天窗口切换
@@ -221,7 +252,7 @@ function onChatChanged() {
 
   if (newChatId === STATE.chatId) return;
 
-  // 保存当前窗口状态
+  // 保存当前窗口状态（内存 + localStorage）
   if (STATE.chatId) {
     CHAT_STORE[STATE.chatId] = {
       threads: JSON.parse(JSON.stringify(STATE.threads)),
@@ -229,23 +260,33 @@ function onChatChanged() {
       sync: { ...STATE.sync },
       currentThread: STATE.currentThread,
     };
+    saveState();
   }
 
   // 切换到新窗口
   STATE.chatId = newChatId;
   STATE.pendingMessages = [];
 
+  // 优先从内存缓存恢复，其次从 localStorage，最后初始化
   if (CHAT_STORE[newChatId]) {
-    const saved = CHAT_STORE[newChatId];
-    STATE.threads = saved.threads;
-    STATE.notifications = saved.notifications;
-    STATE.sync = { ...saved.sync };
-    STATE.currentThread = saved.currentThread;
+    const s = CHAT_STORE[newChatId];
+    STATE.threads = s.threads;
+    STATE.notifications = s.notifications;
+    STATE.sync = { ...s.sync };
+    STATE.currentThread = s.currentThread;
   } else {
-    STATE.threads = DEFAULT_THREADS();
-    STATE.notifications = [];
-    STATE.sync = { stage: 1, progress: 0, status: '乖巧' };
-    STATE.currentThread = null;
+    const persisted = loadState(newChatId);
+    if (persisted) {
+      STATE.threads = persisted.threads;
+      STATE.notifications = persisted.notifications || [];
+      STATE.sync = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
+      STATE.currentThread = null;
+    } else {
+      STATE.threads = DEFAULT_THREADS();
+      STATE.notifications = [];
+      STATE.sync = { stage: 1, progress: 0, status: '乖巧' };
+      STATE.currentThread = null;
+    }
   }
 
   // 重置 UI
@@ -392,6 +433,7 @@ function addContact() {
 
   $('#rp-add-modal').hide();
   renderThreadList();
+  saveState(); // FIX2: 持久化新联系人
 
   console.log(`[Raymond Phone] 添加联系人: ${name} (${id})`);
 }
@@ -499,6 +541,7 @@ function sendSMS() {
   });
   renderBubbles(STATE.currentThread);
   updatePreviews();
+  saveState(); // FIX2: 持久化发出的消息
 
   const ta = document.querySelector('#send_textarea');
   if (!ta) return;
@@ -527,8 +570,8 @@ function sendSMS() {
     // 对话对象是主角：根据场景决定口头还是短信回复
     oocText = `[场景判断：${th.name}，若你与{{user}}不在同一场景（不同地点或不同房间均算），必须通过手机短信格式回复：<PHONE><SMS FROM="${th.name}" TIME="${ts}">回复内容</SMS></PHONE>；若在同一场景中，可口头回复，无需手机格式。]`;
   } else {
-    // FIX4: 对话对象是自定义NPC：NPC必须短信回复，主角继续叙事
-    oocText = `[角色指令：{{user}}刚刚给${th.name}发了短信。无论${th.name}身处何地，请以${th.name}的身份通过手机短信格式回复这条消息：<PHONE><SMS FROM="${th.name}" TIME="${ts}">${th.name}的回复内容</SMS></PHONE>。${mainCharName ? mainCharName + '可继续正常叙事，无需专门提及这条短信，除非剧情需要。' : ''}]`;
+    // FIX1: NPC联系人——明确告知AI这是独立NPC，让AI代写回复，主角完全不知情
+    oocText = `[叙事指令：{{user}}刚刚给"${th.name}"发了短信。重要说明："${th.name}"是故事中一个独立的NPC角色，与${mainCharName}是完全不同的两个人，${mainCharName}并未收到这条短信，也不知道这条短信的存在。请你以叙事者身份，代写"${th.name}"收到短信后的手机回复，格式如下：<PHONE><SMS FROM="${th.name}" TIME="${ts}">此处填写${th.name}的回复内容</SMS></PHONE>。请勿让${mainCharName}对这条短信做出任何反应、评论或提及。]`;
   }
 
   // FIX1: 用 setExtensionPrompt 注入隐藏 OOC，不在聊天框显示
@@ -594,6 +637,7 @@ function parsePhone(block) {
   if (sync) {
     STATE.sync = { stage: +sync[1], progress: +sync[2], status: sync[3] };
     refreshWidget();
+    saveState(); // FIX2: 持久化关系进度
   }
 }
 
@@ -639,6 +683,7 @@ function incomingMsg(threadId, text, time) {
   }
 
   showBanner(th.name, text, time);
+  saveState(); // FIX2: 持久化收到的消息
 }
 
 // ================================================================
