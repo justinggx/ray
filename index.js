@@ -1,13 +1,11 @@
-import { eventSource, event_types } from '../../../../script.js';
+import { eventSource, event_types, setExtensionPrompt, extension_prompt_types } from '../../../../script.js';
 import { getContext } from '../../../extensions.js';
 
 // ================================================================
-//  STATE
+//  DEFAULT THREADS FACTORY
 // ================================================================
-const STATE = {
-  currentView: 'lock',
-  currentThread: null,
-  threads: {
+function DEFAULT_THREADS() {
+  return {
     raymond: {
       id: 'raymond',
       name: 'Raymond Augustine',
@@ -24,10 +22,24 @@ const STATE = {
       messages: [],
       unread: 0,
     },
-  },
+  };
+}
+
+// ================================================================
+//  STATE
+// ================================================================
+const STATE = {
+  currentView: 'lock',
+  currentThread: null,
+  threads: DEFAULT_THREADS(),
   notifications: [],
   sync: { stage: 1, progress: 0, status: '乖巧' },
+  chatId: null,
+  pendingMessages: [], // FIX3: 多条消息队列
 };
+
+// FIX2: 按 chatId 存储各窗口的手机状态
+const CHAT_STORE = {};
 
 // ================================================================
 //  HTML
@@ -137,8 +149,10 @@ const HTML = `
             <span></span>
           </div>
           <div id="rp-bubbles"></div>
+          <!-- FIX3: 待发消息队列预览区 -->
+          <div id="rp-pending-queue" style="display:none"></div>
           <div id="rp-composer">
-            <input id="rp-input" type="text" placeholder="iMessage" autocomplete="off"/>
+            <input id="rp-input" type="text" placeholder="iMessage（回车暂存）" autocomplete="off"/>
             <button id="rp-send" type="button">↑</button>
           </div>
         </div>
@@ -155,7 +169,7 @@ const HTML = `
 
         <div id="rp-home-ind" style="display:none"></div>
 
-        <!-- ✅ FIX3: 添加好友弹窗移至 #rp-screen 内部，使 position:absolute; inset:0 正确覆盖手机屏幕 -->
+        <!-- 添加好友弹窗（位于 #rp-screen 内部） -->
         <div id="rp-add-modal" style="display:none">
           <div id="rp-add-form">
             <h3>添加联系人</h3>
@@ -180,6 +194,10 @@ const HTML = `
 async function init() {
   $('body').append(HTML);
 
+  // FIX2: 记录初始 chatId
+  const ctx = getContext();
+  STATE.chatId = ctx?.chatId || `char_${ctx?.characterId}` || 'default';
+
   updateClock();
   setInterval(updateClock, 1000);
 
@@ -188,8 +206,55 @@ async function init() {
   renderThreadList();
 
   eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
+  // FIX2: 监听聊天窗口切换
+  eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
 
   console.log('[Raymond Phone] ✅ loaded');
+}
+
+// ================================================================
+//  FIX2: 聊天切换 - 保存/恢复各窗口的手机状态
+// ================================================================
+function onChatChanged() {
+  const ctx = getContext();
+  const newChatId = ctx?.chatId || `char_${ctx?.characterId}` || 'default';
+
+  if (newChatId === STATE.chatId) return;
+
+  // 保存当前窗口状态
+  if (STATE.chatId) {
+    CHAT_STORE[STATE.chatId] = {
+      threads: JSON.parse(JSON.stringify(STATE.threads)),
+      notifications: [...STATE.notifications],
+      sync: { ...STATE.sync },
+      currentThread: STATE.currentThread,
+    };
+  }
+
+  // 切换到新窗口
+  STATE.chatId = newChatId;
+  STATE.pendingMessages = [];
+
+  if (CHAT_STORE[newChatId]) {
+    const saved = CHAT_STORE[newChatId];
+    STATE.threads = saved.threads;
+    STATE.notifications = saved.notifications;
+    STATE.sync = { ...saved.sync };
+    STATE.currentThread = saved.currentThread;
+  } else {
+    STATE.threads = DEFAULT_THREADS();
+    STATE.notifications = [];
+    STATE.sync = { stage: 1, progress: 0, status: '乖巧' };
+    STATE.currentThread = null;
+  }
+
+  // 重置 UI
+  go('lock');
+  renderThreadList();
+  refreshBadges();
+  refreshWidget();
+  refreshLockNotifs();
+  renderPendingQueue();
 }
 
 // ================================================================
@@ -211,35 +276,36 @@ function updateClock() {
 //  UI BINDING
 // ================================================================
 function bindUI() {
-  // FAB 开关
   $('#rp-fab').on('click', () => {
     const phone = $('#rp-phone');
     phone.is(':visible') ? phone.hide() : phone.show();
   });
 
-  // 锁屏解锁
   $('#rp-swipe-zone, #rp-lock-time, #rp-lock-date').on('click', () => go('home'));
 
-  // App 图标
   $(document).on('click', '.rp-app[data-app]', function () {
     go($(this).data('app'));
   });
 
-  // 对话列表（事件委托，支持动态添加的联系人）
   $(document).on('click', '.rp-thread[data-thread]', function () {
     openThread($(this).data('thread'));
   });
 
-  // 返回按钮
   $(document).on('click', '.rp-back[data-to]', function () {
     go($(this).data('to'));
   });
 
-  // 发送
+  // FIX3: 发送按钮 → 统一发出所有排队消息
   $('#rp-send').on('click', sendSMS);
-  $('#rp-input').on('keydown', e => { if (e.key === 'Enter') sendSMS(); });
 
-  // 添加好友按钮
+  // FIX3: 回车键 → 暂存到队列，不立即发送
+  $('#rp-input').on('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addToQueue();
+    }
+  });
+
   $('#rp-add-btn').on('click', (e) => {
     e.stopPropagation();
     $('#rp-add-name').val('');
@@ -247,18 +313,41 @@ function bindUI() {
     $('#rp-add-modal').show();
   });
 
-  // 添加好友弹窗 - 取消
   $('#rp-add-cancel').on('click', () => {
     $('#rp-add-modal').hide();
   });
 
-  // 添加好友弹窗 - 确认
   $('#rp-add-confirm').on('click', addContact);
 
-  // 点击弹窗背景关闭
   $('#rp-add-modal').on('click', function (e) {
     if (e.target === this) $(this).hide();
   });
+}
+
+// ================================================================
+//  FIX3: 消息队列
+// ================================================================
+function addToQueue() {
+  const text = $('#rp-input').val().trim();
+  if (!text || !STATE.currentThread) return;
+  STATE.pendingMessages.push(text);
+  $('#rp-input').val('');
+  renderPendingQueue();
+}
+
+function renderPendingQueue() {
+  const container = $('#rp-pending-queue');
+  container.empty();
+  if (STATE.pendingMessages.length === 0) {
+    container.hide();
+    return;
+  }
+  container.show();
+  STATE.pendingMessages.forEach((msg) => {
+    const short = msg.length > 30 ? msg.slice(0, 30) + '…' : msg;
+    container.append(`<div class="rp-pending-item">${short}</div>`);
+  });
+  container.append(`<div class="rp-pending-hint">点击 ↑ 发送全部 ${STATE.pendingMessages.length} 条</div>`);
 }
 
 // ================================================================
@@ -285,13 +374,11 @@ function addContact() {
 
   if (!name) return;
 
-  // 自动生成缩写：取每个词首字母，最多2个
   if (!initials) {
     initials = name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
   if (!initials) initials = name.slice(0, 2).toUpperCase();
 
-  // 生成唯一 id
   const id = 'custom_' + Date.now();
 
   STATE.threads[id] = {
@@ -310,7 +397,7 @@ function addContact() {
 }
 
 // ================================================================
-//  RENDER THREAD LIST (动态)
+//  RENDER THREAD LIST
 // ================================================================
 function renderThreadList() {
   const container = $('#rp-thread-list').empty();
@@ -347,7 +434,6 @@ function go(view) {
   $('#rp-home-ind').toggle(view !== 'lock');
   STATE.currentView = view;
 
-  // 每次进入信息列表时刷新
   if (view === 'messages') {
     renderThreadList();
   }
@@ -358,13 +444,15 @@ function openThread(threadId) {
   const th = STATE.threads[threadId];
   if (!th) return;
 
-  // 清未读
   th.unread = 0;
   refreshBadges();
 
-  // 设置头部
   $('#rp-hd-av').text(th.initials).css('background', th.avatarBg);
   $('#rp-hd-name').text(th.name);
+
+  // FIX3: 切换对话时清空待发队列
+  STATE.pendingMessages = [];
+  renderPendingQueue();
 
   renderBubbles(threadId);
   go('thread');
@@ -385,43 +473,81 @@ function renderBubbles(threadId) {
 }
 
 // ================================================================
-//  SEND SMS (user → char)
+//  SEND SMS
 // ================================================================
 function sendSMS() {
-  const smsText = $('#rp-input').val().trim();
-  if (!STATE.currentThread) return;
-  if (!smsText) return;
+  // FIX3: 先把输入框当前内容并入队列
+  const currentText = $('#rp-input').val().trim();
+  if (currentText) {
+    STATE.pendingMessages.push(currentText);
+    $('#rp-input').val('');
+  }
+
+  if (!STATE.currentThread || STATE.pendingMessages.length === 0) return;
 
   const th  = STATE.threads[STATE.currentThread];
   const now = new Date();
   const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  // 1. 写入手机 UI
-  th.messages.push({ from: 'user', text: smsText, time: ts });
-  $('#rp-input').val('');
+  // 写入手机 UI（全部排队消息）
+  const allMessages = [...STATE.pendingMessages];
+  STATE.pendingMessages = [];
+  renderPendingQueue();
+
+  allMessages.forEach(text => {
+    th.messages.push({ from: 'user', text, time: ts });
+  });
   renderBubbles(STATE.currentThread);
   updatePreviews();
 
-  // 2. 拼装注入内容
   const ta = document.querySelector('#send_textarea');
   if (!ta) return;
 
   const mainText = ta.value.trim();
-  const smsLine  = `*{{user}}拿起手机，给${th.name}发了一条短信：「${smsText}」*`;
 
-  // ✅ FIX1: 注入场景判断指令，要求 AI 根据当前场景选择回复方式
-  const sceneNote = `[OOC指令：${th.name}，你收到了这条短信。请先判断你与{{user}}当前所在场景——若你们不在同一地点或同一房间（哪怕同一栋建筑的不同房间也视为不同场景），你必须通过手机回复，格式严格如下：<PHONE><SMS FROM="${th.name}" TIME="${ts}">你的回复内容</SMS></PHONE>；若你们确实在同一场景中，则可直接口头回复，无需手机格式。]`;
-
-  // 3. 合并：对话框已有内容 + 手机短信内容 + 场景指令
-  if (mainText) {
-    ta.value = `${mainText}\n${smsLine}\n${sceneNote}`;
+  // 拼装可见行动描述
+  let smsLine;
+  if (allMessages.length === 1) {
+    smsLine = `*{{user}}拿起手机，给${th.name}发了一条短信：「${allMessages[0]}」*`;
   } else {
-    ta.value = `${smsLine}\n${sceneNote}`;
+    const msgList = allMessages.map(m => `「${m}」`).join('、');
+    smsLine = `*{{user}}拿起手机，给${th.name}连续发了${allMessages.length}条短信：${msgList}*`;
   }
 
-  // 4. 触发 ST 发送
+  // FIX4: 判断联系人是否为主角，生成不同的 OOC 指令
+  const ctx = getContext();
+  const mainCharName = ctx?.name2 || '';
+  const isMainChar = mainCharName
+    ? th.name.toLowerCase().includes(mainCharName.toLowerCase()) ||
+      mainCharName.toLowerCase().includes(th.name.toLowerCase())
+    : true;
+
+  let oocText;
+  if (isMainChar) {
+    // 对话对象是主角：根据场景决定口头还是短信回复
+    oocText = `[场景判断：${th.name}，若你与{{user}}不在同一场景（不同地点或不同房间均算），必须通过手机短信格式回复：<PHONE><SMS FROM="${th.name}" TIME="${ts}">回复内容</SMS></PHONE>；若在同一场景中，可口头回复，无需手机格式。]`;
+  } else {
+    // FIX4: 对话对象是自定义NPC：NPC必须短信回复，主角继续叙事
+    oocText = `[角色指令：{{user}}刚刚给${th.name}发了短信。无论${th.name}身处何地，请以${th.name}的身份通过手机短信格式回复这条消息：<PHONE><SMS FROM="${th.name}" TIME="${ts}">${th.name}的回复内容</SMS></PHONE>。${mainCharName ? mainCharName + '可继续正常叙事，无需专门提及这条短信，除非剧情需要。' : ''}]`;
+  }
+
+  // FIX1: 用 setExtensionPrompt 注入隐藏 OOC，不在聊天框显示
+  const hasExtPrompt = typeof setExtensionPrompt === 'function' && extension_prompt_types;
+  if (hasExtPrompt) {
+    setExtensionPrompt('rp-phone-ooc', oocText, extension_prompt_types.IN_CHAT, 0, false, 0);
+    ta.value = mainText ? `${mainText}\n${smsLine}` : smsLine;
+  } else {
+    // 降级：OOC 直接写入消息（旧版 ST 兼容）
+    ta.value = mainText ? `${mainText}\n${smsLine}\n${oocText}` : `${smsLine}\n${oocText}`;
+  }
+
   ta.dispatchEvent(new Event('input', { bubbles: true }));
   document.querySelector('#send_but')?.click();
+
+  // 发送后清除隐藏提示
+  if (hasExtPrompt) {
+    setTimeout(() => setExtensionPrompt('rp-phone-ooc', ''), 300);
+  }
 }
 
 // ================================================================
@@ -447,26 +573,23 @@ function onAIMessage() {
 }
 
 function parsePhone(block) {
-  // SMS
   const smsRe = /<SMS\s+FROM="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/SMS>/gi;
   let m;
   while ((m = smsRe.exec(block)) !== null) {
-    const fromRaw = m[1].trim();
-    const time    = m[2];
-    const text    = m[3].trim();
+    const fromRaw  = m[1].trim();
+    const time     = m[2];
+    const text     = m[3].trim();
     const threadId = matchThread(fromRaw);
     if (threadId) {
       incomingMsg(threadId, text, time);
     }
   }
 
-  // NOTIFY
   const notifRe = /<NOTIFY\s+TYPE="([^"]+)"\s+TEXT="([^"]+)"\/>/gi;
   while ((m = notifRe.exec(block)) !== null) {
     addLockNotif(m[1], m[2]);
   }
 
-  // SYNC
   const sync = block.match(/<SYNC\s+STAGE="(\d+)"\s+PROGRESS="(\d+)"\s+STATUS="([^"]+)"\/>/i);
   if (sync) {
     STATE.sync = { stage: +sync[1], progress: +sync[2], status: sync[3] };
@@ -475,23 +598,20 @@ function parsePhone(block) {
 }
 
 // ================================================================
-//  MATCH THREAD (支持自定义联系人)
+//  MATCH THREAD
 // ================================================================
 function matchThread(fromRaw) {
   const lower = fromRaw.toLowerCase();
 
-  // 先精确匹配所有 thread 的 name
   for (const th of Object.values(STATE.threads)) {
     if (th.name.toLowerCase() === lower) return th.id;
   }
 
-  // 模糊匹配：FROM 包含 thread name 或反过来
   for (const th of Object.values(STATE.threads)) {
     const thName = th.name.toLowerCase();
     if (lower.includes(thName) || thName.includes(lower)) return th.id;
   }
 
-  // 兜底：原有的硬编码逻辑
   if (lower.includes('gaspard')) return 'gaspard';
   if (lower.includes('raymond')) return 'raymond';
 
@@ -539,6 +659,11 @@ function showBanner(from, text, time) {
 
 function addLockNotif(type, text) {
   STATE.notifications.push({ type, text });
+  refreshLockNotifs();
+}
+
+// FIX2: 抽出 DOM 刷新，方便聊天切换时重建锁屏通知
+function refreshLockNotifs() {
   const c = $('#rp-lock-notifs').empty();
   STATE.notifications.slice(-3).forEach(n => {
     c.append(`<div class="rp-ln">

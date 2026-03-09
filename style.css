@@ -182,6 +182,28 @@
 #rp-bubbles { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:3px; scrollbar-width:none; }
 #rp-bubbles::-webkit-scrollbar { display:none; }
 
+/* FIX3: 待发消息队列预览 */
+#rp-pending-queue {
+  padding:6px 12px 4px;
+  display:flex; flex-direction:column; gap:3px;
+  flex-shrink:0;
+  max-height:76px; overflow-y:auto;
+  border-top:1px solid rgba(37,99,235,.15);
+  background:rgba(37,99,235,.04);
+  scrollbar-width:none;
+}
+#rp-pending-queue::-webkit-scrollbar { display:none; }
+.rp-pending-item {
+  font-size:11px; color:#1d4ed8;
+  background:rgba(37,99,235,.1);
+  border-radius:8px; padding:3px 10px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.rp-pending-hint {
+  font-size:10px; color:rgba(0,0,0,.35);
+  text-align:center; padding:1px 0 2px;
+}
+
 .rp-bwrap { display:flex; flex-direction:column; gap:2px; }
 .rp-out { align-items:flex-end; }
 .rp-in  { align-items:flex-start; }
