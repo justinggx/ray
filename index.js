@@ -5,8 +5,8 @@ import { getContext } from '../../../extensions.js';
 //  STATE
 // ================================================================
 const STATE = {
-  currentView: 'lock',   // lock | home | messages | thread
-  currentThread: null,   // 'raymond' | 'gaspard'
+  currentView: 'lock',
+  currentThread: null,
   threads: {
     raymond: {
       id: 'raymond',
@@ -34,10 +34,8 @@ const STATE = {
 // ================================================================
 const HTML = `
 <div id="rp-wrapper">
-  <!-- 浮动触发按钮 -->
   <div id="rp-fab" title="打开手机">📱</div>
 
-  <!-- 手机本体 -->
   <div id="rp-phone" style="display:none">
     <div id="rp-frame">
       <div class="rp-btn rp-vol-up"></div>
@@ -45,20 +43,18 @@ const HTML = `
       <div class="rp-btn rp-power"></div>
 
       <div id="rp-screen">
-        <!-- Dynamic Island -->
         <div id="rp-island"></div>
 
-        <!-- 状态栏 -->
         <div id="rp-sbar">
           <span id="rp-sbar-time"></span>
           <div class="rp-sbar-r">
-            <svg width="16" height="10" viewBox="0 0 16 10" fill="white" opacity=".8">
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor" opacity=".8">
               <rect x="0" y="4" width="3" height="6" rx="1"/>
               <rect x="4" y="2" width="3" height="8" rx="1"/>
               <rect x="8" y="0" width="3" height="10" rx="1"/>
               <rect x="12" y="0" width="3" height="10" rx="1" opacity=".3"/>
             </svg>
-            <svg width="14" height="10" viewBox="0 0 14 10" fill="white" opacity=".8">
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="currentColor" opacity=".8">
               <path d="M7 2C9.5 2 11.7 3.1 13.2 4.8L14 4C12.3 2 9.8 1 7 1S1.7 2 0 4l.8.8C2.3 3.1 4.5 2 7 2z"/>
               <path d="M7 4c1.7 0 3.2.7 4.3 1.8L12 5c-1.3-1.3-3-2-5-2S3.3 3.7 2 5l.7.8C3.8 4.7 5.3 4 7 4z"/>
               <circle cx="7" cy="9" r="1.2"/>
@@ -101,16 +97,15 @@ const HTML = `
                 <div class="rp-app-lbl">电话</div>
               </div>
               <div class="rp-app rp-app-off">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#555,#333)">📷</div>
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#999,#777)">📷</div>
                 <div class="rp-app-lbl">相机</div>
               </div>
               <div class="rp-app rp-app-off">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#555,#3a3a3a)">⚙️</div>
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#888,#666)">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
               </div>
             </div>
 
-            <!-- 关系进度小组件 -->
             <div id="rp-widget">
               <div class="rp-wd-label">Augustine · 关系进度</div>
               <div class="rp-wd-stage" id="rp-wd-stage">Stage 1 · 初识</div>
@@ -126,32 +121,9 @@ const HTML = `
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">信息</span>
-            <span></span>
+            <button class="rp-nav-add" id="rp-add-btn">+</button>
           </div>
-          <div id="rp-thread-list">
-            <div class="rp-thread" data-thread="raymond">
-              <div class="rp-av" style="background:linear-gradient(145deg,#1c1c2e,#2c2c4e)">RA</div>
-              <div class="rp-ti">
-                <div class="rp-tn">Raymond Augustine</div>
-                <div class="rp-tp" id="rp-tp-raymond">暂无消息</div>
-              </div>
-              <div class="rp-tm">
-                <div class="rp-tt" id="rp-tt-raymond"></div>
-                <div class="rp-tbadge" id="rp-tbadge-raymond" style="display:none">0</div>
-              </div>
-            </div>
-            <div class="rp-thread" data-thread="gaspard">
-              <div class="rp-av" style="background:linear-gradient(145deg,#1a2e1a,#2a4a2a)">GV</div>
-              <div class="rp-ti">
-                <div class="rp-tn">Gaspard de Valois</div>
-                <div class="rp-tp" id="rp-tp-gaspard">暂无消息</div>
-              </div>
-              <div class="rp-tm">
-                <div class="rp-tt" id="rp-tt-gaspard"></div>
-                <div class="rp-tbadge" id="rp-tbadge-gaspard" style="display:none">0</div>
-              </div>
-            </div>
-          </div>
+          <div id="rp-thread-list"></div>
         </div>
 
         <!-- 对话线程 -->
@@ -181,8 +153,20 @@ const HTML = `
           <div class="rp-nb-time" id="rp-nb-time"></div>
         </div>
 
-        <!-- Home Indicator -->
         <div id="rp-home-ind" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加好友弹窗 -->
+  <div id="rp-add-modal" style="display:none">
+    <div id="rp-add-form">
+      <h3>添加联系人</h3>
+      <input type="text" id="rp-add-name" placeholder="姓名" maxlength="30"/>
+      <input type="text" id="rp-add-initials" placeholder="缩写 (如: ZS)" maxlength="3"/>
+      <div id="rp-add-btns">
+        <button id="rp-add-cancel">取消</button>
+        <button id="rp-add-confirm">添加</button>
       </div>
     </div>
   </div>
@@ -200,6 +184,7 @@ async function init() {
 
   bindUI();
   makeDraggable();
+  renderThreadList();
 
   eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
 
@@ -239,7 +224,7 @@ function bindUI() {
     go($(this).data('app'));
   });
 
-  // 对话列表
+  // 对话列表（事件委托，支持动态添加的联系人）
   $(document).on('click', '.rp-thread[data-thread]', function () {
     openThread($(this).data('thread'));
   });
@@ -252,6 +237,103 @@ function bindUI() {
   // 发送
   $('#rp-send').on('click', sendSMS);
   $('#rp-input').on('keydown', e => { if (e.key === 'Enter') sendSMS(); });
+
+  // 添加好友按钮
+  $('#rp-add-btn').on('click', () => {
+    $('#rp-add-name').val('');
+    $('#rp-add-initials').val('');
+    $('#rp-add-modal').show();
+  });
+
+  // 添加好友弹窗 - 取消
+  $('#rp-add-cancel').on('click', () => {
+    $('#rp-add-modal').hide();
+  });
+
+  // 添加好友弹窗 - 确认
+  $('#rp-add-confirm').on('click', addContact);
+
+  // 点击弹窗背景关闭
+  $('#rp-add-modal').on('click', function (e) {
+    if (e.target === this) $(this).hide();
+  });
+}
+
+// ================================================================
+//  ADD CONTACT
+// ================================================================
+function generateAvatarBg() {
+  const colors = [
+    ['#2e1c1c','#4e2c2c'],
+    ['#1c2e2e','#2c4e4e'],
+    ['#2e2e1c','#4e4e2c'],
+    ['#1c1c2e','#2c2c4e'],
+    ['#2e1c2e','#4e2c4e'],
+    ['#1c2e1c','#2c4a2c'],
+    ['#2e251c','#4e3c2c'],
+    ['#1c252e','#2c3c4e'],
+  ];
+  const pair = colors[Math.floor(Math.random() * colors.length)];
+  return `linear-gradient(145deg,${pair[0]},${pair[1]})`;
+}
+
+function addContact() {
+  const name = $('#rp-add-name').val().trim();
+  let initials = $('#rp-add-initials').val().trim().toUpperCase();
+
+  if (!name) return;
+
+  // 自动生成缩写：取每个词首字母，最多2个
+  if (!initials) {
+    initials = name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+  if (!initials) initials = name.slice(0, 2).toUpperCase();
+
+  // 生成唯一 id
+  const id = 'custom_' + Date.now();
+
+  STATE.threads[id] = {
+    id: id,
+    name: name,
+    initials: initials,
+    avatarBg: generateAvatarBg(),
+    messages: [],
+    unread: 0,
+  };
+
+  $('#rp-add-modal').hide();
+  renderThreadList();
+
+  console.log(`[Raymond Phone] 添加联系人: ${name} (${id})`);
+}
+
+// ================================================================
+//  RENDER THREAD LIST (动态)
+// ================================================================
+function renderThreadList() {
+  const container = $('#rp-thread-list').empty();
+
+  Object.values(STATE.threads).forEach(th => {
+    const lastMsg = th.messages.at(-1);
+    const preview = lastMsg ? (lastMsg.text.slice(0, 28) + (lastMsg.text.length > 28 ? '…' : '')) : '暂无消息';
+    const time    = lastMsg ? lastMsg.time : '';
+    const badgeDisplay = th.unread > 0 ? '' : 'display:none';
+    const badgeCount   = th.unread;
+
+    container.append(`
+      <div class="rp-thread" data-thread="${th.id}">
+        <div class="rp-av" style="background:${th.avatarBg}">${th.initials}</div>
+        <div class="rp-ti">
+          <div class="rp-tn">${th.name}</div>
+          <div class="rp-tp" id="rp-tp-${th.id}">${preview}</div>
+        </div>
+        <div class="rp-tm">
+          <div class="rp-tt" id="rp-tt-${th.id}">${time}</div>
+          <div class="rp-tbadge" id="rp-tbadge-${th.id}" style="${badgeDisplay}">${badgeCount}</div>
+        </div>
+      </div>
+    `);
+  });
 }
 
 // ================================================================
@@ -262,11 +344,17 @@ function go(view) {
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
   STATE.currentView = view;
+
+  // 每次进入信息列表时刷新
+  if (view === 'messages') {
+    renderThreadList();
+  }
 }
 
 function openThread(threadId) {
   STATE.currentThread = threadId;
   const th = STATE.threads[threadId];
+  if (!th) return;
 
   // 清未读
   th.unread = 0;
@@ -340,7 +428,6 @@ function onAIMessage() {
     const chat = ctx?.chat;
     if (!chat?.length) return;
 
-    // 找最后一条 AI 消息
     const last = [...chat].reverse().find(m => !m.is_user);
     if (!last?.mes) return;
 
@@ -359,11 +446,13 @@ function parsePhone(block) {
   const smsRe = /<SMS\s+FROM="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/SMS>/gi;
   let m;
   while ((m = smsRe.exec(block)) !== null) {
-    const fromRaw = m[1].toLowerCase();
+    const fromRaw = m[1].trim();
     const time    = m[2];
     const text    = m[3].trim();
-    const threadId = fromRaw.includes('gaspard') ? 'gaspard' : 'raymond';
-    incomingMsg(threadId, text, time);
+    const threadId = matchThread(fromRaw);
+    if (threadId) {
+      incomingMsg(threadId, text, time);
+    }
   }
 
   // NOTIFY
@@ -381,10 +470,36 @@ function parsePhone(block) {
 }
 
 // ================================================================
+//  MATCH THREAD (支持自定义联系人)
+// ================================================================
+function matchThread(fromRaw) {
+  const lower = fromRaw.toLowerCase();
+
+  // 先精确匹配所有 thread 的 name
+  for (const th of Object.values(STATE.threads)) {
+    if (th.name.toLowerCase() === lower) return th.id;
+  }
+
+  // 模糊匹配：FROM 包含 thread name 或反过来
+  for (const th of Object.values(STATE.threads)) {
+    const thName = th.name.toLowerCase();
+    if (lower.includes(thName) || thName.includes(lower)) return th.id;
+  }
+
+  // 兜底：原有的硬编码逻辑
+  if (lower.includes('gaspard')) return 'gaspard';
+  if (lower.includes('raymond')) return 'raymond';
+
+  return null;
+}
+
+// ================================================================
 //  INCOMING MESSAGE
 // ================================================================
 function incomingMsg(threadId, text, time) {
   const th = STATE.threads[threadId];
+  if (!th) return;
+
   th.messages.push({ from: threadId, text, time });
 
   if (STATE.currentView !== 'thread' || STATE.currentThread !== threadId) {
@@ -435,7 +550,9 @@ function refreshBadges() {
   let total = 0;
   Object.values(STATE.threads).forEach(th => {
     const el = $(`#rp-tbadge-${th.id}`);
-    th.unread > 0 ? el.text(th.unread).show() : el.hide();
+    if (el.length) {
+      th.unread > 0 ? el.text(th.unread).show() : el.hide();
+    }
     total += th.unread;
   });
   total > 0 ? $('#rp-main-badge').text(total).show() : $('#rp-main-badge').hide();
@@ -450,7 +567,7 @@ function updatePreviews() {
   });
 }
 
-const STAGE_NAMES = { 1: '试探', 2: '主导', 3: '陷落' };
+const STAGE_NAMES = { 1: '初识 · 试探', 2: '增进 · 主导', 3: '陷落 · 占有' };
 function refreshWidget() {
   const { stage, progress, status } = STATE.sync;
   $('#rp-wd-stage').text(`Stage ${stage} · ${(STAGE_NAMES[stage] || '').split('·')[1]?.trim()}`);
