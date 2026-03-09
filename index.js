@@ -298,27 +298,37 @@ function renderBubbles(threadId) {
 //  SEND SMS (user → char)
 // ================================================================
 function sendSMS() {
-  const text = $('#rp-input').val().trim();
-  if (!text || !STATE.currentThread) return;
+  const smsText = $('#rp-input').val().trim();
+  if (!STATE.currentThread) return;
+  if (!smsText) return;
 
   const th  = STATE.threads[STATE.currentThread];
   const now = new Date();
   const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  th.messages.push({ from: 'user', text, time: ts });
+  // 1. 写入手机 UI
+  th.messages.push({ from: 'user', text: smsText, time: ts });
   $('#rp-input').val('');
   renderBubbles(STATE.currentThread);
   updatePreviews();
 
-  // 注入到 ST 聊天
-  const inject = `*{{user}}拿起手机，给${th.name}发了一条短信：「${text}」*`;
+  // 2. 拼装注入内容
   const ta = document.querySelector('#send_textarea');
-  if (ta) {
-    const existing = ta.value.trim();
-ta.value = existing ? `${existing}\n${smsLine}` : smsLine;
-    ta.dispatchEvent(new Event('input', { bubbles: true }));
-    document.querySelector('#send_but')?.click();
+  if (!ta) return;
+
+  const mainText = ta.value.trim();
+  const smsLine  = `*{{user}}拿起手机，给${th.name}发了一条短信：「${smsText}」*`;
+
+  // 3. 合并：对话框已有内容 + 手机短信内容
+  if (mainText) {
+    ta.value = `${mainText}\n${smsLine}`;
+  } else {
+    ta.value = smsLine;
   }
+
+  // 4. 触发 ST 发送
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+  document.querySelector('#send_but')?.click();
 }
 
 // ================================================================
@@ -440,7 +450,7 @@ function updatePreviews() {
   });
 }
 
-const STAGE_NAMES = { 1: '初识 · 试探', 2: '增进 · 主导', 3: '陷落 · 占有' };
+const STAGE_NAMES = { 1: '试探', 2: '主导', 3: '陷落' };
 function refreshWidget() {
   const { stage, progress, status } = STATE.sync;
   $('#rp-wd-stage').text(`Stage ${stage} · ${(STAGE_NAMES[stage] || '').split('·')[1]?.trim()}`);
