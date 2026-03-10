@@ -356,6 +356,108 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ── home indicator ── */
 #rp-home-ind { position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; z-index:300; }
+/* ── NIGHT MODE TOGGLE ── */
+.rp-dm-btn{position:absolute;top:58px;right:-14px;z-index:400;width:28px;height:28px;border-radius:14px;background:rgba(240,240,240,.95);border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background .25s,border-color .25s}
+.rp-dark .rp-dm-btn{background:rgba(20,22,42,.9);border-color:rgba(255,255,255,.15)}
+/* ── DARK FRAME ── */
+.rp-dark #rp-frame{background:linear-gradient(160deg,#1e1e1e,#101010);box-shadow:0 0 0 1.5px rgba(255,255,255,.06),0 0 0 9px #0c0c0c,0 0 0 10px rgba(255,255,255,.04),0 36px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+.rp-dark .rp-btn{background:#2c2c2c}
+.rp-dark #rp-screen{background:#050508}
+.rp-dark #rp-island{background:#0a0a0a}
+/* ── DARK LOCK ── */
+.rp-dark .rp-lock-bg{background:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,60,200,.35),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(40,60,200,.25),transparent 55%),linear-gradient(180deg,#0c0c1a,#08080f,#0c0c1a)}
+.rp-dark .rp-lock-body{color:#e0e2f0}
+.rp-dark #rp-lock-time{color:#eef0ff}
+.rp-dark #rp-lock-date{color:rgba(200,210,255,.55)}
+.rp-dark .rp-ln{background:rgba(12,12,24,.88);border-color:rgba(255,255,255,.07)}
+.rp-dark .rp-ln-type{color:rgba(160,175,255,.45)}
+.rp-dark .rp-ln-text{color:rgba(210,218,255,.85)}
+.rp-dark #rp-swipe-hint{color:rgba(180,195,255,.3)}
+.rp-dark #rp-sbar{color:#dde0f2}
+/* ── DARK HOME ── */
+.rp-dark .rp-home-bg{background:radial-gradient(ellipse 100% 70% at 20% 10%,rgba(50,60,140,.38),transparent 50%),radial-gradient(ellipse 100% 70% at 80% 90%,rgba(30,50,130,.28),transparent 50%),linear-gradient(170deg,#0c0c1a,#090912,#0c0c1a)}
+.rp-dark #rp-home-clock{color:#eef0ff}
+.rp-dark .rp-app-lbl{color:rgba(210,218,255,.88);text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.rp-dark .rp-app-ico{box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.rp-dark .rp-app-off{opacity:.2}
+.rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.rp-dark .rp-wd-label{color:rgba(160,175,255,.4)}
+.rp-dark .rp-wd-stage{color:#dde0f2}
+.rp-dark .rp-wd-track{background:rgba(255,255,255,.1)}
+.rp-dark .rp-wd-status{color:rgba(160,175,255,.52)}
+.rp-dark .rp-home-indicator{background:rgba(255,255,255,.22)}
+/* ── DARK MESSAGES ── */
+.rp-dark #rp-view-messages{background:#07070e}
+.rp-dark .rp-thread{border-bottom-color:rgba(255,255,255,.05)}
+.rp-dark .rp-thread:hover{background:rgba(255,255,255,.03)}
+.rp-dark .rp-tn{color:#dde0f2}
+.rp-dark .rp-tp{color:rgba(160,175,255,.46)}
+.rp-dark .rp-tt{color:rgba(160,175,255,.36)}
+.rp-dark .rp-nav-bar{background:#0c0c1a;border-bottom-color:rgba(255,255,255,.07)}
+.rp-dark .rp-nav-title{color:#dde0f2}
+.rp-dark .rp-back{color:#7090f0 !important}
+.rp-dark .rp-nav-add{color:#7090f0 !important}
+.rp-dark .rp-hd-name{color:rgba(160,175,255,.62)}
+/* ── DARK THREAD ── */
+.rp-dark #rp-view-thread{background:#050510}
+.rp-dark #rp-bubbles{background:#050510}
+.rp-dark .rp-recv{background:#161628;color:#dde0f2}
+.rp-dark .rp-bts{color:rgba(160,175,255,.3)}
+.rp-dark #rp-composer{background:#0c0c1a !important;border-top-color:rgba(255,255,255,.06) !important}
+.rp-dark #rp-input{background:rgba(255,255,255,.05) !important;border-color:rgba(255,255,255,.1) !important;color:#dde0f2 !important}
+.rp-dark #rp-input::placeholder{color:rgba(160,175,255,.3)}
+.rp-dark #rp-pending-queue{background:rgba(37,99,235,.05);border-top-color:rgba(37,99,235,.1)}
+.rp-dark .rp-pending-item{color:#8aaef0;background:rgba(37,99,235,.12)}
+.rp-dark .rp-pending-hint{color:rgba(160,175,255,.3)}
+.rp-dark #rp-add-form{background:#12122a}
+.rp-dark #rp-add-form h3{color:#dde0f2}
+.rp-dark #rp-add-form input{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#dde0f2}
+.rp-dark #rp-add-cancel{background:#1c1c38 !important;color:#dde0f2 !important}
+.rp-dark #rp-notif-banner{background:rgba(8,8,20,.95);border-color:rgba(255,255,255,.08)}
+.rp-dark .rp-nb-from{color:rgba(160,175,255,.5)}
+.rp-dark .rp-nb-text{color:#dde0f2}
+.rp-dark .rp-nb-time{color:rgba(160,175,255,.36)}
+.rp-dark #rp-home-ind{background:rgba(255,255,255,.22)}
+/* ── MOMENTS VIEW ── */
+#rp-view-moments{background:#f2f3f7;display:flex;flex-direction:column}
+.rp-dark #rp-view-moments{background:#050510}
+#rp-moments-list{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:8px}
+#rp-moments-list::-webkit-scrollbar{display:none}
+.rp-moment{background:#fff;margin-bottom:8px;padding:14px 16px}
+.rp-dark .rp-moment{background:#0e0e20}
+.rp-moment-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rp-moment-av{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.rp-moment-meta{flex:1;min-width:0}
+.rp-moment-name{font-size:14px;font-weight:700;color:#2563eb}
+.rp-dark .rp-moment-name{color:#8aaef0}
+.rp-moment-time{font-size:10.5px;color:rgba(0,0,0,.38);margin-top:2px;font-weight:600}
+.rp-dark .rp-moment-time{color:rgba(160,175,255,.38)}
+.rp-moment-text{font-size:14px;color:#1a1a1a;line-height:1.65;margin-bottom:10px;word-break:break-word}
+.rp-dark .rp-moment-text{color:#d5d8f0}
+.rp-moment-bar{display:flex;align-items:center;justify-content:flex-end;gap:2px;padding:6px 0 2px;border-top:1px solid rgba(0,0,0,.06)}
+.rp-dark .rp-moment-bar{border-top-color:rgba(255,255,255,.06)}
+.rp-moment-act{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600;color:rgba(0,0,0,.42);cursor:pointer;transition:background .12s,color .12s;border:none;background:none;font-family:inherit}
+.rp-dark .rp-moment-act{color:rgba(160,175,255,.42)}
+.rp-moment-act:hover{background:rgba(0,0,0,.04)}
+.rp-dark .rp-moment-act:hover{background:rgba(255,255,255,.04)}
+.rp-moment-act.rp-liked{color:#e53e3e !important}
+.rp-moment-comments-wrap{background:rgba(0,0,0,.03);border-radius:10px;padding:8px 12px;margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.rp-dark .rp-moment-comments-wrap{background:rgba(255,255,255,.04)}
+.rp-moment-comment{font-size:13px;color:#222;line-height:1.55}
+.rp-dark .rp-moment-comment{color:#c0c8e8}
+.rp-moment-cname{color:#2563eb;font-weight:700}
+.rp-dark .rp-moment-cname{color:#8aaef0}
+.rp-moment-reply-btn{color:rgba(0,0,0,.35);font-size:11px;cursor:pointer;margin-left:6px}
+.rp-dark .rp-moment-reply-btn{color:rgba(160,175,255,.35)}
+.rp-moment-input-row{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06)}
+.rp-dark .rp-moment-input-row{border-top-color:rgba(255,255,255,.06)}
+.rp-moment-cinput{flex:1;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:6px 10px;font-size:12.5px;color:#1a1a1a;font-family:inherit;outline:none}
+.rp-dark .rp-moment-cinput{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#d5d8f0}
+.rp-moment-csend{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.rp-moment-csend:hover{opacity:.85}
+.rp-moments-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:rgba(0,0,0,.3);font-size:13px;gap:8px}
+.rp-dark .rp-moments-empty{color:rgba(160,175,255,.3)}
+
 `;
 
 function injectStyles() {
@@ -415,6 +517,8 @@ const STATE = {
   sync: { stage: 1, progress: 0, status: '乖巧' },
   chatId: null,
   pendingMessages: [], // FIX3: 多条消息队列
+  moments: [],
+  darkMode: false,
 };
 
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
@@ -430,6 +534,8 @@ function saveState() {
       threads: STATE.threads,
       notifications: STATE.notifications,
       sync: STATE.sync,
+      moments: STATE.moments,
+      darkMode: STATE.darkMode,
     }));
   } catch(e) { console.warn('[Raymond Phone] saveState failed', e); }
 }
@@ -454,6 +560,7 @@ const HTML = `
       <div class="rp-btn rp-vol-dn"></div>
       <div class="rp-btn rp-power"></div>
 
+      <button class="rp-dm-btn" id="rp-dm-btn" title="夜间模式">🌙</button>
       <div id="rp-screen">
         <div id="rp-island"></div>
 
@@ -502,11 +609,11 @@ const HTML = `
                 </div>
                 <div class="rp-app-lbl">信息</div>
               </div>
-              <div class="rp-app rp-app-off">
-                <div class="rp-app-ico rp-ico-phone">
-                  <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#ph)"/><defs><linearGradient id="ph" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#34c759"/><stop offset="100%" stop-color="#25a244"/></linearGradient></defs><path d="M14 10h-2a2 2 0 00-2 2v.5C10 22 18 30 27.5 30H28a2 2 0 002-2v-2a2 2 0 00-2-2h-3a2 2 0 00-2 2c-3-1-5.5-3.5-6.5-6.5a2 2 0 002-2V14a2 2 0 00-2-2h-.5" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+              <div class="rp-app" data-app="moments">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff6b35,#f7931e)">
+                  <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#mcg)"/><defs><linearGradient id="mcg" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#ff7043"/><stop offset="100%" stop-color="#ff8f00"/></linearGradient></defs><ellipse cx="17" cy="18" rx="9" ry="7" fill="white" opacity=".95"/><path d="M26 24l4 5-7-2" fill="white" opacity=".95"/><circle cx="14" cy="18" r="1.3" fill="#ff7043"/><circle cx="17" cy="18" r="1.3" fill="#ff7043"/><circle cx="20" cy="18" r="1.3" fill="#ff7043"/></svg>
                 </div>
-                <div class="rp-app-lbl">电话</div>
+                <div class="rp-app-lbl">朋友圈</div>
               </div>
               <div class="rp-app rp-app-off">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#999,#777)">📷</div>
@@ -557,7 +664,17 @@ const HTML = `
           </div>
         </div>
 
-        <!-- 通知横幅 -->
+        <!-- 朋友圈 -->
+        <div id="rp-view-moments" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">朋友圈</span>
+            <span></span>
+          </div>
+          <div id="rp-moments-list"></div>
+        </div>
+
+                <!-- 通知横幅 -->
         <div id="rp-notif-banner" style="display:none">
           <div class="rp-nb-ico">💬</div>
           <div class="rp-nb-body">
@@ -604,8 +721,12 @@ async function init() {
     STATE.threads = saved.threads;
     STATE.notifications = saved.notifications || [];
     STATE.sync = saved.sync || { stage: 1, progress: 0, status: '乖巧' };
+    STATE.moments = saved.moments || [];
+    STATE.darkMode = saved.darkMode || false;
     console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
   }
+
+  if (STATE.darkMode) { $('#rp-phone').addClass('rp-dark'); $('#rp-dm-btn').text('☀️'); }
 
   updateClock();
   setInterval(updateClock, 1000);
@@ -639,6 +760,7 @@ function onChatChanged() {
       notifications: [...STATE.notifications],
       sync: { ...STATE.sync },
       currentThread: STATE.currentThread,
+      moments: JSON.parse(JSON.stringify(STATE.moments || [])),
     };
     saveState();
   }
@@ -660,6 +782,7 @@ function onChatChanged() {
       STATE.threads = persisted.threads;
       STATE.notifications = persisted.notifications || [];
       STATE.sync = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
+      STATE.moments = persisted.moments || [];
       STATE.currentThread = null;
     } else {
       STATE.threads = DEFAULT_THREADS();
@@ -743,6 +866,61 @@ function bindUI() {
   $('#rp-add-modal').on('click', function (e) {
     if (e.target === this) $(this).hide();
   });
+
+  // Dark mode toggle
+  $('#rp-dm-btn').on('click', toggleDarkMode);
+
+  // Moments: like
+  $(document).on('click', '.rp-like-btn', function() {
+    toggleLike($(this).data('moment'));
+  });
+
+  // Moments: comment toggle
+  $(document).on('click', '.rp-comment-toggle', function() {
+    const id = $(this).data('moment');
+    const row = $(`#rp-ci-${id}`);
+    row.toggle();
+    if (row.is(':visible')) {
+      row.find('.rp-moment-cinput').removeData('reply-to').attr('placeholder','发表评论…').focus();
+    }
+  });
+
+  // Moments: reply
+  $(document).on('click', '.rp-moment-reply-btn', function() {
+    const momentId = $(this).data('moment');
+    const rname = $(this).data('rname');
+    const row = $(`#rp-ci-${momentId}`);
+    row.show();
+    row.find('.rp-moment-cinput').data('reply-to', rname).attr('placeholder', `回复 ${rname}…`).focus();
+  });
+
+  // Moments: send comment via button
+  $(document).on('click', '.rp-moment-csend', function() {
+    const momentId = $(this).data('moment');
+    const row = $(`#rp-ci-${momentId}`);
+    const input = row.find('.rp-moment-cinput');
+    const text = input.val().trim();
+    const replyTo = input.data('reply-to') || null;
+    if (!text) return;
+    sendMomentComment(momentId, text, replyTo);
+    input.val('').removeData('reply-to').attr('placeholder','发表评论…');
+    row.hide();
+  });
+
+  // Moments: send comment via enter
+  $(document).on('keydown', '.rp-moment-cinput', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const momentId = $(this).closest('.rp-moment').data('mid');
+      const text = $(this).val().trim();
+      const replyTo = $(this).data('reply-to') || null;
+      if (!text) return;
+      sendMomentComment(momentId, text, replyTo);
+      $(this).val('').removeData('reply-to').attr('placeholder','发表评论…');
+      $(`#rp-ci-${momentId}`).hide();
+    }
+  });
+
 }
 
 // ================================================================
@@ -826,7 +1004,9 @@ function renderThreadList() {
 
   Object.values(STATE.threads).forEach(th => {
     const lastMsg = th.messages.at(-1);
-    const preview = lastMsg ? (lastMsg.text.slice(0, 28) + (lastMsg.text.length > 28 ? '…' : '')) : '暂无消息';
+    const senderLabel = lastMsg ? (lastMsg.from === 'user' ? '我' : th.name.split(' ')[0]) : '';
+    const previewFull = lastMsg ? (senderLabel + '：' + lastMsg.text) : '暂无消息';
+    const preview = previewFull.length > 28 ? previewFull.slice(0, 27) + '…' : previewFull;
     const time    = lastMsg ? lastMsg.time : '';
     const badgeDisplay = th.unread > 0 ? '' : 'display:none';
     const badgeCount   = th.unread;
@@ -858,6 +1038,9 @@ function go(view) {
 
   if (view === 'messages') {
     renderThreadList();
+  }
+  if (view === 'moments') {
+    renderMoments();
   }
 }
 
@@ -1020,6 +1203,16 @@ function parsePhone(block) {
     addLockNotif(m[1], m[2]);
   }
 
+  const momentsRe = /<MOMENTS\s+FROM="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/MOMENTS>/gi;
+  while ((m = momentsRe.exec(block)) !== null) {
+    incomingMoment(m[1].trim(), m[2].trim(), m[3].trim());
+  }
+
+  const commentRe = /<COMMENT\s+MOMENT_ID="([^"]+)"\s+FROM="([^"]+)"\s+TIME="([^"]+)"(?:\s+REPLY_TO="([^"]*)")?\s*>([\s\S]*?)<\/COMMENT>/gi;
+  while ((m = commentRe.exec(block)) !== null) {
+    incomingComment(m[1].trim(), m[2].trim(), m[3].trim(), m[5].trim(), m[4] ? m[4].trim() : null);
+  }
+
   const sync = block.match(/<SYNC\s+STAGE="(\d+)"\s+PROGRESS="(\d+)"\s+STATUS="([^"]+)"\/>/i);
   if (sync) {
     STATE.sync = { stage: +sync[1], progress: +sync[2], status: sync[3] };
@@ -1124,7 +1317,9 @@ function updatePreviews() {
   Object.values(STATE.threads).forEach(th => {
     const last = th.messages.at(-1);
     if (!last) return;
-    $(`#rp-tp-${th.id}`).text(last.text.slice(0, 28) + (last.text.length > 28 ? '…' : ''));
+    const sl = last.from === 'user' ? '我' : th.name.split(' ')[0];
+    const pf = sl + '：' + last.text;
+    $(`#rp-tp-${th.id}`).text(pf.length > 28 ? pf.slice(0, 27) + '…' : pf);
     $(`#rp-tt-${th.id}`).text(last.time);
   });
 }
@@ -1157,6 +1352,142 @@ function makeDraggable() {
     phone.style.cssText += `left:${ox + e.clientX - ex}px;top:${oy + e.clientY - ey}px;right:auto;bottom:auto;`;
   });
   document.addEventListener('mouseup', () => { dragging = false; });
+}
+
+// ================================================================
+//  DARK MODE
+// ================================================================
+function toggleDarkMode() {
+  STATE.darkMode = !STATE.darkMode;
+  $('#rp-phone').toggleClass('rp-dark', STATE.darkMode);
+  $('#rp-dm-btn').text(STATE.darkMode ? '☀️' : '🌙');
+  saveState();
+}
+
+// ================================================================
+//  MOMENTS
+// ================================================================
+function renderMoments() {
+  const container = $('#rp-moments-list').empty();
+  if (!STATE.moments || STATE.moments.length === 0) {
+    container.append('<div class="rp-moments-empty"><span>📭</span><span>暂无动态</span></div>');
+    return;
+  }
+  [...STATE.moments].reverse().forEach(moment => {
+    const likeCount = moment.likes.length;
+    const liked = moment.likes.includes('user');
+    let commentsHtml = '';
+    if (moment.comments && moment.comments.length > 0) {
+      const items = moment.comments.map((cm, idx) => {
+        const replyPart = cm.replyTo !== null && cm.replyTo !== undefined
+          ? `回复 <span class="rp-moment-cname">${moment.comments[cm.replyTo]?.name || '?'}</span>：`
+          : '';
+        return `<div class="rp-moment-comment">
+          <span class="rp-moment-cname">${escHtml(cm.name)}</span>：${replyPart}${escHtml(cm.text)}
+          <span class="rp-moment-reply-btn" data-moment="${moment.id}" data-cidx="${idx}" data-rname="${escHtml(cm.name)}">回复</span>
+        </div>`;
+      }).join('');
+      commentsHtml = `<div class="rp-moment-comments-wrap">${items}</div>`;
+    }
+    container.append(`
+      <div class="rp-moment" data-mid="${moment.id}">
+        <div class="rp-moment-hd">
+          <div class="rp-moment-av" style="background:${moment.avatarBg}">${moment.initials}</div>
+          <div class="rp-moment-meta">
+            <div class="rp-moment-name">${escHtml(moment.name)}</div>
+            <div class="rp-moment-time">${moment.time}</div>
+          </div>
+        </div>
+        <div class="rp-moment-text">${escHtml(moment.text)}</div>
+        <div class="rp-moment-bar">
+          <button class="rp-moment-act rp-like-btn${liked ? ' rp-liked' : ''}" data-moment="${moment.id}">${liked ? '❤️' : '🤍'} ${likeCount > 0 ? likeCount : '点赞'}</button>
+          <button class="rp-moment-act rp-comment-toggle" data-moment="${moment.id}">💬 评论</button>
+        </div>
+        ${commentsHtml}
+        <div class="rp-moment-input-row" id="rp-ci-${moment.id}" style="display:none">
+          <input class="rp-moment-cinput" type="text" placeholder="发表评论…" autocomplete="off"/>
+          <button class="rp-moment-csend" data-moment="${moment.id}">发送</button>
+        </div>
+      </div>
+    `);
+  });
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function incomingMoment(fromRaw, time, text) {
+  const momentId = fromRaw.toLowerCase().replace(/\s+/g,'_') + '_' + time.replace(':','');
+  if (STATE.moments.find(m => m.id === momentId)) return;
+  const threadId = matchThread(fromRaw);
+  const th = STATE.threads[threadId];
+  STATE.moments = STATE.moments || [];
+  STATE.moments.push({
+    id: momentId,
+    from: threadId || fromRaw,
+    name: th ? th.name : fromRaw,
+    initials: th ? th.initials : fromRaw.slice(0,2).toUpperCase(),
+    avatarBg: th ? th.avatarBg : 'linear-gradient(145deg,#555,#333)',
+    time, text,
+    likes: [],
+    comments: [],
+  });
+  if (STATE.currentView === 'moments') renderMoments();
+  showBanner((th ? th.name : fromRaw), '发了朋友圈：' + text.slice(0,25) + (text.length>25?'…':''), time);
+  saveState();
+}
+
+function incomingComment(momentId, fromRaw, time, text, replyTo) {
+  const moment = STATE.moments && STATE.moments.find(m => m.id === momentId || m.id.includes(momentId));
+  if (!moment) return;
+  const threadId = matchThread(fromRaw);
+  const th = STATE.threads[threadId];
+  const name = th ? th.name : fromRaw;
+  let replyToIdx = null;
+  if (replyTo) {
+    replyToIdx = moment.comments.findIndex(cm => cm.name === replyTo);
+    if (replyToIdx < 0) replyToIdx = null;
+  }
+  moment.comments = moment.comments || [];
+  moment.comments.push({ from: threadId || fromRaw, name, text, time, replyTo: replyToIdx });
+  if (STATE.currentView === 'moments') renderMoments();
+  saveState();
+}
+
+function toggleLike(momentId) {
+  const moment = STATE.moments && STATE.moments.find(m => m.id === momentId);
+  if (!moment) return;
+  const idx = moment.likes.indexOf('user');
+  if (idx >= 0) moment.likes.splice(idx, 1);
+  else moment.likes.push('user');
+  renderMoments();
+  saveState();
+}
+
+function sendMomentComment(momentId, text, replyToName) {
+  const moment = STATE.moments && STATE.moments.find(m => m.id === momentId);
+  if (!moment || !text.trim()) return;
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  let replyToIdx = null;
+  if (replyToName) {
+    replyToIdx = moment.comments.findIndex(cm => cm.name === replyToName);
+    if (replyToIdx < 0) replyToIdx = null;
+  }
+  moment.comments = moment.comments || [];
+  moment.comments.push({ from: 'user', name: '我', text: text.trim(), time: ts, replyTo: replyToIdx });
+  renderMoments();
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (!ta) return;
+  const mainText = ta.value.trim();
+  const action = replyToName
+    ? `*{{user}}在${moment.name}的朋友圈下回复${replyToName}：「${text.trim()}」*`
+    : `*{{user}}在${moment.name}的朋友圈下评论：「${text.trim()}」*`;
+  ta.value = mainText ? `${mainText}\n${action}` : action;
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+  document.querySelector('#send_but')?.click();
 }
 
 // ================================================================
