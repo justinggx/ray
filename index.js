@@ -501,7 +501,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-moment-csend:hover{opacity:.85 !important}
 
 /* ── INCOMING CALL OVERLAY ── */
-#rp-call-overlay{position:absolute;inset:0;z-index:800;background:linear-gradient(180deg,#0d0d1a,#1a1a2e);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 20px 50px}
+#rp-call-overlay{position:absolute;top:0;right:0;bottom:0;left:0;z-index:800;background:linear-gradient(180deg,#0d0d1a,#1a1a2e);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 20px 50px}
 .rp-call-av{width:88px;height:88px;border-radius:44px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#fff;margin-bottom:14px;animation:rp-cpulse 1.8s ease-in-out infinite}
 @keyframes rp-cpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.08),0 0 0 14px rgba(255,255,255,.04)}60%{box-shadow:0 0 0 14px rgba(255,255,255,.1),0 0 0 28px rgba(255,255,255,.04)}}
 .rp-call-name{font-size:24px;font-weight:700;color:#fff;letter-spacing:.01em;text-align:center}
@@ -555,6 +555,104 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-grp-sender{font-size:11px;font-weight:700;color:rgba(0,0,0,.45);margin-bottom:3px}
 .rp-dark .rp-grp-sender{color:rgba(255,255,255,.4)}
 .rp-grp-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;overflow:hidden}
+
+/* ── ATTACH PANEL ── */
+#rp-attach-btn{width:30px;height:30px;border-radius:15px;background:rgba(0,0,0,.07);border:none;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#555;transition:background .15s}
+#rp-attach-btn:active{background:rgba(0,0,0,.13)}
+.rp-dark #rp-attach-btn{background:rgba(255,255,255,.1);color:#c8cce8}
+#rp-attach-panel{position:absolute;bottom:100%;left:0;right:0;background:#fff;border-top:1px solid rgba(0,0,0,.08);padding:6px 0 10px;z-index:50;display:none}
+.rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
+.rp-attach-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:4px 0}
+.rp-attach-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;cursor:pointer;font-size:12px;color:#555;font-weight:500}
+.rp-dark .rp-attach-item{color:#9aa0c0}
+.rp-attach-item:active{background:rgba(0,0,0,.04)}
+.rp-attach-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(0,0,0,.05)}
+.rp-dark .rp-attach-ico{background:rgba(255,255,255,.07)}
+.rp-hb-modal{position:absolute;top:0;right:0;bottom:0;left:0;z-index:600;background:rgba(0,0,0,.45);display:flex;align-items:flex-end}
+.rp-hb-sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 20px 32px;width:100%;box-sizing:border-box}
+.rp-dark .rp-hb-sheet{background:#13132a}
+.rp-hb-sheet h3{margin:0 0 16px;font-size:16px;font-weight:700;color:#222;text-align:center}
+.rp-dark .rp-hb-sheet h3{color:#e0e4ff}
+.rp-hb-sheet input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px;background:#fafafa}
+.rp-dark .rp-hb-sheet input{background:#1c1c38;border-color:rgba(255,255,255,.1);color:#dde0f2}
+.rp-hb-send-btn{width:100%;padding:12px;background:#c62828;color:#ffd54f;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.rp-hb-cancel-btn{width:100%;padding:10px;background:none;color:rgba(0,0,0,.4);border:none;font-size:13px;cursor:pointer;margin-top:4px}
+.rp-dark .rp-hb-cancel-btn{color:rgba(255,255,255,.3)}
+.rp-loc-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,.04);border-radius:12px;max-width:220px}
+.rp-dark .rp-loc-card{background:rgba(255,255,255,.06)}
+.rp-loc-ico{font-size:22px;flex-shrink:0}
+.rp-loc-txt{font-size:13px;color:#333;font-weight:500}
+.rp-dark .rp-loc-txt{color:#c8cce8}
+.rp-img-bbl{max-width:180px;border-radius:12px;overflow:hidden}
+.rp-img-bbl img{width:100%;display:block}
+/* ── ADD CHOICE ── */
+.rp-add-choice{position:absolute;top:0;right:0;bottom:0;left:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.35);gap:10px}
+.rp-add-choice-box{background:#fff;border-radius:16px;overflow:hidden;width:80%;max-width:240px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.rp-dark .rp-add-choice-box{background:#1c1c38}
+.rp-add-choice-item{padding:16px 20px;font-size:15px;font-weight:600;color:#222;cursor:pointer;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,0,0,.06)}
+.rp-dark .rp-add-choice-item{color:#e0e4ff;border-bottom-color:rgba(255,255,255,.06)}
+.rp-add-choice-item:last-child{border-bottom:none}
+.rp-add-choice-item:active{background:rgba(0,0,0,.04)}
+.rp-add-choice-cancel{padding:14px 20px;font-size:14px;color:rgba(0,0,0,.4);cursor:pointer;text-align:center;background:#fff;border-radius:12px;width:80%;max-width:240px;box-sizing:border-box;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.rp-dark .rp-add-choice-cancel{background:#111128;color:rgba(255,255,255,.3)}
+/* ── LIVE CHAT OVERLAY ── */
+#rp-live-chat{position:fixed;bottom:80px;right:18px;width:280px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.rp-lc-bubble{display:flex;align-items:flex-start;gap:8px;pointer-events:auto;animation:rp-lc-in .28s cubic-bezier(.34,1.56,.64,1) both;position:relative}
+@keyframes rp-lc-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.rp-lc-av{width:32px;height:32px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;overflow:hidden}
+.rp-lc-body{background:rgba(20,20,40,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:4px 14px 14px 14px;padding:8px 12px;max-width:208px;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.rp-lc-name{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:3px}
+.rp-lc-text{font-size:13px;color:#fff;line-height:1.55;word-break:break-word}
+.rp-lc-dismiss{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:8px;background:rgba(0,0,0,.4);color:rgba(255,255,255,.6);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+/* ── ATTACH PANEL ── */
+#rp-attach-btn{width:30px;height:30px;border-radius:15px;background:rgba(0,0,0,.07);border:none;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#555;transition:background .15s}
+#rp-attach-btn:active{background:rgba(0,0,0,.13)}
+.rp-dark #rp-attach-btn{background:rgba(255,255,255,.1);color:#c8cce8}
+#rp-attach-panel{position:absolute;bottom:100%;left:0;right:0;background:#fff;border-top:1px solid rgba(0,0,0,.08);padding:6px 0 10px;z-index:50;display:none}
+.rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
+.rp-attach-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:4px 0}
+.rp-attach-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;cursor:pointer;font-size:12px;color:#555;font-weight:500}
+.rp-dark .rp-attach-item{color:#9aa0c0}
+.rp-attach-item:active{background:rgba(0,0,0,.04)}
+.rp-attach-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(0,0,0,.05)}
+.rp-dark .rp-attach-ico{background:rgba(255,255,255,.07)}
+.rp-hb-modal{position:absolute;top:0;right:0;bottom:0;left:0;z-index:600;background:rgba(0,0,0,.45);display:flex;align-items:flex-end}
+.rp-hb-sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 20px 32px;width:100%;box-sizing:border-box}
+.rp-dark .rp-hb-sheet{background:#13132a}
+.rp-hb-sheet h3{margin:0 0 16px;font-size:16px;font-weight:700;color:#222;text-align:center}
+.rp-dark .rp-hb-sheet h3{color:#e0e4ff}
+.rp-hb-sheet input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:10px;background:#fafafa}
+.rp-dark .rp-hb-sheet input{background:#1c1c38;border-color:rgba(255,255,255,.1);color:#dde0f2}
+.rp-hb-send-btn{width:100%;padding:12px;background:#c62828;color:#ffd54f;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.rp-hb-cancel-btn{width:100%;padding:10px;background:none;color:rgba(0,0,0,.4);border:none;font-size:13px;cursor:pointer;margin-top:4px}
+.rp-dark .rp-hb-cancel-btn{color:rgba(255,255,255,.3)}
+.rp-loc-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,.04);border-radius:12px;max-width:220px}
+.rp-dark .rp-loc-card{background:rgba(255,255,255,.06)}
+.rp-loc-ico{font-size:22px;flex-shrink:0}
+.rp-loc-txt{font-size:13px;color:#333;font-weight:500}
+.rp-dark .rp-loc-txt{color:#c8cce8}
+.rp-img-bbl{max-width:180px;border-radius:12px;overflow:hidden}
+.rp-img-bbl img{width:100%;display:block}
+/* ── ADD CHOICE ── */
+.rp-add-choice{position:absolute;top:0;right:0;bottom:0;left:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.35);gap:10px}
+.rp-add-choice-box{background:#fff;border-radius:16px;overflow:hidden;width:80%;max-width:240px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.rp-dark .rp-add-choice-box{background:#1c1c38}
+.rp-add-choice-item{padding:16px 20px;font-size:15px;font-weight:600;color:#222;cursor:pointer;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,0,0,.06)}
+.rp-dark .rp-add-choice-item{color:#e0e4ff;border-bottom-color:rgba(255,255,255,.06)}
+.rp-add-choice-item:last-child{border-bottom:none}
+.rp-add-choice-item:active{background:rgba(0,0,0,.04)}
+.rp-add-choice-cancel{padding:14px 20px;font-size:14px;color:rgba(0,0,0,.4);cursor:pointer;text-align:center;background:#fff;border-radius:12px;width:80%;max-width:240px;box-sizing:border-box;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.rp-dark .rp-add-choice-cancel{background:#111128;color:rgba(255,255,255,.3)}
+/* ── LIVE CHAT OVERLAY ── */
+#rp-live-chat{position:fixed;bottom:80px;right:18px;width:280px;z-index:9990;pointer-events:none;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.rp-lc-bubble{display:flex;align-items:flex-start;gap:8px;pointer-events:auto;animation:rp-lc-in .28s cubic-bezier(.34,1.56,.64,1) both;position:relative}
+@keyframes rp-lc-in{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.rp-lc-av{width:32px;height:32px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;overflow:hidden}
+.rp-lc-body{background:rgba(20,20,40,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:4px 14px 14px 14px;padding:8px 12px;max-width:208px;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.rp-lc-name{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:3px}
+.rp-lc-text{font-size:13px;color:#fff;line-height:1.55;word-break:break-word}
+.rp-lc-dismiss{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:8px;background:rgba(0,0,0,.4);color:rgba(255,255,255,.6);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
 `;
 
@@ -762,7 +860,9 @@ const HTML = `
           <div id="rp-bubbles"></div>
           <!-- FIX3: 待发消息队列预览区 -->
           <div id="rp-pending-queue" style="display:none"></div>
+          <div id="rp-attach-panel"></div>
           <div id="rp-composer">
+            <button id="rp-attach-btn" type="button">＋</button>
             <input id="rp-input" type="text" placeholder="iMessage（回车暂存）" autocomplete="off"/>
             <button id="rp-send" type="button">↑</button>
           </div>
@@ -872,6 +972,9 @@ const HTML = `
 async function init() {
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
+  if (!document.getElementById('rp-live-chat')) {
+    $('body').append('<div id="rp-live-chat"></div>');
+  }
 
   // FIX2: 记录初始 chatId 并从 localStorage 恢复状态
   const ctx = getContext();
@@ -1020,9 +1123,18 @@ function bindUI() {
 
   $('#rp-add-btn').on('click', (e) => {
     e.stopPropagation();
-    $('#rp-add-name').val('');
-    $('#rp-add-initials').val('');
-    $('#rp-add-modal').show();
+    showAddChoice();
+  });
+
+  // Attach panel
+  $('#rp-attach-btn').on('click', (e) => {
+    e.stopPropagation();
+    toggleAttachPanel();
+  });
+  $(document).on('click', (e) => {
+    if (!$(e.target).closest('#rp-attach-panel, #rp-attach-btn').length) {
+      $('#rp-attach-panel').hide();
+    }
   });
 
   $('#rp-add-cancel').on('click', () => {
@@ -1357,6 +1469,96 @@ function renderBubbles(threadId) {
       `);
       area.append(wrap); return;
     }
+    // ── user 发的红包 ──
+    if (msg.type === 'hongbao' && msg.from === 'user') {
+      const wrap = $(`<div class="rp-bwrap rp-out"></div>`);
+      wrap.html(`
+        <div class="rp-hongbao opened" style="cursor:default">
+          <div class="rp-hb-top">
+            <div class="rp-hb-ico">🧧</div>
+            <div class="rp-hb-info">
+              <div class="rp-hb-from">我</div>
+              <div class="rp-hb-note">${escHtml(msg.note||'恭喜发财')}</div>
+            </div>
+          </div>
+          <div class="rp-hb-bot">
+            <div class="rp-hb-action">已发送</div>
+            <div class="rp-hb-amount"><small>¥</small>${escHtml(msg.amount)}</div>
+            <div class="rp-hb-tag">微信红包</div>
+          </div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 图片 ──
+    if (msg.type === 'image') {
+      const isUser = msg.from === 'user';
+      const wrap = $(`<div class="rp-bwrap ${isUser?'rp-out':'rp-in'}"></div>`);
+      wrap.html(`
+        <div class="rp-img-bbl"><img src="${msg.src}" alt="图片"/></div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 位置 ──
+    if (msg.type === 'location') {
+      const isUser = msg.from === 'user';
+      const wrap = $(`<div class="rp-bwrap ${isUser?'rp-out':'rp-in'}"></div>`);
+      wrap.html(`
+        <div class="rp-loc-card">
+          <div class="rp-loc-ico">📍</div>
+          <div class="rp-loc-txt">${escHtml(msg.place)}</div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── user 发的红包 ──
+    if (msg.type === 'hongbao' && msg.from === 'user') {
+      const wrap = $(`<div class="rp-bwrap rp-out"></div>`);
+      wrap.html(`
+        <div class="rp-hongbao opened" style="cursor:default">
+          <div class="rp-hb-top">
+            <div class="rp-hb-ico">🧧</div>
+            <div class="rp-hb-info">
+              <div class="rp-hb-from">我</div>
+              <div class="rp-hb-note">${escHtml(msg.note||'恭喜发财')}</div>
+            </div>
+          </div>
+          <div class="rp-hb-bot">
+            <div class="rp-hb-action">已发送</div>
+            <div class="rp-hb-amount"><small>¥</small>${escHtml(msg.amount)}</div>
+            <div class="rp-hb-tag">微信红包</div>
+          </div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 图片 ──
+    if (msg.type === 'image') {
+      const _iu = msg.from === 'user';
+      const wrap = $(`<div class="rp-bwrap ${_iu?'rp-out':'rp-in'}"></div>`);
+      wrap.html(`
+        <div class="rp-img-bbl"><img src="${msg.src}" alt="图片"/></div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 位置 ──
+    if (msg.type === 'location') {
+      const _lu = msg.from === 'user';
+      const wrap = $(`<div class="rp-bwrap ${_lu?'rp-out':'rp-in'}"></div>`);
+      wrap.html(`
+        <div class="rp-loc-card">
+          <div class="rp-loc-ico">📍</div>
+          <div class="rp-loc-txt">${escHtml(msg.place)}</div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
     // ── 普通消息 ──
     const isUser = msg.from === 'user';
     const wrap = $('<div>').addClass('rp-bwrap ' + (isUser ? 'rp-out' : 'rp-in'));
@@ -1573,6 +1775,7 @@ function incomingMsg(threadId, text, time) {
     renderBubbles(threadId);
   }
 
+  showLiveChat(th.name, th.avatarBg, STATE.avatars?.[th.name] || null, text);
   showBanner(th.name, text, time);
   saveState(); // FIX2: 持久化收到的消息
 }
@@ -1839,6 +2042,7 @@ function incomingHongbao(fromRaw, amount, note) {
   refreshBadges(); renderThreadList();
   if (STATE.currentThread === thread.id) renderBubbles(thread.id);
   showBanner(thread.name, '🧧 发来了一个红包');
+  showLiveChat(thread.name, thread.avatarBg, STATE.avatars?.[thread.name] || null, `🧧 红包：${note}`);
   saveState();
 }
 
@@ -1873,6 +2077,7 @@ function incomingVoice(fromRaw, time, duration, text) {
   refreshBadges(); renderThreadList();
   if (STATE.currentThread === thread.id) renderBubbles(thread.id);
   showBanner(thread.name, `🎤 语音消息 ${duration}`);
+  showLiveChat(thread.name, thread.avatarBg, STATE.avatars?.[thread.name] || null, `🎤 ${duration}`);
   saveState();
 }
 
@@ -1913,7 +2118,441 @@ function incomingGroupMsg(fromRaw, groupName, time, text) {
   refreshBadges(); renderThreadList();
   if (STATE.currentThread === groupId) renderBubbles(groupId);
   showBanner(groupName, `${fromRaw}：${text.slice(0,22)}${text.length>22?'…':''}`);
+  const _sth = senderTh;
+  showLiveChat(fromRaw, _sth.avatarBg, STATE.avatars?.[fromRaw] || null, text);
   saveState();
+}
+
+// ================================================================
+//  ATTACH MENU
+// ================================================================
+function toggleAttachPanel() {
+  const p = $('#rp-attach-panel');
+  if (p.is(':visible')) { p.hide(); return; }
+  p.html(`
+    <div class="rp-attach-row">
+      <div class="rp-attach-item" onclick="showHongbaoSheet()">
+        <div class="rp-attach-ico">🧧</div><span>红包</span>
+      </div>
+      <div class="rp-attach-item" onclick="triggerImagePick()">
+        <div class="rp-attach-ico">🖼️</div><span>图片</span>
+      </div>
+      <div class="rp-attach-item" onclick="showLocationInput()">
+        <div class="rp-attach-ico">📍</div><span>位置</span>
+      </div>
+    </div>
+  `).show();
+}
+
+function showHongbaoSheet() {
+  $('#rp-attach-panel').hide();
+  $('#rp-screen').append(`
+    <div class="rp-hb-modal" id="rp-hb-modal">
+      <div class="rp-hb-sheet">
+        <h3>🧧 发红包</h3>
+        <input id="rp-hb-amount" type="number" placeholder="金额（¥）" min="1"/>
+        <input id="rp-hb-note"   type="text"   placeholder="祝福语（选填）" maxlength="15"/>
+        <button class="rp-hb-send-btn" onclick="sendUserHongbao()">发送红包</button>
+        <button class="rp-hb-cancel-btn" onclick="$('#rp-hb-modal').remove()">取消</button>
+      </div>
+    </div>
+  `);
+}
+
+function sendUserHongbao() {
+  const amount = $('#rp-hb-amount').val().trim();
+  const note   = $('#rp-hb-note').val().trim() || '恭喜发财';
+  if (!amount) return;
+  const thread = STATE.threads[STATE.currentThread];
+  if (!thread) return;
+  const now = new Date();
+  const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  thread.messages.push({
+    id: `uhb_${Date.now()}`, from: 'user',
+    type: 'hongbao', name: '我', time: ts,
+    amount, note, opened: true
+  });
+  $('#rp-hb-modal').remove();
+  renderBubbles(thread.id);
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}发给${thread.name}一个¥${amount}的红包，备注"${note}"*`;
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+function triggerImagePick() {
+  $('#rp-attach-panel').hide();
+  const fi = $('<input type="file" accept="image/*" style="display:none">');
+  $('body').append(fi);
+  fi.on('change', function() {
+    const file = this.files[0];
+    if (!file) { fi.remove(); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const thread = STATE.threads[STATE.currentThread];
+      if (!thread) { fi.remove(); return; }
+      const now = new Date();
+      const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      thread.messages.push({
+        id: `uimg_${Date.now()}`, from: 'user',
+        type: 'image', time: ts, src: e.target.result
+      });
+      renderBubbles(thread.id);
+      saveState();
+      fi.remove();
+      const ta = document.querySelector('#send_textarea');
+      if (ta) {
+        const action = `*{{user}}向${thread.name}发送了一张图片*`;
+        ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        document.querySelector('#send_but')?.click();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  fi.trigger('click');
+}
+
+function showLocationInput() {
+  $('#rp-attach-panel').html(`
+    <div style="display:flex;gap:8px;padding:10px 14px;align-items:center">
+      <div style="font-size:20px">📍</div>
+      <input id="rp-loc-inp" type="text" placeholder="输入你的位置…"
+        style="flex:1;border:1px solid rgba(0,0,0,.12);border-radius:20px;padding:7px 14px;font-size:13px;outline:none;background:#fafafa"/>
+      <button onclick="sendLocation()" style="background:#2563eb;color:#fff;border:none;border-radius:16px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600">发送</button>
+    </div>
+  `).show();
+  setTimeout(() => $('#rp-loc-inp').focus(), 50);
+}
+
+function sendLocation() {
+  const place = $('#rp-loc-inp').val().trim();
+  if (!place) return;
+  const thread = STATE.threads[STATE.currentThread];
+  if (!thread) return;
+  const now = new Date();
+  const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  thread.messages.push({
+    id: `uloc_${Date.now()}`, from: 'user',
+    type: 'location', time: ts, place
+  });
+  $('#rp-attach-panel').hide();
+  renderBubbles(thread.id);
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}向${thread.name}共享了位置：${place}*`;
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+// ================================================================
+//  ADD CHOICE / CREATE GROUP
+// ================================================================
+function showAddChoice() {
+  $('#rp-screen').append(`
+    <div class="rp-add-choice" id="rp-add-choice">
+      <div class="rp-add-choice-box">
+        <div class="rp-add-choice-item" onclick="hideAddChoice();setTimeout(()=>{$('#rp-add-name').val('');go('add')},50)">
+          👤 添加联系人
+        </div>
+        <div class="rp-add-choice-item" onclick="hideAddChoice();showCreateGroup()">
+          👥 创建群聊
+        </div>
+      </div>
+      <div class="rp-add-choice-cancel" onclick="hideAddChoice()">取消</div>
+    </div>
+  `);
+}
+
+function hideAddChoice() { $('#rp-add-choice').remove(); }
+
+function showCreateGroup() {
+  $('#rp-screen').append(`
+    <div class="rp-add-choice" id="rp-grp-create">
+      <div class="rp-add-choice-box" style="padding:20px">
+        <div style="font-size:15px;font-weight:700;color:#222;margin-bottom:14px;text-align:center">创建群聊</div>
+        <input id="rp-grp-name-inp" type="text" placeholder="群聊名称" maxlength="20"
+          style="width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:12px"/>
+        <div style="display:flex;gap:8px">
+          <button onclick="$('#rp-grp-create').remove()"
+            style="flex:1;padding:10px;border:none;border-radius:10px;background:#e9ecef;font-size:14px;font-weight:600;cursor:pointer">取消</button>
+          <button onclick="confirmCreateGroup()"
+            style="flex:1;padding:10px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer">创建</button>
+        </div>
+      </div>
+    </div>
+  `);
+  setTimeout(() => $('#rp-grp-name-inp').focus(), 50);
+}
+
+function confirmCreateGroup() {
+  const name = $('#rp-grp-name-inp').val().trim();
+  if (!name) return;
+  $('#rp-grp-create').remove();
+  const groupId = `grp_${name}`;
+  if (!STATE.threads[groupId]) {
+    const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
+    STATE.threads[groupId] = {
+      id: groupId, name,
+      initials: name.slice(0, 2),
+      avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
+      type: 'group', messages: [], unread: 0
+    };
+    saveState();
+    renderThreadList();
+  }
+  openThread(groupId);
+}
+
+// ================================================================
+//  LIVE CHAT OVERLAY
+// ================================================================
+const LC_TTL = 6000;
+const LC_MAX = 3;
+
+function showLiveChat(name, avatarBg, customImg, text) {
+  const lc = $('#rp-live-chat');
+  if (!lc.length) return;
+  const id = `lc_${Date.now()}`;
+  const avHtml = customImg
+    ? `<div class="rp-lc-av"><img src="${customImg}" style="width:100%;height:100%;object-fit:cover"/></div>`
+    : `<div class="rp-lc-av" style="background:${avatarBg}">${escHtml((name||'?').slice(0,2))}</div>`;
+  lc.append(`
+    <div class="rp-lc-bubble" id="${id}">
+      ${avHtml}
+      <div class="rp-lc-body">
+        <div class="rp-lc-name">${escHtml(name)}</div>
+        <div class="rp-lc-text">${escHtml(text.slice(0,80))}${text.length>80?'…':''}</div>
+      </div>
+      <div class="rp-lc-dismiss" onclick="$('#${id}').remove()">×</div>
+    </div>
+  `);
+  const all = lc.children();
+  if (all.length > LC_MAX) all.first().remove();
+  setTimeout(() => $(`#${id}`).fadeOut(400, function(){ $(this).remove(); }), LC_TTL);
+}
+
+// ================================================================
+//  ATTACH MENU
+// ================================================================
+function toggleAttachPanel() {
+  const p = $('#rp-attach-panel');
+  if (p.is(':visible')) { p.hide(); return; }
+  p.html(`
+    <div class="rp-attach-row">
+      <div class="rp-attach-item" onclick="showHongbaoSheet()">
+        <div class="rp-attach-ico">🧧</div><span>红包</span>
+      </div>
+      <div class="rp-attach-item" onclick="triggerImagePick()">
+        <div class="rp-attach-ico">🖼️</div><span>图片</span>
+      </div>
+      <div class="rp-attach-item" onclick="showLocationInput()">
+        <div class="rp-attach-ico">📍</div><span>位置</span>
+      </div>
+    </div>
+  `).show();
+}
+
+function showHongbaoSheet() {
+  $('#rp-attach-panel').hide();
+  $('#rp-screen').append(`
+    <div class="rp-hb-modal" id="rp-hb-modal">
+      <div class="rp-hb-sheet">
+        <h3>🧧 发红包</h3>
+        <input id="rp-hb-amount" type="number" placeholder="金额（¥）" min="1"/>
+        <input id="rp-hb-note"   type="text"   placeholder="祝福语（选填）" maxlength="15"/>
+        <button class="rp-hb-send-btn" onclick="sendUserHongbao()">发送红包</button>
+        <button class="rp-hb-cancel-btn" onclick="$('#rp-hb-modal').remove()">取消</button>
+      </div>
+    </div>
+  `);
+}
+
+function sendUserHongbao() {
+  const amount = $('#rp-hb-amount').val().trim();
+  const note   = $('#rp-hb-note').val().trim() || '恭喜发财';
+  if (!amount) return;
+  const thread = STATE.threads[STATE.currentThread];
+  if (!thread) return;
+  const now = new Date();
+  const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  thread.messages.push({
+    id: `uhb_${Date.now()}`, from: 'user',
+    type: 'hongbao', name: '我', time: ts,
+    amount, note, opened: true
+  });
+  $('#rp-hb-modal').remove();
+  renderBubbles(thread.id);
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}发给${thread.name}一个¥${amount}的红包，备注"${note}"*`;
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+function triggerImagePick() {
+  $('#rp-attach-panel').hide();
+  const fi = $('<input type="file" accept="image/*" style="display:none">');
+  $('body').append(fi);
+  fi.on('change', function() {
+    const file = this.files[0];
+    if (!file) { fi.remove(); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const thread = STATE.threads[STATE.currentThread];
+      if (!thread) { fi.remove(); return; }
+      const now = new Date();
+      const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      thread.messages.push({
+        id: `uimg_${Date.now()}`, from: 'user',
+        type: 'image', time: ts, src: e.target.result
+      });
+      renderBubbles(thread.id);
+      saveState();
+      fi.remove();
+      const ta = document.querySelector('#send_textarea');
+      if (ta) {
+        const action = `*{{user}}向${thread.name}发送了一张图片*`;
+        ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+        document.querySelector('#send_but')?.click();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  fi.trigger('click');
+}
+
+function showLocationInput() {
+  $('#rp-attach-panel').html(`
+    <div style="display:flex;gap:8px;padding:10px 14px;align-items:center">
+      <div style="font-size:20px">📍</div>
+      <input id="rp-loc-inp" type="text" placeholder="输入你的位置…"
+        style="flex:1;border:1px solid rgba(0,0,0,.12);border-radius:20px;padding:7px 14px;font-size:13px;outline:none;background:#fafafa"/>
+      <button onclick="sendLocation()" style="background:#2563eb;color:#fff;border:none;border-radius:16px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600">发送</button>
+    </div>
+  `).show();
+  setTimeout(() => $('#rp-loc-inp').focus(), 50);
+}
+
+function sendLocation() {
+  const place = $('#rp-loc-inp').val().trim();
+  if (!place) return;
+  const thread = STATE.threads[STATE.currentThread];
+  if (!thread) return;
+  const now = new Date();
+  const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  thread.messages.push({
+    id: `uloc_${Date.now()}`, from: 'user',
+    type: 'location', time: ts, place
+  });
+  $('#rp-attach-panel').hide();
+  renderBubbles(thread.id);
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}向${thread.name}共享了位置：${place}*`;
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+// ================================================================
+//  ADD CHOICE / CREATE GROUP
+// ================================================================
+function showAddChoice() {
+  $('#rp-screen').append(`
+    <div class="rp-add-choice" id="rp-add-choice">
+      <div class="rp-add-choice-box">
+        <div class="rp-add-choice-item" onclick="hideAddChoice();$('#rp-add-name').val('');$('#rp-add-initials').val('');setTimeout(()=>$('#rp-add-modal').show(),50)">
+          👤 添加联系人
+        </div>
+        <div class="rp-add-choice-item" onclick="hideAddChoice();showCreateGroup()">
+          👥 创建群聊
+        </div>
+      </div>
+      <div class="rp-add-choice-cancel" onclick="hideAddChoice()">取消</div>
+    </div>
+  `);
+}
+
+function hideAddChoice() { $('#rp-add-choice').remove(); }
+
+function showCreateGroup() {
+  $('#rp-screen').append(`
+    <div class="rp-add-choice" id="rp-grp-create">
+      <div class="rp-add-choice-box" style="padding:20px">
+        <div style="font-size:15px;font-weight:700;color:#222;margin-bottom:14px;text-align:center">创建群聊</div>
+        <input id="rp-grp-name-inp" type="text" placeholder="群聊名称" maxlength="20"
+          style="width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:12px"/>
+        <div style="display:flex;gap:8px">
+          <button onclick="$('#rp-grp-create').remove()"
+            style="flex:1;padding:10px;border:none;border-radius:10px;background:#e9ecef;font-size:14px;font-weight:600;cursor:pointer">取消</button>
+          <button onclick="confirmCreateGroup()"
+            style="flex:1;padding:10px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer">创建</button>
+        </div>
+      </div>
+    </div>
+  `);
+  setTimeout(() => $('#rp-grp-name-inp').focus(), 50);
+}
+
+function confirmCreateGroup() {
+  const name = $('#rp-grp-name-inp').val().trim();
+  if (!name) return;
+  $('#rp-grp-create').remove();
+  const groupId = `grp_${name}`;
+  if (!STATE.threads[groupId]) {
+    const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
+    STATE.threads[groupId] = {
+      id: groupId, name,
+      initials: name.slice(0, 2),
+      avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
+      type: 'group', messages: [], unread: 0
+    };
+    saveState();
+    renderThreadList();
+  }
+  openThread(groupId);
+}
+
+// ================================================================
+//  LIVE CHAT OVERLAY
+// ================================================================
+const LC_TTL = 6000;
+const LC_MAX = 3;
+
+function showLiveChat(name, avatarBg, customImg, text) {
+  const lc = $('#rp-live-chat');
+  if (!lc.length) return;
+  const id = `lc_${Date.now()}`;
+  const avHtml = customImg
+    ? `<div class="rp-lc-av"><img src="${customImg}" style="width:100%;height:100%;object-fit:cover"/></div>`
+    : `<div class="rp-lc-av" style="background:${avatarBg}">${escHtml((name||'?').slice(0,2))}</div>`;
+  lc.append(`
+    <div class="rp-lc-bubble" id="${id}">
+      ${avHtml}
+      <div class="rp-lc-body">
+        <div class="rp-lc-name">${escHtml(name)}</div>
+        <div class="rp-lc-text">${escHtml(text.slice(0,80))}${text.length>80?'…':''}</div>
+      </div>
+      <div class="rp-lc-dismiss" onclick="$('#${id}').remove()">×</div>
+    </div>
+  `);
+  const all = lc.children();
+  if (all.length > LC_MAX) all.first().remove();
+  setTimeout(() => $(`#${id}`).fadeOut(400, function(){ $(this).remove(); }), LC_TTL);
 }
 
 // ================================================================
