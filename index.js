@@ -101,10 +101,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-ln {
   background:rgba(255,255,255,.85); backdrop-filter:blur(24px);
   border:1px solid rgba(0,0,0,.06); border-radius:14px;
-  padding:10px 14px; display:flex; gap:10px; align-items:flex-start;
+  padding:10px 14px; display:flex; flex-direction:column; gap:4px;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
-.rp-ln-type { font-size:10px; font-weight:700; color:rgba(0,0,0,.4); text-transform:uppercase; letter-spacing:.6px; white-space:nowrap; }
+.rp-ln-type { font-size:10px; font-weight:700; color:rgba(0,0,0,.4); text-transform:uppercase; letter-spacing:.6px; }
 .rp-ln-text { font-size:12px; color:rgba(0,0,0,.85); line-height:1.4; }
 
 #rp-swipe-hint {
@@ -127,7 +127,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-home-clock { font-size:52px; font-weight:100; color:#000; letter-spacing:-3px; margin-bottom:22px; }
 
 /* app grid */
-#rp-app-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:0 18px; width:100%; }
+#rp-app-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:0 18px; width:100%; }
 .rp-app { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; transition:transform .12s; }
 .rp-app:active { transform:scale(.88); }
 .rp-app-off { opacity:.35; pointer-events:none; }
@@ -640,6 +640,7 @@ const HTML = `
           <div class="rp-home-body">
             <div id="rp-home-clock"></div>
             <div id="rp-app-grid">
+              <!-- row 1: 信息 朋友圈 夜间 -->
               <div class="rp-app" data-app="messages">
                 <div class="rp-app-ico rp-ico-msg">
                   <div class="rp-badge" id="rp-main-badge" style="display:none">0</div>
@@ -647,7 +648,7 @@ const HTML = `
                 </div>
                 <div class="rp-app-lbl">信息</div>
               </div>
-                            <div class="rp-app" data-app="moments">
+              <div class="rp-app" data-app="moments">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#3d8b65,#2d7a55)">
                   <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#mcg2)"/><defs><linearGradient id="mcg2" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#3d8b65"/><stop offset="100%" stop-color="#2d7a55"/></linearGradient></defs><circle cx="20" cy="14" r="3.5" fill="white" opacity=".9"/><rect x="10" y="20" width="20" height="2" rx="1" fill="white" opacity=".7"/><rect x="12" y="24" width="16" height="2" rx="1" fill="white" opacity=".5"/><rect x="14" y="28" width="12" height="2" rx="1" fill="white" opacity=".35"/></svg>
                 </div>
@@ -657,9 +658,18 @@ const HTML = `
                 <div class="rp-app-ico rp-dm-ico" style="background:linear-gradient(145deg,#4a4a6a,#32324e)">🌙</div>
                 <div class="rp-app-lbl" id="rp-dm-lbl">夜间</div>
               </div>
+              <!-- row 2: 设置 占位 占位 -->
               <div class="rp-app" data-app="settings">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#636380,#48485e)">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
+              </div>
+              <div class="rp-app rp-app-off" style="pointer-events:none;visibility:hidden">
+                <div class="rp-app-ico" style="background:rgba(0,0,0,.06)"></div>
+                <div class="rp-app-lbl"></div>
+              </div>
+              <div class="rp-app rp-app-off" style="pointer-events:none;visibility:hidden">
+                <div class="rp-app-ico" style="background:rgba(0,0,0,.06)"></div>
+                <div class="rp-app-lbl"></div>
               </div>
             </div>
 
@@ -982,6 +992,9 @@ function bindUI() {
       updateAvatarPreviewSwatch(who);
       renderMoments();
       renderThreadList();
+      if (STATE.currentView === 'thread' && STATE.currentThread) {
+        openThread(STATE.currentThread);
+      }
     };
     reader.readAsDataURL(file);
     // Reset input so same file can be selected again
@@ -1184,7 +1197,12 @@ function openThread(threadId) {
   th.unread = 0;
   refreshBadges();
 
-  $('#rp-hd-av').text(th.initials).css('background', th.avatarBg);
+  const _hdImg = STATE.avatars && STATE.avatars[th.name];
+  if (_hdImg) {
+    $('#rp-hd-av').empty().append(`<img class="rp-av-photo" src="${_hdImg}" alt=""/>`).css('background', 'transparent');
+  } else {
+    $('#rp-hd-av').empty().text(th.initials).css('background', th.avatarBg);
+  }
   $('#rp-hd-name').text(th.name);
 
   // FIX3: 切换对话时清空待发队列
