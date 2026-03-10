@@ -359,11 +359,22 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 `;
 
 function injectStyles() {
-  if (document.getElementById('rp-phone-css')) return;
-  const el = document.createElement('style');
-  el.id = 'rp-phone-css';
-  el.textContent = RP_PHONE_CSS;
-  document.body.appendChild(el); // bypass ST head MutationObserver
+  if (window._rpPhoneSheet || document.getElementById('rp-phone-css')) return;
+  try {
+    // Use adoptedStyleSheets: creates NO <style> DOM element,
+    // so SillyTavern CSS parser cannot scan or interfere with it.
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(RP_PHONE_CSS);
+    document.adoptedStyleSheets = [...(document.adoptedStyleSheets || []), sheet];
+    window._rpPhoneSheet = true;
+  } catch(e) {
+    // Fallback for older Electron builds
+    console.warn('[Raymond Phone] adoptedStyleSheets unavailable, using style tag fallback');
+    const el = document.createElement('style');
+    el.id = 'rp-phone-css';
+    el.textContent = RP_PHONE_CSS;
+    document.body.appendChild(el);
+  }
 }
 
 import { eventSource, event_types, setExtensionPrompt, extension_prompt_types } from '../../../../script.js';
