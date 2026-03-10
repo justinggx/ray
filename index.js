@@ -682,6 +682,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── WALLPAPER ── */
 .rp-wall-preview-img{width:100%;height:80px;border-radius:10px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.08);margin-bottom:10px}
 
+/* FIX #3: hide terminal SMS inbox panel */
+.p4{display:none!important}
+/* FIX #5: attach panel - position relative to composer */
+#rp-composer{position:relative}
+#rp-attach-panel{position:absolute;bottom:100%;left:0;right:0;background:#fff;border-top:1px solid rgba(0,0,0,.08);padding:6px 0 10px;z-index:500;display:none;border-radius:12px 12px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.08)}
+.rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
+/* FIX #4: wallpaper layer */
+#rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
+.rp-view{position:relative;z-index:1}
+
 `;
 
 function injectStyles() {
@@ -784,6 +794,7 @@ const HTML = `
       <div class="rp-btn rp-power"></div>
 
       <div id="rp-screen">
+        <div id="rp-wallpaper-layer"></div>
         <div id="rp-island"></div>
         <div id="rp-sbar">
           <span id="rp-sbar-time"></span>
@@ -1167,8 +1178,8 @@ function bindUI() {
     showAddChoice();
   });
 
-  // Attach panel
-  $('#rp-attach-btn').on('click', (e) => {
+  // Attach panel (event delegation - button lives inside dynamically built HTML)
+  $(document).on('click', '#rp-attach-btn', (e) => {
     e.stopPropagation();
     toggleAttachPanel();
   });
@@ -1292,7 +1303,9 @@ function bindUI() {
     const action = $(this).data('action');
     $('#rp-add-choice').remove();
     if (action === 'contact') {
-      go('add');
+      $('#rp-add-name').val('');
+      $('#rp-add-initials').val('');
+      $('#rp-add-modal').show();
     } else if (action === 'group') {
       showGroupPicker();
     }
@@ -2446,7 +2459,6 @@ function beautifySMSInChat() {
     const ctx = getContext();
     if (!ctx?.name) return;
     const charName = ctx.name;
-    // Find the last AI message element in ST's chat
     const allMsgs = document.querySelectorAll('.mes:not([is_user="true"])');
     if (!allMsgs.length) return;
     const lastMsg = allMsgs[allMsgs.length - 1];
@@ -2454,45 +2466,54 @@ function beautifySMSInChat() {
     if (!textEl || textEl.dataset.rpDone) return;
     textEl.dataset.rpDone = '1';
 
-    const thread = Object.values(STATE.threads).find(t => t.name === charName);
+    const thread   = Object.values(STATE.threads).find(t => t.name === charName);
     const avatarBg = thread?.avatarBg || 'linear-gradient(145deg,#555,#333)';
-    const initials  = charName.slice(0, 2);
+    const initials = charName.slice(0, 2);
     const customImg = STATE.avatars?.[charName];
     const avHtml = customImg
       ? `<div class="rp-cb-av"><img src="${customImg}" alt=""/></div>`
       : `<div class="rp-cb-av" style="background:${avatarBg}">${initials}</div>`;
-
-    // Replace 「...」 spans / raw text with bubble divs
+    const mkBubble = (text) => {
+      const d = document.createElement('div');
+      d.className = 'rp-cb';
+      d.innerHTML = `${avHtml}<div class="rp-cb-txt">${escHtml(text.trim())}</div>`;
+      return d;
+    };
+    // Match em/i elements: curly quotes, straight quotes, or brackets
     textEl.querySelectorAll('em, i').forEach(el => {
-      const t = el.textContent;
-      if (/^「.+」$/.test(t.trim())) {
-        const inner = t.trim().slice(1, -1);
-        const bubble = document.createElement('div');
-        bubble.className = 'rp-cb';
-        bubble.innerHTML = `${avHtml}<div class="rp-cb-txt">${escHtml(inner)}</div>`;
-        el.replaceWith(bubble);
-      }
+      if (el.closest('.rp-cb')) return;
+      const raw = el.textContent.trim();
+      const isDialogue = /^["\u201c\u00ab\u300c\u300e\u300a\uff02]/.test(raw)
+                      || /["\u201d\u00bb\u300d\u300f\u300b\uff02\u300c]$/.test(raw)
+                      || /^\u300c|\u300d$/.test(raw);
+      if (!isDialogue && raw.length < 3) return;
+      // Strip wrapping quote chars
+      const inner = raw.replace(/^["\u201c\u00ab\u300c\u300e\u300a\uff02\u300c]/, '')
+                       .replace(/["\u201d\u00bb\u300d\u300f\u300b\uff02]$/, '');
+      if (inner.trim().length > 0) el.replaceWith(mkBubble(inner));
     });
-    // Also handle plain-text 「...」
-    textEl.childNodes.forEach(node => {
-      if (node.nodeType !== Node.TEXT_NODE) return;
-      const text = node.textContent;
-      if (!text.includes('「')) return;
-      const frag = document.createDocumentFragment();
-      const parts = text.split(/(「[^」]+」)/g);
-      parts.forEach(part => {
-        const m = part.match(/^「([^」]+)」$/);
-        if (m) {
-          const div = document.createElement('div');
-          div.className = 'rp-cb';
-          div.innerHTML = `${avHtml}<div class="rp-cb-txt">${escHtml(m[1])}</div>`;
-          frag.appendChild(div);
-        } else if (part) {
-          frag.appendChild(document.createTextNode(part));
+    // Match text nodes with curly-quote spans
+    const walkText = (node) => {
+      if (node.nodeType === 3) {
+        const txt = node.textContent;
+        const re = /[\u201c"][^\u201d"\n]{2,}[\u201d"]|[\u300c\u300e][^\u300d\u300f\n]{2,}[\u300d\u300f]/g;
+        if (!re.test(txt)) return;
+        re.lastIndex = 0;
+        const frag = document.createDocumentFragment();
+        let last = 0, m;
+        while ((m = re.exec(txt)) !== null) {
+          if (m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+          const inner = m[0].slice(1, -1);
+          frag.appendChild(mkBubble(inner));
+          last = m.index + m[0].length;
         }
-      });
-      node.replaceWith(frag);
-    });
+        if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+        node.replaceWith(frag);
+      } else if (node.nodeType === 1 && !node.classList.contains('rp-cb')) {
+        Array.from(node.childNodes).forEach(walkText);
+      }
+    };
+    Array.from(textEl.childNodes).forEach(walkText);
   } catch(e) {
     console.warn('[Raymond Phone] beautify:', e);
   }
@@ -2502,13 +2523,13 @@ function beautifySMSInChat() {
 //  WALLPAPER
 // ================================================================
 function applyWallpaper() {
+  const layer = document.getElementById('rp-wallpaper-layer');
+  const prev  = document.getElementById('rp-wall-preview');
   if (STATE.wallpaper) {
-    $('#rp-phone').css('background-image', `url(${STATE.wallpaper})`).css('background-size','cover').css('background-position','center');
-    const prev = document.getElementById('rp-wall-preview');
+    if (layer) layer.style.backgroundImage = `url(${STATE.wallpaper})`;
     if (prev) { prev.src = STATE.wallpaper; prev.style.display = 'block'; }
   } else {
-    $('#rp-phone').css({'background-image':'','background-size':'','background-position':''});
-    const prev = document.getElementById('rp-wall-preview');
+    if (layer) layer.style.backgroundImage = '';
     if (prev) { prev.src = ''; prev.style.display = 'none'; }
   }
 }
