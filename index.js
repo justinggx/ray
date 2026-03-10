@@ -357,7 +357,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── home indicator ── */
 #rp-home-ind { position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; z-index:300; }
 /* ── NIGHT MODE TOGGLE ── */
-.rp-dm-btn{position:absolute;top:58px;right:-14px;z-index:400;width:28px;height:28px;border-radius:14px;background:rgba(240,240,240,.95);border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background .25s,border-color .25s}
+.rp-dm-btn{position:absolute;top:10px;right:14px;z-index:299;width:28px;height:28px;border-radius:14px;background:rgba(240,240,240,.95);border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background .25s,border-color .25s}
 .rp-dark .rp-dm-btn{background:rgba(20,22,42,.9);border-color:rgba(255,255,255,.15)}
 /* ── DARK FRAME ── */
 .rp-dark #rp-frame{background:linear-gradient(160deg,#1e1e1e,#101010);box-shadow:0 0 0 1.5px rgba(255,255,255,.06),0 0 0 9px #0c0c0c,0 0 0 10px rgba(255,255,255,.04),0 36px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
@@ -458,6 +458,30 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-moments-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:rgba(0,0,0,.3);font-size:13px;gap:8px}
 .rp-dark .rp-moments-empty{color:rgba(160,175,255,.3)}
 
+/* ── COMPOSE MODAL ── */
+#rp-compose-modal{position:absolute;inset:0;z-index:700;background:#f2f3f7;display:flex;flex-direction:column}
+.rp-dark #rp-compose-modal{background:#06060e}
+.rp-compose-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+#rp-compose-text{width:100%;min-height:80px;border:none;background:transparent;font-size:15px;color:#1a1a1a;resize:none;outline:none;font-family:inherit;line-height:1.65;box-sizing:border-box}
+.rp-dark #rp-compose-text{color:#dde0f2}
+.rp-compose-photo-strip{display:flex;gap:8px;flex-wrap:wrap}
+.rp-compose-photo-slot{width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0}
+.rp-compose-photo-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.rp-compose-sep{height:1px;background:rgba(0,0,0,.08);margin:0 -16px}
+.rp-dark .rp-compose-sep{background:rgba(255,255,255,.06)}
+.rp-compose-post-btn{background:none !important;border:none !important;color:#2563eb !important;font-size:15px !important;font-weight:700 !important;cursor:pointer !important;padding:0 10px !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
+.rp-dark .rp-compose-post-btn{color:#7090f0 !important}
+/* ── MOMENT IMAGE ── */
+.rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
+.rp-moment-img{width:100%;display:block;border-radius:8px}
+/* ── MOMENTS send button fix ── */
+.rp-moment-input-row{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06);align-items:center}
+.rp-dark .rp-moment-input-row{border-top-color:rgba(255,255,255,.06)}
+.rp-moment-cinput{flex:1;min-width:0;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:6px 10px;font-size:12.5px;color:#1a1a1a;font-family:inherit;outline:none}
+.rp-dark .rp-moment-cinput{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#d5d8f0}
+.rp-moment-csend{flex-shrink:0;background:#2563eb !important;color:#fff !important;border:none !important;border-radius:8px !important;padding:6px 12px !important;font-size:12px !important;font-weight:700 !important;cursor:pointer !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
+.rp-moment-csend:hover{opacity:.85 !important}
+
 `;
 
 function injectStyles() {
@@ -470,12 +494,8 @@ function injectStyles() {
     document.adoptedStyleSheets = [...(document.adoptedStyleSheets || []), sheet];
     window._rpPhoneSheet = true;
   } catch(e) {
-    // Fallback for older Electron builds
-    console.warn('[Raymond Phone] adoptedStyleSheets unavailable, using style tag fallback');
-    const el = document.createElement('style');
-    el.id = 'rp-phone-css';
-    el.textContent = RP_PHONE_CSS;
-    document.body.appendChild(el);
+    // Never fall back to <style> tag - ST CSS parser would scan it and break terminal
+    console.error('[Raymond Phone] adoptedStyleSheets failed:', e);
   }
 }
 
@@ -560,9 +580,9 @@ const HTML = `
       <div class="rp-btn rp-vol-dn"></div>
       <div class="rp-btn rp-power"></div>
 
-      <button class="rp-dm-btn" id="rp-dm-btn" title="夜间模式">🌙</button>
       <div id="rp-screen">
         <div id="rp-island"></div>
+        <button class="rp-dm-btn" id="rp-dm-btn" title="夜间模式">🌙</button>
 
         <div id="rp-sbar">
           <span id="rp-sbar-time"></span>
@@ -609,9 +629,9 @@ const HTML = `
                 </div>
                 <div class="rp-app-lbl">信息</div>
               </div>
-              <div class="rp-app" data-app="moments">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff6b35,#f7931e)">
-                  <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#mcg)"/><defs><linearGradient id="mcg" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#ff7043"/><stop offset="100%" stop-color="#ff8f00"/></linearGradient></defs><ellipse cx="17" cy="18" rx="9" ry="7" fill="white" opacity=".95"/><path d="M26 24l4 5-7-2" fill="white" opacity=".95"/><circle cx="14" cy="18" r="1.3" fill="#ff7043"/><circle cx="17" cy="18" r="1.3" fill="#ff7043"/><circle cx="20" cy="18" r="1.3" fill="#ff7043"/></svg>
+                            <div class="rp-app" data-app="moments">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#3d8b65,#2d7a55)">
+                  <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#mcg2)"/><defs><linearGradient id="mcg2" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#3d8b65"/><stop offset="100%" stop-color="#2d7a55"/></linearGradient></defs><circle cx="20" cy="14" r="3.5" fill="white" opacity=".9"/><rect x="10" y="20" width="20" height="2" rx="1" fill="white" opacity=".7"/><rect x="12" y="24" width="16" height="2" rx="1" fill="white" opacity=".5"/><rect x="14" y="28" width="12" height="2" rx="1" fill="white" opacity=".35"/></svg>
                 </div>
                 <div class="rp-app-lbl">朋友圈</div>
               </div>
@@ -664,14 +684,53 @@ const HTML = `
           </div>
         </div>
 
+        <!-- 发朋友圈 -->
+        <div id="rp-compose-modal" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" id="rp-compose-cancel" style="font-size:14px;color:#2563eb !important;padding:0 10px !important">取消</button>
+            <span class="rp-nav-title">发朋友圈</span>
+            <button class="rp-compose-post-btn" id="rp-compose-post">发布</button>
+          </div>
+          <div class="rp-compose-body">
+            <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
+            <div class="rp-compose-sep"></div>
+            <div class="rp-compose-photo-strip">
+              <div class="rp-compose-photo-slot">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75" alt="巴黎夜景" onerror="this.style.cssText='background:#1a1a3e;width:80px;height:80px;display:block'"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- 朋友圈 -->
         <div id="rp-view-moments" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">朋友圈</span>
-            <span></span>
+            <button class="rp-nav-add" id="rp-moments-add" title="发朋友圈">✏️</button>
           </div>
           <div id="rp-moments-list"></div>
+        </div>
+
+        <!-- 发朋友圈 -->
+        <div id="rp-compose-modal" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" id="rp-compose-cancel" style="font-size:14px;color:#2563eb !important">取消</button>
+            <span class="rp-nav-title">发朋友圈</span>
+            <button class="rp-compose-post-btn" id="rp-compose-post">发布</button>
+          </div>
+          <div class="rp-compose-body">
+            <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
+            <div class="rp-compose-sep"></div>
+            <div class="rp-compose-photo-strip">
+              <div class="rp-compose-photo-slot">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75" alt="巴黎·埃菲尔铁塔夜景" onerror="this.style.background='#1a1a3e';this.src=''"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:none">
         </div>
 
                 <!-- 通知横幅 -->
@@ -775,6 +834,7 @@ function onChatChanged() {
     STATE.threads = s.threads;
     STATE.notifications = s.notifications;
     STATE.sync = { ...s.sync };
+    STATE.moments = JSON.parse(JSON.stringify(s.moments || []));
     STATE.currentThread = s.currentThread;
   } else {
     const persisted = loadState(newChatId);
@@ -866,6 +926,12 @@ function bindUI() {
   $('#rp-add-modal').on('click', function (e) {
     if (e.target === this) $(this).hide();
   });
+
+
+  // Compose moment
+  $(document).on('click', '#rp-moments-add', openCompose);
+  $(document).on('click', '#rp-compose-cancel, #rp-compose-modal .rp-back', closeCompose);
+  $(document).on('click', '#rp-compose-post', postUserMoment);
 
   // Dark mode toggle
   $('#rp-dm-btn').on('click', toggleDarkMode);
@@ -1203,9 +1269,9 @@ function parsePhone(block) {
     addLockNotif(m[1], m[2]);
   }
 
-  const momentsRe = /<MOMENTS\s+FROM="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/MOMENTS>/gi;
+  const momentsRe = /<MOMENTS\s+FROM="([^"]+)"\s+TIME="([^"]+)"(?:\s+IMG="([^"]*)")?\s*>([\s\S]*?)<\/MOMENTS>/gi;
   while ((m = momentsRe.exec(block)) !== null) {
-    incomingMoment(m[1].trim(), m[2].trim(), m[3].trim());
+    incomingMoment(m[1].trim(), m[2].trim(), m[4].trim(), m[3] ? m[3].trim() : null);
   }
 
   const commentRe = /<COMMENT\s+MOMENT_ID="([^"]+)"\s+FROM="([^"]+)"\s+TIME="([^"]+)"(?:\s+REPLY_TO="([^"]*)")?\s*>([\s\S]*?)<\/COMMENT>/gi;
@@ -1355,6 +1421,51 @@ function makeDraggable() {
 }
 
 // ================================================================
+//  COMPOSE MOMENT
+// ================================================================
+function openCompose() {
+  $('#rp-compose-modal').show();
+  $('#rp-compose-text').val('').focus();
+}
+
+function closeCompose() {
+  $('#rp-compose-modal').hide();
+}
+
+function postUserMoment() {
+  const text = $('#rp-compose-text').val().trim();
+  if (!text) return;
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const momentId = `user_${now.getTime()}`;
+  STATE.moments = STATE.moments || [];
+  STATE.moments.push({
+    id: momentId,
+    from: 'user',
+    name: '我',
+    initials: '我',
+    avatarBg: 'linear-gradient(145deg,#2563eb,#1d4ed8)',
+    time: ts,
+    text,
+    img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75',
+    likes: [],
+    comments: [],
+  });
+  closeCompose();
+  go('moments');
+  saveState();
+  // Notify ST chat
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}发布了一条朋友圈：「${text}」[附图：巴黎埃菲尔铁塔夜景]*`;
+    const main = ta.value.trim();
+    ta.value = main ? `${main}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+// ================================================================
 //  DARK MODE
 // ================================================================
 function toggleDarkMode() {
@@ -1399,6 +1510,7 @@ function renderMoments() {
           </div>
         </div>
         <div class="rp-moment-text">${escHtml(moment.text)}</div>
+        ${moment.img ? `<div class="rp-moment-img-wrap"><img class="rp-moment-img" src="${escHtml(moment.img)}" alt=""/></div>` : ''}
         <div class="rp-moment-bar">
           <button class="rp-moment-act rp-like-btn${liked ? ' rp-liked' : ''}" data-moment="${moment.id}">${liked ? '❤️' : '🤍'} ${likeCount > 0 ? likeCount : '点赞'}</button>
           <button class="rp-moment-act rp-comment-toggle" data-moment="${moment.id}">💬 评论</button>
@@ -1417,7 +1529,7 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function incomingMoment(fromRaw, time, text) {
+function incomingMoment(fromRaw, time, text, img) {
   const momentId = fromRaw.toLowerCase().replace(/\s+/g,'_') + '_' + time.replace(':','');
   if (STATE.moments.find(m => m.id === momentId)) return;
   const threadId = matchThread(fromRaw);
@@ -1430,6 +1542,7 @@ function incomingMoment(fromRaw, time, text) {
     initials: th ? th.initials : fromRaw.slice(0,2).toUpperCase(),
     avatarBg: th ? th.avatarBg : 'linear-gradient(145deg,#555,#333)',
     time, text,
+    img: img || null,
     likes: [],
     comments: [],
   });
@@ -1487,6 +1600,16 @@ function sendMomentComment(momentId, text, replyToName) {
     : `*{{user}}在${moment.name}的朋友圈下评论：「${text.trim()}」*`;
   ta.value = mainText ? `${mainText}\n${action}` : action;
   ta.dispatchEvent(new Event('input', { bubbles: true }));
+
+  // Force NPC/char reply via OOC hidden prompt
+  const hasEP = typeof setExtensionPrompt === 'function' && typeof extension_prompt_types !== 'undefined';
+  if (hasEP) {
+    const who = replyToName ? `${moment.name}及${replyToName}` : moment.name;
+    const oocM = `[朋友圈互动强制指令：{{user}}刚在${moment.name}的朋友圈下${replyToName ? `回复了${replyToName}` : '发表了评论'}，内容：「${text.trim()}」。相关角色（${who}）必须在本轮<PHONE>块内用<COMMENT>标签回复这条评论，至少1条，至多3条，语气符合人设，不得忽略。]`;
+    setExtensionPrompt('rp-moments-ooc', oocM, extension_prompt_types.IN_CHAT, 0, false, 0);
+    setTimeout(() => setExtensionPrompt('rp-moments-ooc', ''), 500);
+  }
+
   document.querySelector('#send_but')?.click();
 }
 
