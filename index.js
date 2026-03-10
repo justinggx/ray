@@ -456,6 +456,27 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-moments-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:rgba(0,0,0,.3);font-size:13px;gap:8px}
 .rp-dark .rp-moments-empty{color:rgba(160,175,255,.3)}
 
+/* ── AVATAR IMAGES ── */
+.rp-av-img,.rp-moment-av.rp-av-img{overflow:hidden;padding:0}
+.rp-av-photo{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
+/* ── SETTINGS VIEW ── */
+#rp-view-settings{background:#f2f3f7;display:flex;flex-direction:column;overflow-y:auto}
+.rp-dark #rp-view-settings{background:#060610}
+.rp-set-section{background:#fff;border-radius:12px;margin:10px 12px 0;padding:0 14px;overflow:hidden}
+.rp-dark .rp-set-section{background:rgba(255,255,255,.04)}
+.rp-set-section-title{font-size:11.5px;font-weight:600;color:#8a8a9a;text-transform:uppercase;letter-spacing:.04em;margin:14px 12px 4px;padding:0}
+.rp-dark .rp-set-section-title{color:#6a6a7a}
+.rp-set-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);gap:10px;min-height:44px}
+.rp-dark .rp-set-row{border-bottom-color:rgba(255,255,255,.05)}
+.rp-set-row:last-child{border-bottom:none}
+.rp-set-key{font-size:14px;color:#1a1a2e;flex:1}
+.rp-dark .rp-set-key{color:#c8cce8}
+.rp-set-select{font-size:13px;color:#3a3a5e;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:4px 8px;font-family:inherit;max-width:140px;outline:none}
+.rp-dark .rp-set-select{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#c0c4e0}
+.rp-avatar-upload-btn{font-size:12.5px;color:#2563eb;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.18);border-radius:8px;padding:5px 10px;cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center}
+.rp-dark .rp-avatar-upload-btn{color:#7090f0;background:rgba(112,144,240,.12);border-color:rgba(112,144,240,.2)}
+.rp-set-avatar-preview{width:38px;height:38px;border-radius:19px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+
 /* ── COMPOSE MODAL ── */
 #rp-compose-modal{position:absolute;inset:0;z-index:700;background:#f2f3f7;display:flex;flex-direction:column}
 .rp-dark #rp-compose-modal{background:#06060e}
@@ -536,6 +557,7 @@ const STATE = {
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
   darkMode: false,
+  avatars: {},
 };
 
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
@@ -553,6 +575,7 @@ function saveState() {
       sync: STATE.sync,
       moments: STATE.moments,
       darkMode: STATE.darkMode,
+      avatars: STATE.avatars || {},
     }));
   } catch(e) { console.warn('[Raymond Phone] saveState failed', e); }
 }
@@ -634,8 +657,8 @@ const HTML = `
                 <div class="rp-app-ico rp-dm-ico" style="background:linear-gradient(145deg,#4a4a6a,#32324e)">🌙</div>
                 <div class="rp-app-lbl" id="rp-dm-lbl">夜间</div>
               </div>
-              <div class="rp-app rp-app-off">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#888,#666)">⚙️</div>
+              <div class="rp-app" data-app="settings">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#636380,#48485e)">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
               </div>
             </div>
@@ -717,7 +740,33 @@ const HTML = `
         <div style="display:none">
         </div>
 
-                <!-- 通知横幅 -->
+                <!-- 设置 -->
+        <div id="rp-view-settings" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">设置</span>
+            <span></span>
+          </div>
+          <div style="overflow-y:auto;flex:1">
+            <div class="rp-set-section-title">头像管理</div>
+            <div class="rp-set-section">
+              <div class="rp-set-row">
+                <span class="rp-set-key">修改对象</span>
+                <select id="rp-avatar-select" class="rp-set-select">
+                  <option value="user">我（User）</option>
+                </select>
+              </div>
+              <div class="rp-set-row">
+                <div id="rp-avatar-preview-swatch" class="rp-set-avatar-preview" style="background:linear-gradient(145deg,#64748b,#475569)">我</div>
+                <span class="rp-set-key" style="font-size:12px;color:#8a8a9a">点击右侧上传图片</span>
+                <label class="rp-avatar-upload-btn" for="rp-avatar-file-input">📷 选择</label>
+                <input type="file" id="rp-avatar-file-input" accept="image/*" style="display:none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 通知横幅 -->
         <div id="rp-notif-banner" style="display:none">
           <div class="rp-nb-ico">💬</div>
           <div class="rp-nb-body">
@@ -819,6 +868,7 @@ function onChatChanged() {
     STATE.notifications = s.notifications;
     STATE.sync = { ...s.sync };
     STATE.moments = JSON.parse(JSON.stringify(s.moments || []));
+    STATE.avatars = Object.assign({}, s.avatars || {});
     STATE.currentThread = s.currentThread;
   } else {
     const persisted = loadState(newChatId);
@@ -827,6 +877,7 @@ function onChatChanged() {
       STATE.notifications = persisted.notifications || [];
       STATE.sync = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments = persisted.moments || [];
+      STATE.avatars = persisted.avatars || {};
       STATE.currentThread = null;
     } else {
       STATE.threads = DEFAULT_THREADS();
@@ -911,6 +962,37 @@ function bindUI() {
     if (e.target === this) $(this).hide();
   });
 
+
+
+  // Settings: avatar select change
+  $(document).on('change', '#rp-avatar-select', function() {
+    updateAvatarPreviewSwatch($(this).val());
+  });
+
+  // Settings: file input change - read image and store
+  $(document).on('change', '#rp-avatar-file-input', function(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const who = $('#rp-avatar-select').val();
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      STATE.avatars = STATE.avatars || {};
+      STATE.avatars[who] = ev.target.result;
+      saveState();
+      updateAvatarPreviewSwatch(who);
+      renderMoments();
+      renderThreadList();
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be selected again
+    $(this).val('');
+  });
+
+  // Settings app - go to settings view (override data-app handler)
+  $(document).on('click', '[data-app="settings"]', function(e) {
+    e.stopPropagation();
+    openSettings();
+  });
 
   // Compose moment
   $(document).on('click', '#rp-moments-add', openCompose);
@@ -1062,7 +1144,7 @@ function renderThreadList() {
 
     container.append(`
       <div class="rp-thread" data-thread="${th.id}">
-        <div class="rp-av" style="background:${th.avatarBg}">${th.initials}</div>
+        ${(()=>{const ci=STATE.avatars&&STATE.avatars[th.name];return ci?`<div class="rp-av rp-av-img"><img class="rp-av-photo" src="${ci}" alt=""/></div>`:`<div class="rp-av" style="background:${th.avatarBg}">${th.initials}</div>`;})()}
         <div class="rp-ti">
           <div class="rp-tn">${th.name}</div>
           <div class="rp-tp" id="rp-tp-${th.id}">${preview}</div>
@@ -1428,7 +1510,7 @@ function postUserMoment() {
     from: 'user',
     name: '我',
     initials: '我',
-    avatarBg: 'linear-gradient(145deg,#2563eb,#1d4ed8)',
+    avatarBg: 'linear-gradient(145deg,#64748b,#475569)',
     time: ts,
     text,
     img: null,
@@ -1438,14 +1520,61 @@ function postUserMoment() {
   closeCompose();
   go('moments');
   saveState();
-  // Notify ST chat
   const ta = document.querySelector('#send_textarea');
-  if (ta) {
-    const action = `*{{user}}发布了一条朋友圈：「${text}」[附图：巴黎埃菲尔铁塔夜景]*`;
-    const main = ta.value.trim();
-    ta.value = main ? `${main}\n${action}` : action;
-    ta.dispatchEvent(new Event('input', { bubbles: true }));
-    document.querySelector('#send_but')?.click();
+  if (!ta) return;
+  // Force char/NPC to reply with COMMENT — set OOC BEFORE send
+  const hasEP = typeof setExtensionPrompt === 'function' && extension_prompt_types;
+  if (hasEP) {
+    const oocM = `[朋友圈发布强制指令：{{user}}刚发布了一条朋友圈，MOMENT_ID="${momentId}"，内容：「${text}」。角色必须在本轮<PHONE>块内用<COMMENT MOMENT_ID="${momentId}" FROM="角色名" TIME="HH:MM">评论内容</COMMENT>格式回应，至少1条至多3条，不得省略。]`;
+    setExtensionPrompt('rp-moments-post-ooc', oocM, extension_prompt_types.IN_CHAT, 0, false, 0);
+  }
+  const action = `*{{user}}发布了一条朋友圈：「${text}」*`;
+  const main = ta.value.trim();
+  ta.value = main ? `${main}\n${action}` : action;
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+  document.querySelector('#send_but')?.click();
+  if (hasEP) {
+    setTimeout(() => setExtensionPrompt('rp-moments-post-ooc', ''), 300);
+  }
+}
+
+// ================================================================
+//  SETTINGS / AVATAR MANAGEMENT
+// ================================================================
+function openSettings() {
+  populateAvatarSelect();
+  updateAvatarPreviewSwatch($('#rp-avatar-select').val());
+  go('settings');
+}
+
+function populateAvatarSelect() {
+  const sel = $('#rp-avatar-select');
+  sel.empty().append('<option value="user">我（User）</option>');
+  // Add NPCs from threads
+  Object.values(STATE.threads).forEach(th => {
+    sel.append(`<option value="${th.name}">${th.name}</option>`);
+  });
+  // Add NPCs from moments (unique)
+  const seen = new Set(['user', ...Object.values(STATE.threads).map(t => t.name)]);
+  (STATE.moments || []).forEach(m => {
+    if (m.from !== 'user' && !seen.has(m.name)) {
+      seen.add(m.name);
+      sel.append(`<option value="${m.name}">${m.name}</option>`);
+    }
+  });
+}
+
+function updateAvatarPreviewSwatch(who) {
+  const swatch = $('#rp-avatar-preview-swatch');
+  const ci = STATE.avatars && STATE.avatars[who];
+  if (ci) {
+    swatch.html(`<img class="rp-av-photo" src="${ci}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:19px"/>`);
+    swatch.css('background', 'transparent');
+  } else if (who === 'user') {
+    swatch.text('我').css('background', 'linear-gradient(145deg,#64748b,#475569)');
+  } else {
+    const th = Object.values(STATE.threads).find(t => t.name === who);
+    swatch.text(th ? th.initials : who.slice(0,2).toUpperCase()).css('background', th ? th.avatarBg : 'linear-gradient(145deg,#555,#333)');
   }
 }
 
@@ -1488,7 +1617,7 @@ function renderMoments() {
     container.append(`
       <div class="rp-moment" data-mid="${moment.id}">
         <div class="rp-moment-hd">
-          <div class="rp-moment-av" style="background:${moment.avatarBg}">${moment.initials}</div>
+          ${(()=>{const k=moment.from==='user'?'user':moment.name;const ci=STATE.avatars&&STATE.avatars[k];return ci?`<div class="rp-moment-av rp-av-img"><img class="rp-av-photo" src="${ci}" alt=""/></div>`:`<div class="rp-moment-av" style="background:${moment.avatarBg}">${moment.initials}</div>`;})()}
           <div class="rp-moment-meta">
             <div class="rp-moment-name">${escHtml(moment.name)}</div>
             <div class="rp-moment-time">${moment.time}</div>
@@ -1537,7 +1666,12 @@ function incomingMoment(fromRaw, time, text, img) {
 }
 
 function incomingComment(momentId, fromRaw, time, text, replyTo) {
-  const moment = STATE.moments && STATE.moments.find(m => m.id === momentId || m.id.includes(momentId));
+  let moment = STATE.moments && STATE.moments.find(m => m.id === momentId || m.id.includes(momentId));
+  if (!moment) {
+    // Fallback: apply to most recent user moment if any exist
+    const userMoments = (STATE.moments || []).filter(m => m.from === 'user');
+    moment = userMoments.length > 0 ? userMoments[userMoments.length - 1] : null;
+  }
   if (!moment) return;
   const threadId = matchThread(fromRaw);
   const th = STATE.threads[threadId];
