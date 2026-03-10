@@ -1,3 +1,371 @@
+// ================================================================
+//  INJECT STYLES
+//  CSS 从 manifest 的 css 字段移至此处 JS 注入，
+//  彻底绕开 SillyTavern 扩展 CSS 加载管线，
+//  避免与终端正则美化 <style> 标签的 CSS 解析器产生冲突。
+// ================================================================
+const RP_PHONE_CSS = `/* ── wrapper ── */
+#rp-wrapper { position:fixed; right:20px; bottom:20px; z-index:9998; }
+
+/* ── FAB ── */
+#rp-fab {
+  position:fixed; right:20px; bottom:20px; z-index:10001;
+  width:52px; height:52px; border-radius:50%;
+  background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
+  border:1px solid rgba(0,0,0,.08);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; cursor:pointer;
+  box-shadow:0 4px 24px rgba(0,0,0,.15);
+  transition:transform .15s;
+}
+#rp-fab:hover { transform:scale(1.1); }
+
+/* ── phone container ── */
+#rp-phone {
+  position:fixed; right:84px; bottom:20px; z-index:10000;
+  cursor:default;
+}
+
+/* ── frame (iPhone 15 Pro) ── */
+#rp-frame {
+  position:relative; width:286px; height:580px;
+  background:linear-gradient(160deg,#e8e8e8,#d0d0d0);
+  border-radius:50px;
+  box-shadow:
+    0 0 0 1.5px rgba(0,0,0,.12),
+    0 0 0 9px #f5f5f5,
+    0 0 0 10px rgba(0,0,0,.08),
+    0 36px 80px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.5);
+  padding:11px;
+}
+
+/* side buttons */
+.rp-btn { position:absolute; border-radius:2px; background:#c0c0c0; }
+.rp-vol-up  { left:-3px; top:88px;  width:3px; height:34px; }
+.rp-vol-dn  { left:-3px; top:130px; width:3px; height:34px; }
+.rp-power   { right:-3px; top:106px; width:3px; height:46px; }
+
+/* ── screen ── */
+#rp-screen {
+  width:100%; height:100%;
+  background:#fff; border-radius:40px; overflow:hidden;
+  position:relative;
+  font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
+}
+
+/* Dynamic Island */
+#rp-island {
+  position:absolute; top:11px; left:50%; transform:translateX(-50%);
+  width:86px; height:28px; background:#000; border-radius:20px; z-index:200;
+  box-shadow:0 0 0 2px #f5f5f5;
+}
+
+/* ── status bar ── */
+#rp-sbar {
+  position:absolute; top:0; left:0; right:0; height:48px;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 20px 7px; z-index:199; color:#000;
+  font-size:12px; font-weight:600; letter-spacing:-.2px;
+}
+.rp-sbar-r { display:flex; align-items:center; gap:6px; }
+#rp-bat { width:22px; height:11px; border:1.5px solid rgba(0,0,0,.4); border-radius:3px; padding:1.5px; position:relative; }
+#rp-bat::after { content:''; position:absolute; right:-4px; top:50%; transform:translateY(-50%); width:2px; height:5px; background:rgba(0,0,0,.3); border-radius:0 1px 1px 0; }
+#rp-bat-fill { height:100%; width:85%; background:#34c759; border-radius:1.5px; }
+
+/* ── views ── */
+.rp-view { position:absolute; inset:0; overflow:hidden; }
+
+/* ── LOCK SCREEN ── */
+.rp-lock-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 30% 15%, rgba(200,220,255,.6), transparent 55%),
+    radial-gradient(ellipse 100% 80% at 80% 85%, rgba(220,230,255,.5), transparent 55%),
+    linear-gradient(180deg,#e8f0ff,#f0f5ff,#e8f0ff);
+}
+.rp-lock-body {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; padding-top:64px;
+  cursor:pointer; color:#000;
+}
+#rp-lock-time {
+  font-size:70px; font-weight:100; letter-spacing:-4px; line-height:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+#rp-lock-date {
+  font-size:15px; font-weight:400; opacity:.6; margin-top:6px;
+  letter-spacing:.3px;
+}
+#rp-lock-notifs { width:100%; padding:14px 16px; display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.rp-ln {
+  background:rgba(255,255,255,.85); backdrop-filter:blur(24px);
+  border:1px solid rgba(0,0,0,.06); border-radius:14px;
+  padding:10px 14px; display:flex; gap:10px; align-items:flex-start;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.rp-ln-type { font-size:10px; font-weight:700; color:rgba(0,0,0,.4); text-transform:uppercase; letter-spacing:.6px; white-space:nowrap; }
+.rp-ln-text { font-size:12px; color:rgba(0,0,0,.85); line-height:1.4; }
+
+#rp-swipe-hint {
+  position:absolute; bottom:30px; left:0; right:0; text-align:center;
+  font-size:12px; color:rgba(0,0,0,.3);
+  animation:rp-breathe 2.2s ease-in-out infinite;
+}
+@keyframes rp-breathe { 0%,100%{opacity:.2} 50%{opacity:.5} }
+#rp-swipe-zone { position:absolute; inset:0; cursor:pointer; }
+
+/* ── HOME SCREEN ── */
+.rp-home-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 100% 70% at 20% 10%, rgba(220,235,255,.7), transparent 50%),
+    radial-gradient(ellipse 100% 70% at 80% 90%, rgba(230,240,255,.6), transparent 50%),
+    linear-gradient(170deg,#e8f2ff,#f0f6ff,#e8f2ff);
+}
+.rp-home-body { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; padding-top:54px; }
+#rp-home-clock { font-size:52px; font-weight:100; color:#000; letter-spacing:-3px; margin-bottom:22px; }
+
+/* app grid */
+#rp-app-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:0 18px; width:100%; }
+.rp-app { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; transition:transform .12s; }
+.rp-app:active { transform:scale(.88); }
+.rp-app-off { opacity:.35; pointer-events:none; }
+.rp-app-ico {
+  width:52px; height:52px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  position:relative; box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+.rp-app-ico svg { width:100%; height:100%; }
+.rp-app-lbl { font-size:10px; color:rgba(0,0,0,.85); text-shadow:0 1px 2px rgba(255,255,255,.8); }
+.rp-badge {
+  position:absolute; top:-5px; right:-5px;
+  background:#ff3b30; color:#fff; font-size:10px; font-weight:700;
+  min-width:17px; height:17px; border-radius:9px; padding:0 4px;
+  display:flex; align-items:center; justify-content:center;
+  border:1.5px solid #fff;
+}
+
+/* widget */
+#rp-widget {
+  background:rgba(255,255,255,.75); backdrop-filter:blur(20px);
+  border:1px solid rgba(0,0,0,.08); border-radius:18px;
+  margin:18px 16px 0; padding:13px 16px; width:calc(100% - 32px); color:#000;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);
+}
+.rp-wd-label { font-size:10px; text-transform:uppercase; letter-spacing:.8px; opacity:.45; font-weight:600; }
+.rp-wd-stage { font-size:14px; font-weight:600; margin:5px 0 7px; }
+.rp-wd-track { height:3px; background:rgba(0,0,0,.08); border-radius:2px; overflow:hidden; }
+.rp-wd-fill  { height:100%; width:0%; background:linear-gradient(90deg,#2563eb,#60a5fa); border-radius:2px; transition:width .9s ease; }
+.rp-wd-status { font-size:11px; opacity:.55; margin-top:7px; }
+
+.rp-home-indicator { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; }
+
+/* ── MESSAGES VIEW ── */
+#rp-view-messages { background:#fff; display:flex; flex-direction:column; }
+#rp-thread-list { flex:1; overflow-y:auto; scrollbar-width:none; }
+#rp-thread-list::-webkit-scrollbar { display:none; }
+
+.rp-thread {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 16px; border-bottom:1px solid rgba(0,0,0,.08);
+  cursor:pointer; transition:background .12s;
+}
+.rp-thread:hover { background:rgba(0,0,0,.03); }
+
+.rp-av { width:46px; height:46px; border-radius:23px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
+.rp-ti { flex:1; min-width:0; }
+.rp-tn { font-size:14px; font-weight:600; color:#000; }
+.rp-tp { font-size:12px; color:rgba(0,0,0,.5); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px; }
+.rp-tm { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.rp-tt { font-size:11px; color:rgba(0,0,0,.4); }
+.rp-tbadge { background:#2563eb; color:#fff; font-size:10px; font-weight:700; min-width:19px; height:19px; border-radius:10px; padding:0 5px; display:flex; align-items:center; justify-content:center; }
+
+/* ── THREAD VIEW ── */
+#rp-view-thread { background:#fff; display:flex; flex-direction:column; }
+
+/* bubbles */
+#rp-bubbles { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:3px; scrollbar-width:none; }
+#rp-bubbles::-webkit-scrollbar { display:none; }
+
+/* FIX3: 待发消息队列预览 */
+#rp-pending-queue {
+  padding:6px 12px 4px;
+  display:flex; flex-direction:column; gap:3px;
+  flex-shrink:0;
+  max-height:76px; overflow-y:auto;
+  border-top:1px solid rgba(37,99,235,.15);
+  background:rgba(37,99,235,.04);
+  scrollbar-width:none;
+}
+#rp-pending-queue::-webkit-scrollbar { display:none; }
+.rp-pending-item {
+  font-size:11px; color:#1d4ed8;
+  background:rgba(37,99,235,.1);
+  border-radius:8px; padding:3px 10px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.rp-pending-hint {
+  font-size:10px; color:rgba(0,0,0,.35);
+  text-align:center; padding:1px 0 2px;
+}
+
+.rp-bwrap { display:flex; flex-direction:column; gap:2px; }
+.rp-out { align-items:flex-end; }
+.rp-in  { align-items:flex-start; }
+.rp-bubble { max-width:72%; padding:9px 13px; border-radius:19px; font-size:13px; line-height:1.45; word-break:break-word; }
+.rp-sent { background:#2563eb; color:#fff; border-bottom-right-radius:5px; }
+.rp-recv { background:#e9ecef; color:#000; border-bottom-left-radius:5px; }
+.rp-bts  { font-size:10px; color:rgba(0,0,0,.4); padding:0 4px; }
+
+/* composer */
+#rp-composer {
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:8px 12px 22px !important;
+  border-top:1px solid rgba(0,0,0,.08) !important;
+  flex-shrink:0 !important;
+  background:#fff !important;
+}
+#rp-input {
+  flex:1 !important;
+  background:rgba(0,0,0,.04) !important;
+  border:1px solid rgba(0,0,0,.12) !important;
+  border-radius:22px !important;
+  padding:9px 16px !important;
+  color:#000 !important;
+  font-size:13px !important;
+  outline:none !important;
+  font-family:inherit !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+}
+#rp-input::placeholder { color:rgba(0,0,0,.4); }
+
+/* ✅ FIX2: 强制显示发送按钮，防止 SillyTavern 全局 CSS 覆盖 */
+#rp-send {
+  width:32px !important;
+  height:32px !important;
+  min-width:32px !important;
+  border-radius:16px !important;
+  background:#2563eb !important;
+  border:none !important;
+  color:#fff !important;
+  font-size:16px !important;
+  font-weight:700 !important;
+  cursor:pointer !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-shrink:0 !important;
+  transition:opacity .15s;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+  outline:none !important;
+}
+#rp-send:hover { opacity:.82 !important; }
+
+/* ── NAV BAR (共用) ── */
+.rp-nav-bar {
+  height:92px; padding-top:46px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding-left:6px; padding-right:16px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  background:#fff;
+}
+.rp-nav-title { font-size:17px; font-weight:600; color:#000; }
+.rp-back {
+  background:none !important; border:none !important;
+  color:#2563eb !important; font-size:30px !important;
+  line-height:1 !important; cursor:pointer !important;
+  padding:0 6px !important; font-family:inherit !important;
+  display:inline-flex !important; visibility:visible !important;
+  opacity:1 !important; pointer-events:auto !important;
+}
+.rp-nav-add {
+  background:none !important; border:none !important;
+  color:#2563eb !important; font-size:28px !important;
+  line-height:1 !important; cursor:pointer !important;
+  padding:0 6px !important; font-family:inherit !important;
+  font-weight:300 !important; display:inline-flex !important;
+  visibility:visible !important; opacity:1 !important;
+  pointer-events:auto !important;
+}
+.rp-thread-hd { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.rp-hd-av { width:32px; height:32px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
+.rp-hd-name { font-size:11px; color:rgba(0,0,0,.6); }
+
+/* ── ADD CONTACT MODAL ── */
+/* ✅ FIX3: modal 已移至 #rp-screen 内部，position:absolute; inset:0 现在正确覆盖手机屏幕 */
+#rp-add-modal {
+  position:absolute; inset:0; z-index:600;
+  background:rgba(0,0,0,.4); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+#rp-add-form {
+  background:#fff; border-radius:18px;
+  padding:20px; width:100%; max-width:240px;
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+#rp-add-form h3 {
+  margin:0 0 16px; font-size:18px; font-weight:600; color:#000; text-align:center;
+}
+#rp-add-form input {
+  width:100%; padding:10px 12px; margin-bottom:12px;
+  border:1px solid rgba(0,0,0,.15); border-radius:10px;
+  font-size:14px; font-family:inherit; color:#000;
+  background:rgba(0,0,0,.02); outline:none; box-sizing:border-box;
+}
+#rp-add-form input::placeholder { color:rgba(0,0,0,.4); }
+#rp-add-btns {
+  display:flex; gap:10px; margin-top:16px;
+}
+#rp-add-btns button {
+  flex:1 !important; padding:10px !important; border:none !important; border-radius:10px !important;
+  font-size:14px !important; font-weight:600 !important; cursor:pointer !important;
+  font-family:inherit !important; transition:opacity .15s;
+  display:flex !important; align-items:center !important; justify-content:center !important;
+  visibility:visible !important; opacity:1 !important; pointer-events:auto !important;
+}
+#rp-add-btns button:hover { opacity:.8 !important; }
+#rp-add-cancel { background:#e9ecef !important; color:#000 !important; }
+#rp-add-confirm { background:#2563eb !important; color:#fff !important; }
+
+/* ── NOTIFICATION BANNER ── */
+#rp-notif-banner {
+  position:absolute; top:52px; left:10px; right:10px;
+  background:rgba(255,255,255,.95); backdrop-filter:blur(24px);
+  border:1px solid rgba(0,0,0,.08); border-radius:15px;
+  padding:11px 13px; display:flex; align-items:center; gap:10px;
+  z-index:500; box-shadow:0 6px 24px rgba(0,0,0,.2);
+  transform:translateY(-130%); transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+}
+#rp-notif-banner.rp-nb-in { transform:translateY(0); }
+.rp-nb-ico { font-size:22px; flex-shrink:0; }
+.rp-nb-body { flex:1; min-width:0; }
+.rp-nb-from { font-size:11px; font-weight:600; color:rgba(0,0,0,.5); }
+.rp-nb-text { font-size:13px; color:#000; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rp-nb-time { font-size:11px; color:rgba(0,0,0,.4); align-self:flex-start; flex-shrink:0; }
+
+/* ── home indicator ── */
+#rp-home-ind { position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; z-index:300; }
+`;
+
+function injectStyles() {
+  if (document.getElementById('rp-phone-css')) return;
+  const el = document.createElement('style');
+  el.id = 'rp-phone-css';
+  el.textContent = RP_PHONE_CSS;
+  document.head.appendChild(el);
+}
+
 import { eventSource, event_types, setExtensionPrompt, extension_prompt_types } from '../../../../script.js';
 import { getContext } from '../../../extensions.js';
 
@@ -213,6 +581,7 @@ const HTML = `
 //  INIT
 // ================================================================
 async function init() {
+  injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
 
   // FIX2: 记录初始 chatId 并从 localStorage 恢复状态
