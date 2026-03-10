@@ -363,7 +363,7 @@ function injectStyles() {
   const el = document.createElement('style');
   el.id = 'rp-phone-css';
   el.textContent = RP_PHONE_CSS;
-  document.head.appendChild(el);
+  document.body.appendChild(el); // bypass ST head MutationObserver
 }
 
 import { eventSource, event_types, setExtensionPrompt, extension_prompt_types } from '../../../../script.js';
