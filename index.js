@@ -654,6 +654,34 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-lc-text{font-size:13px;color:#fff;line-height:1.55;word-break:break-word}
 .rp-lc-dismiss{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:8px;background:rgba(0,0,0,.4);color:rgba(255,255,255,.6);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
+/* ── GROUP PICKER ── */
+.rp-grp-pick-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.04);transition:background .12s}
+.rp-grp-pick-item.selected{background:rgba(37,99,235,.06)}
+.rp-grp-pick-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.rp-grp-pick-name{flex:1;font-size:14px;font-weight:500;color:#222}
+.rp-dark .rp-grp-pick-name{color:#e0e4ff}
+.rp-grp-pick-chk{width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;flex-shrink:0;transition:all .15s}
+.rp-grp-pick-item.selected .rp-grp-pick-chk{background:#2563eb;border-color:#2563eb;color:#fff}
+.rp-grp-modal{background:#fff;border-radius:16px;overflow:hidden;width:90%;max-width:290px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.rp-dark .rp-grp-modal{background:#1c1c38}
+.rp-grp-modal-hd{padding:14px 16px;font-size:15px;font-weight:700;color:#222;border-bottom:1px solid rgba(0,0,0,.06);text-align:center}
+.rp-dark .rp-grp-modal-hd{color:#e0e4ff;border-bottom-color:rgba(255,255,255,.06)}
+.rp-grp-name-inp{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;background:#fafafa}
+.rp-dark .rp-grp-name-inp{background:#131328;border-color:rgba(255,255,255,.1);color:#dde0f2}
+.rp-grp-modal-ft{display:flex;border-top:1px solid rgba(0,0,0,.06)}
+.rp-dark .rp-grp-modal-ft{border-top-color:rgba(255,255,255,.06)}
+.rp-grp-ft-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;cursor:pointer}
+.rp-grp-ft-cancel{color:rgba(0,0,0,.35);border-right:1px solid rgba(0,0,0,.06)}
+.rp-grp-ft-ok{color:#2563eb}
+.rp-dark .rp-grp-ft-cancel{color:rgba(255,255,255,.25);border-right-color:rgba(255,255,255,.06)}
+/* ── CHAT BUBBLE INSET ── */
+.rp-cb{display:flex;align-items:flex-start;gap:8px;margin:8px 0;clear:both}
+.rp-cb-av{width:28px;height:28px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;overflow:hidden;margin-top:1px}
+.rp-cb-av img{width:100%;height:100%;object-fit:cover}
+.rp-cb-txt{background:rgba(0,0,0,.07);border-radius:3px 14px 14px 14px;padding:8px 12px;font-size:13.5px;line-height:1.6;color:#1a1a2e;max-width:78%;word-break:break-word;font-style:normal}
+/* ── WALLPAPER ── */
+.rp-wall-preview-img{width:100%;height:80px;border-radius:10px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.08);margin-bottom:10px}
+
 `;
 
 function injectStyles() {
@@ -710,6 +738,7 @@ const STATE = {
   chatId: null,
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
+  wallpaper: null,
   darkMode: false,
   avatars: {},
 };
@@ -927,6 +956,18 @@ const HTML = `
                 <span class="rp-set-key" style="font-size:12px;color:#8a8a9a">点击右侧上传图片</span>
                 <label class="rp-avatar-upload-btn" for="rp-avatar-file-input">📷 选择</label>
                 <input type="file" id="rp-avatar-file-input" accept="image/*" style="display:none">
+              </div>
+            </div>
+
+            <div class="rp-set-section-title">壁纸管理</div>
+            <div class="rp-set-section">
+              <div class="rp-set-row" style="flex-direction:column;align-items:stretch;gap:8px">
+                <img id="rp-wall-preview" class="rp-wall-preview-img" style="display:none" alt=""/>
+                <div style="display:flex;gap:8px">
+                  <button id="rp-wall-upload" class="rp-set-upload-btn" style="flex:1">📷 上传壁纸</button>
+                  <button id="rp-wall-reset"  class="rp-set-upload-btn" style="flex:1;background:rgba(0,0,0,.06);color:#555">恢复默认</button>
+                </div>
+                <input id="rp-wall-file" type="file" accept="image/*" style="display:none"/>
               </div>
             </div>
           </div>
@@ -1242,6 +1283,57 @@ function bindUI() {
       $(this).val('').removeData('reply-to').attr('placeholder','发表评论…');
       $(`#rp-ci-${momentId}`).hide();
     }
+  });
+
+
+  // ── 添加联系人 / 创建群聊 choice overlay (event delegation) ──
+  $(document).on('click', '#rp-add-choice .rp-add-choice-item', function(e) {
+    e.stopPropagation();
+    const action = $(this).data('action');
+    $('#rp-add-choice').remove();
+    if (action === 'contact') {
+      go('add');
+    } else if (action === 'group') {
+      showGroupPicker();
+    }
+  });
+  $(document).on('click', '#rp-add-choice .rp-add-choice-cancel', (e) => {
+    e.stopPropagation();
+    $('#rp-add-choice').remove();
+  });
+  $(document).on('click', '#rp-add-choice', function(e) {
+    if (e.target === this) $('#rp-add-choice').remove();
+  });
+
+  // ── Group picker: toggle selection ──
+  $(document).on('click', '#rp-grp-pick-list .rp-grp-pick-item', function(e) {
+    e.stopPropagation();
+    $(this).toggleClass('selected');
+  });
+  $(document).on('click', '[data-action="grp-cancel"]', () => $('#rp-grp-create').remove());
+  $(document).on('click', '[data-action="grp-confirm"]', () => confirmCreateGroup());
+  $(document).on('click', '#rp-grp-create', function(e) {
+    if (e.target === this) $(this).remove();
+  });
+
+  // ── Wallpaper upload / reset ──
+  $(document).on('click', '#rp-wall-upload', () => $('#rp-wall-file').trigger('click'));
+  $(document).on('change', '#rp-wall-file', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      STATE.wallpaper = e.target.result;
+      saveState();
+      applyWallpaper();
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+  });
+  $(document).on('click', '#rp-wall-reset', () => {
+    STATE.wallpaper = null;
+    saveState();
+    applyWallpaper();
   });
 
 }
@@ -1673,6 +1765,7 @@ function onAIMessage() {
     if (!match) return;
 
     parsePhone(match[1]);
+    beautifySMSInChat();
   } catch (e) {
     console.warn('[Raymond Phone]', e);
   }
@@ -2256,59 +2349,65 @@ function sendLocation() {
 //  ADD CHOICE / CREATE GROUP
 // ================================================================
 function showAddChoice() {
+  $('#rp-add-choice').remove();
   $('#rp-screen').append(`
     <div class="rp-add-choice" id="rp-add-choice">
       <div class="rp-add-choice-box">
-        <div class="rp-add-choice-item" onclick="hideAddChoice();setTimeout(()=>{$('#rp-add-name').val('');go('add')},50)">
-          👤 添加联系人
-        </div>
-        <div class="rp-add-choice-item" onclick="hideAddChoice();showCreateGroup()">
-          👥 创建群聊
-        </div>
+        <div class="rp-add-choice-item" data-action="contact">👤 添加联系人</div>
+        <div class="rp-add-choice-item" data-action="group">👥 创建群聊</div>
       </div>
-      <div class="rp-add-choice-cancel" onclick="hideAddChoice()">取消</div>
+      <div class="rp-add-choice-cancel" data-action="cancel">取消</div>
     </div>
   `);
 }
 
 function hideAddChoice() { $('#rp-add-choice').remove(); }
 
-function showCreateGroup() {
+function showGroupPicker() {
+  $('#rp-grp-create').remove();
+  const contacts = Object.values(STATE.threads).filter(t => !t.id.startsWith('grp_'));
+  const items = contacts.map(t => {
+    const img = STATE.avatars?.[t.name];
+    const avHtml = img
+      ? `<div class="rp-grp-pick-av rp-av-img" style="overflow:hidden"><img src="${img}" style="width:100%;height:100%;object-fit:cover"/></div>`
+      : `<div class="rp-grp-pick-av" style="background:${t.avatarBg}">${t.initials}</div>`;
+    return `<div class="rp-grp-pick-item" data-tid="${t.id}">${avHtml}<span class="rp-grp-pick-name">${escHtml(t.name)}</span><div class="rp-grp-pick-chk">✓</div></div>`;
+  }).join('');
   $('#rp-screen').append(`
     <div class="rp-add-choice" id="rp-grp-create">
-      <div class="rp-add-choice-box" style="padding:20px">
-        <div style="font-size:15px;font-weight:700;color:#222;margin-bottom:14px;text-align:center">创建群聊</div>
-        <input id="rp-grp-name-inp" type="text" placeholder="群聊名称" maxlength="20"
-          style="width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:10px 14px;font-size:14px;outline:none;margin-bottom:12px"/>
-        <div style="display:flex;gap:8px">
-          <button onclick="$('#rp-grp-create').remove()"
-            style="flex:1;padding:10px;border:none;border-radius:10px;background:#e9ecef;font-size:14px;font-weight:600;cursor:pointer">取消</button>
-          <button onclick="confirmCreateGroup()"
-            style="flex:1;padding:10px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:14px;font-weight:600;cursor:pointer">创建</button>
+      <div class="rp-grp-modal">
+        <div class="rp-grp-modal-hd">选择群聊成员</div>
+        <div id="rp-grp-pick-list" style="max-height:220px;overflow-y:auto">
+          ${items || '<div style="padding:16px;color:rgba(0,0,0,.4);text-align:center;font-size:13px">暂无联系人</div>'}
+        </div>
+        <div style="padding:10px 14px;border-top:1px solid rgba(0,0,0,.06)">
+          <input id="rp-grp-name-inp" class="rp-grp-name-inp" type="text" placeholder="群聊名称（留空则自动生成）" maxlength="20"/>
+        </div>
+        <div class="rp-grp-modal-ft">
+          <button class="rp-grp-ft-btn rp-grp-ft-cancel" data-action="grp-cancel">取消</button>
+          <button class="rp-grp-ft-btn rp-grp-ft-ok"     data-action="grp-confirm">创建</button>
         </div>
       </div>
     </div>
   `);
-  setTimeout(() => $('#rp-grp-name-inp').focus(), 50);
+  setTimeout(() => $('#rp-grp-name-inp').focus(), 80);
 }
 
 function confirmCreateGroup() {
-  const name = $('#rp-grp-name-inp').val().trim();
-  if (!name) return;
+  const selected = $('#rp-grp-pick-list .rp-grp-pick-item.selected');
+  if (!selected.length) return;
+  const memberIds = selected.map((_, el) => $(el).data('tid')).get();
+  let name = $('#rp-grp-name-inp').val().trim();
+  if (!name) name = memberIds.map(id => STATE.threads[id]?.name || id).join('、');
   $('#rp-grp-create').remove();
-  const groupId = `grp_${name}`;
-  if (!STATE.threads[groupId]) {
-    const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
-    STATE.threads[groupId] = {
-      id: groupId, name,
-      initials: name.slice(0, 2),
-      avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
-      type: 'group', messages: [], unread: 0
-    };
-    saveState();
-    renderThreadList();
-  }
-  openThread(groupId);
+  const groupId = `grp_${name}_${Date.now()}`;
+  const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
+  STATE.threads[groupId] = {
+    id: groupId, name, initials: name.slice(0,2),
+    avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
+    type: 'group', members: memberIds, messages: [], unread: 0
+  };
+  saveState(); renderThreadList(); openThread(groupId);
 }
 
 // ================================================================
@@ -2337,6 +2436,81 @@ function showLiveChat(name, avatarBg, customImg, text) {
   const all = lc.children();
   if (all.length > LC_MAX) all.first().remove();
   setTimeout(() => $(`#${id}`).fadeOut(400, function(){ $(this).remove(); }), LC_TTL);
+}
+
+// ================================================================
+//  CHAT BUBBLE BEAUTIFICATION
+// ================================================================
+function beautifySMSInChat() {
+  try {
+    const ctx = getContext();
+    if (!ctx?.name) return;
+    const charName = ctx.name;
+    // Find the last AI message element in ST's chat
+    const allMsgs = document.querySelectorAll('.mes:not([is_user="true"])');
+    if (!allMsgs.length) return;
+    const lastMsg = allMsgs[allMsgs.length - 1];
+    const textEl  = lastMsg?.querySelector('.mes_text');
+    if (!textEl || textEl.dataset.rpDone) return;
+    textEl.dataset.rpDone = '1';
+
+    const thread = Object.values(STATE.threads).find(t => t.name === charName);
+    const avatarBg = thread?.avatarBg || 'linear-gradient(145deg,#555,#333)';
+    const initials  = charName.slice(0, 2);
+    const customImg = STATE.avatars?.[charName];
+    const avHtml = customImg
+      ? `<div class="rp-cb-av"><img src="${customImg}" alt=""/></div>`
+      : `<div class="rp-cb-av" style="background:${avatarBg}">${initials}</div>`;
+
+    // Replace 「...」 spans / raw text with bubble divs
+    textEl.querySelectorAll('em, i').forEach(el => {
+      const t = el.textContent;
+      if (/^「.+」$/.test(t.trim())) {
+        const inner = t.trim().slice(1, -1);
+        const bubble = document.createElement('div');
+        bubble.className = 'rp-cb';
+        bubble.innerHTML = `${avHtml}<div class="rp-cb-txt">${escHtml(inner)}</div>`;
+        el.replaceWith(bubble);
+      }
+    });
+    // Also handle plain-text 「...」
+    textEl.childNodes.forEach(node => {
+      if (node.nodeType !== Node.TEXT_NODE) return;
+      const text = node.textContent;
+      if (!text.includes('「')) return;
+      const frag = document.createDocumentFragment();
+      const parts = text.split(/(「[^」]+」)/g);
+      parts.forEach(part => {
+        const m = part.match(/^「([^」]+)」$/);
+        if (m) {
+          const div = document.createElement('div');
+          div.className = 'rp-cb';
+          div.innerHTML = `${avHtml}<div class="rp-cb-txt">${escHtml(m[1])}</div>`;
+          frag.appendChild(div);
+        } else if (part) {
+          frag.appendChild(document.createTextNode(part));
+        }
+      });
+      node.replaceWith(frag);
+    });
+  } catch(e) {
+    console.warn('[Raymond Phone] beautify:', e);
+  }
+}
+
+// ================================================================
+//  WALLPAPER
+// ================================================================
+function applyWallpaper() {
+  if (STATE.wallpaper) {
+    $('#rp-phone').css('background-image', `url(${STATE.wallpaper})`).css('background-size','cover').css('background-position','center');
+    const prev = document.getElementById('rp-wall-preview');
+    if (prev) { prev.src = STATE.wallpaper; prev.style.display = 'block'; }
+  } else {
+    $('#rp-phone').css({'background-image':'','background-size':'','background-position':''});
+    const prev = document.getElementById('rp-wall-preview');
+    if (prev) { prev.src = ''; prev.style.display = 'none'; }
+  }
 }
 
 // ================================================================
