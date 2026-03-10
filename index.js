@@ -500,6 +500,62 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-moment-csend{flex-shrink:0;background:#2563eb !important;color:#fff !important;border:none !important;border-radius:8px !important;padding:6px 12px !important;font-size:12px !important;font-weight:700 !important;cursor:pointer !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
 .rp-moment-csend:hover{opacity:.85 !important}
 
+/* ── INCOMING CALL OVERLAY ── */
+#rp-call-overlay{position:absolute;inset:0;z-index:800;background:linear-gradient(180deg,#0d0d1a,#1a1a2e);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 20px 50px}
+.rp-call-av{width:88px;height:88px;border-radius:44px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#fff;margin-bottom:14px;animation:rp-cpulse 1.8s ease-in-out infinite}
+@keyframes rp-cpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.08),0 0 0 14px rgba(255,255,255,.04)}60%{box-shadow:0 0 0 14px rgba(255,255,255,.1),0 0 0 28px rgba(255,255,255,.04)}}
+.rp-call-name{font-size:24px;font-weight:700;color:#fff;letter-spacing:.01em;text-align:center}
+.rp-call-sub{font-size:13px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center}
+.rp-call-btns{display:flex;gap:56px;align-items:flex-start}
+.rp-call-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.rp-call-dec{width:64px;height:64px;border-radius:32px;background:#e53935;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 24px rgba(229,57,53,.45);transition:transform .15s}
+.rp-call-dec:active{transform:scale(.92)}
+.rp-call-ans{width:64px;height:64px;border-radius:32px;background:#43a047;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:0 6px 24px rgba(67,160,71,.45);transition:transform .15s}
+.rp-call-ans:active{transform:scale(.92)}
+.rp-call-lbl{font-size:11px;color:rgba(255,255,255,.45)}
+/* ── CALL RECORD ── */
+.rp-sys-msg{display:flex;justify-content:center;margin:8px 0}
+.rp-call-rec{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(0,0,0,.04);color:rgba(0,0,0,.4)}
+.rp-dark .rp-call-rec{background:rgba(255,255,255,.06);color:rgba(255,255,255,.35)}
+.rp-call-rec.missed{color:#e53935;background:rgba(229,57,53,.07)}
+/* ── HONGBAO ── */
+.rp-hongbao{background:linear-gradient(145deg,#c62828,#b71c1c);border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:0 4px 20px rgba(183,28,28,.4);width:200px;user-select:none;transition:opacity .2s}
+.rp-hb-top{padding:14px 16px 12px;display:flex;align-items:center;gap:12px}
+.rp-hb-ico{width:44px;height:44px;border-radius:22px;background:rgba(255,213,79,.18);border:1.5px solid rgba(255,213,79,.4);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.rp-hb-info{flex:1;min-width:0}
+.rp-hb-from{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.rp-hb-note{font-size:11.5px;color:rgba(255,255,255,.65);line-height:1.35}
+.rp-hb-bot{background:rgba(0,0,0,.22);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.rp-hb-action{font-size:13px;font-weight:700;color:#ffd54f;letter-spacing:.02em}
+.rp-hb-tag{font-size:10.5px;color:rgba(255,213,79,.5)}
+.rp-hongbao.opened{cursor:default}
+.rp-hongbao.opened .rp-hb-top{background:rgba(0,0,0,.1)}
+.rp-hb-amount{font-size:26px;font-weight:900;color:#ffd54f;text-align:center;padding:6px 0 2px;letter-spacing:.02em;width:100%}
+.rp-hb-amount small{font-size:14px;font-weight:600}
+/* ── VOICE MESSAGE ── */
+.rp-voice-wrap{display:flex;flex-direction:column;gap:0}
+.rp-voice-bbl{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,.05);border-radius:14px;cursor:pointer;min-width:150px;transition:background .15s}
+.rp-dark .rp-voice-bbl{background:rgba(255,255,255,.07)}
+.rp-voice-bbl:active{background:rgba(0,0,0,.09)}
+.rp-voice-play{width:30px;height:30px;border-radius:15px;background:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#fff;transition:background .2s}
+.rp-voice-bbl.played .rp-voice-play{background:#94a3b8}
+.rp-wave{flex:1;display:flex;align-items:center;gap:2px;height:22px}
+.rp-wb{width:3px;border-radius:2px;background:rgba(37,99,235,.65)}
+.rp-voice-bbl:not(.played) .rp-wb{animation:rp-wv 1.3s ease-in-out infinite}
+.rp-voice-bbl.played .rp-wb{animation:none;opacity:.3}
+@keyframes rp-wv{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.rp-wb:nth-child(2){animation-delay:.07s}.rp-wb:nth-child(3){animation-delay:.14s}.rp-wb:nth-child(4){animation-delay:.21s}.rp-wb:nth-child(5){animation-delay:.28s}.rp-wb:nth-child(6){animation-delay:.14s}.rp-wb:nth-child(7){animation-delay:.07s}
+.rp-voice-dur{font-size:11.5px;color:rgba(0,0,0,.4);flex-shrink:0}
+.rp-dark .rp-voice-dur{color:rgba(255,255,255,.35)}
+.rp-voice-txt{font-size:13px;color:#333;line-height:1.65;padding:8px 14px 2px;display:none}
+.rp-dark .rp-voice-txt{color:#c8cce8}
+.rp-voice-bbl.played~.rp-voice-txt{display:block}
+/* ── GROUP CHAT ── */
+.rp-bwrap.rp-in.rp-grp{gap:8px}
+.rp-grp-sender{font-size:11px;font-weight:700;color:rgba(0,0,0,.45);margin-bottom:3px}
+.rp-dark .rp-grp-sender{color:rgba(255,255,255,.4)}
+.rp-grp-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;overflow:hidden}
+
 `;
 
 function injectStyles() {
@@ -776,6 +832,9 @@ const HTML = `
           </div>
         </div>
 
+        <!-- 来电遮罩 -->
+        <div id="rp-call-overlay" style="display:none"></div>
+
         <!-- 通知横幅 -->
         <div id="rp-notif-banner" style="display:none">
           <div class="rp-nb-ico">💬</div>
@@ -925,6 +984,10 @@ function updateClock() {
 //  UI BINDING
 // ================================================================
 function bindUI() {
+  // 来电：接听 / 拒绝（事件委托）
+  $(document).on('click', '#rp-call-ans', () => resolveCall('answered'));
+  $(document).on('click', '#rp-call-dec', () => resolveCall('declined'));
+
   $('#rp-fab').on('click', () => {
     const phone = $('#rp-phone');
     phone.is(':visible') ? phone.hide() : phone.show();
@@ -1011,6 +1074,10 @@ function bindUI() {
   $(document).on('click', '#rp-moments-add', openCompose);
   $(document).on('click', '#rp-compose-cancel, #rp-compose-modal .rp-back', closeCompose);
   $(document).on('click', '#rp-compose-post', postUserMoment);
+
+  // 来电：接听 / 拒绝（事件委托）
+  $(document).on('click', '#rp-call-ans', () => resolveCall('answered'));
+  $(document).on('click', '#rp-call-dec', () => resolveCall('declined'));
 
   // Dark mode is handled via data-app='darkmode' in the app grid
 
@@ -1218,12 +1285,86 @@ function openThread(threadId) {
 // ================================================================
 function renderBubbles(threadId) {
   const area = $('#rp-bubbles').empty();
-  STATE.threads[threadId].messages.forEach(msg => {
-    const wrap = $('<div>').addClass('rp-bwrap ' + (msg.from === 'user' ? 'rp-out' : 'rp-in'));
-    const bbl  = $('<div>').addClass('rp-bubble ' + (msg.from === 'user' ? 'rp-sent' : 'rp-recv')).text(msg.text);
+  const thread = STATE.threads[threadId];
+  if (!thread) return;
+
+  thread.messages.forEach(msg => {
+    // ── 通话记录 ──
+    if (msg.type === 'call_rec') {
+      const icon = msg.result === 'answered' ? '📞' : '📵';
+      const cls  = msg.result === 'missed' ? 'rp-call-rec missed' : 'rp-call-rec';
+      area.append(`<div class="rp-sys-msg"><div class="${cls}">${icon} ${msg.label} · ${msg.time}</div></div>`);
+      return;
+    }
+    // ── 红包 ──
+    if (msg.type === 'hongbao') {
+      const openedHtml = msg.opened
+        ? `<div class="rp-hb-amount"><small>¥</small>${escHtml(msg.amount)}</div>` : '';
+      const wrap = $(`<div class="rp-bwrap rp-in"></div>`);
+      const onclick = msg.opened ? '' : `openHongbao('${threadId}','${msg.id}')`;
+      wrap.html(`
+        <div class="rp-hongbao ${msg.opened?'opened':''}" ${onclick?`onclick="${onclick}"`:''}">
+          <div class="rp-hb-top">
+            <div class="rp-hb-ico">🧧</div>
+            <div class="rp-hb-info">
+              <div class="rp-hb-from">${escHtml(msg.name)}</div>
+              <div class="rp-hb-note">${escHtml(msg.note||'恭喜发财')}</div>
+            </div>
+          </div>
+          <div class="rp-hb-bot">
+            <div class="rp-hb-action">${msg.opened?'已领取':'点击领取红包'}</div>
+            ${openedHtml}
+            <div class="rp-hb-tag">微信红包</div>
+          </div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 语音消息 ──
+    if (msg.type === 'voice') {
+      const playedCls = msg.played ? 'played' : '';
+      const heights = [35,70,55,90,45,65,30];
+      const bars = heights.map(h => `<div class="rp-wb" style="height:${h}%"></div>`).join('');
+      const wrap = $(`<div class="rp-bwrap rp-in"></div>`);
+      wrap.html(`
+        <div class="rp-voice-wrap">
+          <div class="rp-voice-bbl ${playedCls}" onclick="playVoice('${threadId}','${msg.id}')">
+            <div class="rp-voice-play">${msg.played?'✓':'▶'}</div>
+            <div class="rp-wave">${bars}</div>
+            <div class="rp-voice-dur">${escHtml(msg.duration)}</div>
+          </div>
+          <div class="rp-voice-txt">${msg.played?escHtml(msg.text):''}</div>
+        </div>
+        <div class="rp-bts">${msg.time}</div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 群聊消息 ──
+    if (msg.type === 'group_msg') {
+      const customImg = STATE.avatars && STATE.avatars[msg.name];
+      const avHtml = customImg
+        ? `<div class="rp-grp-av rp-av-img"><img class="rp-av-photo" src="${customImg}" alt=""/></div>`
+        : `<div class="rp-grp-av" style="background:${msg.avatarBg}">${msg.initials}</div>`;
+      const wrap = $(`<div class="rp-bwrap rp-in rp-grp"></div>`);
+      wrap.html(`
+        ${avHtml}
+        <div>
+          <div class="rp-grp-sender">${escHtml(msg.name)}</div>
+          <div class="rp-bubble rp-recv">${escHtml(msg.text)}</div>
+          <div class="rp-bts">${msg.time}</div>
+        </div>
+      `);
+      area.append(wrap); return;
+    }
+    // ── 普通消息 ──
+    const isUser = msg.from === 'user';
+    const wrap = $('<div>').addClass('rp-bwrap ' + (isUser ? 'rp-out' : 'rp-in'));
+    const bbl  = $('<div>').addClass('rp-bubble ' + (isUser ? 'rp-sent' : 'rp-recv')).text(msg.text);
     const ts   = $('<div>').addClass('rp-bts').text(msg.time);
     area.append(wrap.append(bbl, ts));
   });
+
   area.scrollTop(area[0].scrollHeight);
 }
 
@@ -1369,7 +1510,27 @@ function parsePhone(block) {
     refreshWidget();
     saveState(); // FIX2: 持久化关系进度
   }
-}
+
+  // ── CALL ──
+  const callRe = /<CALL\s+FROM="([^"]+)"\s+TIME="([^"]+)"\s*\/?>/gi;
+  while ((m = callRe.exec(block)) !== null) {
+    incomingCall(m[1].trim(), m[2].trim());
+  }
+  // ── HONGBAO ──
+  const hongbaoRe = /<HONGBAO\s+FROM="([^"]+)"\s+AMOUNT="([^"]+)"(?:\s+NOTE="([^"]*)")?\s*\/?>/gi;
+  while ((m = hongbaoRe.exec(block)) !== null) {
+    incomingHongbao(m[1].trim(), m[2].trim(), m[3] ? m[3].trim() : '恭喜发财');
+  }
+  // ── VOICE ──
+  const voiceRe = /<VOICE\s+FROM="([^"]+)"\s+TIME="([^"]+)"\s+DURATION="([^"]+)">([\s\S]*?)<\/VOICE>/gi;
+  while ((m = voiceRe.exec(block)) !== null) {
+    incomingVoice(m[1].trim(), m[2].trim(), m[3].trim(), m[4].trim());
+  }
+  // ── GROUP MSG ──
+  const gmsgRe = /<GMSG\s+FROM="([^"]+)"\s+GROUP="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/GMSG>/gi;
+  while ((m = gmsgRe.exec(block)) !== null) {
+    incomingGroupMsg(m[1].trim(), m[2].trim(), m[3].trim(), m[4].trim());
+  }}
 
 // ================================================================
 //  MATCH THREAD
@@ -1594,6 +1755,165 @@ function updateAvatarPreviewSwatch(who) {
     const th = Object.values(STATE.threads).find(t => t.name === who);
     swatch.text(th ? th.initials : who.slice(0,2).toUpperCase()).css('background', th ? th.avatarBg : 'linear-gradient(145deg,#555,#333)');
   }
+}
+
+// ================================================================
+//  CALL
+// ================================================================
+function incomingCall(fromRaw, time) {
+  const thread = findOrCreateThread(fromRaw);
+  const customImg = STATE.avatars && STATE.avatars[thread.name];
+  const avHtml = customImg
+    ? `<div class="rp-call-av rp-av-img" style="background:transparent;overflow:hidden"><img class="rp-av-photo" src="${customImg}" alt=""/></div>`
+    : `<div class="rp-call-av" style="background:${thread.avatarBg}">${thread.initials}</div>`;
+  $('#rp-call-overlay').html(`
+    <div style="display:flex;flex-direction:column;align-items:center">
+      ${avHtml}
+      <div class="rp-call-name">${escHtml(thread.name)}</div>
+      <div class="rp-call-sub">来电中…</div>
+    </div>
+    <div class="rp-call-btns">
+      <div class="rp-call-btn-wrap">
+        <div class="rp-call-dec" id="rp-call-dec">📵</div>
+        <div class="rp-call-lbl">拒绝</div>
+      </div>
+      <div class="rp-call-btn-wrap">
+        <div class="rp-call-ans" id="rp-call-ans">📞</div>
+        <div class="rp-call-lbl">接听</div>
+      </div>
+    </div>
+  `).show();
+  STATE._pendingCall = { fromRaw, time, threadId: thread.id };
+  clearTimeout(STATE._callTimer);
+  STATE._callTimer = setTimeout(() => resolveCall('missed'), 15000);
+  showBanner(thread.name, '📞 来电中…');
+}
+
+function resolveCall(result) {
+  clearTimeout(STATE._callTimer);
+  const call = STATE._pendingCall;
+  $('#rp-call-overlay').hide().empty();
+  if (!call) return;
+  const thread = STATE.threads[call.threadId];
+  if (!thread) return;
+  const labels = { missed: '未接来电', declined: '已拒绝', answered: '已接听' };
+  thread.messages.push({
+    id: `call_${Date.now()}`, from: 'system',
+    type: 'call_rec', result, time: call.time,
+    label: labels[result]
+  });
+  if (result === 'missed') {
+    thread.unread = (thread.unread || 0) + 1;
+    refreshBadges();
+  }
+  renderThreadList();
+  if (STATE.currentThread === thread.id) renderBubbles(thread.id);
+  saveState();
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const actions = {
+      missed:   `*${thread.name}拨打了电话，{{user}}未接听*`,
+      declined: `*{{user}}拒绝了${thread.name}的来电*`,
+      answered: `*{{user}}接听了${thread.name}的来电*`
+    };
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${actions[result]}` : actions[result];
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+  STATE._pendingCall = null;
+}
+
+// ================================================================
+//  HONGBAO
+// ================================================================
+function incomingHongbao(fromRaw, amount, note) {
+  const thread = findOrCreateThread(fromRaw);
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  thread.messages.push({
+    id: `hb_${Date.now()}`, from: 'incoming',
+    type: 'hongbao', name: fromRaw, time: ts,
+    amount, note, opened: false
+  });
+  thread.unread = (thread.unread || 0) + 1;
+  refreshBadges(); renderThreadList();
+  if (STATE.currentThread === thread.id) renderBubbles(thread.id);
+  showBanner(thread.name, '🧧 发来了一个红包');
+  saveState();
+}
+
+function openHongbao(threadId, msgId) {
+  const thread = STATE.threads[threadId];
+  if (!thread) return;
+  const msg = thread.messages.find(m => m.id === msgId);
+  if (!msg || msg.opened) return;
+  msg.opened = true;
+  saveState();
+  renderBubbles(threadId);
+  const ta = document.querySelector('#send_textarea');
+  if (ta) {
+    const action = `*{{user}}打开了${msg.name}发来的红包，领到了¥${msg.amount}*`;
+    ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#send_but')?.click();
+  }
+}
+
+// ================================================================
+//  VOICE MESSAGE
+// ================================================================
+function incomingVoice(fromRaw, time, duration, text) {
+  const thread = findOrCreateThread(fromRaw);
+  thread.messages.push({
+    id: `vc_${Date.now()}`, from: 'incoming',
+    type: 'voice', name: fromRaw, time,
+    duration, text, played: false
+  });
+  thread.unread = (thread.unread || 0) + 1;
+  refreshBadges(); renderThreadList();
+  if (STATE.currentThread === thread.id) renderBubbles(thread.id);
+  showBanner(thread.name, `🎤 语音消息 ${duration}`);
+  saveState();
+}
+
+function playVoice(threadId, msgId) {
+  const thread = STATE.threads[threadId];
+  if (!thread) return;
+  const msg = thread.messages.find(m => m.id === msgId);
+  if (!msg || msg.played) return;
+  msg.played = true;
+  saveState();
+  renderBubbles(threadId);
+}
+
+// ================================================================
+//  GROUP CHAT
+// ================================================================
+const GROUP_COLORS = ['#7c3aed','#0891b2','#0d9488','#b45309','#be185d','#1d4ed8'];
+
+function incomingGroupMsg(fromRaw, groupName, time, text) {
+  const groupId = `grp_${groupName}`;
+  if (!STATE.threads[groupId]) {
+    const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
+    STATE.threads[groupId] = {
+      id: groupId, name: groupName,
+      initials: groupName.slice(0, 2),
+      avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
+      type: 'group', messages: [], unread: 0
+    };
+  }
+  const thread = STATE.threads[groupId];
+  const senderTh = findOrCreateThread(fromRaw);
+  thread.messages.push({
+    id: `gm_${Date.now()}`, from: 'incoming',
+    type: 'group_msg', name: fromRaw, time, text,
+    initials: senderTh.initials, avatarBg: senderTh.avatarBg
+  });
+  thread.unread = (thread.unread || 0) + 1;
+  refreshBadges(); renderThreadList();
+  if (STATE.currentThread === groupId) renderBubbles(groupId);
+  showBanner(groupName, `${fromRaw}：${text.slice(0,22)}${text.length>22?'…':''}`);
+  saveState();
 }
 
 // ================================================================
