@@ -356,9 +356,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ── home indicator ── */
 #rp-home-ind { position:absolute; bottom:7px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; z-index:300; }
-/* ── NIGHT MODE TOGGLE ── */
-.rp-dm-btn{position:absolute;top:10px;right:14px;z-index:299;width:28px;height:28px;border-radius:14px;background:rgba(240,240,240,.95);border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background .25s,border-color .25s}
-.rp-dark .rp-dm-btn{background:rgba(20,22,42,.9);border-color:rgba(255,255,255,.15)}
+/* dark mode toggle is now an app icon on home screen */
 /* ── DARK FRAME ── */
 .rp-dark #rp-frame{background:linear-gradient(160deg,#1e1e1e,#101010);box-shadow:0 0 0 1.5px rgba(255,255,255,.06),0 0 0 9px #0c0c0c,0 0 0 10px rgba(255,255,255,.04),0 36px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
 .rp-dark .rp-btn{background:#2c2c2c}
@@ -464,11 +462,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-compose-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
 #rp-compose-text{width:100%;min-height:80px;border:none;background:transparent;font-size:15px;color:#1a1a1a;resize:none;outline:none;font-family:inherit;line-height:1.65;box-sizing:border-box}
 .rp-dark #rp-compose-text{color:#dde0f2}
-.rp-compose-photo-strip{display:flex;gap:8px;flex-wrap:wrap}
-.rp-compose-photo-slot{width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0}
-.rp-compose-photo-slot img{width:100%;height:100%;object-fit:cover;display:block}
 .rp-compose-sep{height:1px;background:rgba(0,0,0,.08);margin:0 -16px}
 .rp-dark .rp-compose-sep{background:rgba(255,255,255,.06)}
+.rp-compose-cancel{background:none !important;border:none !important;color:rgba(0,0,0,.5) !important;font-size:14px !important;font-weight:400 !important;cursor:pointer !important;padding:0 6px !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
+.rp-dark .rp-compose-cancel{color:rgba(180,190,255,.55) !important}
 .rp-compose-post-btn{background:none !important;border:none !important;color:#2563eb !important;font-size:15px !important;font-weight:700 !important;cursor:pointer !important;padding:0 10px !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
 .rp-dark .rp-compose-post-btn{color:#7090f0 !important}
 /* ── MOMENT IMAGE ── */
@@ -582,8 +579,6 @@ const HTML = `
 
       <div id="rp-screen">
         <div id="rp-island"></div>
-        <button class="rp-dm-btn" id="rp-dm-btn" title="夜间模式">🌙</button>
-
         <div id="rp-sbar">
           <span id="rp-sbar-time"></span>
           <div class="rp-sbar-r">
@@ -635,9 +630,9 @@ const HTML = `
                 </div>
                 <div class="rp-app-lbl">朋友圈</div>
               </div>
-              <div class="rp-app rp-app-off">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#999,#777)">📷</div>
-                <div class="rp-app-lbl">相机</div>
+              <div class="rp-app" id="rp-dm-app" data-app="darkmode">
+                <div class="rp-app-ico rp-dm-ico" style="background:linear-gradient(145deg,#4a4a6a,#32324e)">🌙</div>
+                <div class="rp-app-lbl" id="rp-dm-lbl">夜间</div>
               </div>
               <div class="rp-app rp-app-off">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#888,#666)">⚙️</div>
@@ -687,18 +682,13 @@ const HTML = `
         <!-- 发朋友圈 -->
         <div id="rp-compose-modal" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
-            <button class="rp-back" id="rp-compose-cancel" style="font-size:14px;color:#2563eb !important;padding:0 10px !important">取消</button>
+            <button class="rp-compose-cancel" id="rp-compose-cancel">取消</button>
             <span class="rp-nav-title">发朋友圈</span>
             <button class="rp-compose-post-btn" id="rp-compose-post">发布</button>
           </div>
           <div class="rp-compose-body">
             <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
-            <div class="rp-compose-sep"></div>
-            <div class="rp-compose-photo-strip">
-              <div class="rp-compose-photo-slot">
-                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75" alt="巴黎夜景" onerror="this.style.cssText='background:#1a1a3e;width:80px;height:80px;display:block'"/>
-              </div>
-            </div>
+
           </div>
         </div>
 
@@ -707,7 +697,7 @@ const HTML = `
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">朋友圈</span>
-            <button class="rp-nav-add" id="rp-moments-add" title="发朋友圈">✏️</button>
+            <button class="rp-nav-add" id="rp-moments-add" title="发朋友圈">+</button>
           </div>
           <div id="rp-moments-list"></div>
         </div>
@@ -721,12 +711,6 @@ const HTML = `
           </div>
           <div class="rp-compose-body">
             <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
-            <div class="rp-compose-sep"></div>
-            <div class="rp-compose-photo-strip">
-              <div class="rp-compose-photo-slot">
-                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75" alt="巴黎·埃菲尔铁塔夜景" onerror="this.style.background='#1a1a3e';this.src=''"/>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -785,7 +769,7 @@ async function init() {
     console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
   }
 
-  if (STATE.darkMode) { $('#rp-phone').addClass('rp-dark'); $('#rp-dm-btn').text('☀️'); }
+  if (STATE.darkMode) { $('#rp-phone').addClass('rp-dark'); $('.rp-dm-ico').text('☀️'); $('#rp-dm-lbl').text('日间'); }
 
   updateClock();
   setInterval(updateClock, 1000);
@@ -933,8 +917,7 @@ function bindUI() {
   $(document).on('click', '#rp-compose-cancel, #rp-compose-modal .rp-back', closeCompose);
   $(document).on('click', '#rp-compose-post', postUserMoment);
 
-  // Dark mode toggle
-  $('#rp-dm-btn').on('click', toggleDarkMode);
+  // Dark mode is handled via data-app='darkmode' in the app grid
 
   // Moments: like
   $(document).on('click', '.rp-like-btn', function() {
@@ -1097,6 +1080,7 @@ function renderThreadList() {
 //  NAVIGATION
 // ================================================================
 function go(view) {
+  if (view === 'darkmode') { toggleDarkMode(); return; }
   $('.rp-view').hide();
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
@@ -1447,7 +1431,7 @@ function postUserMoment() {
     avatarBg: 'linear-gradient(145deg,#2563eb,#1d4ed8)',
     time: ts,
     text,
-    img: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=200&q=75',
+    img: null,
     likes: [],
     comments: [],
   });
@@ -1471,7 +1455,8 @@ function postUserMoment() {
 function toggleDarkMode() {
   STATE.darkMode = !STATE.darkMode;
   $('#rp-phone').toggleClass('rp-dark', STATE.darkMode);
-  $('#rp-dm-btn').text(STATE.darkMode ? '☀️' : '🌙');
+  $('.rp-dm-ico').text(STATE.darkMode ? '☀️' : '🌙');
+  $('#rp-dm-lbl').text(STATE.darkMode ? '日间' : '夜间');
   saveState();
 }
 
@@ -1601,16 +1586,20 @@ function sendMomentComment(momentId, text, replyToName) {
   ta.value = mainText ? `${mainText}\n${action}` : action;
   ta.dispatchEvent(new Event('input', { bubbles: true }));
 
-  // Force NPC/char reply via OOC hidden prompt
-  const hasEP = typeof setExtensionPrompt === 'function' && typeof extension_prompt_types !== 'undefined';
+  // Force NPC/char reply - OOC must be set BEFORE send (same as SMS pattern)
+  const hasEP = typeof setExtensionPrompt === 'function' && extension_prompt_types;
   if (hasEP) {
-    const who = replyToName ? `${moment.name}及${replyToName}` : moment.name;
-    const oocM = `[朋友圈互动强制指令：{{user}}刚在${moment.name}的朋友圈下${replyToName ? `回复了${replyToName}` : '发表了评论'}，内容：「${text.trim()}」。相关角色（${who}）必须在本轮<PHONE>块内用<COMMENT>标签回复这条评论，至少1条，至多3条，语气符合人设，不得忽略。]`;
+    const oocM = `[朋友圈回复指令：${moment.name}或相关角色必须在本轮<PHONE>块内使用<COMMENT MOMENT_ID="${moment.id}" FROM="角色名" TIME="HH:MM">内容</COMMENT>标签回复{{user}}的评论，至少1条至多3条，不得省略。]`;
     setExtensionPrompt('rp-moments-ooc', oocM, extension_prompt_types.IN_CHAT, 0, false, 0);
-    setTimeout(() => setExtensionPrompt('rp-moments-ooc', ''), 500);
   }
 
+  ta.value = mainText ? `${mainText}\n${action}` : action;
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
   document.querySelector('#send_but')?.click();
+
+  if (hasEP) {
+    setTimeout(() => setExtensionPrompt('rp-moments-ooc', ''), 300);
+  }
 }
 
 // ================================================================
