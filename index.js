@@ -3126,17 +3126,19 @@ function cleanGameReply(raw) {
   let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   // 2. Remove <PHONE>...</PHONE> terminal blocks entirely
   text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, '').trim();
-  // 3. Strip markdown formatting (##, **, *, __)
+  // 3. Remove ALL XML/HTML-like tags (e.g. <创作规则>)
+  text = text.replace(/<[^>]{1,40}>/g, '').trim();
+  // 4. Strip markdown heading markers; bold/italic markers
   text = text.replace(/^#{1,6}\s*/gm, '').replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1').trim();
-  // 4. Remove standalone 【tag】 tokens (metadata labels like 【承诺】【评论】)
-  text = text.replace(/^【[^】]{1,10}】\s*/gm, '').trim();
-  // 5. Split into lines, pick first "clean" conversational line
-  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆#\[<【]|---)/i;
+  // 5. Remove standalone 【tag】 tokens at line start
+  text = text.replace(/^【[^】]{1,15}】[：:＊]?\s*/gm, '').trim();
+  // 6. Split into lines, skip meta/noise lines
+  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆#\[<【]|---|我已读取|我已深|我已理解|本轮我将|创作规则|以下是|如下[是：]|根据规则|落实[：:])/i;
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
   const clean = lines.find(l => l.length > 0 && !noiseRe.test(l) && l.length <= 50);
-  if (clean) return clean;
-  // 6. Last resort: first line, strip symbols, truncate
-  return (lines[0] || '').replace(/^[★▌▶◆#【\[]+\s*/, '').trim().substring(0, 30);
+  if (clean) return clean.replace(/^[""\u201c\u201d\']+|[""\u201c\u201d\']+$/g, '').trim();
+  // 7. Last resort: first line, strip leading symbols, truncate
+  return (lines[0] || '').replace(/^[★▌▶◆#【\["\u201c\']+\s*/, '').trim().substring(0, 30);
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
@@ -3191,7 +3193,8 @@ async function lgCharComment(event) {
 
   // Build a minimal prompt — include persona so char stays in character
   const persona = lgGetPersona();
-  const prompt = `[飞行棋游戏：${persona}你现在扮演${cName}，正在和用户玩飞行棋。${evtDesc}。请完全代入你的角色性格，只用一句口语化短话（不超过15字），像真人发短信，不要任何格式或结构化内容，只输出这一句话。]`;
+  // Completion-style prompt: ends with open quote so AI fills dialogue directly
+  const prompt = `${persona}\n[游戏场景：${cName}正在和用户玩飞行棋，${evtDesc}]\n${cName}此刻脱口而出："`;
 
   try {
     // ST v1.20+ exports generateRaw
@@ -3216,7 +3219,8 @@ async function lgGameChat(text) {
   const ctx    = getContext();
   const cName  = LG.charName;
   const persona = lgGetPersona();
-  const prompt = `[飞行棋游戏聊天：${persona}你现在扮演${cName}，用户对你说："${text}"。请完全代入你的角色性格，只回一句口语化短话（不超过15字），像真人发短信，不要任何格式或结构，只输出这一句话。]`;
+  // Completion-style prompt: AI fills dialogue directly after open quote
+  const prompt = `${persona}\n[游戏中聊天]用户对${cName}说："${text}"\n${cName}简短回应："`;
 
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
