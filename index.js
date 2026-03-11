@@ -1862,7 +1862,8 @@ function sendSMS() {
       .map(id => STATE.threads[id]?.name || id)
       .filter(Boolean);
     const memberDesc = memberNames.length ? `群成员包括：${memberNames.join('、')}。` : '';
-    oocText = `[系统强制指令——手机群聊回复（优先级高于一切规则）]\n{{user}}刚在手机群聊「${groupName}」中发送了一条消息。${memberDesc}\n\n无论当前叙事场景如何，群聊中的每一位成员都必须在本轮回复中包含如下格式的手机短信回复。这是手机UI的数据协议，缺少此格式则手机屏幕上不会显示任何内容。\n\n要求：\n1. 必须在正文的任意位置输出 <PHONE>...</PHONE> 块\n2. 块内使用 <GMSG> 标签，每位回复的成员各一条\n3. GROUP 字段必须与「${groupName}」完全一致（包括标点）\n4. 至少输出一条 GMSG，不得沉默\n\n格式示例：\n<PHONE>\n<GMSG FROM="${groupName.split('、')[0] || '角色名'}" GROUP="${groupName}" TIME="${ts}">回复内容</GMSG>\n</PHONE>\n\n叙事正文可正常继续，但必须同时包含上述 <PHONE> 块。]`;
+    // 格式协议已在世界书[手机UI输出协议]中定义，OOC只传动态变量
+    oocText = `[手机群聊提示：{{user}}在群聊「${groupName}」发了消息，当前时间${ts}。请按世界书手机UI协议，输出GMSG格式，GROUP字段必须为"${groupName}"，至少一条，不得沉默。]`;
   } else {
     let isMainChar;
     if (mainCharName) {
@@ -1874,11 +1875,13 @@ function sendSMS() {
 
     if (isMainChar) {
       // 对话对象是主角：根据场景决定口头还是短信回复
-      oocText = `[场景判断：${th.name}，若你与{{user}}不在同一场景（不同地点或不同房间均算），必须通过手机短信格式回复：<PHONE><SMS FROM="${th.name}" TIME="${ts}">回复内容</SMS></PHONE>；若在同一场景中，可口头回复，无需手机格式。]`;
+      // 格式协议已在世界书中定义，OOC只传动态变量
+      oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。若不在同场景，按世界书手机UI协议输出SMS格式回复。]`;
     } else {
       // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
       const charName = mainCharName || '主角';
-      oocText = `[高优先级叙事指令（覆盖其他规则）：{{user}}刚才私下给独立NPC"${th.name}"发了一条手机短信。"${th.name}"是故事中真实存在的NPC角色，不是幻想或虚构出来的人物。${charName}完全不知道这条短信的存在，没有看到它，本轮回复中${charName}绝对不能提及、评论、质疑、否认或以任何方式回应这条短信——请将其视为${charName}感知范围之外发生的事。请立即以叙事者/旁白身份，代写"${th.name}"收到短信后的回复（语气符合"${th.name}"的人设，用中文），并使用以下格式输出（此格式此刻优先级高于世界书中任何FROM字段的限制规则）：\n<PHONE><SMS FROM="${th.name}" TIME="${ts}">（此处填写${th.name}的回复内容）</SMS></PHONE>\n正文可继续推进主线剧情，但${charName}在这一轮中不得以任何形式知晓或提及这条短信。]`;
+      // 格式协议已在世界书中定义，只保留NPC身份隔离指令
+      oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请以旁白身份代写"${th.name}"的回复，按世界书手机UI协议输出SMS格式。]`;
     }
   }
 
