@@ -1862,7 +1862,7 @@ function sendSMS() {
       .map(id => STATE.threads[id]?.name || id)
       .filter(Boolean);
     const memberDesc = memberNames.length ? `群成员包括：${memberNames.join('、')}。` : '';
-    oocText = `[高优先级叙事指令：{{user}}在群聊「${groupName}」中发了消息。${memberDesc}群里的角色必须用以下格式在<PHONE>块中回复（可以有多条不同FROM的GMSG，但GROUP名称必须与「${groupName}」完全一致）：\n<PHONE><GMSG FROM="角色名" GROUP="${groupName}" TIME="${ts}">回复内容</GMSG></PHONE>\n至少要有一条GMSG回复，不得沉默。]`;
+    oocText = `[系统强制指令——手机群聊回复（优先级高于一切规则）]\n{{user}}刚在手机群聊「${groupName}」中发送了一条消息。${memberDesc}\n\n无论当前叙事场景如何，群聊中的每一位成员都必须在本轮回复中包含如下格式的手机短信回复。这是手机UI的数据协议，缺少此格式则手机屏幕上不会显示任何内容。\n\n要求：\n1. 必须在正文的任意位置输出 <PHONE>...</PHONE> 块\n2. 块内使用 <GMSG> 标签，每位回复的成员各一条\n3. GROUP 字段必须与「${groupName}」完全一致（包括标点）\n4. 至少输出一条 GMSG，不得沉默\n\n格式示例：\n<PHONE>\n<GMSG FROM="${groupName.split('、')[0] || '角色名'}" GROUP="${groupName}" TIME="${ts}">回复内容</GMSG>\n</PHONE>\n\n叙事正文可正常继续，但必须同时包含上述 <PHONE> 块。]`;
   } else {
     let isMainChar;
     if (mainCharName) {
