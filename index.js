@@ -801,6 +801,26 @@ const STATE = {
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
 const CHAT_STORE = {};
 
+/* ── HELPER: findOrCreateThread ── */
+function findOrCreateThread(nameRaw) {
+  const lower = nameRaw.toLowerCase();
+  for (const th of Object.values(STATE.threads)) {
+    if (th.name && th.name.toLowerCase() === lower) return th;
+  }
+  const _colors = ['#7c3aed','#0891b2','#0d9488','#b45309','#be185d','#1d4ed8'];
+  const colorIdx = Object.keys(STATE.threads).length % _colors.length;
+  const tempId = `contact_${lower.replace(/\s+/g, '_')}`;
+  if (!STATE.threads[tempId]) {
+    STATE.threads[tempId] = {
+      id: tempId, name: nameRaw,
+      initials: nameRaw.slice(0, 2),
+      avatarBg: `linear-gradient(145deg,${_colors[colorIdx]},${_colors[(colorIdx+1)%_colors.length]})`,
+      type: 'contact', messages: [], unread: 0
+    };
+  }
+  return STATE.threads[tempId];
+}
+
 // ================================================================
 //  PERSISTENCE (localStorage)
 // ================================================================
@@ -2330,26 +2350,6 @@ function playVoice(threadId, msgId) {
 //  GROUP CHAT
 // ================================================================
 const GROUP_COLORS = ['#7c3aed','#0891b2','#0d9488','#b45309','#be185d','#1d4ed8'];
-
-function findOrCreateThread(nameRaw) {
-  // 先按名字精确匹配已有联系人
-  const lower = nameRaw.toLowerCase();
-  for (const th of Object.values(STATE.threads)) {
-    if (th.name && th.name.toLowerCase() === lower) return th;
-  }
-  // 没有则创建一个临时联系人占位（仅用于取头像色/缩写）
-  const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
-  const tempId = `contact_${lower.replace(/\s+/g, '_')}`;
-  if (!STATE.threads[tempId]) {
-    STATE.threads[tempId] = {
-      id: tempId, name: nameRaw,
-      initials: nameRaw.slice(0, 2),
-      avatarBg: `linear-gradient(145deg,${GROUP_COLORS[colorIdx]},${GROUP_COLORS[(colorIdx+1)%GROUP_COLORS.length]})`,
-      type: 'contact', messages: [], unread: 0
-    };
-  }
-  return STATE.threads[tempId];
-}
 
 function incomingGroupMsg(fromRaw, groupName, time, text) {
   const groupId = `grp_${groupName}`;
