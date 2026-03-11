@@ -734,7 +734,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .game-win-sub{color:#9090b0}
 .game-win-btn{width:100%!important;padding:12px!important;background:linear-gradient(135deg,#ff6b8a,#e0407a)!important;color:#fff!important;border:none!important;border-radius:14px!important;font-size:15px!important;font-weight:700!important;cursor:pointer!important;font-family:inherit!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
 .game-win-btn:hover{opacity:.88!important}
-@keyframes rp-dice-roll{0%{transform:rotate(0)scale(1)}25%{transform:rotate(90deg)scale(1.3)}50%{transform:rotate(180deg)scale(1)}75%{transform:rotate(270deg)scale(1.3)}100%{transform:rotate(360deg)scale(1)}}
+@keyframes rp-dice-roll{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
 .ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
 
 `;
@@ -1100,6 +1100,11 @@ const HTML = `
 //  INIT
 // ================================================================
 async function init() {
+  // Hot-reload safety: remove stale phone element & force CSS re-inject
+  const stale = document.getElementById('rp-wrapper');
+  if (stale) stale.remove();
+  window._rpPhoneSheet = false;
+
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
   if (!document.getElementById('rp-live-chat')) {
@@ -1135,6 +1140,7 @@ async function init() {
   // FIX2: 监听聊天窗口切换
   eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
 
+  go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 }
 
@@ -1567,7 +1573,7 @@ function renderThreadList() {
 // ================================================================
 function go(view) {
   if (view === 'darkmode') { toggleDarkMode(); return; }
-  if (view === 'ludo') { if (!LG.active) lgInit(); else lgRender(); view = 'game'; }
+  if (view === 'ludo') { try { if (!LG.active) lgInit(); else lgRender(); } catch(e) { console.warn('[Ludo]', e); } view = 'game'; }
   $('.rp-view').hide();
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
