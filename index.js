@@ -553,6 +553,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── GROUP CHAT ── */
 .rp-bwrap.rp-in.rp-grp{flex-direction:row;align-items:flex-start;gap:8px}
 .rp-bwrap.rp-out.rp-grp{flex-direction:row-reverse;align-items:flex-start;gap:8px}
+.rp-bwrap.rp-grp>div{flex:1;min-width:0}
+.rp-bwrap.rp-grp .rp-bubble{max-width:100%}
 .rp-grp-sender{font-size:11px;font-weight:700;color:rgba(0,0,0,.45);margin-bottom:3px}
 .rp-dark .rp-grp-sender{color:rgba(255,255,255,.4)}
 .rp-grp-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;overflow:hidden}
@@ -632,6 +634,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-loc-card{background:rgba(255,255,255,.06)}
 .rp-loc-ico{font-size:22px;flex-shrink:0}
 .rp-loc-txt{font-size:13px;color:#333;font-weight:500}
+.rp-loc-modal{position:absolute;inset:0;z-index:600;background:rgba(0,0,0,.45);display:flex;align-items:flex-end}
+.rp-loc-sheet{background:#fff;border-radius:18px 18px 0 0;padding:20px 20px 32px;width:100%;box-sizing:border-box}
+.rp-dark .rp-loc-sheet{background:#13132a}
+.rp-loc-sheet h3{margin:0 0 14px;font-size:16px;font-weight:700;color:#222;text-align:center}
+.rp-dark .rp-loc-sheet h3{color:#e0e4ff}
+.rp-loc-sheet input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:10px 14px;font-size:14px;outline:none;background:#fafafa;margin-bottom:12px}
+.rp-dark .rp-loc-sheet input{background:#1c1c38;border-color:rgba(255,255,255,.1);color:#dde0f2}
+.rp-loc-send-btn{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer}
+.rp-loc-cancel-btn{width:100%;padding:10px;background:none;border:none;color:rgba(0,0,0,.35);font-size:14px;cursor:pointer;margin-top:6px}
+.rp-dark .rp-loc-cancel-btn{color:rgba(255,255,255,.3)}
 .rp-dark .rp-loc-txt{color:#c8cce8}
 .rp-img-bbl{max-width:180px;border-radius:12px;overflow:hidden}
 .rp-img-bbl img{width:100%;display:block}
@@ -2474,8 +2486,17 @@ function triggerImagePick() {
       renderBubbles(thread.id);
       saveState();
       fi.remove();
-      // Try to pass actual image to ST for vision (programmatic file attachment)
-      const stImgInput = document.querySelector('#img_upload, input[data-role="img-upload"], input[name="fileAttach"]');
+      // Try to pass actual image to ST for vision (try all known ST selectors)
+      const imgSelectors = [
+        '#img_upload', '#file_attachment_browse', '#file_form_input',
+        'input[type=file][accept*="image"]', '#mes_media_input',
+        'input[type=file][name*="file"]', 'input[type=file][name*="image"]',
+      ];
+      let stImgInput = null;
+      for (const sel of imgSelectors) {
+        const el = document.querySelector(sel);
+        if (el) { stImgInput = el; break; }
+      }
       if (stImgInput) {
         try {
           const blob = dataURLtoBlob(src);
@@ -2483,7 +2504,10 @@ function triggerImagePick() {
           dt.items.add(new File([blob], 'photo.jpg', { type: file.type }));
           stImgInput.files = dt.files;
           stImgInput.dispatchEvent(new Event('change', { bubbles: true }));
-        } catch(err) { /* vision passthrough failed silently */ }
+          console.log('[Raymond Phone] Image attached via', stImgInput.id || stImgInput.name);
+        } catch(err) { console.warn('[Raymond Phone] Vision passthrough failed:', err); }
+      } else {
+        console.warn('[Raymond Phone] No ST image input found; selectors tried:', imgSelectors);
       }
       // Always inject OOC so char knows to respond to the image
       const ta = document.querySelector('#send_textarea');
@@ -2509,15 +2533,20 @@ function dataURLtoBlob(dataURL) {
 }
 
 function showLocationInput() {
-  $('#rp-attach-panel').html(`
-    <div style="display:flex;gap:8px;padding:10px 14px;align-items:center">
-      <div style="font-size:20px">📍</div>
-      <input id="rp-loc-inp" type="text" placeholder="输入你的位置…"
-        style="flex:1;border:1px solid rgba(0,0,0,.12);border-radius:20px;padding:7px 14px;font-size:13px;outline:none;background:#fafafa"/>
-      <button onclick="sendLocation()" style="background:#2563eb;color:#fff;border:none;border-radius:16px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600">发送</button>
+  $('#rp-attach-panel').hide();
+  $('#rp-loc-modal').remove();
+  const dark = $('#rp-phone').hasClass('rp-dark') ? 'rp-dark' : '';
+  $('#rp-screen').append(`
+    <div class="rp-loc-modal ${dark}" id="rp-loc-modal" onclick="if(event.target===this)$('#rp-loc-modal').remove()">
+      <div class="rp-loc-sheet">
+        <h3>📍 发送位置</h3>
+        <input id="rp-loc-inp" type="text" placeholder="输入你的位置…"/>
+        <button class="rp-loc-send-btn" onclick="sendLocation()">发送</button>
+        <button class="rp-loc-cancel-btn" onclick="$('#rp-loc-modal').remove()">取消</button>
+      </div>
     </div>
-  `).show();
-  setTimeout(() => $('#rp-loc-inp').focus(), 50);
+  `);
+  setTimeout(() => document.getElementById('rp-loc-inp')?.focus(), 60);
 }
 
 function sendLocation() {
@@ -2531,6 +2560,7 @@ function sendLocation() {
     id: `uloc_${Date.now()}`, from: 'user',
     type: 'location', time: ts, place
   });
+  $('#rp-loc-modal').remove();
   $('#rp-attach-panel').hide();
   renderBubbles(thread.id);
   saveState();
