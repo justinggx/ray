@@ -1823,24 +1823,35 @@ function sendSMS() {
   // 修复：mainCharName 为空时，仅将内置线程 raymond/gaspard 视为主角，避免把所有 NPC 错误归为主角
   const ctx = getContext();
   const mainCharName = ctx?.name2 || '';
-  let isMainChar;
-  if (mainCharName) {
-    isMainChar = th.name.toLowerCase().includes(mainCharName.toLowerCase()) ||
-      mainCharName.toLowerCase().includes(th.name.toLowerCase());
-  } else {
-    // 无法获取主角名时，只有内置预设线程才视为主角
-    isMainChar = (th.id === 'raymond' || th.id === 'gaspard');
-  }
+  const isGroupThread = th.type === 'group' || th.id.startsWith('grp_');
 
   let oocText;
-  if (isMainChar) {
-    // 对话对象是主角：根据场景决定口头还是短信回复
-    oocText = `[场景判断：${th.name}，若你与{{user}}不在同一场景（不同地点或不同房间均算），必须通过手机短信格式回复：<PHONE><SMS FROM="${th.name}" TIME="${ts}">回复内容</SMS></PHONE>；若在同一场景中，可口头回复，无需手机格式。]`;
+
+  if (isGroupThread) {
+    // ── 群聊线程：要求 AI 用 GMSG 格式回复 ──
+    const groupName = th.name;
+    const memberNames = (th.members || [])
+      .map(id => STATE.threads[id]?.name || id)
+      .filter(Boolean);
+    const memberDesc = memberNames.length ? `群成员包括：${memberNames.join('、')}。` : '';
+    oocText = `[高优先级叙事指令：{{user}}在群聊「${groupName}」中发了消息。${memberDesc}群里的角色必须用以下格式在<PHONE>块中回复（可以有多条不同FROM的GMSG，但GROUP名称必须与「${groupName}」完全一致）：\n<PHONE><GMSG FROM="角色名" GROUP="${groupName}" TIME="${ts}">回复内容</GMSG></PHONE>\n至少要有一条GMSG回复，不得沉默。]`;
   } else {
-    // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
-    // 同时显式覆盖世界书中"FROM字段仅限Raymond/Gaspard"的限制，要求 AI 代写 NPC 回复
-    const charName = mainCharName || '主角';
-    oocText = `[高优先级叙事指令（覆盖其他规则）：{{user}}刚才私下给独立NPC"${th.name}"发了一条手机短信。"${th.name}"是故事中真实存在的NPC角色，不是幻想或虚构出来的人物。${charName}完全不知道这条短信的存在，没有看到它，本轮回复中${charName}绝对不能提及、评论、质疑、否认或以任何方式回应这条短信——请将其视为${charName}感知范围之外发生的事。请立即以叙事者/旁白身份，代写"${th.name}"收到短信后的回复（语气符合"${th.name}"的人设，用中文），并使用以下格式输出（此格式此刻优先级高于世界书中任何FROM字段的限制规则）：\n<PHONE><SMS FROM="${th.name}" TIME="${ts}">（此处填写${th.name}的回复内容）</SMS></PHONE>\n正文可继续推进主线剧情，但${charName}在这一轮中不得以任何形式知晓或提及这条短信。]`;
+    let isMainChar;
+    if (mainCharName) {
+      isMainChar = th.name.toLowerCase().includes(mainCharName.toLowerCase()) ||
+        mainCharName.toLowerCase().includes(th.name.toLowerCase());
+    } else {
+      isMainChar = (th.id === 'raymond' || th.id === 'gaspard');
+    }
+
+    if (isMainChar) {
+      // 对话对象是主角：根据场景决定口头还是短信回复
+      oocText = `[场景判断：${th.name}，若你与{{user}}不在同一场景（不同地点或不同房间均算），必须通过手机短信格式回复：<PHONE><SMS FROM="${th.name}" TIME="${ts}">回复内容</SMS></PHONE>；若在同一场景中，可口头回复，无需手机格式。]`;
+    } else {
+      // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
+      const charName = mainCharName || '主角';
+      oocText = `[高优先级叙事指令（覆盖其他规则）：{{user}}刚才私下给独立NPC"${th.name}"发了一条手机短信。"${th.name}"是故事中真实存在的NPC角色，不是幻想或虚构出来的人物。${charName}完全不知道这条短信的存在，没有看到它，本轮回复中${charName}绝对不能提及、评论、质疑、否认或以任何方式回应这条短信——请将其视为${charName}感知范围之外发生的事。请立即以叙事者/旁白身份，代写"${th.name}"收到短信后的回复（语气符合"${th.name}"的人设，用中文），并使用以下格式输出（此格式此刻优先级高于世界书中任何FROM字段的限制规则）：\n<PHONE><SMS FROM="${th.name}" TIME="${ts}">（此处填写${th.name}的回复内容）</SMS></PHONE>\n正文可继续推进主线剧情，但${charName}在这一轮中不得以任何形式知晓或提及这条短信。]`;
+    }
   }
 
   // FIX1: 用 setExtensionPrompt 注入隐藏 OOC，不在聊天框显示
@@ -2514,7 +2525,7 @@ function confirmCreateGroup() {
   let name = $('#rp-grp-name-inp').val().trim();
   if (!name) name = memberIds.map(id => STATE.threads[id]?.name || id).join('、');
   $('#rp-grp-create').remove();
-  const groupId = `grp_${name}_${Date.now()}`;
+  const groupId = `grp_${name}`;
   const colorIdx = Object.keys(STATE.threads).length % GROUP_COLORS.length;
   STATE.threads[groupId] = {
     id: groupId, name, initials: name.slice(0,2),
