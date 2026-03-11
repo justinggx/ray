@@ -2469,16 +2469,26 @@ function triggerImagePick() {
       if (!thread) { fi.remove(); return; }
       const now = new Date();
       const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-      thread.messages.push({
-        id: `uimg_${Date.now()}`, from: 'user',
-        type: 'image', time: ts, src: e.target.result
-      });
+      const src = e.target.result;
+      thread.messages.push({ id: `uimg_${Date.now()}`, from: 'user', type: 'image', time: ts, src });
       renderBubbles(thread.id);
       saveState();
       fi.remove();
+      // Try to pass actual image to ST for vision (programmatic file attachment)
+      const stImgInput = document.querySelector('#img_upload, input[data-role="img-upload"], input[name="fileAttach"]');
+      if (stImgInput) {
+        try {
+          const blob = dataURLtoBlob(src);
+          const dt = new DataTransfer();
+          dt.items.add(new File([blob], 'photo.jpg', { type: file.type }));
+          stImgInput.files = dt.files;
+          stImgInput.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch(err) { /* vision passthrough failed silently */ }
+      }
+      // Always inject OOC so char knows to respond to the image
       const ta = document.querySelector('#send_textarea');
       if (ta) {
-        const action = `*{{user}}向${thread.name}发送了一张图片*`;
+        const action = `*{{user}}向${thread.name}发送了一张图片，请认真观看图片并以${thread.name}的视角做出符合人设的回应*`;
         ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
         ta.dispatchEvent(new Event('input', { bubbles: true }));
         document.querySelector('#send_but')?.click();
@@ -2487,6 +2497,15 @@ function triggerImagePick() {
     reader.readAsDataURL(file);
   });
   fi.trigger('click');
+}
+
+function dataURLtoBlob(dataURL) {
+  const [header, base64] = dataURL.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const bytes = atob(base64);
+  const arr = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new Blob([arr], { type: mime });
 }
 
 function showLocationInput() {
@@ -3317,6 +3336,18 @@ async function lgGameChat(text) {
   const fallbacks = ['嗯嗯~','专注游戏！','别分心，来追我','说什么，快走棋！','哈哈，继续玩！'];
   setTimeout(() => lgMsg('char', fallbacks[Math.floor(Math.random()*fallbacks.length)]), 500+Math.random()*300);
 }
+
+// ================================================================
+//  GLOBAL SCOPE EXPORTS  (required: onclick="" attrs run in window scope)
+// ================================================================
+Object.assign(window, {
+  openHongbao, playVoice, sendUserHongbao,
+  toggleAttachPanel, showHongbaoSheet, sendLocation,
+  showLocationInput, triggerImagePick,
+  showAddChoice, confirmCreateGroup,
+  openThread, openSettings,
+  lgUserRoll,
+});
 
 // ================================================================
 //  ENTRY
