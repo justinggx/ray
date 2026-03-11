@@ -692,6 +692,51 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
 .rp-view{position:relative;z-index:1}
 
+/* ── LUDO GAME ── */
+#rp-view-game{background:#fef0f5;display:flex;flex-direction:column}
+.rp-dark #rp-view-game{background:#0d080e}
+#rp-game-board-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 0 0;overflow:hidden;min-height:0}
+#rp-ludo-canvas{border-radius:10px;max-width:260px;max-height:260px;display:block}
+#rp-game-controls{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;border-top:1px solid rgba(0,0,0,.08);background:#fff;flex-shrink:0;gap:8px}
+.rp-dark #rp-game-controls{background:#0c0c1a;border-top-color:rgba(255,255,255,.07)}
+#rp-dice-btn{width:46px;height:46px;border-radius:23px;background:linear-gradient(145deg,#ff6b8a,#e0407a);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex!important;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(224,64,122,.38);transition:transform .15s;flex-shrink:0;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+#rp-dice-btn:active{transform:scale(.88)}
+#rp-dice-btn:disabled{opacity:.45!important;cursor:default}
+.rp-game-info{flex:1;min-width:0}
+.rp-game-players{font-size:11.5px;font-weight:600;color:#1a1a2e}
+.rp-dark .rp-game-players{color:#c8cce8}
+.rp-game-status{font-size:11px;color:#888;margin-top:1px}
+.rp-dark .rp-game-status{color:#6a6a8a}
+#rp-dice-face{font-size:28px;min-width:34px;text-align:center;flex-shrink:0}
+#rp-game-chat{max-height:68px;overflow-y:auto;padding:4px 12px;display:flex;flex-direction:column;gap:1px;flex-shrink:0;border-top:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.9);scrollbar-width:none}
+#rp-game-chat::-webkit-scrollbar{display:none}
+.rp-dark #rp-game-chat{background:rgba(12,12,26,.9);border-top-color:rgba(255,255,255,.05)}
+.game-msg{font-size:11px;line-height:1.45;padding:1px 0}
+.game-msg-user{color:#2563eb;text-align:right}
+.game-msg-char{color:#e0407a}
+.rp-dark .game-msg-char{color:#ff7aaa}
+.game-msg-sys{color:#888;text-align:center;font-style:italic}
+.rp-dark .game-msg-sys{color:#666}
+#rp-game-input-row{display:flex;gap:6px;padding:6px 10px 22px;border-top:1px solid rgba(0,0,0,.06);background:#fff;flex-shrink:0;align-items:center}
+.rp-dark #rp-game-input-row{background:#0c0c1a;border-top-color:rgba(255,255,255,.06)}
+#rp-game-input{flex:1;min-width:0;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.12);border-radius:18px;padding:7px 12px;font-size:12px;font-family:inherit;color:#1a1a2e;outline:none}
+.rp-dark #rp-game-input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#dde0f2}
+#rp-game-input::placeholder{color:rgba(0,0,0,.38)}
+#rp-game-send{width:28px!important;height:28px!important;min-width:28px!important;border-radius:14px!important;background:#e0407a!important;border:none!important;color:#fff!important;font-size:14px!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;padding:0!important;margin:0!important}
+#rp-game-send:hover{opacity:.82!important}
+#rp-game-win{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
+.game-win-box{background:#fff;border-radius:24px;padding:26px 22px;text-align:center;max-width:220px;width:88%;box-shadow:0 16px 48px rgba(0,0,0,.25)}
+.rp-dark .game-win-box{background:#16162a}
+.game-win-emoji{font-size:56px;margin-bottom:8px;line-height:1}
+.game-win-title{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+.rp-dark .game-win-title{color:#eef0ff}
+.game-win-sub{font-size:13px;color:#666;margin-bottom:16px;line-height:1.55}
+.rp-dark .game-win-sub{color:#9090b0}
+.game-win-btn{width:100%!important;padding:12px!important;background:linear-gradient(135deg,#ff6b8a,#e0407a)!important;color:#fff!important;border:none!important;border-radius:14px!important;font-size:15px!important;font-weight:700!important;cursor:pointer!important;font-family:inherit!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.game-win-btn:hover{opacity:.88!important}
+@keyframes rp-dice-roll{0%{transform:rotate(0)scale(1)}25%{transform:rotate(90deg)scale(1.3)}50%{transform:rotate(180deg)scale(1)}75%{transform:rotate(270deg)scale(1.3)}100%{transform:rotate(360deg)scale(1)}}
+.ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
+
 `;
 
 function injectStyles() {
@@ -852,14 +897,14 @@ const HTML = `
                 <div class="rp-app-ico rp-dm-ico" style="background:linear-gradient(145deg,#4a4a6a,#32324e)">🌙</div>
                 <div class="rp-app-lbl" id="rp-dm-lbl">夜间</div>
               </div>
-              <!-- row 2: 设置 占位 占位 -->
+              <!-- row 2: 设置 飞行棋 占位 -->
               <div class="rp-app" data-app="settings">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#636380,#48485e)">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
               </div>
-              <div class="rp-app rp-app-off" style="pointer-events:none;visibility:hidden">
-                <div class="rp-app-ico" style="background:rgba(0,0,0,.06)"></div>
-                <div class="rp-app-lbl"></div>
+              <div class="rp-app" data-app="ludo">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff6b8a,#c0294a)">🎲</div>
+                <div class="rp-app-lbl">飞行棋</div>
               </div>
               <div class="rp-app rp-app-off" style="pointer-events:none;visibility:hidden">
                 <div class="rp-app-ico" style="background:rgba(0,0,0,.06)"></div>
@@ -980,6 +1025,39 @@ const HTML = `
                 </div>
                 <input id="rp-wall-file" type="file" accept="image/*" style="display:none"/>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 飞行棋 -->
+        <div id="rp-view-game" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">🎲 飞行棋</span>
+            <span></span>
+          </div>
+          <div id="rp-game-board-wrap">
+            <canvas id="rp-ludo-canvas" width="260" height="260"></canvas>
+          </div>
+          <div id="rp-game-controls">
+            <div class="rp-game-info">
+              <div class="rp-game-players">❤️ 你 vs 💙 <span id="rp-game-char-name">对方</span></div>
+              <div class="rp-game-status" id="rp-game-status-text">按骰子开始！</div>
+            </div>
+            <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
+            <div id="rp-dice-face"></div>
+          </div>
+          <div id="rp-game-chat"></div>
+          <div id="rp-game-input-row">
+            <input id="rp-game-input" type="text" placeholder="游戏中聊天..." autocomplete="off"/>
+            <button id="rp-game-send" type="button">↑</button>
+          </div>
+          <div id="rp-game-win" style="display:none">
+            <div class="game-win-box">
+              <div class="game-win-emoji" id="game-win-emoji">🎉</div>
+              <div class="game-win-title" id="game-win-title">恭喜你赢了！</div>
+              <div class="game-win-sub" id="game-win-sub">你率先抵达终点，赢得了这场飞行棋！</div>
+              <button class="game-win-btn" id="game-restart-btn" type="button">再来一局</button>
             </div>
           </div>
         </div>
@@ -1198,6 +1276,35 @@ function bindUI() {
   $('#rp-add-modal').on('click', function (e) {
     if (e.target === this) $(this).hide();
   });
+
+  // ── Ludo game ────────────────────────────────────────────────
+  $(document).on('click', '[data-app="ludo"]', function(e) {
+    e.stopPropagation();
+    if (!LG.active) lgInit();
+    else lgRender();
+    go('game');
+  });
+
+  $(document).on('click', '#rp-dice-btn', function() {
+    if (LG.turn === 'user' && !LG.rolling && LG.active) lgUserRoll();
+  });
+
+  $(document).on('click', '#rp-game-send', function() {
+    const t = $('#rp-game-input').val().trim();
+    if (t) { lgGameChat(t); $('#rp-game-input').val(''); }
+  });
+
+  $(document).on('keydown', '#rp-game-input', function(e) {
+    if (e.key === 'Enter') {
+      const t = $(this).val().trim();
+      if (t) { lgGameChat(t); $(this).val(''); }
+    }
+  });
+
+  $(document).on('click', '#game-restart-btn', function() {
+    lgInit();
+  });
+  // ─────────────────────────────────────────────────────────────
 
 
 
@@ -1460,6 +1567,7 @@ function renderThreadList() {
 // ================================================================
 function go(view) {
   if (view === 'darkmode') { toggleDarkMode(); return; }
+  if (view === 'ludo') { if (!LG.active) lgInit(); else lgRender(); view = 'game'; }
   $('.rp-view').hide();
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
@@ -2690,6 +2798,400 @@ function sendMomentComment(momentId, text, replyToName) {
   if (hasEP) {
     setTimeout(() => setExtensionPrompt('rp-moments-ooc', ''), 300);
   }
+}
+
+// ================================================================
+//  LUDO GAME
+// ================================================================
+
+// 13×13 board, CELL=20px → 260px
+// Common path: 48 squares [row, col], clockwise from User entry
+const LUDO_PATH = [
+  [12,5],[11,5],[10,5],[9,5],[8,5],            // 0-4  : up left col of bottom arm
+  [7,5],[7,4],[7,3],[7,2],[7,1],[7,0],          // 5-10 : left across row7
+  [6,0],[5,0],                                  // 11-12: up left side
+  [5,1],[5,2],[5,3],[5,4],[5,5],                // 13-17: right across row5
+  [4,5],[3,5],[2,5],[1,5],[0,5],                // 18-22: up left col of top arm
+  [0,6],                                        // 23   : top centre
+  [0,7],[1,7],[2,7],[3,7],[4,7],                // 24-28: down right col of top arm ← Char entry
+  [5,7],[5,8],[5,9],[5,10],[5,11],[5,12],       // 29-34: right across row5
+  [6,12],[7,12],                                // 35-36: down right side
+  [7,11],[7,10],[7,9],[7,8],[7,7],              // 37-41: left across row7
+  [8,7],[9,7],[10,7],[11,7],[12,7],             // 42-46: down right col of bottom arm
+  [12,6],                                       // 47   : bottom centre ← User re-entry / home start
+];
+const LUDO_PATH_LEN = LUDO_PATH.length; // 48
+
+// Home-run lanes (5 squares, col6, toward centre row6)
+const USER_HOME_RUN = [[11,6],[10,6],[9,6],[8,6],[7,6]];  // up col6
+const CHAR_HOME_RUN = [[1,6],[2,6],[3,6],[4,6],[5,6]];    // down col6
+
+// Absolute path indices that are "safe" squares (can't eat)
+const LUDO_SAFE = new Set([0, 12, 24, 36]);
+
+// Player entry indices into LUDO_PATH
+const USER_ENTRY = 0;   // (12,5)
+const CHAR_ENTRY = 24;  // (0,7)
+
+// Positions: 0=home yard, 1-48=common path, 49-53=home run, 54=WIN
+const LG = {
+  active: false,
+  userPos: 0,
+  charPos: 0,
+  turn: 'user',      // 'user'|'char'
+  rolling: false,
+  lastDice: 0,
+  charName: '对方',
+  chatLog: [],
+};
+
+const DICE_EMOJI = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+
+function lgInit() {
+  LG.active   = true;
+  LG.userPos  = 0;
+  LG.charPos  = 0;
+  LG.turn     = 'user';
+  LG.rolling  = false;
+  LG.lastDice = 0;
+  LG.chatLog  = [];
+
+  const ctx = getContext();
+  LG.charName = ctx?.name2 || ctx?.name || '对方';
+  $('#rp-game-char-name').text(LG.charName);
+  $('#rp-game-win').hide();
+  $('#rp-game-chat').empty();
+  $('#rp-dice-btn').prop('disabled', false);
+
+  lgRender();
+  lgStatus('你先出手 — 按🎲掷骰子！');
+  lgMsg('sys', `游戏开始！掷出6才能出发，先到终点者胜。❤️=你  💙=${LG.charName}`);
+  setTimeout(() => lgCharComment('game_start'), 900);
+}
+
+// Convert player position → canvas pixel coords
+function lgCoords(player, pos) {
+  const CELL = 20, H = CELL / 2;
+  if (pos === 0) {
+    // sitting in home yard
+    return player === 'user' ? {x:2*CELL+H, y:10*CELL+H} : {x:10*CELL+H, y:2*CELL+H};
+  }
+  if (pos >= 54) {
+    return {x:6*CELL+H, y:6*CELL+H}; // centre finish
+  }
+  if (pos >= 49) {
+    const hr = player === 'user' ? USER_HOME_RUN : CHAR_HOME_RUN;
+    const [r,c] = hr[pos - 49] || hr[hr.length-1];
+    return {x:c*CELL+H, y:r*CELL+H};
+  }
+  const entry = player === 'user' ? USER_ENTRY : CHAR_ENTRY;
+  const idx   = (entry + pos - 1) % LUDO_PATH_LEN;
+  const [r,c] = LUDO_PATH[idx];
+  return {x:c*CELL+H, y:r*CELL+H};
+}
+
+function lgRender() {
+  const canvas = document.getElementById('rp-ludo-canvas');
+  if (!canvas) return;
+  const C = canvas.getContext('2d');
+  const CELL = 20, N = 13, W = N * CELL;
+
+  C.clearRect(0, 0, W, W);
+
+  // ── Background ──
+  C.fillStyle = '#fef5f8';
+  C.fillRect(0, 0, W, W);
+
+  // ── Cross arms (white) ──
+  C.fillStyle = '#ffffff';
+  C.fillRect(5*CELL, 0, 3*CELL, W);    // vertical
+  C.fillRect(0, 5*CELL, W, 3*CELL);    // horizontal
+
+  // ── Home zones ──
+  // User  (bottom-left) pink
+  C.fillStyle = '#ffd6e7';
+  C.fillRect(0, 8*CELL, 5*CELL, 5*CELL);
+  // Char  (top-right) blue
+  C.fillStyle = '#d6e8ff';
+  C.fillRect(8*CELL, 0, 5*CELL, 5*CELL);
+  // Other two (greyed)
+  C.fillStyle = '#f0f0f0';
+  C.fillRect(0, 0, 5*CELL, 5*CELL);
+  C.fillRect(8*CELL, 8*CELL, 5*CELL, 5*CELL);
+
+  // ── Centre finish (gradient) ──
+  const grad = C.createRadialGradient(6.5*CELL,6.5*CELL,4, 6.5*CELL,6.5*CELL,32);
+  grad.addColorStop(0, '#ffd700');
+  grad.addColorStop(.5,'#ff9de2');
+  grad.addColorStop(1, '#9de2ff');
+  C.fillStyle = grad;
+  C.fillRect(5*CELL, 5*CELL, 3*CELL, 3*CELL);
+
+  // ── Path squares ──
+  C.lineWidth = .5;
+  LUDO_PATH.forEach(([r,c], idx) => {
+    let fill = '#ffffff';
+    if (c === 6 && r > 6) fill = '#ffe0ee';  // User home-run approach
+    if (c === 6 && r < 6) fill = '#e0eeff';  // Char home-run approach
+    if (LUDO_SAFE.has(idx)) fill = '#fff8dc';
+    C.fillStyle = fill;
+    C.strokeStyle = 'rgba(0,0,0,.1)';
+    C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
+    C.strokeRect(c*CELL, r*CELL, CELL, CELL);
+    if (LUDO_SAFE.has(idx)) {
+      C.fillStyle = '#cca800';
+      C.font = `${CELL*.52}px serif`;
+      C.textAlign = 'center'; C.textBaseline = 'middle';
+      C.fillText('★', c*CELL+CELL/2, r*CELL+CELL/2);
+    }
+  });
+
+  // ── Home-run lanes ──
+  USER_HOME_RUN.forEach(([r,c]) => {
+    C.fillStyle = '#ffb3c8'; C.strokeStyle = 'rgba(220,40,100,.2)';
+    C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
+    C.strokeRect(c*CELL, r*CELL, CELL, CELL);
+  });
+  CHAR_HOME_RUN.forEach(([r,c]) => {
+    C.fillStyle = '#b3c8ff'; C.strokeStyle = 'rgba(40,100,220,.2)';
+    C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
+    C.strokeRect(c*CELL, r*CELL, CELL, CELL);
+  });
+
+  // ── Home zone labels ──
+  C.textAlign = 'center'; C.textBaseline = 'middle';
+  C.font = `${CELL*1.6}px serif`;
+  C.fillText('❤️', 2.5*CELL, 10.5*CELL);
+  C.fillText('💙', 10.5*CELL, 2.5*CELL);
+
+  // ── Centre heart ──
+  C.font = `${CELL*1.8}px serif`;
+  C.fillText('💗', 6.5*CELL, 6.5*CELL);
+
+  // ── Pieces ──
+  lgDrawPiece(C, 'user', LG.userPos, CELL);
+  lgDrawPiece(C, 'char', LG.charPos, CELL);
+}
+
+function lgDrawPiece(C, player, pos, CELL) {
+  if (pos >= 54) return;
+  const {x, y} = lgCoords(player, pos);
+  // shadow
+  C.shadowColor = 'rgba(0,0,0,.25)';
+  C.shadowBlur  = 4;
+  C.font = `${CELL*.78}px serif`;
+  C.textAlign = 'center'; C.textBaseline = 'middle';
+  C.fillText(player === 'user' ? '❤️' : '💙', x, y);
+  C.shadowBlur = 0;
+}
+
+function lgRoll() { return Math.floor(Math.random() * 6) + 1; }
+
+async function lgAnimDice() {
+  for (let i = 0; i < 8; i++) {
+    $('#rp-dice-face').text(DICE_EMOJI[Math.floor(Math.random()*6)+1]);
+    await new Promise(r => setTimeout(r, 90));
+  }
+}
+
+async function lgUserRoll() {
+  if (!LG.active || LG.rolling || LG.turn !== 'user') return;
+  LG.rolling = true;
+  $('#rp-dice-btn').prop('disabled', true).addClass('ludo-rolling');
+
+  await lgAnimDice();
+  $('#rp-dice-btn').removeClass('ludo-rolling');
+
+  const n = lgRoll();
+  LG.lastDice = n;
+  $('#rp-dice-face').text(DICE_EMOJI[n]);
+  lgMsg('sys', `你掷出 ${n} ${DICE_EMOJI[n]}`);
+
+  await lgMove('user', n);
+
+  if (LG.userPos >= 54) { lgWin('user'); LG.rolling = false; return; }
+
+  LG.rolling = false;
+  if (n === 6) {
+    lgStatus('掷出6！再来一次！');
+    lgMsg('sys', '掷出6，再掷一次！');
+    $('#rp-dice-btn').prop('disabled', false);
+    setTimeout(() => lgCharComment(`dice_6_user`), 500);
+  } else {
+    LG.turn = 'char';
+    lgStatus(`${LG.charName} 的回合...`);
+    setTimeout(() => lgCharTurn(), 900 + Math.random()*400);
+  }
+}
+
+async function lgCharTurn() {
+  if (!LG.active) return;
+  await lgAnimDice();
+
+  const n = lgRoll();
+  LG.lastDice = n;
+  $('#rp-dice-face').text(DICE_EMOJI[n]);
+  lgMsg('sys', `${LG.charName} 掷出 ${n} ${DICE_EMOJI[n]}`);
+
+  await lgMove('char', n);
+
+  if (LG.charPos >= 54) { lgWin('char'); return; }
+
+  setTimeout(() => lgCharComment(`dice_${n}_char`), 400);
+
+  if (n === 6) {
+    lgMsg('sys', `${LG.charName} 掷出6，再掷！`);
+    setTimeout(() => lgCharTurn(), 1000);
+  } else {
+    LG.turn = 'user';
+    lgStatus('你的回合 — 按🎲掷骰子！');
+    $('#rp-dice-btn').prop('disabled', false);
+  }
+}
+
+async function lgMove(player, steps) {
+  const isUser = player === 'user';
+  const cur    = isUser ? LG.userPos : LG.charPos;
+
+  // Must roll 6 to leave yard
+  if (cur === 0 && steps !== 6) {
+    lgMsg('sys', isUser ? '需要掷出6才能出发！' : `${LG.charName}需要6才能出发！`);
+    return;
+  }
+
+  let next = cur === 0 ? 1 : cur + steps;
+
+  // Home-run overflow: bounce back
+  if (next > 53) next = 53 - (next - 53);
+  if (next < 0)  next = 0;
+
+  // Animate step-by-step
+  const start = Math.max(cur, 1);
+  for (let p = start + 1; p <= next; p++) {
+    if (isUser) LG.userPos = p; else LG.charPos = p;
+    lgRender();
+    await new Promise(r => setTimeout(r, 170));
+  }
+  // If entering board from yard, set to 1 first
+  if (cur === 0) { if (isUser) LG.userPos = 1; else LG.charPos = 1; lgRender(); await new Promise(r=>setTimeout(r,170)); }
+
+  if (isUser) LG.userPos = next; else LG.charPos = next;
+  lgRender();
+
+  // Home-run entry announcement
+  if (next >= 49 && cur < 49) {
+    lgMsg('sys', isUser ? '✨ 进入回家路！' : `✨ ${LG.charName}进入回家路！`);
+  }
+
+  // Eat check (only on common path 1-48)
+  if (next >= 1 && next <= 48) {
+    const myAbs  = ((isUser ? USER_ENTRY : CHAR_ENTRY) + next - 1) % LUDO_PATH_LEN;
+    const opPos  = isUser ? LG.charPos : LG.userPos;
+    if (opPos >= 1 && opPos <= 48) {
+      const opAbs = ((!isUser ? USER_ENTRY : CHAR_ENTRY) + opPos - 1) % LUDO_PATH_LEN;
+      if (myAbs === opAbs && !LUDO_SAFE.has(myAbs)) {
+        if (isUser) { LG.charPos = 0; lgMsg('sys', `💥 你吃掉了${LG.charName}的棋子！`); }
+        else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}吃掉了你的棋子！`); }
+        lgRender();
+        await new Promise(r => setTimeout(r, 300));
+        if (!isUser) lgCharComment('eaten_user');
+      }
+    }
+  }
+}
+
+function lgStatus(txt) { $('#rp-game-status-text').text(txt); }
+
+function lgMsg(type, text) {
+  const cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
+  const pre  = type === 'char' ? `${LG.charName}: ` : '';
+  $('#rp-game-chat').append(`<div class="game-msg ${cls}">${pre}${text}</div>`);
+  const el = document.getElementById('rp-game-chat');
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function lgWin(winner) {
+  LG.active = false;
+  const isUser = winner === 'user';
+  $('#game-win-emoji').text(isUser ? '🎉' : '😅');
+  $('#game-win-title').text(isUser ? '你赢了！' : `${LG.charName} 赢了！`);
+  $('#game-win-sub').text(isUser
+    ? `你率先抵达终点！${LG.charName}甘拜下风～`
+    : `${LG.charName}率先抵达终点！再来一局？`);
+  $('#rp-game-win').show();
+  lgCharComment(isUser ? 'user_win' : 'char_win');
+}
+
+// ── AI commentary (calls ST generate pipeline silently) ──────────
+const LG_FALLBACK = {
+  game_start : ['让我们开始吧！','准备好输给我了吗？','公平竞争哦~','嘻嘻，我先出手？'],
+  eaten_user : ['哼，被你吃掉了...','下次我要报仇！','好过分，重来！'],
+  user_win   : ['恭喜你赢了…下次我不会手软的','你运气好','哎呀输了，不认输！'],
+  char_win   : ['嘻嘻我赢了～','看到没，就是这么强','你还需要练习哦'],
+  dice_1     : ['才1步，加油！','哈，1点~','慢慢来吧'],
+  dice_2     : ['2步，稳稳的','小步前进~','2点，不错'],
+  dice_3     : ['3步，继续！','走3格~','加油加油'],
+  dice_4     : ['4步，有点猛','4格！','哦哦，4点'],
+  dice_5     : ['5步！势头不错','哇5点！','厉害，5格'],
+  dice_6     : ['哇！6！出发咯！','6最大！走起！','6点，棒棒！'],
+};
+
+async function lgCharComment(event) {
+  if (!LG.active && !event.endsWith('_win')) return;
+  await new Promise(r => setTimeout(r, 200));
+
+  // Try to use ST's generateRaw if available
+  const ctx   = getContext();
+  const uPos  = LG.userPos;
+  const cPos  = LG.charPos;
+  const n     = LG.lastDice;
+  const cName = LG.charName;
+
+  let evtDesc = '';
+  if      (event === 'game_start')  evtDesc = '游戏刚开始';
+  else if (event === 'eaten_user')  evtDesc = '我的棋子被对方吃掉了';
+  else if (event === 'user_win')    evtDesc = '对方赢得了游戏';
+  else if (event === 'char_win')    evtDesc = '我赢得了游戏';
+  else if (event.startsWith('dice_')) evtDesc = `刚掷出了${event.split('_')[1]}点`;
+
+  // Build a minimal prompt
+  const prompt = `[飞行棋游戏评论：你是角色${cName}，正在和用户玩飞行棋。你的棋子位置${cPos}/53，用户棋子位置${uPos}/53。${evtDesc}。请用1-2句话对这个游戏状况做出简短、符合你角色个性的评论，不超过25字，不要OOC，只输出对话内容。]`;
+
+  try {
+    // ST v1.20+ exports generateRaw
+    const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
+    if (typeof generateRaw === 'function') {
+      const resp = await generateRaw({ prompt, max_new_tokens: 60, quiet: true });
+      if (resp && resp.trim()) { lgMsg('char', resp.trim()); return; }
+    }
+  } catch(e) { /* fallback below */ }
+
+  // Fallback: hardcoded pool
+  const dKey = `dice_${n}`;
+  const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！','加油！'];
+  lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
+}
+
+async function lgGameChat(text) {
+  if (!text.trim()) return;
+  lgMsg('user', text);
+
+  // quick in-character reply via OOC injection (doesn't advance story)
+  const ctx    = getContext();
+  const cName  = LG.charName;
+  const prompt = `[飞行棋游戏聊天：用户对${cName}说了："${text}"。请以${cName}的角色用1句话简短回应（不超过20字，不OOC，只输出对话内容）。]`;
+
+  try {
+    const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
+    if (typeof generateRaw === 'function') {
+      const resp = await generateRaw({ prompt, max_new_tokens: 50, quiet: true });
+      if (resp && resp.trim()) { lgMsg('char', resp.trim()); return; }
+    }
+  } catch(e) { /* fallback */ }
+
+  // Fallback replies
+  const fallbacks = ['嗯嗯~','专注游戏！','别分心，来追我','说什么，快走棋！','哈哈，继续玩！'];
+  setTimeout(() => lgMsg('char', fallbacks[Math.floor(Math.random()*fallbacks.length)]), 500+Math.random()*300);
 }
 
 // ================================================================
