@@ -551,7 +551,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-voice-txt{color:#c8cce8}
 .rp-voice-bbl.played~.rp-voice-txt{display:block}
 /* ── GROUP CHAT ── */
-.rp-bwrap.rp-in.rp-grp{gap:8px}
+.rp-bwrap.rp-in.rp-grp{flex-direction:row;align-items:flex-start;gap:8px}
+.rp-bwrap.rp-out.rp-grp{flex-direction:row-reverse;align-items:flex-start;gap:8px}
 .rp-grp-sender{font-size:11px;font-weight:700;color:rgba(0,0,0,.45);margin-bottom:3px}
 .rp-dark .rp-grp-sender{color:rgba(255,255,255,.4)}
 .rp-grp-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;margin-top:2px;overflow:hidden}
@@ -1795,10 +1796,23 @@ function renderBubbles(threadId) {
     }
     // ── 普通消息 ──
     const isUser = msg.from === 'user';
-    const wrap = $('<div>').addClass('rp-bwrap ' + (isUser ? 'rp-out' : 'rp-in'));
-    const bbl  = $('<div>').addClass('rp-bubble ' + (isUser ? 'rp-sent' : 'rp-recv')).text(msg.text);
-    const ts   = $('<div>').addClass('rp-bts').text(msg.time);
-    area.append(wrap.append(bbl, ts));
+    const isGrpThread = thread.type === 'group' || (threadId && threadId.startsWith('grp_'));
+    const wrap = $('<div>').addClass('rp-bwrap ' + (isUser ? 'rp-out' : 'rp-in') + (isGrpThread ? ' rp-grp' : ''));
+    if (isGrpThread && isUser) {
+      const uImg = STATE.avatars && STATE.avatars['user'];
+      const uAvHtml = uImg
+        ? `<div class="rp-grp-av rp-av-img"><img class="rp-av-photo" src="${uImg}" alt=""/></div>`
+        : `<div class="rp-grp-av" style="background:linear-gradient(145deg,#64748b,#475569)">我</div>`;
+      const inner = $('<div>');
+      inner.append($('<div>').addClass('rp-bubble rp-sent').text(msg.text));
+      inner.append($('<div>').addClass('rp-bts').text(msg.time));
+      wrap.append(inner, $(uAvHtml));
+    } else {
+      const bbl = $('<div>').addClass('rp-bubble ' + (isUser ? 'rp-sent' : 'rp-recv')).text(msg.text);
+      const ts  = $('<div>').addClass('rp-bts').text(msg.time);
+      wrap.append(bbl, ts);
+    }
+    area.append(wrap);
   });
 
   area.scrollTop(area[0].scrollHeight);
