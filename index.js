@@ -1214,9 +1214,17 @@ function bindUI() {
   $(document).on('click', '#rp-call-ans', () => resolveCall('answered'));
   $(document).on('click', '#rp-call-dec', () => resolveCall('declined'));
 
-  $('#rp-fab').on('click', () => {
+  $('#rp-fab').on('click', (e) => {
+    e.stopPropagation();
+    $('#rp-phone').show();
+  });
+
+  // Click outside phone → close
+  $(document).on('click', (e) => {
     const phone = $('#rp-phone');
-    phone.is(':visible') ? phone.hide() : phone.show();
+    if (phone.is(':visible') && !$(e.target).closest('#rp-phone, #rp-fab').length) {
+      phone.hide();
+    }
   });
 
   $('#rp-swipe-zone, #rp-lock-time, #rp-lock-date').on('click', () => go('home'));
