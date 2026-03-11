@@ -1872,8 +1872,8 @@ function sendSMS() {
     oocText,
   });
   if (hasExtPrompt) {
-    setExtensionPrompt('rp-phone-ooc', oocText, extension_prompt_types.IN_CHAT, 0, false, 0);
-    console.log('[Raymond Phone] setExtensionPrompt called with IN_CHAT, depth=0');
+    setExtensionPrompt('rp-phone-ooc', oocText, extension_prompt_types.BEFORE_PROMPT, 0, false, 0);
+    console.log('[Raymond Phone] setExtensionPrompt called with BEFORE_PROMPT, depth=0');
     ta.value = mainText ? `${mainText}\n${smsLine}` : smsLine;
   } else {
     // 降级：OOC 直接写入消息（旧版 ST 兼容）
