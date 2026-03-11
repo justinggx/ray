@@ -3009,11 +3009,15 @@ async function lgUserRoll() {
     lgStatus('掷出6！再来一次！');
     lgMsg('sys', '掷出6，再掷一次！');
     $('#rp-dice-btn').prop('disabled', false);
-    setTimeout(() => lgCharComment(`dice_6_user`), 500);
+    setTimeout(() => lgCharComment(`dice_6`), 500);
   } else {
     LG.turn = 'char';
     lgStatus(`${LG.charName} 的回合...`);
-    setTimeout(() => lgCharTurn(), 900 + Math.random()*400);
+    // ~50% chance: char reacts to user's dice roll before taking their turn
+    if (Math.random() < 0.5) {
+      setTimeout(() => lgCharComment(`dice_${n}`), 400);
+    }
+    setTimeout(() => lgCharTurn(), 1100 + Math.random()*500);
   }
 }
 
@@ -3131,6 +3135,21 @@ function cleanGameReply(raw) {
   return (lines[0] || '').replace(/[★▌▶◆]/g, '').trim().substring(0, 30);
 }
 
+// ── Extract compact persona snippet from current ST character ─────────────────
+function lgGetPersona() {
+  try {
+    const ctx  = getContext();
+    const char = ctx?.characters?.[ctx?.characterId];
+    if (!char) return '';
+    // personality is short; description is longer but richer
+    const personality = (char.personality || '').replace(/\s+/g, ' ').trim();
+    const description = (char.description || '').replace(/\s+/g, ' ').trim();
+    // prefer personality; fall back to first 200 chars of description
+    const src = personality || description.substring(0, 200);
+    return src ? `【角色人设】${src}。` : '';
+  } catch(e) { return ''; }
+}
+
 const LG_FALLBACK = {
   game_start : ['让我们开始吧！','准备好输给我了吗？','公平竞争哦~','嘻嘻，我先出手？'],
   eaten_user : ['哼，被你吃掉了...','下次我要报仇！','好过分，重来！'],
@@ -3157,13 +3176,18 @@ async function lgCharComment(event) {
 
   let evtDesc = '';
   if      (event === 'game_start')  evtDesc = '游戏刚开始';
-  else if (event === 'eaten_user')  evtDesc = '我的棋子被对方吃掉了';
-  else if (event === 'user_win')    evtDesc = '对方赢得了游戏';
+  else if (event === 'eaten_user')  evtDesc = '我的棋子刚被对方吃掉了';
+  else if (event === 'user_win')    evtDesc = '对方赢得了游戏，我输了';
   else if (event === 'char_win')    evtDesc = '我赢得了游戏';
-  else if (event.startsWith('dice_')) evtDesc = `刚掷出了${event.split('_')[1]}点`;
+  else if (event.startsWith('dice_')) {
+    const pts = event.split('_')[1];
+    const lead = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
+    evtDesc = `用户刚掷出了${pts}点${lead}`;
+  }
 
-  // Build a minimal prompt
-  const prompt = `[飞行棋游戏评论：你是角色${cName}，正在和用户玩飞行棋。${evtDesc}。请只输出一句口语化短句（不超过15字），像发短信一样自然，不要任何结构化内容，不要OOC，只输出这一句话。]`;
+  // Build a minimal prompt — include persona so char stays in character
+  const persona = lgGetPersona();
+  const prompt = `[飞行棋游戏：${persona}你现在扮演${cName}，正在和用户玩飞行棋。${evtDesc}。请完全代入你的角色性格，只用一句口语化短话（不超过15字），像真人发短信，不要任何格式或结构化内容，只输出这一句话。]`;
 
   try {
     // ST v1.20+ exports generateRaw
@@ -3187,7 +3211,8 @@ async function lgGameChat(text) {
   // quick in-character reply via OOC injection (doesn't advance story)
   const ctx    = getContext();
   const cName  = LG.charName;
-  const prompt = `[飞行棋游戏聊天：用户对${cName}说："${text}"。请以${cName}的角色只回一句口语化短话（不超过15字），像发短信一样，不要任何格式或结构，只输出这一句话。]`;
+  const persona = lgGetPersona();
+  const prompt = `[飞行棋游戏聊天：${persona}你现在扮演${cName}，用户对你说："${text}"。请完全代入你的角色性格，只回一句口语化短话（不超过15字），像真人发短信，不要任何格式或结构，只输出这一句话。]`;
 
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
