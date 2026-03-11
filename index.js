@@ -945,8 +945,8 @@ const HTML = `
           <div id="rp-bubbles"></div>
           <!-- FIX3: 待发消息队列预览区 -->
           <div id="rp-pending-queue" style="display:none"></div>
-          <div id="rp-attach-panel"></div>
           <div id="rp-composer">
+            <div id="rp-attach-panel"></div>
             <button id="rp-attach-btn" type="button">＋</button>
             <input id="rp-input" type="text" placeholder="iMessage（回车暂存）" autocomplete="off"/>
             <button id="rp-send" type="button">↑</button>
