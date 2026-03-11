@@ -3002,7 +3002,7 @@ async function lgUserRoll() {
 
   await lgMove('user', n);
 
-  if (LG.userPos >= 54) { lgWin('user'); LG.rolling = false; return; }
+  if (LG.userPos >= 53) { lgWin('user'); LG.rolling = false; return; }
 
   LG.rolling = false;
   if (n === 6) {
@@ -3028,7 +3028,7 @@ async function lgCharTurn() {
 
   await lgMove('char', n);
 
-  if (LG.charPos >= 54) { lgWin('char'); return; }
+  if (LG.charPos >= 53) { lgWin('char'); return; }
 
   setTimeout(() => lgCharComment(`dice_${n}_char`), 400);
 
