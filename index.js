@@ -3126,13 +3126,17 @@ function cleanGameReply(raw) {
   let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   // 2. Remove <PHONE>...</PHONE> terminal blocks entirely
   text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, '').trim();
-  // 3. Split into lines, pick first "clean" conversational line
-  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆\[<]|---)/i;
+  // 3. Strip markdown formatting (##, **, *, __)
+  text = text.replace(/^#{1,6}\s*/gm, '').replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1').trim();
+  // 4. Remove standalone 【tag】 tokens (metadata labels like 【承诺】【评论】)
+  text = text.replace(/^【[^】]{1,10}】\s*/gm, '').trim();
+  // 5. Split into lines, pick first "clean" conversational line
+  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆#\[<【]|---)/i;
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
   const clean = lines.find(l => l.length > 0 && !noiseRe.test(l) && l.length <= 50);
   if (clean) return clean;
-  // 4. Last resort: first line, truncated
-  return (lines[0] || '').replace(/[★▌▶◆]/g, '').trim().substring(0, 30);
+  // 6. Last resort: first line, strip symbols, truncate
+  return (lines[0] || '').replace(/^[★▌▶◆#【\[]+\s*/, '').trim().substring(0, 30);
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
