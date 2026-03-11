@@ -690,7 +690,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
 /* FIX #4: wallpaper layer */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
-.rp-view{position:relative;z-index:1}
+.rp-view{z-index:1}
 
 /* ── LUDO GAME ── */
 #rp-view-game{background:#fef0f5;display:flex;flex-direction:column}
@@ -950,19 +950,6 @@ const HTML = `
             <button id="rp-attach-btn" type="button">＋</button>
             <input id="rp-input" type="text" placeholder="iMessage（回车暂存）" autocomplete="off"/>
             <button id="rp-send" type="button">↑</button>
-          </div>
-        </div>
-
-        <!-- 发朋友圈 -->
-        <div id="rp-compose-modal" class="rp-view" style="display:none">
-          <div class="rp-nav-bar">
-            <button class="rp-compose-cancel" id="rp-compose-cancel">取消</button>
-            <span class="rp-nav-title">发朋友圈</span>
-            <button class="rp-compose-post-btn" id="rp-compose-post">发布</button>
-          </div>
-          <div class="rp-compose-body">
-            <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
-
           </div>
         </div>
 
