@@ -3146,21 +3146,28 @@ function lgWin(winner) {
 function cleanGameReply(raw) {
   // 1. Remove <think>...</think> reasoning chains
   let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-  // 2. Remove <PHONE>...</PHONE> terminal blocks entirely
+  // 2. Remove <PHONE>...</PHONE> terminal blocks
   text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, '').trim();
-  // 3. Remove ALL XML/HTML-like tags (e.g. <创作规则>)
-  text = text.replace(/<[^>]{1,40}>/g, '').trim();
-  // 4. Strip markdown heading markers; bold/italic markers
+  // 3. Remove XML/HTML-like tags (e.g. <创作规则>, <POWER:...>)
+  text = text.replace(/<[^>]{1,60}>/g, '').trim();
+  // 4. Strip markdown headings and bold/italic markers
   text = text.replace(/^#{1,6}\s*/gm, '').replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1').trim();
-  // 5. Remove standalone 【tag】 tokens at line start
+  // 5. Remove 【tag】 tokens and [ALL_CAPS_TAG] patterns at line start
   text = text.replace(/^【[^】]{1,15}】[：:＊]?\s*/gm, '').trim();
-  // 6. Split into lines, skip meta/noise lines
-  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆#\[<【]|---|我已读取|我已深|我已理解|本轮我将|创作规则|以下是|如下[是：]|根据规则|落实[：:])/i;
+  text = text.replace(/^\[[A-Z][A-Z\s:_\-]{1,30}\]\s*/gm, '').trim();
+  // 6. Split lines, skip noise/meta/structured lines
+  const noiseRe = /^(\d+[.)、]\s*[\[（【]|摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|POWER|DETOX|RULE|[★▌▶◆#\[<【]|---|我已|我必须|本轮我将|创作规则|遵循|以下是|如下[是：]|根据规则|落实[：:])/i;
+  // also skip lines that end with ： or : (they are headers, not dialogue)
+  const isHeader = l => /[：:]\s*$/.test(l);
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-  const clean = lines.find(l => l.length > 0 && !noiseRe.test(l) && l.length <= 50);
-  if (clean) return clean.replace(/^[""\u201c\u201d\']+|[""\u201c\u201d\']+$/g, '').trim();
-  // 7. Last resort: first line, strip leading symbols, truncate
-  return (lines[0] || '').replace(/^[★▌▶◆#【\["\u201c\']+\s*/, '').trim().substring(0, 30);
+  // clean line: short (≤30 chars), not noise, not a header
+  const clean = lines.find(l => l.length > 0 && l.length <= 30 && !noiseRe.test(l) && !isHeader(l));
+  if (clean) return clean.replace(/^["""']+|["""']+$/g, '').trim();
+  // fallback: try up to 45 chars
+  const clean2 = lines.find(l => l.length > 0 && l.length <= 45 && !noiseRe.test(l) && !isHeader(l));
+  if (clean2) return clean2.replace(/^["""']+|["""']+$/g, '').trim().substring(0, 30);
+  // last resort: first line, strip leading noise symbols, truncate
+  return (lines[0] || '').replace(/^[\d.、）)★▌▶◆#【\["']+\s*/, '').trim().substring(0, 25);
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
