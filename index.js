@@ -2635,15 +2635,26 @@ function beautifySMSInChat() {
 //  WALLPAPER
 // ================================================================
 function applyWallpaper() {
+  const wp   = STATE.wallpaper;
+  const prev = document.getElementById('rp-wall-preview');
+  // Apply wallpaper directly onto the view bg layers (home + lock)
+  // #rp-wallpaper-layer is behind z-index:1 views and never visible — bypass it
+  document.querySelectorAll('.rp-home-bg, .rp-lock-bg').forEach(el => {
+    if (wp) {
+      // wallpaper image + semi-transparent white overlay for readability
+      el.style.backgroundImage = `linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.18)), url(${wp})`;
+      el.style.backgroundSize   = 'auto, cover';
+      el.style.backgroundPosition = 'auto, center';
+    } else {
+      el.style.backgroundImage  = '';
+      el.style.backgroundSize   = '';
+      el.style.backgroundPosition = '';
+    }
+  });
+  // Keep the separate layer in sync (used by settings preview)
   const layer = document.getElementById('rp-wallpaper-layer');
-  const prev  = document.getElementById('rp-wall-preview');
-  if (STATE.wallpaper) {
-    if (layer) layer.style.backgroundImage = `url(${STATE.wallpaper})`;
-    if (prev) { prev.src = STATE.wallpaper; prev.style.display = 'block'; }
-  } else {
-    if (layer) layer.style.backgroundImage = '';
-    if (prev) { prev.src = ''; prev.style.display = 'none'; }
-  }
+  if (layer) layer.style.backgroundImage = wp ? `url(${wp})` : '';
+  if (prev) { prev.src = wp || ''; prev.style.display = wp ? 'block' : 'none'; }
 }
 
 // ================================================================
