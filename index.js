@@ -1864,11 +1864,20 @@ function sendSMS() {
 
   // FIX1: 用 setExtensionPrompt 注入隐藏 OOC，不在聊天框显示
   const hasExtPrompt = typeof setExtensionPrompt === 'function' && extension_prompt_types;
+  console.log('[Raymond Phone] sendSMS triggered', {
+    threadId: STATE.currentThread,
+    threadType: th.type,
+    isGroupThread,
+    hasExtPrompt,
+    oocText,
+  });
   if (hasExtPrompt) {
     setExtensionPrompt('rp-phone-ooc', oocText, extension_prompt_types.IN_CHAT, 0, false, 0);
+    console.log('[Raymond Phone] setExtensionPrompt called with IN_CHAT, depth=0');
     ta.value = mainText ? `${mainText}\n${smsLine}` : smsLine;
   } else {
     // 降级：OOC 直接写入消息（旧版 ST 兼容）
+    console.warn('[Raymond Phone] setExtensionPrompt not available, falling back to inline OOC');
     ta.value = mainText ? `${mainText}\n${smsLine}\n${oocText}` : `${smsLine}\n${oocText}`;
   }
 
@@ -3276,3 +3285,4 @@ async function lgGameChat(text) {
 //  ENTRY
 // ================================================================
 jQuery(async () => { await init(); });
+
