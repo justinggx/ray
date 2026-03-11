@@ -553,7 +553,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── GROUP CHAT ── */
 .rp-bwrap.rp-in.rp-grp{flex-direction:row;align-items:flex-start;gap:8px}
 .rp-bwrap.rp-out.rp-grp{flex-direction:row-reverse;align-items:flex-start;gap:8px}
-.rp-bwrap.rp-grp>div{flex:1;min-width:0}
+.rp-bwrap.rp-grp>div:not(.rp-grp-av){flex:1;min-width:0}
 .rp-bwrap.rp-grp .rp-bubble{max-width:100%}
 .rp-grp-sender{font-size:11px;font-weight:700;color:rgba(0,0,0,.45);margin-bottom:3px}
 .rp-dark .rp-grp-sender{color:rgba(255,255,255,.4)}
@@ -2469,11 +2469,13 @@ function sendUserHongbao() {
 }
 
 function triggerImagePick() {
+  console.log('[Raymond Phone] triggerImagePick called');
   $('#rp-attach-panel').hide();
   const fi = $('<input type="file" accept="image/*" style="display:none">');
   $('body').append(fi);
   fi.on('change', function() {
     const file = this.files[0];
+    console.log('[Raymond Phone] File selected:', file?.name, file?.type);
     if (!file) { fi.remove(); return; }
     const reader = new FileReader();
     reader.onload = (e) => {
