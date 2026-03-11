@@ -3116,6 +3116,21 @@ function lgWin(winner) {
 }
 
 // ── AI commentary (calls ST generate pipeline silently) ──────────
+// ── Strip AI noise, keep only first clean dialogue line ──────────────────────
+function cleanGameReply(raw) {
+  // 1. Remove <think>...</think> reasoning chains
+  let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  // 2. Remove <PHONE>...</PHONE> terminal blocks entirely
+  text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, '').trim();
+  // 3. Split into lines, pick first "clean" conversational line
+  const noiseRe = /^(摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|[★▌▶◆\[<]|---)/i;
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const clean = lines.find(l => l.length > 0 && !noiseRe.test(l) && l.length <= 50);
+  if (clean) return clean;
+  // 4. Last resort: first line, truncated
+  return (lines[0] || '').replace(/[★▌▶◆]/g, '').trim().substring(0, 30);
+}
+
 const LG_FALLBACK = {
   game_start : ['让我们开始吧！','准备好输给我了吗？','公平竞争哦~','嘻嘻，我先出手？'],
   eaten_user : ['哼，被你吃掉了...','下次我要报仇！','好过分，重来！'],
@@ -3148,14 +3163,14 @@ async function lgCharComment(event) {
   else if (event.startsWith('dice_')) evtDesc = `刚掷出了${event.split('_')[1]}点`;
 
   // Build a minimal prompt
-  const prompt = `[飞行棋游戏评论：你是角色${cName}，正在和用户玩飞行棋。你的棋子位置${cPos}/53，用户棋子位置${uPos}/53。${evtDesc}。请用1-2句话对这个游戏状况做出简短、符合你角色个性的评论，不超过25字，不要OOC，只输出对话内容。]`;
+  const prompt = `[飞行棋游戏评论：你是角色${cName}，正在和用户玩飞行棋。${evtDesc}。请只输出一句口语化短句（不超过15字），像发短信一样自然，不要任何结构化内容，不要OOC，只输出这一句话。]`;
 
   try {
     // ST v1.20+ exports generateRaw
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 60, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', resp.trim()); return; }
+      const resp = await generateRaw({ prompt, max_new_tokens: 40, quiet: true });
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback below */ }
 
@@ -3172,13 +3187,13 @@ async function lgGameChat(text) {
   // quick in-character reply via OOC injection (doesn't advance story)
   const ctx    = getContext();
   const cName  = LG.charName;
-  const prompt = `[飞行棋游戏聊天：用户对${cName}说了："${text}"。请以${cName}的角色用1句话简短回应（不超过20字，不OOC，只输出对话内容）。]`;
+  const prompt = `[飞行棋游戏聊天：用户对${cName}说："${text}"。请以${cName}的角色只回一句口语化短话（不超过15字），像发短信一样，不要任何格式或结构，只输出这一句话。]`;
 
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 50, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', resp.trim()); return; }
+      const resp = await generateRaw({ prompt, max_new_tokens: 40, quiet: true });
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback */ }
 
