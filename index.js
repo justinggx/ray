@@ -3261,19 +3261,31 @@ function cleanGameReply(raw) {
   // 5. Remove 【tag】 tokens and [ALL_CAPS_TAG] patterns at line start
   text = text.replace(/^【[^】]{1,15}】[：:＊]?\s*/gm, '').trim();
   text = text.replace(/^\[[A-Z][A-Z\s:_\-]{1,30}\]\s*/gm, '').trim();
-  // 6. Split lines, skip noise/meta/structured lines
+  // 6. Try to extract quoted dialogue first (prompt ends with open ", AI fills in)
+  // Match content between Chinese/English quotes, prefer shortest complete quote
+  const quoteMatch = text.match(/["""「]([^"""」
+]{1,35})["""」]/);
+  if (quoteMatch) {
+    const q = quoteMatch[1].trim();
+    if (q.length > 0 && q.length <= 35) return q;
+  }
+  // 7. Split lines, skip noise/meta/structured lines
   const noiseRe = /^(\d+[.)、]\s*[\[（【]|摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|POWER|DETOX|RULE|[★▌▶◆#\[<【]|---|我已|我必须|本轮我将|创作规则|遵循|以下是|如下[是：]|根据规则|落实[：:])/i;
-  // also skip lines that end with ： or : (they are headers, not dialogue)
   const isHeader = l => /[：:]\s*$/.test(l);
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-  // clean line: short (≤30 chars), not noise, not a header
-  const clean = lines.find(l => l.length > 0 && l.length <= 30 && !noiseRe.test(l) && !isHeader(l));
-  if (clean) return clean.replace(/^["""']+|["""']+$/g, '').trim();
-  // fallback: try up to 45 chars
-  const clean2 = lines.find(l => l.length > 0 && l.length <= 45 && !noiseRe.test(l) && !isHeader(l));
-  if (clean2) return clean2.replace(/^["""']+|["""']+$/g, '').trim().substring(0, 30);
+  // clean line: short (≤35 chars), not noise, not a header
+  const clean = lines.find(l => l.length > 0 && l.length <= 35 && !noiseRe.test(l) && !isHeader(l));
+  if (clean) return clean.replace(/^["""'「」]+|["""'「」]+$/g, '').trim();
+  // fallback: try up to 50 chars, truncate at sentence boundary
+  const clean2 = lines.find(l => l.length > 0 && l.length <= 50 && !noiseRe.test(l) && !isHeader(l));
+  if (clean2) {
+    const trimmed = clean2.replace(/^["""'「」]+|["""'「」]+$/g, '').trim();
+    // cut at first sentence-ending punctuation within 35 chars
+    const m = trimmed.match(/^.{1,35}[。！？…～]/);
+    return m ? m[0] : trimmed.substring(0, 35);
+  }
   // last resort: first line, strip leading noise symbols, truncate
-  return (lines[0] || '').replace(/^[\d.、）)★▌▶◆#【\["']+\s*/, '').trim().substring(0, 25);
+  return (lines[0] || '').replace(/^[\d.、）)★▌▶◆#【\["'「]+\s*/, '').trim().substring(0, 30);
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
@@ -3335,7 +3347,7 @@ async function lgCharComment(event) {
     // ST v1.20+ exports generateRaw
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 40, quiet: true });
+      const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback below */ }
@@ -3360,7 +3372,7 @@ async function lgGameChat(text) {
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 40, quiet: true });
+      const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback */ }
