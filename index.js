@@ -774,8 +774,12 @@ function injectStyles() {
   console.log('[Raymond Phone] CSS injected');
 }
 
-import { eventSource, event_types, setExtensionPrompt, extension_prompt_types } from '../../../../script.js';
-import { getContext } from '../../../extensions.js';
+// ST extensions use global variables, not ES6 modules
+const eventSource = window.eventSource || SillyTavern?.eventSource;
+const event_types = window.event_types || SillyTavern?.eventTypes;
+const setExtensionPrompt = window.setExtensionPrompt || SillyTavern?.setExtensionPrompt;
+const extension_prompt_types = window.extension_prompt_types || SillyTavern?.extensionPromptTypes;
+const getContext = window.getContext || SillyTavern?.getContext || (() => ({}));
 
 // ================================================================
 //  DEFAULT THREADS FACTORY
@@ -3298,8 +3302,7 @@ function cleanGameReply(raw) {
   text = text.replace(/^\[[A-Z][A-Z\s:_\-]{1,30}\]\s*/gm, '').trim();
   // 6. Try to extract quoted dialogue first (prompt ends with open ", AI fills in)
   // Match content between Chinese/English quotes, prefer shortest complete quote
-  const quoteMatch = text.match(/["""「]([^"""」
-]{1,35})["""」]/);
+  const quoteMatch = text.match(/["""「]([^"""」\n]{1,60})["""」]/);
   if (quoteMatch) {
     const q = quoteMatch[1].trim();
     if (q.length > 0 && q.length <= 60) return q;
