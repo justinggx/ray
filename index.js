@@ -1374,7 +1374,9 @@ function bindUI() {
     $('#rp-game-chat-fs').show();
     body.scrollTop = body.scrollHeight;
   });
-  $(document).on('click', '#rp-game-chat-fs-close', function() {
+  $(document).on('click', '#rp-game-chat-fs-close', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
     $('#rp-game-chat-fs').hide();
   });
   // ─────────────────────────────────────────────────────────────
@@ -3329,16 +3331,37 @@ function cleanGameReply(raw) {
 // ── Extract compact persona snippet from current ST character ─────────────────
 function lgGetPersona() {
   try {
-    const ctx  = getContext();
-    const char = ctx?.characters?.[ctx?.characterId];
-    if (!char) return '';
-    // personality is short; description is longer but richer
+    // Try multiple ways to get context
+    const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
+    
+    // Try to get character from multiple sources
+    let char = null;
+    if (ctx.characters && ctx.characterId !== undefined) {
+      char = ctx.characters[ctx.characterId];
+    }
+    // Fallback: try global this_chid
+    if (!char && typeof this_chid !== 'undefined' && window.characters) {
+      char = window.characters[this_chid];
+    }
+    
+    if (!char) {
+      console.warn('[Ludo] No character data found');
+      return '';
+    }
+    
     const personality = (char.personality || '').replace(/\s+/g, ' ').trim();
     const description = (char.description || '').replace(/\s+/g, ' ').trim();
-    // prefer personality; fall back to first 200 chars of description
     const src = personality || description.substring(0, 200);
-    return src ? `【角色人设】${src}。` : '';
-  } catch(e) { return ''; }
+    
+    if (src) {
+      console.log('[Ludo] Persona loaded:', src.substring(0, 50) + '...');
+      return `【角色人设】${src}。`;
+    }
+    return '';
+  } catch(e) {
+    console.error('[Ludo] lgGetPersona error:', e);
+    return '';
+  }
 }
 
 const LG_FALLBACK = {
