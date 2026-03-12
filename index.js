@@ -840,8 +840,15 @@ function findOrCreateThread(nameRaw) {
 function saveState() {
   if (!STATE.chatId) return;
   try {
+    // Deep-copy and strip base64 image src to avoid localStorage QuotaExceededError
+    const threads = JSON.parse(JSON.stringify(STATE.threads));
+    for (const th of Object.values(threads)) {
+      if (th.messages) th.messages = th.messages.map(m =>
+        (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
+      );
+    }
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify({
-      threads: STATE.threads,
+      threads,
       notifications: STATE.notifications,
       sync: STATE.sync,
       moments: STATE.moments,
@@ -2511,14 +2518,8 @@ function triggerImagePick() {
       } else {
         console.warn('[Raymond Phone] No ST image input found; selectors tried:', imgSelectors);
       }
-      // Always inject OOC so char knows to respond to the image
-      const ta = document.querySelector('#send_textarea');
-      if (ta) {
-        const action = `*{{user}}向${thread.name}发送了一张图片，请认真观看图片并以${thread.name}的视角做出符合人设的回应*`;
-        ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
-        ta.dispatchEvent(new Event('input', { bubbles: true }));
-        document.querySelector('#send_but')?.click();
-      }
+      // Attempt vision: describe image via generateRaw, then send with description
+      sendImageMessage(thread, src, file.type);
     };
     reader.readAsDataURL(file);
   });
@@ -2532,6 +2533,37 @@ function dataURLtoBlob(dataURL) {
   const arr = new Uint8Array(bytes.length);
   for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
   return new Blob([arr], { type: mime });
+}
+
+async function sendImageMessage(thread, src, mimeType) {
+  const ta = document.querySelector('#send_textarea');
+  if (!ta) return;
+
+  // Try to get a vision description via generateRaw with inline image
+  let imgDesc = null;
+  try {
+    const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
+    if (typeof generateRaw === 'function') {
+      const base64 = src.split(',')[1];
+      const resp = await generateRaw(
+        `请用一句话简洁描述这张图片的内容（中文，≤30字）：`,
+        null, false, false, null,
+        { image: src, quiet: true, max_new_tokens: 60 }
+      );
+      if (resp && resp.trim() && resp.trim().length < 100) {
+        imgDesc = resp.trim();
+        console.log('[Raymond Phone] Image described:', imgDesc);
+      }
+    }
+  } catch(e) {
+    console.warn('[Raymond Phone] generateRaw vision failed:', e);
+  }
+
+  const descPart = imgDesc ? `图片内容：${imgDesc}。` : '';
+  const action = `*{{user}}向${thread.name}发送了一张图片。${descPart}请以${thread.name}的视角，根据图片内容做出符合人设的回应*`;
+  ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+  document.querySelector('#send_but')?.click();
 }
 
 function showLocationInput() {
