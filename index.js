@@ -1373,12 +1373,16 @@ function bindUI() {
     body.innerHTML = document.getElementById('rp-game-chat').innerHTML;
     $('#rp-game-chat-fs').show();
     body.scrollTop = body.scrollHeight;
+    
+    // Bind close button directly (not via delegation)
+    $('#rp-game-chat-fs-close').off('click').on('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      $('#rp-game-chat-fs').hide();
+      console.log('[Ludo] Fullscreen closed');
+    });
   });
-  $(document).on('click', '#rp-game-chat-fs-close', function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    $('#rp-game-chat-fs').hide();
-  });
+
   // ─────────────────────────────────────────────────────────────
 
 
@@ -3411,11 +3415,18 @@ async function lgCharComment(event) {
   try {
     // Use global generateRaw (already available from ST)
     const generateRaw = window.generateRaw || SillyTavern?.generateRaw;
+    console.log('[Ludo] generateRaw type:', typeof generateRaw);
     if (typeof generateRaw === 'function') {
+      console.log('[Ludo] Calling generateRaw with prompt:', prompt.substring(0, 100) + '...');
       const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
+      console.log('[Ludo] generateRaw response:', resp ? resp.substring(0, 50) + '...' : 'null');
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+    } else {
+      console.warn('[Ludo] generateRaw not available, using fallback');
     }
-  } catch(e) { /* fallback below */ }
+  } catch(e) { 
+    console.error('[Ludo] generateRaw error:', e);
+  }
 
   // Fallback: hardcoded pool
   const dKey = `dice_${n}`;
