@@ -730,7 +730,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-game-chat-fs-header{border-bottom-color:rgba(255,255,255,.07)}
 #rp-game-chat-fs-title{font-size:14px;font-weight:600;color:#1a1a2e}
 .rp-dark #rp-game-chat-fs-title{color:#dde0f2}
-#rp-game-chat-fs-close{width:30px;height:30px;border-radius:15px;background:rgba(0,0,0,.06);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a2e}
+#rp-game-chat-fs-close{width:30px;height:30px;border-radius:15px;background:rgba(0,0,0,.06);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a2e;position:relative;z-index:10;pointer-events:auto}
 .rp-dark #rp-game-chat-fs-close{background:rgba(255,255,255,.1);color:#dde0f2}
 #rp-game-chat-fs-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
 #rp-game-chat-fs-body .game-msg{font-size:13px;line-height:1.6;padding:3px 0}
@@ -3373,7 +3373,11 @@ async function lgCharComment(event) {
   else if (event.startsWith('dice_')) {
     const pts = event.split('_')[1];
     const lead = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
-    evtDesc = `用户刚掷出了${pts}点${lead}`;
+    // Check whose turn it was
+    const isCharTurn = event.startsWith('char_dice_');
+    evtDesc = isCharTurn 
+      ? `我刚掷出了${pts}点${lead}` 
+      : `用户刚掷出了${pts}点${lead}`;
   }
 
   // Build a minimal prompt — include persona so char stays in character
@@ -3382,8 +3386,8 @@ async function lgCharComment(event) {
   const prompt = `${persona}\n[游戏场景：${cName}正在和用户玩飞行棋，${evtDesc}]\n${cName}此刻脱口而出："`;
 
   try {
-    // ST v1.20+ exports generateRaw
-    const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
+    // Use global generateRaw (already available from ST)
+    const generateRaw = window.generateRaw || SillyTavern?.generateRaw;
     if (typeof generateRaw === 'function') {
       const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
