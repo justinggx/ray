@@ -2477,6 +2477,9 @@ function sendUserHongbao() {
 
 function triggerImagePick() {
   console.log('[Raymond Phone] triggerImagePick called');
+  // Debug: log all file inputs on page to find ST's attach input
+  const allInputs = Array.from(document.querySelectorAll('input[type=file]'));
+  console.log('[Raymond Phone] All file inputs:', allInputs.map(el => ({id:el.id, name:el.name, accept:el.accept, class:el.className.slice(0,40)})));
   $('#rp-attach-panel').hide();
   const fi = $('<input type="file" accept="image/*" style="display:none">');
   $('body').append(fi);
