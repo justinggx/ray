@@ -1,8 +1,7 @@
 {
   "display_name": "Ray Mobile Shell",
   "author": "You",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "loading_order": 5,
-  "js": "index.js?v=3",
-  "generate_interceptor": "rayMobileInterceptor"
+  "js": "index.js?v=4"
 }
