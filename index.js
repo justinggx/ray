@@ -2477,9 +2477,6 @@ function sendUserHongbao() {
 
 function triggerImagePick() {
   console.log('[Raymond Phone] triggerImagePick called');
-  // Debug: log all file inputs on page to find ST's attach input
-  const allInputs = Array.from(document.querySelectorAll('input[type=file]'));
-  console.log('[Raymond Phone] All file inputs:', allInputs.map(el => ({id:el.id, name:el.name, accept:el.accept, class:el.className.slice(0,40)})));
   $('#rp-attach-panel').hide();
   const fi = $('<input type="file" accept="image/*" style="display:none">');
   $('body').append(fi);
@@ -2498,29 +2495,20 @@ function triggerImagePick() {
       renderBubbles(thread.id);
       saveState();
       fi.remove();
-      // Try to pass actual image to ST for vision (try all known ST selectors)
-      const imgSelectors = [
-        '#img_upload', '#file_attachment_browse', '#file_form_input',
-        'input[type=file][accept*="image"]', '#mes_media_input',
-        'input[type=file][name*="file"]', 'input[type=file][name*="image"]',
-      ];
-      let stImgInput = null;
-      for (const sel of imgSelectors) {
-        const el = document.querySelector(sel);
-        if (el) { stImgInput = el; break; }
-      }
-      if (stImgInput) {
-        try {
+      // Attach image to ST's #img_file input (ST's built-in vision attachment)
+      try {
+        const stImgInput = document.getElementById('img_file');
+        if (stImgInput) {
           const blob = dataURLtoBlob(src);
           const dt = new DataTransfer();
           dt.items.add(new File([blob], 'photo.jpg', { type: file.type }));
           stImgInput.files = dt.files;
           stImgInput.dispatchEvent(new Event('change', { bubbles: true }));
-          console.log('[Raymond Phone] Image attached via', stImgInput.id || stImgInput.name);
-        } catch(err) { console.warn('[Raymond Phone] Vision passthrough failed:', err); }
-      } else {
-        console.warn('[Raymond Phone] No ST image input found; selectors tried:', imgSelectors);
-      }
+          console.log('[Raymond Phone] Image attached to ST #img_file ✓');
+        } else {
+          console.warn('[Raymond Phone] #img_file not found');
+        }
+      } catch(err) { console.warn('[Raymond Phone] Vision attach failed:', err); }
       // Attempt vision: describe image via generateRaw, then send with description
       sendImageMessage(thread, src, file.type);
     };
