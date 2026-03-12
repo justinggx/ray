@@ -2495,18 +2495,18 @@ function triggerImagePick() {
       renderBubbles(thread.id);
       saveState();
       fi.remove();
-      // Attach image to ST's #img_file input (ST's built-in vision attachment)
+      // Attach image to ST's #file_form_input (confirmed: used by 附加文件 button)
       try {
-        const stImgInput = document.getElementById('img_file');
+        const stImgInput = document.getElementById('file_form_input');
         if (stImgInput) {
           const blob = dataURLtoBlob(src);
           const dt = new DataTransfer();
           dt.items.add(new File([blob], 'photo.jpg', { type: file.type }));
           stImgInput.files = dt.files;
           stImgInput.dispatchEvent(new Event('change', { bubbles: true }));
-          console.log('[Raymond Phone] Image attached to ST #img_file ✓');
+          console.log('[Raymond Phone] Image attached to ST #file_form_input ✓');
         } else {
-          console.warn('[Raymond Phone] #img_file not found');
+          console.warn('[Raymond Phone] #file_form_input not found');
         }
       } catch(err) { console.warn('[Raymond Phone] Vision attach failed:', err); }
       // Delay send to let ST's async FileReader process the attachment before API call
