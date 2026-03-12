@@ -721,7 +721,20 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-game-status{font-size:11px;color:#888;margin-top:1px}
 .rp-dark .rp-game-status{color:#6a6a8a}
 #rp-dice-face{font-size:28px;min-width:34px;text-align:center;flex-shrink:0}
-#rp-game-chat{max-height:68px;overflow-y:auto;padding:4px 12px;display:flex;flex-direction:column;gap:1px;flex-shrink:0;border-top:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.9);scrollbar-width:none}
+#rp-game-chat{max-height:68px;overflow-y:auto;padding:6px 12px;display:flex;flex-direction:column;gap:1px;flex-shrink:0;border:1.5px solid #e0407a;border-radius:8px;margin:0 10px 4px;background:rgba(255,255,255,.9);scrollbar-width:none;cursor:pointer;transition:border-color .2s}
+#rp-game-chat:hover{border-color:#ff6b8a}
+.rp-dark #rp-game-chat{border-color:#e0407a;background:rgba(12,12,26,.9)}
+#rp-game-chat-fs{position:absolute;inset:0;z-index:200;background:#fff;display:flex;flex-direction:column}
+.rp-dark #rp-game-chat-fs{background:#0c0c1a}
+#rp-game-chat-fs-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0}
+.rp-dark #rp-game-chat-fs-header{border-bottom-color:rgba(255,255,255,.07)}
+#rp-game-chat-fs-title{font-size:14px;font-weight:600;color:#1a1a2e}
+.rp-dark #rp-game-chat-fs-title{color:#dde0f2}
+#rp-game-chat-fs-close{width:30px;height:30px;border-radius:15px;background:rgba(0,0,0,.06);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a2e}
+.rp-dark #rp-game-chat-fs-close{background:rgba(255,255,255,.1);color:#dde0f2}
+#rp-game-chat-fs-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+#rp-game-chat-fs-body .game-msg{font-size:13px;line-height:1.6;padding:3px 0}
+#rp-game-chat-fs-hint{font-size:10px;color:rgba(224,64,122,.7);text-align:center;padding:2px 0 1px;flex-shrink:0}
 #rp-game-chat::-webkit-scrollbar{display:none}
 .rp-dark #rp-game-chat{background:rgba(12,12,26,.9);border-top-color:rgba(255,255,255,.05)}
 .game-msg{font-size:11px;line-height:1.45;padding:1px 0}
@@ -1074,6 +1087,7 @@ const HTML = `
             <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
             <div id="rp-dice-face"></div>
           </div>
+          <div id="rp-game-chat-hint" style="font-size:9.5px;color:rgba(224,64,122,.65);text-align:right;padding:0 14px 1px;flex-shrink:0">点击展开 ↗</div>
           <div id="rp-game-chat"></div>
           <div id="rp-game-input-row">
             <input id="rp-game-input" type="text" placeholder="游戏中聊天..." autocomplete="off"/>
@@ -1086,6 +1100,14 @@ const HTML = `
               <div class="game-win-sub" id="game-win-sub">你率先抵达终点，赢得了这场飞行棋！</div>
               <button class="game-win-btn" id="game-restart-btn" type="button">再来一局</button>
             </div>
+          </div>
+          <!-- 全屏聊天记录 -->
+          <div id="rp-game-chat-fs" style="display:none">
+            <div id="rp-game-chat-fs-header">
+              <span id="rp-game-chat-fs-title">💬 游戏聊天记录</span>
+              <button id="rp-game-chat-fs-close" type="button">✕</button>
+            </div>
+            <div id="rp-game-chat-fs-body"></div>
           </div>
         </div>
 
@@ -1344,6 +1366,18 @@ function bindUI() {
 
   $(document).on('click', '#game-restart-btn', function() {
     lgInit();
+  });
+
+  // ── 全屏查看聊天记录 ─────────────────────────────────────────
+  $(document).on('click', '#rp-game-chat', function() {
+    const body = document.getElementById('rp-game-chat-fs-body');
+    if (!body) return;
+    body.innerHTML = document.getElementById('rp-game-chat').innerHTML;
+    $('#rp-game-chat-fs').show();
+    body.scrollTop = body.scrollHeight;
+  });
+  $(document).on('click', '#rp-game-chat-fs-close', function() {
+    $('#rp-game-chat-fs').hide();
   });
   // ─────────────────────────────────────────────────────────────
 
@@ -3230,9 +3264,16 @@ function lgStatus(txt) { $('#rp-game-status-text').text(txt); }
 function lgMsg(type, text) {
   const cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
   const pre  = type === 'char' ? `${LG.charName}: ` : '';
-  $('#rp-game-chat').append(`<div class="game-msg ${cls}">${pre}${text}</div>`);
+  const msgHtml = `<div class="game-msg ${cls}">${pre}${text}</div>`;
+  $('#rp-game-chat').append(msgHtml);
   const el = document.getElementById('rp-game-chat');
   if (el) el.scrollTop = el.scrollHeight;
+  // sync to fullscreen if open
+  const fs = document.getElementById('rp-game-chat-fs');
+  if (fs && fs.style.display !== 'none') {
+    const body = document.getElementById('rp-game-chat-fs-body');
+    if (body) { body.insertAdjacentHTML('beforeend', msgHtml); body.scrollTop = body.scrollHeight; }
+  }
 }
 
 function lgWin(winner) {
@@ -3267,25 +3308,25 @@ function cleanGameReply(raw) {
 ]{1,35})["""」]/);
   if (quoteMatch) {
     const q = quoteMatch[1].trim();
-    if (q.length > 0 && q.length <= 35) return q;
+    if (q.length > 0 && q.length <= 60) return q;
   }
   // 7. Split lines, skip noise/meta/structured lines
   const noiseRe = /^(\d+[.)、]\s*[\[（【]|摘要[：:]|未解决|故事走向|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|jianbao|STATUS|GUANXI|POWER|DETOX|RULE|[★▌▶◆#\[<【]|---|我已|我必须|本轮我将|创作规则|遵循|以下是|如下[是：]|根据规则|落实[：:])/i;
   const isHeader = l => /[：:]\s*$/.test(l);
   const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
   // clean line: short (≤35 chars), not noise, not a header
-  const clean = lines.find(l => l.length > 0 && l.length <= 35 && !noiseRe.test(l) && !isHeader(l));
+  const clean = lines.find(l => l.length > 0 && l.length <= 60 && !noiseRe.test(l) && !isHeader(l));
   if (clean) return clean.replace(/^["""'「」]+|["""'「」]+$/g, '').trim();
   // fallback: try up to 50 chars, truncate at sentence boundary
-  const clean2 = lines.find(l => l.length > 0 && l.length <= 50 && !noiseRe.test(l) && !isHeader(l));
+  const clean2 = lines.find(l => l.length > 0 && l.length <= 80 && !noiseRe.test(l) && !isHeader(l));
   if (clean2) {
     const trimmed = clean2.replace(/^["""'「」]+|["""'「」]+$/g, '').trim();
     // cut at first sentence-ending punctuation within 35 chars
     const m = trimmed.match(/^.{1,35}[。！？…～]/);
-    return m ? m[0] : trimmed.substring(0, 35);
+    return m ? m[0] : trimmed.substring(0, 60);
   }
   // last resort: first line, strip leading noise symbols, truncate
-  return (lines[0] || '').replace(/^[\d.、）)★▌▶◆#【\["'「]+\s*/, '').trim().substring(0, 30);
+  return (lines[0] || '').replace(/^[\d.、）)★▌▶◆#【\["'「]+\s*/, '').trim().substring(0, 50);
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
@@ -3347,7 +3388,7 @@ async function lgCharComment(event) {
     // ST v1.20+ exports generateRaw
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
+      const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback below */ }
@@ -3372,7 +3413,7 @@ async function lgGameChat(text) {
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
+      const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback */ }
