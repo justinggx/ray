@@ -2509,8 +2509,8 @@ function triggerImagePick() {
           console.warn('[Raymond Phone] #img_file not found');
         }
       } catch(err) { console.warn('[Raymond Phone] Vision attach failed:', err); }
-      // Attempt vision: describe image via generateRaw, then send with description
-      sendImageMessage(thread, src, file.type);
+      // Delay send to let ST's async FileReader process the attachment before API call
+      setTimeout(() => sendImageMessage(thread, src, file.type), 600);
     };
     reader.readAsDataURL(file);
   });
