@@ -2537,30 +2537,33 @@ function dataURLtoBlob(dataURL) {
 
 async function sendImageMessage(thread, src, mimeType) {
   const ta = document.querySelector('#send_textarea');
-  if (!ta) return;
+  if (!ta) { console.warn('[Raymond Phone] send_textarea not found'); return; }
 
-  // Try to get a vision description via generateRaw with inline image
+  // Try to get a vision description via generateRaw (with 5s timeout)
   let imgDesc = null;
   try {
     const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
     if (typeof generateRaw === 'function') {
-      const base64 = src.split(',')[1];
-      const resp = await generateRaw(
-        `请用一句话简洁描述这张图片的内容（中文，≤30字）：`,
-        null, false, false, null,
-        { image: src, quiet: true, max_new_tokens: 60 }
-      );
+      const resp = await Promise.race([
+        generateRaw(
+          `请用一句话简洁描述这张图片的内容（中文，≤30字）：`,
+          null, false, false, null,
+          { image: src, quiet: true, max_new_tokens: 60 }
+        ),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('vision timeout')), 5000))
+      ]);
       if (resp && resp.trim() && resp.trim().length < 100) {
         imgDesc = resp.trim();
         console.log('[Raymond Phone] Image described:', imgDesc);
       }
     }
   } catch(e) {
-    console.warn('[Raymond Phone] generateRaw vision failed:', e);
+    console.warn('[Raymond Phone] generateRaw vision skipped:', e.message);
   }
 
   const descPart = imgDesc ? `图片内容：${imgDesc}。` : '';
   const action = `*{{user}}向${thread.name}发送了一张图片。${descPart}请以${thread.name}的视角，根据图片内容做出符合人设的回应*`;
+  console.log('[Raymond Phone] Sending image OOC:', action.slice(0, 60));
   ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
   ta.dispatchEvent(new Event('input', { bubbles: true }));
   document.querySelector('#send_but')?.click();
