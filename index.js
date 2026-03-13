@@ -3446,7 +3446,7 @@ const LG_FALLBACK_POOLS = {
 };
 
 // Default to formal (most common for ST characters)
-let LG_FALLBACK = LG_FALLBACK_POOLS.formal;
+var LG_FALLBACK = LG_FALLBACK_POOLS.formal;
 
 // Function to select pool based on persona
 function lgSelectPool(personaText) {
