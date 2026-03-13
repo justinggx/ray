@@ -3089,7 +3089,7 @@ function lgInit() {
 
   lgRender();
   lgStatus('你先出手 — 按🎲掷骰子！');
-  lgMsg('sys', `游戏开始！掷出6才能出发，先到终点者胜。❤️=你  💙=${LG.charName}`);
+  lgMsg('sys', `游戏开始！掷骰子即可出发，先到终点者胜。❤️=你  💙=${LG.charName}`);
   setTimeout(() => lgCharComment('game_start'), 900);
 }
 
@@ -3316,13 +3316,7 @@ async function lgMove(player, steps) {
   const isUser = player === 'user';
   const cur    = isUser ? LG.userPos : LG.charPos;
 
-  // Must roll 6 to leave yard
-  if (cur === 0 && steps !== 6) {
-    lgMsg('sys', isUser ? '需要掷出6才能出发！' : `${LG.charName}需要6才能出发！`);
-    return;
-  }
-
-  let next = cur === 0 ? 1 : cur + steps;
+  let next = cur === 0 ? steps : cur + steps;
 
   // Home-run overflow: bounce back
   if (next > 53) next = 53 - (next - 53);
@@ -3585,28 +3579,38 @@ async function lgTriggerSquareEvent(player, pos) {
   }
 }
 
-async function lgCharComment(event) {
+function lgCharComment(event) {
   if (!LG.active && !event.endsWith('_win')) return;
 
-  const n     = LG.lastDice;
-  const cPos  = LG.charPos;
-  const uPos  = LG.userPos;
-
-  // Fix isCharTurn: event ends with _char for char's roll
-  if (event.startsWith('dice_')) {
-    const parts = event.split('_');
-    const pts   = parts[1];
-    const lead  = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
-    const isCharTurn = event.endsWith('_char');
-    // Update evtDesc for pool selection — not needed since we go straight to pool
-  }
-
-  // Use instant pool (no AI delay for auto game comments)
+  const n      = LG.lastDice;
+  const cPos   = LG.charPos;
+  const uPos   = LG.userPos;
+  const isCharTurn = event.endsWith('_char');
+  const lead   = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
+  const subject = isCharTurn
+    ? `我掷出了${n}点${lead}`
+    : `对方掷出了${n}点${lead}`;
   const persona = lgGetPersona();
-  lgSelectPool(persona);
-  const dKey = `dice_${n}`;
-  const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！', '加油！'];
-  lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
+  const prompt  = `${persona}
+[飞行棋游戏]当前状况：${subject}。
+${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气自然贴合角色）：`;
+
+  // 异步 AI 生成，不阻塞游戏流程
+  (async () => {
+    try {
+      let resp = null;
+      if (typeof generateRaw === 'function') {
+        resp = await generateRaw(prompt, '', false, false, undefined, 'quiet');
+      } else if (typeof window.generateQuietPrompt === 'function') {
+        resp = await window.generateQuietPrompt(prompt, false, false);
+      }
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+    } catch(e) { /* ignore */ }
+    // 兜底：pool 回复
+    const dKey = `dice_${n}`;
+    const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！', '加油！'];
+    lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
+  })();
 }
 
 async function lgGameChat(text) {
