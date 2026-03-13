@@ -1183,9 +1183,9 @@ async function init() {
   refreshWidget();
   refreshLockNotifs();
 
-  eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
+  if (eventSource && event_types) eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
   // FIX2: 监听聊天窗口切换
-  eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
+  if (eventSource && event_types) eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
 
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
@@ -3571,65 +3571,3 @@ jQuery(async () => { await init(); });
 
 
 
-// ================================================================
-//  ENTRY - 直接执行，不依赖 jQuery
-// ================================================================
-console.log('[Raymond Phone] Script loaded, starting...');
-
-// 直接初始化，不等待 jQuery
-(async function() {
-    console.log('[Raymond Phone] Starting initialization...');
-    
-    // 检查关键依赖
-    console.log('[Raymond Phone] jQuery available:', typeof jQuery !== 'undefined');
-    console.log('[Raymond Phone] $ available:', typeof $ !== 'undefined');
-    console.log('[Raymond Phone] SillyTavern available:', typeof SillyTavern !== 'undefined');
-    
-    try {
-        // 如果 jQuery 不存在，使用原生 DOM 方法
-        if (typeof jQuery === 'undefined' && typeof $ === 'undefined') {
-            console.warn('[Raymond Phone] jQuery not found, using native DOM');
-            // 等待 DOM 加载
-            if (document.readyState === 'loading') {
-                await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
-            }
-        } else {
-            // 使用 jQuery 等待 DOM
-            const $ = window.jQuery || window.$;
-            await new Promise(resolve => $(resolve));
-        }
-        
-        console.log('[Raymond Phone] DOM ready, calling init...');
-        await init();
-        console.log('[Raymond Phone] Initialization complete!');
-    } catch (error) {
-        console.error('[Raymond Phone] Initialization failed:', error);
-        // 尝试创建简单的 FAB 作为后备
-        createFallbackFAB();
-    }
-})();
-
-// 简单的后备 FAB
-function createFallbackFAB() {
-    console.log('[Raymond Phone] Creating fallback FAB...');
-    const fab = document.createElement('div');
-    fab.id = 'rp-fab';
-    fab.style.cssText = 'position:fixed; right:20px; bottom:20px; z-index:10001; width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.95); backdrop-filter:blur(12px); border:1px solid rgba(0,0,0,.08); display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; box-shadow:0 4px 24px rgba(0,0,0,.15); transition:transform .15s;';
-    fab.textContent = '📱';
-    fab.title = '打开手机';
-    fab.onclick = function() {
-        const phone = document.getElementById('rp-phone');
-        if (phone) {
-            phone.style.display = phone.style.display === 'none' ? 'block' : 'none';
-        } else {
-            console.warn('[Raymond Phone] #rp-phone not found, init may have failed');
-            // 尝试重新初始化
-            if (typeof init === 'function') {
-                console.log('[Raymond Phone] Retrying init...');
-                init().catch(e => console.error('[Raymond Phone] Retry failed:', e));
-            }
-        }
-    };
-    document.body.appendChild(fab);
-    console.log('[Raymond Phone] Fallback FAB created');
-}
