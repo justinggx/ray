@@ -3633,6 +3633,8 @@ async function lgTriggerSquareEvent(player, pos) {
     // ── Char 任务：AI 自动生成完成动作，user 点「已完成」确认 ──
     txt.textContent = `💙 ${LG.charName} 任务中…`;
     bar.style.display = 'flex';
+    const hintEl = document.getElementById('rp-sq-task-hint');
+    if (hintEl) hintEl.textContent = `请耐心等待${LG.charName}的回答`;
 
     // AI 生成 char 完成任务的话
     const persona   = lgGetPersona();
@@ -3655,6 +3657,8 @@ async function lgTriggerSquareEvent(player, pos) {
     // ── User 任务：显示小条，user 自行在聊天框完成后点「已完成」 ──
     txt.textContent = `💬 ${ev.text}`;
     bar.style.display = 'flex';
+    const hintEl2 = document.getElementById('rp-sq-task-hint');
+    if (hintEl2) hintEl2.textContent = '请在下方对话框内完成指定任务';
   }
 
   // 等待「已完成」点击
