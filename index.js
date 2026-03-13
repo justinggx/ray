@@ -3649,7 +3649,6 @@ async function lgTriggerSquareEvent(player, pos) {
     if (!replied) {
       lgMsg('char', ev.type === 'action' ? `*完成${ev.text}*` : `（关于${ev.text}……）`);
     }
-    }
 
     txt.textContent = `💙 ${LG.charName} 完成了吗？`;
   } else {
