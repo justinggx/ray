@@ -3658,13 +3658,11 @@ ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气�
   // 异步 AI 生成，不阻塞游戏流程
   (async () => {
     try {
-      let resp = null;
+      const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
       if (typeof generateRaw === 'function') {
-        resp = await generateRaw(prompt, '', false, false, undefined, 'quiet');
-      } else if (typeof window.generateQuietPrompt === 'function') {
-        resp = await window.generateQuietPrompt(prompt, false, false);
+        const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
+        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
       }
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     } catch(e) { /* ignore */ }
     // 兜底：pool 回复
     const dKey = `dice_${n}`;
