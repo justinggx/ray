@@ -3091,6 +3091,8 @@ function lgInit() {
   LG.userSkip   = false;
   LG.charSkip   = false;
   LG.pendingReroll = null;
+  LG.taskChatCount = 0;
+  LG.justDidTask   = false;
 
   const ctx = getContext();
   LG.charName = ctx?.name2 || ctx?.name || '对方';
@@ -3558,6 +3560,7 @@ async function lgTriggerSquareEvent(player, pos) {
   const noteEl = document.getElementById('rp-sq-event-note');
   noteEl.textContent = isUser ? (ev.note || '') : `${LG.charName}将完成此任务`;
   lgMsg('sys', `📍 第${pos}格 ${ev.emoji} — ${ev.text}`);
+  LG.taskChatCount = 2;
 
   // 步骤一：显示弹窗，等待点「确认」
   await new Promise(resolve => {
@@ -3600,7 +3603,7 @@ async function lgTriggerSquareEvent(player, pos) {
 
     // AI 生成 char 完成任务的话
     const persona   = lgGetPersona();
-    const actHint   = ev.type === 'action' ? '（需加入动作描写，用*动作*格式，如"*轻轻地……*"）' : '';
+  const actHint   = ev.type === 'action' ? '(需动作描写，用*动作*格式，不超过10字)' : '';
     const prompt    = `${persona}
 [飞行棋互动任务]
 任务：${ev.text}${actHint}
@@ -3681,7 +3684,7 @@ async function lgGameChat(text) {
   const cName  = LG.charName;
   const persona = lgGetPersona();
   // Completion-style prompt: AI fills dialogue directly after open quote
-  const prompt = `${persona}\n[游戏中聊天]用户对${cName}说："${text}"\n${cName}简短回应："`;
+  const prompt = `${persona}\n[游戏中聊天]用户对${cName}说："${text}"\n${cName}简短回应（动作描写≤ 10字）："`;
 
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
