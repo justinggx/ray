@@ -743,6 +743,20 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .game-msg-char{color:#7ab8ff}
 .game-msg-sys{color:#888;text-align:center;font-style:italic}
 .rp-dark .game-msg-sys{color:#666}
+/* ── Square Event Popup ── */
+#rp-sq-event{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;border-radius:48px;}
+#rp-sq-event-box{background:#fff;border-radius:20px;padding:20px 18px;max-width:220px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25);}
+#rp-sq-event-sq{font-size:10px;color:#aaa;margin-bottom:6px;letter-spacing:.5px;}
+#rp-sq-event-emoji{font-size:36px;margin-bottom:8px;line-height:1;}
+#rp-sq-event-text{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:8px;line-height:1.5;}
+#rp-sq-event-note{font-size:10px;color:#999;margin-bottom:14px;line-height:1.4;}
+#rp-sq-event-done{background:linear-gradient(135deg,#e0407a,#ff7aaa);color:#fff;border:none;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-weight:600;}
+#rp-sq-event-done:active{transform:scale(.96);}
+.rp-dark #rp-sq-event-box{background:#1a1a2e;color:#e0e2f0;}
+.rp-dark #rp-sq-event-text{color:#e0e2f0;}
+.rp-dark #rp-sq-event-sq{color:#666;}
+.rp-dark #rp-sq-event-note{color:#555;}
+
 #rp-game-input-row{display:flex;gap:6px;padding:6px 10px 22px;border-top:1px solid rgba(0,0,0,.06);background:#fff;flex-shrink:0;align-items:center}
 .rp-dark #rp-game-input-row{background:#0c0c1a;border-top-color:rgba(255,255,255,.06)}
 #rp-game-input{flex:1;min-width:0;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.12);border-radius:18px;padding:7px 12px;font-size:12px;font-family:inherit;color:#1a1a2e;outline:none}
@@ -962,6 +976,17 @@ const HTML = `
                 <div class="rp-app-lbl"></div>
               </div>
             </div>
+
+          <!-- 格子事件弹窗 -->
+          <div id="rp-sq-event" style="display:none">
+            <div id="rp-sq-event-box">
+              <div id="rp-sq-event-sq">第 X 格</div>
+              <div id="rp-sq-event-emoji">💬</div>
+              <div id="rp-sq-event-text">事件内容</div>
+              <div id="rp-sq-event-note">备注</div>
+              <button id="rp-sq-event-done" type="button">✅ 已完成</button>
+            </div>
+          </div>
 
             <div id="rp-widget">
               <div class="rp-wd-label">Augustine · 关系进度</div>
@@ -2987,6 +3012,43 @@ const CHAR_HOME_RUN = [[1,6],[2,6],[3,6],[4,6],[5,6]];    // down col6
 
 // Absolute path indices that are "safe" squares (can't eat)
 const LUDO_SAFE = new Set([0, 12, 24, 36]);
+// ── Square events (格子事件) ───────────────────────────────────────
+const SQUARE_EVENTS = {
+  2:  { emoji:'💬', text:'说一句情话', note:'请在下方对话框分享', type:'talk' },
+  3:  { emoji:'💭', text:'回忆第一次心动', note:'请在下方对话框分享', type:'talk' },
+  5:  { emoji:'🤗', text:'给对方一个拥抱', note:'请在对话框互动（需有动作描写）', type:'action' },
+  6:  { emoji:'🤫', text:'分享一个秘密', note:'请在下方对话框分享', type:'talk' },
+  8:  { emoji:'✨', text:'赞美对方一句话', note:'请在下方对话框说', type:'talk' },
+  10: { emoji:'📖', text:'说一件难忘往事', note:'请在下方对话框分享', type:'talk' },
+  11: { emoji:'⬅️', text:'后退三格', note:'', type:'move', delta:-3 },
+  13: { emoji:'😘', text:'轻轻吻对方脸颊', note:'请在对话框互动（需有动作描写）', type:'action' },
+  15: { emoji:'💗', text:'说一句有关对方的真心话', note:'请在下方对话框说', type:'talk' },
+  16: { emoji:'🍜', text:'喜欢吃什么？', note:'请在下方对话框回答', type:'talk' },
+  18: { emoji:'❤️', text:'喜欢对方哪一点？', note:'请在下方对话框回答', type:'talk' },
+  19: { emoji:'🥹', text:'分享一个感动瞬间', note:'请在下方对话框分享', type:'talk' },
+  21: { emoji:'🥰', text:'叫对方最可爱的昵称', note:'请在下方对话框说', type:'talk' },
+  23: { emoji:'🎁', text:'如果可以无条件提一个要求，会提什么？', note:'请在下方对话框回答', type:'talk' },
+  24: { emoji:'💆', text:'给对方按摩肩膀1分钟', note:'请在对话框互动（需有动作描写）', type:'action' },
+  26: { emoji:'🙈', text:'分享一个不为人知的小习惯', note:'请在下方对话框分享', type:'talk' },
+  27: { emoji:'🌈', text:'对彼此未来的幻想是什么样的？', note:'请在下方对话框分享', type:'talk' },
+  29: { emoji:'⏩', text:'前进六格', note:'', type:'move', delta:6 },
+  31: { emoji:'🤝', text:'十指相扣30秒', note:'请在对话框互动（需有动作描写）', type:'action' },
+  32: { emoji:'🎀', text:'最想收到什么礼物？', note:'请在下方对话框回答', type:'talk' },
+  34: { emoji:'😊', text:'跟对方一起发生过的最开心的事是什么？', note:'请在下方对话框分享', type:'talk' },
+  36: { emoji:'🎵', text:'给对方唱一小段情歌', note:'请在对话框互动（需有动作描写）', type:'action' },
+  37: { emoji:'💫', text:'对方的存在让自己变成了更好的人了吗？', note:'请在下方对话框回答', type:'talk' },
+  39: { emoji:'🫂', text:'亲密动作：轻轻拥抱并从背后环住', note:'请在对话框互动（需有动作描写）', type:'action' },
+  40: { emoji:'👀', text:'对方什么时候看起来最好看？', note:'请在下方对话框回答', type:'talk' },
+  42: { emoji:'⏸️', text:'停留此格，跳过下一轮', note:'', type:'skip' },
+  44: { emoji:'🌟', text:'对对方连说三句夸奖的话', note:'请在下方对话框说', type:'talk' },
+  45: { emoji:'⏩', text:'前进三格', note:'', type:'move', delta:3 },
+  47: { emoji:'🏷️', text:'你最想给对方起的绰号是什么？', note:'请在下方对话框分享', type:'talk' },
+  49: { emoji:'🎲', text:'幸运格！再掷一次骰子', note:'', type:'reroll' },
+  50: { emoji:'🤏', text:'轻轻捏对方脸蛋保持三秒', note:'请在对话框互动（需有动作描写）', type:'action' },
+  52: { emoji:'🧧', text:'给对方发个红包', note:'请在对话框互动', type:'action' },
+  53: { emoji:'💍', text:'最终告白：说出"无论走到第几格，我都想和你一起"', note:'到达终点！', type:'talk' },
+};
+
 
 // Player entry indices into LUDO_PATH
 const USER_ENTRY = 0;   // (12,5)
@@ -3013,7 +3075,10 @@ function lgInit() {
   LG.turn     = 'user';
   LG.rolling  = false;
   LG.lastDice = 0;
-  LG.chatLog  = [];
+  LG.chatLog     = [];
+  LG.userSkip   = false;
+  LG.charSkip   = false;
+  LG.pendingReroll = null;
 
   const ctx = getContext();
   LG.charName = ctx?.name2 || ctx?.name || '对方';
@@ -3155,6 +3220,15 @@ async function lgAnimDice() {
 
 async function lgUserRoll() {
   if (!LG.active || LG.rolling || LG.turn !== 'user') return;
+  // Check skip
+  if (LG.userSkip) {
+    LG.userSkip = false;
+    lgMsg('sys', '⏸️ 你本轮停留，轮到对方了');
+    LG.turn = 'char';
+    lgStatus(`${LG.charName} 的回合...`);
+    setTimeout(() => lgCharTurn(), 1200);
+    return;
+  }
   LG.rolling = true;
   $('#rp-dice-btn').prop('disabled', true).addClass('ludo-rolling');
 
@@ -3167,6 +3241,15 @@ async function lgUserRoll() {
   lgMsg('sys', `你掷出 ${n} ${DICE_EMOJI[n]}`);
 
   await lgMove('user', n);
+
+  // Pending reroll from square event
+  if (LG.pendingReroll === 'user') {
+    LG.pendingReroll = null;
+    LG.rolling = false;
+    lgStatus('🎲 幸运！再掷一次！');
+    $('#rp-dice-btn').prop('disabled', false);
+    return;
+  }
 
   if (LG.userPos >= 53) { lgWin('user'); LG.rolling = false; return; }
 
@@ -3189,6 +3272,15 @@ async function lgUserRoll() {
 
 async function lgCharTurn() {
   if (!LG.active) return;
+  // Check skip
+  if (LG.charSkip) {
+    LG.charSkip = false;
+    lgMsg('sys', `⏸️ ${LG.charName}本轮停留，轮到你了`);
+    LG.turn = 'user';
+    lgStatus('你的回合 — 按🎲掷骰子！');
+    $('#rp-dice-btn').prop('disabled', false);
+    return;
+  }
   await lgAnimDice();
 
   const n = lgRoll();
@@ -3197,6 +3289,14 @@ async function lgCharTurn() {
   lgMsg('sys', `${LG.charName} 掷出 ${n} ${DICE_EMOJI[n]}`);
 
   await lgMove('char', n);
+
+  // Pending reroll from square event
+  if (LG.pendingReroll === 'char') {
+    LG.pendingReroll = null;
+    lgMsg('sys', `🎲 ${LG.charName}获得额外一次掷骰！`);
+    setTimeout(() => lgCharTurn(), 800);
+    return;
+  }
 
   if (LG.charPos >= 53) { lgWin('char'); return; }
 
@@ -3260,6 +3360,12 @@ async function lgMove(player, steps) {
         if (!isUser) lgCharComment('eaten_user');
       }
     }
+  }
+
+  // Trigger square event if applicable
+  const finalPos = isUser ? LG.userPos : LG.charPos;
+  if (finalPos > 0 && finalPos <= 53 && SQUARE_EVENTS[finalPos]) {
+    await lgTriggerSquareEvent(player, finalPos);
   }
 }
 
@@ -3428,6 +3534,54 @@ function lgSelectPool(personaText) {
   } else {
     LG_FALLBACK = LG_FALLBACK_POOLS.neutral;
     console.log('[Ludo] Using neutral pool (default)');
+  }
+}
+
+
+// ── Square event trigger ─────────────────────────────────────────
+async function lgTriggerSquareEvent(player, pos) {
+  const ev = SQUARE_EVENTS[pos];
+  if (!ev) return;
+  const isUser = player === 'user';
+  const moverName = isUser ? '你' : LG.charName;
+
+  // Populate popup
+  document.getElementById('rp-sq-event-sq').textContent = `第 ${pos} 格`;
+  document.getElementById('rp-sq-event-emoji').textContent = ev.emoji;
+  document.getElementById('rp-sq-event-text').textContent = ev.text;
+  document.getElementById('rp-sq-event-note').textContent = ev.note || '';
+
+  lgMsg('sys', `📍 第${pos}格 ${ev.emoji} — ${ev.text}`);
+
+  // Show popup and wait for done click
+  await new Promise(resolve => {
+    const overlay = document.getElementById('rp-sq-event');
+    const btn = document.getElementById('rp-sq-event-done');
+    overlay.style.display = 'flex';
+    const handler = () => {
+      btn.removeEventListener('click', handler);
+      overlay.style.display = 'none';
+      resolve();
+    };
+    btn.addEventListener('click', handler);
+  });
+
+  // Apply special mechanics after popup closed
+  if (ev.type === 'move') {
+    const curPos = isUser ? LG.userPos : LG.charPos;
+    let newPos = curPos + ev.delta;
+    if (newPos < 1) newPos = 1;
+    if (newPos > 53) newPos = 53;
+    if (isUser) LG.userPos = newPos; else LG.charPos = newPos;
+    const dir = ev.delta > 0 ? `前进${ev.delta}格` : `后退${Math.abs(ev.delta)}格`;
+    lgMsg('sys', `${moverName}${dir}，到达第${newPos}格`);
+    lgRender();
+  } else if (ev.type === 'skip') {
+    if (isUser) LG.userSkip = true; else LG.charSkip = true;
+    lgMsg('sys', `⏸️ ${moverName}下一轮停留`);
+  } else if (ev.type === 'reroll') {
+    LG.pendingReroll = player;
+    lgMsg('sys', `🎲 ${moverName}获得额外一次掷骰！`);
   }
 }
 
