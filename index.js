@@ -3335,6 +3335,40 @@ function cleanGameReply(raw) {
 // ── Extract compact persona snippet from current ST character ─────────────────
 function lgGetPersona() {
   try {
+    console.log("[Ludo] lgGetPersona called");
+    // Try multiple ways to get context
+    const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
+    
+    // Try to get character from multiple sources
+    let char = null;
+    if (ctx.characters && ctx.characterId !== undefined) {
+      char = ctx.characters[ctx.characterId];
+    }
+    // Fallback: try global this_chid
+    if (!char && typeof this_chid !== 'undefined' && window.characters) {
+      char = window.characters[this_chid];
+    }
+    
+    if (!char) {
+      console.warn('[Ludo] No character data found');
+      return '';
+    }
+    
+    const personality = (char.personality || '').replace(/\s+/g, ' ').trim();
+    const description = (char.description || '').replace(/\s+/g, ' ').trim();
+    const src = personality || description.substring(0, 200);
+    
+    if (src) {
+      console.log('[Ludo] Persona loaded:', src.substring(0, 50) + '...');
+      return `【角色人设】${src}。`;
+    }
+    return '';
+  } catch(e) {
+    console.error('[Ludo] lgGetPersona error:', e);
+    return '';
+  }
+}
+  try {
     // Try multiple ways to get context
     const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
     
@@ -3382,6 +3416,31 @@ const LG_FALLBACK = {
 };
 
 async function lgCharComment(event) {
+  if (!LG.active && !event.endsWith('_win')) return;
+  await new Promise(r => setTimeout(r, 200));
+
+    console.log("[Ludo] Attempting generateRaw, prompt:", prompt.substring(0, 120) + "...");
+  // Try to use ST's generateRaw if available
+  const ctx   = getContext();
+  const uPos  = LG.userPos;
+  const cPos  = LG.charPos;
+  const n     = LG.lastDice;
+  const cName = LG.charName;
+
+  let evtDesc = '';
+  if      (event === 'game_start')  evtDesc = '游戏刚开始';
+  else if (event === 'eaten_user')  evtDesc = '我的棋子刚被对方吃掉了';
+  else if (event === 'user_win')    evtDesc = '对方赢得了游戏，我输了';
+  else if (event === 'char_win')    evtDesc = '我赢得了游戏';
+  else if (event.startsWith('dice_')) {
+    const pts = event.split('_')[1];
+    const lead = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
+    // Check whose turn it was
+    const isCharTurn = event.startsWith('char_dice_');
+    evtDesc = isCharTurn 
+      ? `我刚掷出了${pts}点${lead}` 
+      : `用户刚掷出了${pts}点${lead}`;
+  }
   if (!LG.active && !event.endsWith('_win')) return;
   await new Promise(r => setTimeout(r, 200));
 
