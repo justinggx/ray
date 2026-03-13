@@ -3402,18 +3402,68 @@ function lgGetPersona() {
   }
 }
 
-const LG_FALLBACK = {
-  game_start : ['开始吧。','请做好准备。','公平竞争。','由我先手。'],
-  eaten_user : ['棋子被吃了。','下次我会注意。','重来。'],
-  user_win   : ['你赢了。下次不会如此。','运气不错。','承让。'],
-  char_win   : ['我赢了。','实力使然。','你还需要进步。'],
-  dice_1     : ['一点。','最小步数。','谨慎前进。'],
-  dice_2     : ['两步。','稳步推进。','尚可。'],
-  dice_3     : ['三点。','继续。','保持节奏。'],
-  dice_4     : ['四点。','不错。','有所进展。'],
-  dice_5     : ['五点。','势头良好。','值得肯定。'],
-  dice_6     : ['六点。出发。','最大点数。','很好。'],
+// Style pools for different character personalities
+const LG_FALLBACK_POOLS = {
+  // Formal/Upper-class (上位者, 严肃, 高傲)
+  formal: {
+    game_start : ['开始。','准备就绪。','公平竞争。','我先手。'],
+    eaten_user : ['棋子被吃。','下次注意。','重来。'],
+    user_win   : ['你赢了。下次不会如此。','运气不错。','承让。'],
+    char_win   : ['我赢了。','实力使然。','还需进步。'],
+    dice_1     : ['一点。','最小步数。','谨慎。'],
+    dice_2     : ['两步。','稳步。','尚可。'],
+    dice_3     : ['三点。','继续。','保持。'],
+    dice_4     : ['四点。','不错。','进展。'],
+    dice_5     : ['五点。','良好。','肯定。'],
+    dice_6     : ['六点。出发。','最大。','很好。'],
+  },
+  // Casual/Friendly (轻松, 友好)
+  casual: {
+    game_start : ['开始吧！','准备好输了吗？','公平竞争哦~','我先出手？'],
+    eaten_user : ['被你吃掉了...','下次我要报仇！','好过分，重来！'],
+    user_win   : ['恭喜你赢了…下次我不会手软','你运气好','哎呀输了'],
+    char_win   : ['我赢了～','看到没，就是这么强','你还需要练习哦'],
+    dice_1     : ['才1步，加油！','哈，1点~','慢慢来'],
+    dice_2     : ['2步，稳稳的','小步前进~','2点不错'],
+    dice_3     : ['3步，继续！','走3格~','加油'],
+    dice_4     : ['4步，有点猛','4格！','哦哦4点'],
+    dice_5     : ['5步！势头不错','哇5点！','厉害5格'],
+    dice_6     : ['哇！6！出发咯！','6最大！走起！','6点棒！'],
+  },
+  // Neutral (中性)
+  neutral: {
+    game_start : ['游戏开始。','掷出6出发。','先到终点胜。'],
+    eaten_user : ['棋子被吃。','位置重置。','重新开始。'],
+    user_win   : ['你赢了。','游戏结束。','恭喜。'],
+    char_win   : ['我赢了。','游戏结束。','胜利。'],
+    dice_1     : ['掷出1点。','前进1格。','1点。'],
+    dice_2     : ['掷出2点。','前进2格。','2点。'],
+    dice_3     : ['掷出3点。','前进3格。','3点。'],
+    dice_4     : ['掷出4点。','前进4格。','4点。'],
+    dice_5     : ['掷出5点。','前进5格。','5点。'],
+    dice_6     : ['掷出6点。','前进6格。','6点。'],
+  },
 };
+
+// Default to formal (most common for ST characters)
+let LG_FALLBACK = LG_FALLBACK_POOLS.formal;
+
+// Function to select pool based on persona
+function lgSelectPool(personaText) {
+  if (!personaText) return;
+  const lower = personaText.toLowerCase();
+  // Check for upper-class/formal keywords
+  if (/上位者|高傲|严肃|端庄|威严|贵族|精英|总裁|老板|领导|冷酷|冷漠/.test(lower)) {
+    LG_FALLBACK = LG_FALLBACK_POOLS.formal;
+    console.log('[Ludo] Using formal pool (upper-class character)');
+  } else if (/活泼|开朗|可爱|温柔|友好|亲切|热情|元气/.test(lower)) {
+    LG_FALLBACK = LG_FALLBACK_POOLS.casual;
+    console.log('[Ludo] Using casual pool (friendly character)');
+  } else {
+    LG_FALLBACK = LG_FALLBACK_POOLS.neutral;
+    console.log('[Ludo] Using neutral pool (default)');
+  }
+}
 
 async function lgCharComment(event) {
   if (!LG.active && !event.endsWith('_win')) return;
@@ -3442,6 +3492,8 @@ async function lgCharComment(event) {
 
   // Build a minimal prompt — include persona so char stays in character
   const persona = lgGetPersona();
+  // Select reply pool based on persona
+  lgSelectPool(persona);
   // Completion-style prompt: ends with open quote so AI fills dialogue directly
   const prompt = `${persona}
 [游戏场景：${cName}正在和用户玩飞行棋，${evtDesc}]
