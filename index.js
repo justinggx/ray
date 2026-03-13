@@ -3093,6 +3093,7 @@ function lgInit() {
   LG.pendingReroll = null;
   LG.taskChatCount = 0;
   LG.justDidTask   = false;
+  LG.taskActive    = null;
 
   const ctx = getContext();
   LG.charName = ctx?.name2 || ctx?.name || '对方';
@@ -3603,11 +3604,9 @@ async function lgTriggerSquareEvent(player, pos) {
 
     // AI 生成 char 完成任务的话
     const persona   = lgGetPersona();
-  const actHint   = ev.type === 'action' ? '(需动作描写，用*动作*格式，不超过10字)' : '';
+    const actHint   = ev.type === 'action' ? '（动作描写用*动作*格式，≤8字）' : '';
     const prompt    = `${persona}
-[飞行棋互动任务]
-任务：${ev.text}${actHint}
-${LG.charName}用第一人称、简短地完成这个任务：`;
+    const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字）：`;
     let replied = false;
     try {
       let resp = null;
@@ -3677,20 +3676,20 @@ ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气�
 async function lgGameChat(text) {
   if (!text.trim()) return;
   lgMsg('user', text);
-  if (LG.taskChatCount !== undefined && LG.taskChatCount <= 0) return;
 
   // quick in-character reply via OOC injection (doesn't advance story)
   const ctx    = getContext();
   const cName  = LG.charName;
   const persona = lgGetPersona();
   // Completion-style prompt: AI fills dialogue directly after open quote
-  const prompt = `${persona}\n[游戏中聊天]用户对${cName}说："${text}"\n${cName}简短回应（动作描写≤ 10字）："`;
+  const taskNote = LG.taskActive ? `\n[当前待完成任务：「${LG.taskActive}」——必须直接完成，不许回避]` : '';
+  const prompt = `${persona}${taskNote}\n[游戏聊天]用户说："${text}"\n${cName}简短回应（动作描写≤8字）："`;
 
   try {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
       const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); if (LG.taskChatCount > 0) LG.taskChatCount--; return; }
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
   } catch(e) { /* fallback */ }
 
