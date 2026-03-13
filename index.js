@@ -3609,18 +3609,15 @@ async function lgTriggerSquareEvent(player, pos) {
     const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字，必须包含实际说话内容，不许只有动作描写）：`;
     let replied = false;
     try {
-      let resp = null;
+      const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
       if (typeof generateRaw === 'function') {
-        resp = await generateRaw(prompt, '', false, false, undefined, 'quiet');
-      } else if (typeof window.generateQuietPrompt === 'function') {
-        resp = await window.generateQuietPrompt(prompt, false, false);
+        const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
+        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); replied = true; }
       }
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); replied = true; }
     } catch(e) { /* ignore */ }
     if (!replied) {
-      // fallback
-      const fallbacks = { talk:'…（沉默了一会儿）', action:`*${ev.text}*` };
-      lgMsg('char', fallbacks[ev.type] || ev.text);
+      lgMsg('char', ev.type === 'action' ? `*完成${ev.text}*` : `（关于${ev.text}……）`);
+    }
     }
 
     txt.textContent = `💙 ${LG.charName} 完成了吗？`;
