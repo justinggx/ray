@@ -753,9 +753,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-sq-event-done{background:linear-gradient(135deg,#e0407a,#ff7aaa);color:#fff;border:none;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-weight:600;}
 #rp-sq-event-done:active{transform:scale(.96);}
 /* ── Task bar (任务进行中) ── */
-#rp-sq-task-bar{position:absolute;top:4px;left:6px;right:6px;background:linear-gradient(135deg,#c23060,#e0407a);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:space-between;padding:5px 10px;z-index:55;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
-#rp-sq-task-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px;}
-#rp-sq-task-done-btn{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.45);border-radius:10px;color:#fff;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:700;white-space:nowrap;}
+#rp-sq-task-bar{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);width:170px;background:linear-gradient(135deg,#c23060,#e0407a);color:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 14px;z-index:55;box-shadow:0 6px 20px rgba(0,0,0,.35);text-align:center;}
+#rp-sq-task-text{font-size:12px;font-weight:700;line-height:1.5;margin-bottom:10px;white-space:normal;word-break:break-all;}
+#rp-sq-task-done-btn{background:rgba(255,255,255,.28);border:1.5px solid rgba(255,255,255,.55);border-radius:20px;color:#fff;padding:6px 22px;font-size:13px;cursor:pointer;font-weight:700;}
 #rp-sq-task-done-btn:active{transform:scale(.95);}
 
 .rp-dark #rp-sq-event-box{background:#1a1a2e;color:#e0e2f0;}
