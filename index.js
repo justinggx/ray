@@ -724,7 +724,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-game-chat{max-height:68px;overflow-y:auto;padding:6px 12px;display:flex;flex-direction:column;gap:1px;flex-shrink:0;border:1.5px solid #e0407a;border-radius:8px;margin:0 10px 4px;background:rgba(255,255,255,.9);scrollbar-width:none;cursor:pointer;transition:border-color .2s}
 #rp-game-chat:hover{border-color:#ff6b8a}
 .rp-dark #rp-game-chat{border-color:#e0407a;background:rgba(12,12,26,.9)}
-#rp-game-chat-fs{position:absolute;top:20%;bottom:0;left:0;right:0;z-index:200;background:#fff;display:flex;flex-direction:column}
+#rp-game-chat-fs{position:absolute;top:12%;bottom:0;left:0;right:0;z-index:200;background:#fff;display:flex;flex-direction:column}
 .rp-dark #rp-game-chat-fs{background:#0c0c1a}
 #rp-game-chat-fs-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.08);flex-shrink:0}
 .rp-dark #rp-game-chat-fs-header{border-bottom-color:rgba(255,255,255,.07)}
