@@ -3606,7 +3606,7 @@ async function lgTriggerSquareEvent(player, pos) {
     const persona   = lgGetPersona();
     const actHint   = ev.type === 'action' ? '（动作描写用*动作*格式，≤8字）' : '';
     const prompt    = `${persona}
-    const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字）：`;
+    const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字，必须包含实际说话内容，不许只有动作描写）：`;
     let replied = false;
     try {
       let resp = null;
