@@ -977,16 +977,6 @@ const HTML = `
               </div>
             </div>
 
-          <!-- 格子事件弹窗 -->
-          <div id="rp-sq-event" style="display:none">
-            <div id="rp-sq-event-box">
-              <div id="rp-sq-event-sq">第 X 格</div>
-              <div id="rp-sq-event-emoji">💬</div>
-              <div id="rp-sq-event-text">事件内容</div>
-              <div id="rp-sq-event-note">备注</div>
-              <button id="rp-sq-event-done" type="button">✅ 已完成</button>
-            </div>
-          </div>
 
             <div id="rp-widget">
               <div class="rp-wd-label">Augustine · 关系进度</div>
@@ -1122,6 +1112,16 @@ const HTML = `
               <div class="game-win-title" id="game-win-title">恭喜你赢了！</div>
               <div class="game-win-sub" id="game-win-sub">你率先抵达终点，赢得了这场飞行棋！</div>
               <button class="game-win-btn" id="game-restart-btn" type="button">再来一局</button>
+            </div>
+          </div>
+          <!-- 格子事件弹窗 -->
+          <div id="rp-sq-event" style="display:none">
+            <div id="rp-sq-event-box">
+              <div id="rp-sq-event-sq">第 X 格</div>
+              <div id="rp-sq-event-emoji">💬</div>
+              <div id="rp-sq-event-text">事件内容</div>
+              <div id="rp-sq-event-note">备注</div>
+              <button id="rp-sq-event-done" type="button">✅ 已完成</button>
             </div>
           </div>
           <!-- 全屏聊天记录 -->
