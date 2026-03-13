@@ -3368,40 +3368,6 @@ function lgGetPersona() {
     return '';
   }
 }
-  try {
-    // Try multiple ways to get context
-    const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
-    
-    // Try to get character from multiple sources
-    let char = null;
-    if (ctx.characters && ctx.characterId !== undefined) {
-      char = ctx.characters[ctx.characterId];
-    }
-    // Fallback: try global this_chid
-    if (!char && typeof this_chid !== 'undefined' && window.characters) {
-      char = window.characters[this_chid];
-    }
-    
-    if (!char) {
-      console.warn('[Ludo] No character data found');
-      return '';
-    }
-    
-    const personality = (char.personality || '').replace(/\s+/g, ' ').trim();
-    const description = (char.description || '').replace(/\s+/g, ' ').trim();
-    const src = personality || description.substring(0, 200);
-    
-    if (src) {
-      console.log('[Ludo] Persona loaded:', src.substring(0, 50) + '...');
-      return `【角色人设】${src}。`;
-    }
-    return '';
-  } catch(e) {
-    console.error('[Ludo] lgGetPersona error:', e);
-    return '';
-  }
-}
-
 // Style pools for different character personalities
 const LG_FALLBACK_POOLS = {
   // Formal/Upper-class (上位者, 严肃, 高傲)
