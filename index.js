@@ -3194,18 +3194,34 @@ function lgRender() {
   });
 
   // ── Event square markers (tiny pulsing ♥, centered) ──
+  // USER_ENTRY=0, CHAR_ENTRY=24: 同一个 pos 对两个玩家在棋盘上是不同物理格子
   {
     const pulse = 0.7 + 0.3 * Math.abs(Math.sin(Date.now() / 700));
     C.save();
     C.textAlign = 'center'; C.textBaseline = 'middle';
     C.shadowBlur = 0;
     C.font = `${CELL * 0.38}px serif`;
+    C.fillStyle = `rgba(220,50,110,${0.45 + 0.35 * pulse})`;
+    const drawnCells = new Set();
     Object.keys(SQUARE_EVENTS).forEach(posStr => {
       const pos = parseInt(posStr);
       if (pos >= 1 && pos <= 48) {
-        const [r, c] = LUDO_PATH[pos - 1];
-        C.fillStyle = `rgba(220,50,110,${0.45 + 0.35 * pulse})`;
-        C.fillText('♥', c * CELL + CELL * 0.5, r * CELL + CELL * 0.5);
+        // user 路径上的物理格
+        const uIdx = (USER_ENTRY + pos - 1) % LUDO_PATH_LEN;
+        const [ur, uc] = LUDO_PATH[uIdx];
+        const uKey = `${ur},${uc}`;
+        if (!drawnCells.has(uKey)) {
+          C.fillText('♥', uc * CELL + CELL * 0.5, ur * CELL + CELL * 0.5);
+          drawnCells.add(uKey);
+        }
+        // char 路径上的物理格
+        const cIdx = (CHAR_ENTRY + pos - 1) % LUDO_PATH_LEN;
+        const [cr, cc] = LUDO_PATH[cIdx];
+        const cKey = `${cr},${cc}`;
+        if (!drawnCells.has(cKey)) {
+          C.fillText('♥', cc * CELL + CELL * 0.5, cr * CELL + CELL * 0.5);
+          drawnCells.add(cKey);
+        }
       }
     });
     C.restore();
