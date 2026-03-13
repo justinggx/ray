@@ -3341,8 +3341,6 @@ async function lgCharTurn() {
 
   if (LG.charPos >= 53) { lgWin('char'); return; }
 
-  setTimeout(() => lgCharComment(`dice_${n}_char`), 400);
-
   if (n === 6) {
     lgMsg('sys', `${LG.charName} 掷出6，再掷！`);
     setTimeout(() => lgCharTurn(), 1000);
@@ -3392,7 +3390,6 @@ async function lgMove(player, steps) {
         else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}吃掉了你的棋子！`); }
         lgRender();
         await new Promise(r => setTimeout(r, 300));
-        if (!isUser) lgCharComment('eaten_user');
       }
     }
   }
@@ -3431,7 +3428,6 @@ function lgWin(winner) {
     ? `你率先抵达终点！${LG.charName}甘拜下风～`
     : `${LG.charName}率先抵达终点！再来一局？`);
   $('#rp-game-win').show();
-  lgCharComment(isUser ? 'user_win' : 'char_win');
 }
 
 // ── AI commentary (calls ST generate pipeline silently) ──────────
