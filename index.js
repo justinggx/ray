@@ -752,6 +752,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-sq-event-note{font-size:10px;color:#999;margin-bottom:14px;line-height:1.4;}
 #rp-sq-event-done{background:linear-gradient(135deg,#e0407a,#ff7aaa);color:#fff;border:none;border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;font-weight:600;}
 #rp-sq-event-done:active{transform:scale(.96);}
+/* ── Task bar (任务进行中) ── */
+#rp-sq-task-bar{position:absolute;top:4px;left:6px;right:6px;background:linear-gradient(135deg,#c23060,#e0407a);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:space-between;padding:5px 10px;z-index:55;font-size:11px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+#rp-sq-task-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px;}
+#rp-sq-task-done-btn{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.45);border-radius:10px;color:#fff;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:700;white-space:nowrap;}
+#rp-sq-task-done-btn:active{transform:scale(.95);}
+
 .rp-dark #rp-sq-event-box{background:#1a1a2e;color:#e0e2f0;}
 .rp-dark #rp-sq-event-text{color:#e0e2f0;}
 .rp-dark #rp-sq-event-sq{color:#666;}
@@ -1121,8 +1127,13 @@ const HTML = `
               <div id="rp-sq-event-emoji">💬</div>
               <div id="rp-sq-event-text">事件内容</div>
               <div id="rp-sq-event-note">备注</div>
-              <button id="rp-sq-event-done" type="button">✅ 已完成</button>
+              <button id="rp-sq-event-done" type="button">确认</button>
             </div>
+          </div>
+          <!-- 任务进行中条 -->
+          <div id="rp-sq-task-bar" style="display:none">
+            <span id="rp-sq-task-text">💬 任务进行中...</span>
+            <button id="rp-sq-task-done-btn" type="button">✅ 已完成</button>
           </div>
           <!-- 全屏聊天记录 -->
           <div id="rp-game-chat-fs" style="display:none">
@@ -3532,51 +3543,59 @@ function lgSelectPool(personaText) {
 }
 
 
-// ── Square event trigger ─────────────────────────────────────────
+// ── Square event trigger (两步流程) ──────────────────────────────
 async function lgTriggerSquareEvent(player, pos) {
   const ev = SQUARE_EVENTS[pos];
   if (!ev) return;
   const isUser = player === 'user';
   const moverName = isUser ? '你' : LG.charName;
 
-  // Populate popup
+  // 填充弹窗内容
   document.getElementById('rp-sq-event-sq').textContent = `第 ${pos} 格`;
   document.getElementById('rp-sq-event-emoji').textContent = ev.emoji;
   document.getElementById('rp-sq-event-text').textContent = ev.text;
   document.getElementById('rp-sq-event-note').textContent = ev.note || '';
-
   lgMsg('sys', `📍 第${pos}格 ${ev.emoji} — ${ev.text}`);
 
-  // Show popup and wait for done click
+  // 步骤一：显示弹窗，等待用户点「确认」
   await new Promise(resolve => {
     const overlay = document.getElementById('rp-sq-event');
-    const btn = document.getElementById('rp-sq-event-done');
+    const btn     = document.getElementById('rp-sq-event-done');
     overlay.style.display = 'flex';
-    const handler = () => {
-      btn.removeEventListener('click', handler);
-      overlay.style.display = 'none';
-      resolve();
-    };
+    const handler = () => { btn.removeEventListener('click', handler); overlay.style.display = 'none'; resolve(); };
     btn.addEventListener('click', handler);
   });
 
-  // Apply special mechanics after popup closed
+  // 特殊格：立即执行效果，不进入步骤二
   if (ev.type === 'move') {
     const curPos = isUser ? LG.userPos : LG.charPos;
-    let newPos = curPos + ev.delta;
-    if (newPos < 1) newPos = 1;
-    if (newPos > 53) newPos = 53;
+    let newPos = Math.max(1, Math.min(53, curPos + ev.delta));
     if (isUser) LG.userPos = newPos; else LG.charPos = newPos;
-    const dir = ev.delta > 0 ? `前进${ev.delta}格` : `后退${Math.abs(ev.delta)}格`;
-    lgMsg('sys', `${moverName}${dir}，到达第${newPos}格`);
+    lgMsg('sys', ev.delta > 0 ? `${moverName}前进${ev.delta}格，到第${newPos}格` : `${moverName}后退${Math.abs(ev.delta)}格，到第${newPos}格`);
     lgRender();
-  } else if (ev.type === 'skip') {
+    return;
+  }
+  if (ev.type === 'skip') {
     if (isUser) LG.userSkip = true; else LG.charSkip = true;
     lgMsg('sys', `⏸️ ${moverName}下一轮停留`);
-  } else if (ev.type === 'reroll') {
+    return;
+  }
+  if (ev.type === 'reroll') {
     LG.pendingReroll = player;
     lgMsg('sys', `🎲 ${moverName}获得额外一次掷骰！`);
+    return;
   }
+
+  // 步骤二：对话/动作类任务 — 显示小条（不遮聊天框），等待「已完成」
+  await new Promise(resolve => {
+    const bar  = document.getElementById('rp-sq-task-bar');
+    const btn  = document.getElementById('rp-sq-task-done-btn');
+    const txt  = document.getElementById('rp-sq-task-text');
+    txt.textContent = `💬 ${ev.text}`;
+    bar.style.display = 'flex';
+    const handler = () => { btn.removeEventListener('click', handler); bar.style.display = 'none'; resolve(); };
+    btn.addEventListener('click', handler);
+  });
 }
 
 function lgCharComment(event) {
