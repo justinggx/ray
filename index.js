@@ -738,9 +738,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-game-chat::-webkit-scrollbar{display:none}
 .rp-dark #rp-game-chat{background:rgba(12,12,26,.9);border-top-color:rgba(255,255,255,.05)}
 .game-msg{font-size:11px;line-height:1.45;padding:1px 0}
-.game-msg-user{color:#2563eb;text-align:right}
-.game-msg-char{color:#e0407a}
-.rp-dark .game-msg-char{color:#ff7aaa}
+.game-msg-user{color:#e0407a;text-align:right}
+.game-msg-char{color:#2563eb}
+.rp-dark .game-msg-char{color:#7ab8ff}
 .game-msg-sys{color:#888;text-align:center;font-style:italic}
 .rp-dark .game-msg-sys{color:#666}
 #rp-game-input-row{display:flex;gap:6px;padding:6px 10px 22px;border-top:1px solid rgba(0,0,0,.06);background:#fff;flex-shrink:0;align-items:center}
@@ -3433,55 +3433,23 @@ function lgSelectPool(personaText) {
 
 async function lgCharComment(event) {
   if (!LG.active && !event.endsWith('_win')) return;
-  await new Promise(r => setTimeout(r, 200));
 
-  const ctx   = getContext();
-  const uPos  = LG.userPos;
-  const cPos  = LG.charPos;
   const n     = LG.lastDice;
-  const cName = LG.charName;
+  const cPos  = LG.charPos;
+  const uPos  = LG.userPos;
 
-  let evtDesc = '';
-  if      (event === 'game_start')  evtDesc = '游戏刚开始';
-  else if (event === 'eaten_user')  evtDesc = '我的棋子刚被对方吃掉了';
-  else if (event === 'user_win')    evtDesc = '对方赢得了游戏，我输了';
-  else if (event === 'char_win')    evtDesc = '我赢得了游戏';
-  else if (event.startsWith('dice_')) {
+  // Fix isCharTurn: event ends with _char for char's roll
+  if (event.startsWith('dice_')) {
     const parts = event.split('_');
     const pts   = parts[1];
     const lead  = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
-    const isCharTurn = event.endsWith('_char');  // FIX: was startsWith('char_dice_')
-    evtDesc = isCharTurn
-      ? `我刚掷出了${pts}点${lead}`
-      : `用户刚掷出了${pts}点${lead}`;
+    const isCharTurn = event.endsWith('_char');
+    // Update evtDesc for pool selection — not needed since we go straight to pool
   }
 
-  // Build prompt — include persona so char stays in character
+  // Use instant pool (no AI delay for auto game comments)
   const persona = lgGetPersona();
   lgSelectPool(persona);
-  const prompt = `${persona}
-[游戏场景：${cName}正在和用户玩飞行棋，${evtDesc}]
-${cName}此刻脱口而出："`;
-
-  // Try AI generation first
-  try {
-    // Method 1: generateRaw (older ST)
-    const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
-    if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 60, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
-    }
-  } catch(e) { /* ignore */ }
-
-  try {
-    // Method 2: generateQuietPrompt (newer ST)
-    if (typeof window.generateQuietPrompt === 'function') {
-      const resp = await window.generateQuietPrompt(prompt, false, false, '', 60);
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
-    }
-  } catch(e) { /* ignore */ }
-
-  // Fallback: hardcoded pool
   const dKey = `dice_${n}`;
   const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！', '加油！'];
   lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
