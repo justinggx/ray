@@ -3481,51 +3481,45 @@ async function lgCharComment(event) {
   else if (event === 'user_win')    evtDesc = '对方赢得了游戏，我输了';
   else if (event === 'char_win')    evtDesc = '我赢得了游戏';
   else if (event.startsWith('dice_')) {
-    const pts = event.split('_')[1];
-    const lead = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
-    // Check whose turn it was
-    const isCharTurn = event.startsWith('char_dice_');
-    evtDesc = isCharTurn 
-      ? `我刚掷出了${pts}点${lead}` 
+    const parts = event.split('_');
+    const pts   = parts[1];
+    const lead  = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
+    const isCharTurn = event.endsWith('_char');  // FIX: was startsWith('char_dice_')
+    evtDesc = isCharTurn
+      ? `我刚掷出了${pts}点${lead}`
       : `用户刚掷出了${pts}点${lead}`;
   }
 
-  // Build a minimal prompt — include persona so char stays in character
+  // Build prompt — include persona so char stays in character
   const persona = lgGetPersona();
-  // Select reply pool based on persona
   lgSelectPool(persona);
-  // Completion-style prompt: ends with open quote so AI fills dialogue directly
   const prompt = `${persona}
 [游戏场景：${cName}正在和用户玩飞行棋，${evtDesc}]
 ${cName}此刻脱口而出："`;
 
-  console.log('[Ludo] Attempting character reply, prompt:', prompt.substring(0, 120) + '...');
-
-  // Method 1: Try to use ST's chat generation via eventSource
+  // Try AI generation first
   try {
-    const st = window.SillyTavern;
-    if (st && st.getContext && st.getContext().eventSource) {
-      console.log('[Ludo] Using eventSource for character reply');
-      // This is a hack: we'll send a system message and hope ST generates a reply
-      // In practice, ST extensions should use the proper API
-      // For now, we'll fall back to the pool but log the prompt for debugging
-      console.log('[Ludo] Prompt (for debugging):', prompt);
+    // Method 1: generateRaw (older ST)
+    const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
+    if (typeof generateRaw === 'function') {
+      const resp = await generateRaw({ prompt, max_new_tokens: 60, quiet: true });
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     }
-  } catch(e) {
-    console.error('[Ludo] ST API error:', e);
-  }
+  } catch(e) { /* ignore */ }
+
+  try {
+    // Method 2: generateQuietPrompt (newer ST)
+    if (typeof window.generateQuietPrompt === 'function') {
+      const resp = await window.generateQuietPrompt(prompt, false, false, '', 60);
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+    }
+  } catch(e) { /* ignore */ }
 
   // Fallback: hardcoded pool
   const dKey = `dice_${n}`;
-  const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！','加油！'];
-  console.log('[Ludo] generateRaw not available, using fallback:', pool[0]);
+  const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！', '加油！'];
   lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
 }
-
-  // Fallback: hardcoded pool
-  const dKey = `dice_${n}`;
-  const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！','加油！'];
-  lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
 }
 
 async function lgGameChat(text) {
