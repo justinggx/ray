@@ -3475,9 +3475,43 @@ async function lgCharComment(event) {
     // Use global generateRaw (already available from ST)
     const generateRaw = window.generateRaw || SillyTavern?.generateRaw;
     console.log('[Ludo] generateRaw type:', typeof generateRaw);
-    if (typeof generateRaw === 'function') {
-      console.log('[Ludo] Calling generateRaw with prompt:', prompt.substring(0, 100) + '...');
-      const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
+  // Try multiple ST API methods
+  const st = window.SillyTavern;
+  if (st && st.getContext) {
+    // Method 1: Use eventSource to simulate user message
+    const ctx = st.getContext();
+    if (ctx && ctx.eventSource) {
+      console.log("[Ludo] Using eventSource for character reply");
+      const msg = {
+        type: "game_comment",
+        text: prompt,
+        character: LG.charName,
+        isUser: false,
+      };
+      ctx.eventSource.emit("MESSAGE_NEW", msg);
+      // Wait a bit for response
+      await new Promise(r => setTimeout(r, 800));
+      // Check if any new message appeared
+      const lastMsg = ctx.chat?.[ctx.chat.length - 1];
+      if (lastMsg && lastMsg.name === LG.charName && lastMsg.mes) {
+        lgMsg("char", lastMsg.mes);
+        return;
+      }
+    }
+  }
+  // Fallback: use sendMessageAsUser if available
+  if (window.sendMessageAsUser) {
+    console.log("[Ludo] Using sendMessageAsUser");
+    window.sendMessageAsUser(prompt, { isSystem: true, character: LG.charName });
+    await new Promise(r => setTimeout(r, 800));
+    // Try to get last message again
+    const ctx = window.SillyTavern?.getContext?.();
+    const lastMsg = ctx?.chat?.[ctx.chat.length - 1];
+    if (lastMsg && lastMsg.name === LG.charName && lastMsg.mes) {
+      lgMsg("char", lastMsg.mes);
+      return;
+    }
+  }
       console.log('[Ludo] generateRaw response:', resp ? resp.substring(0, 50) + '...' : 'null');
       if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
     } else {
