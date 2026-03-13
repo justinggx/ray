@@ -1371,14 +1371,14 @@ function bindUI() {
     const body = document.getElementById('rp-game-chat-fs-body');
     if (!body) return;
     body.innerHTML = document.getElementById('rp-game-chat').innerHTML;
-    $('#rp-game-chat-fs').show();
+    jQuery('#rp-game-chat-fs').show();
     body.scrollTop = body.scrollHeight;
     
     // Bind close button directly (not via delegation)
-    $('#rp-game-chat-fs-close').off('click').on('click', function(e) {
+    jQuery('#rp-game-chat-fs-close').off('click').on('click', function(e) {
       e.stopPropagation();
       e.preventDefault();
-      $('#rp-game-chat-fs').hide();
+      jQuery('#rp-game-chat-fs').hide();
       console.log('[Ludo] Fullscreen closed');
     });
   });
@@ -3474,4 +3474,5 @@ Object.assign(window, {
 //  ENTRY
 // ================================================================
 jQuery(async () => { await init(); });
+
 
