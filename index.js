@@ -3103,6 +3103,14 @@ function lgInit() {
   $('#rp-dice-btn').prop('disabled', false);
 
   lgRender();
+  // 启动棋盘动画循环（驱动 ♥ 闪烁）
+  if (LG._animFrame) cancelAnimationFrame(LG._animFrame);
+  const _animLoop = () => {
+    if (!LG.active) return;
+    lgRender();
+    LG._animFrame = requestAnimationFrame(_animLoop);
+  };
+  LG._animFrame = requestAnimationFrame(_animLoop);
   lgStatus('你先出手 — 按🎲掷骰子！');
   lgMsg('sys', `游戏开始！掷骰子即可出发，先到终点者胜。❤️=你  💙=${LG.charName}`);
   setTimeout(() => lgCharComment('game_start'), 900);
@@ -3184,6 +3192,24 @@ function lgRender() {
       C.fillText('★', c*CELL+CELL/2, r*CELL+CELL/2);
     }
   });
+
+  // ── Event square markers (pulsing ♥) ──
+  {
+    const pulse = 0.65 + 0.35 * Math.abs(Math.sin(Date.now() / 500));
+    C.save();
+    C.textAlign = 'center'; C.textBaseline = 'middle';
+    C.shadowColor = '#ff69b4'; C.shadowBlur = 6 * pulse;
+    C.font = `${CELL * 0.58 * pulse}px serif`;
+    Object.keys(SQUARE_EVENTS).forEach(posStr => {
+      const pos = parseInt(posStr);
+      if (pos >= 1 && pos <= 48) {
+        const [r, c] = LUDO_PATH[pos - 1];
+        C.fillStyle = `rgba(224,64,122,${0.55 + 0.45 * pulse})`;
+        C.fillText('♥', c * CELL + CELL * 0.78, r * CELL + CELL * 0.28);
+      }
+    });
+    C.restore();
+  }
 
   // ── Home-run lanes ──
   USER_HOME_RUN.forEach(([r,c]) => {
@@ -3397,6 +3423,7 @@ function lgMsg(type, text) {
 
 function lgWin(winner) {
   LG.active = false;
+  if (LG._animFrame) { cancelAnimationFrame(LG._animFrame); LG._animFrame = null; }
   const isUser = winner === 'user';
   $('#game-win-emoji').text(isUser ? '🎉' : '😅');
   $('#game-win-title').text(isUser ? '你赢了！' : `${LG.charName} 赢了！`);
