@@ -3602,10 +3602,15 @@ async function lgTriggerSquareEvent(player, pos) {
   // 特殊格：立即执行效果，不进入步骤二
   if (ev.type === 'move') {
     const curPos = isUser ? LG.userPos : LG.charPos;
-    let newPos = Math.max(1, Math.min(53, curPos + ev.delta));
-    if (isUser) LG.userPos = newPos; else LG.charPos = newPos;
+    const newPos = Math.max(1, Math.min(53, curPos + ev.delta));
+    const step   = ev.delta > 0 ? 1 : -1;
+    // 逐格动画，与普通掷骰移动相同速度
+    for (let p = curPos + step; step > 0 ? p <= newPos : p >= newPos; p += step) {
+      if (isUser) LG.userPos = p; else LG.charPos = p;
+      lgRender();
+      await new Promise(r => setTimeout(r, 320));
+    }
     lgMsg('sys', ev.delta > 0 ? `${moverName}前进${ev.delta}格，到第${newPos}格` : `${moverName}后退${Math.abs(ev.delta)}格，到第${newPos}格`);
-    lgRender();
     return;
   }
   if (ev.type === 'skip') {
