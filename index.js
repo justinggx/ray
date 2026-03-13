@@ -3486,7 +3486,6 @@ ${cName}此刻脱口而出："`;
   const pool = LG_FALLBACK[event] || LG_FALLBACK[dKey] || ['继续！', '加油！'];
   lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
 }
-}
 
 async function lgGameChat(text) {
   if (!text.trim()) return;
