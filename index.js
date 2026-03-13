@@ -3554,10 +3554,11 @@ async function lgTriggerSquareEvent(player, pos) {
   document.getElementById('rp-sq-event-sq').textContent = `第 ${pos} 格`;
   document.getElementById('rp-sq-event-emoji').textContent = ev.emoji;
   document.getElementById('rp-sq-event-text').textContent = ev.text;
-  document.getElementById('rp-sq-event-note').textContent = ev.note || '';
+  const noteEl = document.getElementById('rp-sq-event-note');
+  noteEl.textContent = isUser ? (ev.note || '') : `${LG.charName}将完成此任务`;
   lgMsg('sys', `📍 第${pos}格 ${ev.emoji} — ${ev.text}`);
 
-  // 步骤一：显示弹窗，等待用户点「确认」
+  // 步骤一：显示弹窗，等待点「确认」
   await new Promise(resolve => {
     const overlay = document.getElementById('rp-sq-event');
     const btn     = document.getElementById('rp-sq-event-done');
@@ -3586,13 +3587,48 @@ async function lgTriggerSquareEvent(player, pos) {
     return;
   }
 
-  // 步骤二：对话/动作类任务 — 显示小条（不遮聊天框），等待「已完成」
-  await new Promise(resolve => {
-    const bar  = document.getElementById('rp-sq-task-bar');
-    const btn  = document.getElementById('rp-sq-task-done-btn');
-    const txt  = document.getElementById('rp-sq-task-text');
+  // 步骤二：对话/动作类任务
+  const bar = document.getElementById('rp-sq-task-bar');
+  const btn = document.getElementById('rp-sq-task-done-btn');
+  const txt = document.getElementById('rp-sq-task-text');
+
+  if (!isUser) {
+    // ── Char 任务：AI 自动生成完成动作，user 点「已完成」确认 ──
+    txt.textContent = `💙 ${LG.charName} 任务中…`;
+    bar.style.display = 'flex';
+
+    // AI 生成 char 完成任务的话
+    const persona   = lgGetPersona();
+    const actHint   = ev.type === 'action' ? '（需加入动作描写，用*动作*格式，如"*轻轻地……*"）' : '';
+    const prompt    = `${persona}
+[飞行棋互动任务]
+任务：${ev.text}${actHint}
+${LG.charName}用第一人称、简短地完成这个任务：`;
+    let replied = false;
+    try {
+      let resp = null;
+      if (typeof generateRaw === 'function') {
+        resp = await generateRaw(prompt, '', false, false, undefined, 'quiet');
+      } else if (typeof window.generateQuietPrompt === 'function') {
+        resp = await window.generateQuietPrompt(prompt, false, false);
+      }
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); replied = true; }
+    } catch(e) { /* ignore */ }
+    if (!replied) {
+      // fallback
+      const fallbacks = { talk:'…（沉默了一会儿）', action:`*${ev.text}*` };
+      lgMsg('char', fallbacks[ev.type] || ev.text);
+    }
+
+    txt.textContent = `💙 ${LG.charName} 完成了吗？`;
+  } else {
+    // ── User 任务：显示小条，user 自行在聊天框完成后点「已完成」 ──
     txt.textContent = `💬 ${ev.text}`;
     bar.style.display = 'flex';
+  }
+
+  // 等待「已完成」点击
+  await new Promise(resolve => {
     const handler = () => { btn.removeEventListener('click', handler); bar.style.display = 'none'; resolve(); };
     btn.addEventListener('click', handler);
   });
