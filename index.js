@@ -3193,19 +3193,19 @@ function lgRender() {
     }
   });
 
-  // ── Event square markers (pulsing ♥) ──
+  // ── Event square markers (tiny pulsing ♥, centered) ──
   {
-    const pulse = 0.65 + 0.35 * Math.abs(Math.sin(Date.now() / 500));
+    const pulse = 0.7 + 0.3 * Math.abs(Math.sin(Date.now() / 700));
     C.save();
     C.textAlign = 'center'; C.textBaseline = 'middle';
-    C.shadowColor = '#ff69b4'; C.shadowBlur = 6 * pulse;
-    C.font = `${CELL * 0.58 * pulse}px serif`;
+    C.shadowBlur = 0;
+    C.font = `${CELL * 0.38}px serif`;
     Object.keys(SQUARE_EVENTS).forEach(posStr => {
       const pos = parseInt(posStr);
       if (pos >= 1 && pos <= 48) {
         const [r, c] = LUDO_PATH[pos - 1];
-        C.fillStyle = `rgba(224,64,122,${0.55 + 0.45 * pulse})`;
-        C.fillText('♥', c * CELL + CELL * 0.78, r * CELL + CELL * 0.28);
+        C.fillStyle = `rgba(220,50,110,${0.45 + 0.35 * pulse})`;
+        C.fillText('♥', c * CELL + CELL * 0.5, r * CELL + CELL * 0.5);
       }
     });
     C.restore();
