@@ -756,7 +756,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-sq-task-bar{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);width:170px;background:linear-gradient(135deg,#c23060,#e0407a);color:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 14px;z-index:55;box-shadow:0 6px 20px rgba(0,0,0,.35);text-align:center;}
 #rp-sq-task-text{font-size:12px;font-weight:700;line-height:1.5;margin-bottom:10px;white-space:normal;word-break:break-all;}
 #rp-sq-task-done-btn{background:rgba(255,255,255,.28);border:1.5px solid rgba(255,255,255,.55);border-radius:20px;color:#fff;padding:6px 22px;font-size:13px;cursor:pointer;font-weight:700;}
-#rp-sq-task-done-btn:active{transform:scale(.95);}
+#rp-sq-task-done-btn:active{transform:scale(.95);}#rp-sq-task-hint{font-size:10px;color:rgba(255,255,255,.85);margin-top:7px;animation:taskHintBlink 1.3s ease-in-out infinite;}@keyframes taskHintBlink{0%,100%{opacity:1;}50%{opacity:.15;}}
 
 .rp-dark #rp-sq-event-box{background:#1a1a2e;color:#e0e2f0;}
 .rp-dark #rp-sq-event-text{color:#e0e2f0;}
@@ -1134,6 +1134,7 @@ const HTML = `
           <div id="rp-sq-task-bar" style="display:none">
             <span id="rp-sq-task-text">💬 任务进行中...</span>
             <button id="rp-sq-task-done-btn" type="button">✅ 已完成</button>
+            <div id="rp-sq-task-hint">请在下方对话框内完成指定任务</div>
           </div>
           <!-- 全屏聊天记录 -->
           <div id="rp-game-chat-fs" style="display:none">
@@ -3338,7 +3339,7 @@ async function lgMove(player, steps) {
   for (let p = start + 1; p <= next; p++) {
     if (isUser) LG.userPos = p; else LG.charPos = p;
     lgRender();
-    await new Promise(r => setTimeout(r, 170));
+    await new Promise(r => setTimeout(r, 320));
   }
   // If entering board from yard, set to 1 first
   if (cur === 0) { if (isUser) LG.userPos = 1; else LG.charPos = 1; lgRender(); await new Promise(r=>setTimeout(r,170)); }
@@ -3632,10 +3633,12 @@ ${LG.charName}用第一人称、简短地完成这个任务：`;
     const handler = () => { btn.removeEventListener('click', handler); bar.style.display = 'none'; resolve(); };
     btn.addEventListener('click', handler);
   });
+  LG.justDidTask = true;
 }
 
 function lgCharComment(event) {
   if (!LG.active && !event.endsWith('_win')) return;
+  if (LG.justDidTask) { LG.justDidTask = false; return; }
 
   const n      = LG.lastDice;
   const cPos   = LG.charPos;
@@ -3671,6 +3674,7 @@ ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气�
 async function lgGameChat(text) {
   if (!text.trim()) return;
   lgMsg('user', text);
+  if (LG.taskChatCount !== undefined && LG.taskChatCount <= 0) return;
 
   // quick in-character reply via OOC injection (doesn't advance story)
   const ctx    = getContext();
@@ -3683,7 +3687,7 @@ async function lgGameChat(text) {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
       const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); if (LG.taskChatCount > 0) LG.taskChatCount--; return; }
     }
   } catch(e) { /* fallback */ }
 
