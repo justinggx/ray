@@ -3432,9 +3432,18 @@ function lgWin(winner) {
 
 // ── AI commentary (calls ST generate pipeline silently) ──────────
 // ── Strip AI noise, keep only first clean dialogue line ──────────────────────
-function cleanGameReply(raw) {
+function cleanGameReply(raw, charName) {
+  // 0. Strip leading 'charName said/replied:' prefixes from AI output
+  let text = raw;
+  if (charName) {
+    // e.g. '雷蒙德说', '雷蒙德：', '雷蒙德说"'
+    const escaped = charName.replace(/[.*+?^${}()|\[\]\\]/g, '\\$&');
+    text = text.replace(new RegExp('^\\s*' + escaped + '\\s*[\u8bf4\u9053\u7b54\u56de\u8868\u793a]?\\s*[\uff1a:"\u201c\u300c]?\\s*'), '');
+  }
+  // Also strip generic 'XXX said' patterns (1-6 CJK chars + verb)
+  text = text.replace(/^[\s\u3000]*[\u4e00-\u9fa5]{1,6}(\u8bf4|\u9053|\u7b54|\u56de\u7b54|\u8f7b\u58f0\u9053)[\uff1a:\"\u201c\u300c]?\s*/, '');
   // 1. Remove <think>...</think> reasoning chains
-  let text = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
   // 2. Remove <PHONE>...</PHONE> terminal blocks
   text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, '').trim();
   // 3. Remove XML/HTML-like tags (e.g. <创作规则>, <POWER:...>)
@@ -3641,7 +3650,7 @@ async function lgTriggerSquareEvent(player, pos) {
       const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
       if (typeof generateRaw === 'function') {
         const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); replied = true; }
+        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); replied = true; }
       }
     } catch(e) { /* ignore */ }
     if (!replied) {
@@ -3688,7 +3697,7 @@ ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气�
       const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
       if (typeof generateRaw === 'function') {
         const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
-        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); return; }
       }
     } catch(e) { /* ignore */ }
     // 兜底：pool 回复
@@ -3714,7 +3723,7 @@ async function lgGameChat(text) {
     const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
     if (typeof generateRaw === 'function') {
       const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp)); return; }
+      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); return; }
     }
   } catch(e) { /* fallback */ }
 
