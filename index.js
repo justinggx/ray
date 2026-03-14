@@ -129,7 +129,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-btn-bg:#3a1a80;
   --rp-island-bg:#0a0620;
   --rp-island-ring:#0e0a30;
-  --rp-screen-bg:#0e0e2e;
+  --rp-screen-bg:transparent;
   --rp-sbar-color:#c8c0f5;
   --rp-bat-border:rgba(180,160,255,.4);
   --rp-bat-nub:rgba(180,160,255,.3);
@@ -225,7 +225,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── screen ── */
 #rp-screen {
   width:100%; height:100%;
-  background:var(--rp-screen-bg); border-radius:40px; overflow:hidden;
+  background:var(--rp-home-wall), var(--rp-screen-bg);
+  background-size:cover;
+  background-position:center;
+  border-radius:40px; overflow:hidden;
   position:relative;
   font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
 }
@@ -291,8 +294,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── HOME SCREEN ── */
 .rp-home-bg {
   position:absolute; inset:0;
-  background:var(--rp-home-wall);
-  image-rendering: high-quality;
+  background:transparent;
 }
 .rp-home-body { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; padding-top:54px; }
 #rp-home-clock { font-size:52px; font-weight:100; color:var(--rp-clock-color); letter-spacing:-3px; margin-bottom:22px; }
@@ -539,7 +541,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── DARK FRAME ── */
 .rp-dark #rp-frame{background:linear-gradient(160deg,#1e1e1e,#101010);box-shadow:0 0 0 1.5px rgba(255,255,255,.06),0 0 0 9px #0c0c0c,0 0 0 10px rgba(255,255,255,.04),0 36px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
 .rp-dark .rp-btn{background:#2c2c2c}
-.rp-dark #rp-screen{background:#050508}
+.rp-dark #rp-screen{background:var(--rp-home-wall);background-size:cover;background-position:center}
 .rp-dark #rp-island{background:#0a0a0a}
 /* ── DARK LOCK ── */
 .rp-dark .rp-lock-bg{background:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,60,200,.35),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(40,60,200,.25),transparent 55%),linear-gradient(180deg,#0c0c1a,#08080f,#0c0c1a)}
@@ -1038,7 +1040,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-btn-bg:#b0c4d8;
   --rp-island-bg:#1a2635;
   --rp-island-ring:#e8eff5;
-  --rp-screen-bg:#eef2f7;
+  --rp-screen-bg:transparent;
   --rp-sbar-color:#2c4a6a;
   --rp-bat-border:rgba(44,74,106,.4);
   --rp-bat-nub:rgba(44,74,106,.3);
