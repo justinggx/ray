@@ -3594,8 +3594,8 @@ async function lgMove(player, steps) {
 
   let next = cur === 0 ? steps : cur + steps;
 
-  // Home-run overflow: bounce back
-  if (next > 53) next = 53 - (next - 53);
+  // Home-run overflow: clamp to 53 (win), no bounce back
+  if (next > 53) next = 53;
   if (next < 0)  next = 0;
 
   // Animate step-by-step
