@@ -1587,6 +1587,10 @@ function bindUI() {
   });
 
   // ── 全屏查看聊天记录 ─────────────────────────────────────────
+  $(document).on('click', '#rp-game-chat-hint', function() {
+    $('#rp-game-chat').trigger('click');
+  });
+
   $(document).on('click', '#rp-game-chat', function() {
     const body = document.getElementById('rp-game-chat-fs-body');
     if (!body) return;
@@ -4027,17 +4031,13 @@ async function lgGameChat(text) {
   const taskNote = LG.taskActive ? `\n[当前待完成任务：「${LG.taskActive}」——必须直接完成，不许回避]` : '';
   const prompt = `${persona}${taskNote}\n[游戏聊天]用户说："${text}"\n${cName}简短回应（动作描写≤8字）："`;
 
-  try {
-    const { generateRaw } = await import('../../../../script.js').catch(()=>({}));
-    if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-      if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); return; }
-    }
-  } catch(e) { /* fallback */ }
+  // 使用 lgCallAPI（支持自定义 API + ST fallback）
+  const resp = await lgCallAPI(prompt, 150);
+  if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); return; }
 
   // Fallback replies
   const fallbacks = ['嗯嗯~','专注游戏！','别分心，来追我','说什么，快走棋！','哈哈，继续玩！'];
-  setTimeout(() => lgMsg('char', fallbacks[Math.floor(Math.random()*fallbacks.length)]), 500+Math.random()*300);
+  lgMsg('char', fallbacks[Math.floor(Math.random()*fallbacks.length)]);
 }
 
 // ================================================================
