@@ -1119,7 +1119,7 @@ const HTML = `
           </div>
           <div id="rp-game-controls">
             <div class="rp-game-info">
-              <div class="rp-game-players">🌸 你 vs 🌙 <span id="rp-game-char-name">对方</span></div>
+              <div class="rp-game-players"><span style="color:#ec4899">●</span> 你 vs <span style="color:#7c3aed">●</span> <span id="rp-game-char-name">对方</span></div>
               <div class="rp-game-status" id="rp-game-status-text">按骰子开始！</div>
             </div>
             <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
@@ -3131,7 +3131,7 @@ function lgInit() {
   };
   LG._animFrame = requestAnimationFrame(_animLoop);
   lgStatus('你先出手 — 按🎲掷骰子！');
-  lgMsg('sys', `游戏开始！掷骰子即可出发，先到终点者胜。🌸=你  🌙=${LG.charName}`);
+  lgMsg('sys', `游戏开始！先到终点者胜。粉=你，紫=${LG.charName}`);
   setTimeout(() => lgCharComment('game_start'), 900);
 }
 
@@ -3174,27 +3174,22 @@ function lgRender() {
   C.fillRect(0, 5*CELL, W, 3*CELL);
 
   // ── Home zones ──
-  // User (bottom-left) soft rose pink
   const ugrd = C.createRadialGradient(2.5*CELL, 11*CELL, 4, 2.5*CELL, 11*CELL, 65);
   ugrd.addColorStop(0, '#fce4ec'); ugrd.addColorStop(1, '#f8bbd0');
   C.fillStyle = ugrd;
   C.fillRect(0, 8*CELL, 5*CELL, 5*CELL);
-  // Char (top-right) soft periwinkle
   const cgrd = C.createRadialGradient(10.5*CELL, 2*CELL, 4, 10.5*CELL, 2*CELL, 65);
   cgrd.addColorStop(0, '#ede9fe'); cgrd.addColorStop(1, '#c4b5fd');
   C.fillStyle = cgrd;
   C.fillRect(8*CELL, 0, 5*CELL, 5*CELL);
-  // Unused (light gray)
   C.fillStyle = '#f1f5f9';
   C.fillRect(0, 0, 5*CELL, 5*CELL);
   C.fillRect(8*CELL, 8*CELL, 5*CELL, 5*CELL);
 
-  // ── Centre finish (candy gradient) ──
+  // ── Centre (candy gradient) ──
   const grad = C.createRadialGradient(6.5*CELL, 6.5*CELL, 2, 6.5*CELL, 6.5*CELL, 36);
-  grad.addColorStop(0,   '#f9a8d4');
-  grad.addColorStop(.35, '#c084fc');
-  grad.addColorStop(.75, '#818cf8');
-  grad.addColorStop(1,   '#bfdbfe');
+  grad.addColorStop(0, '#f9a8d4'); grad.addColorStop(.4, '#c084fc');
+  grad.addColorStop(.8, '#818cf8'); grad.addColorStop(1, '#bfdbfe');
   C.fillStyle = grad;
   C.fillRect(5*CELL, 5*CELL, 3*CELL, 3*CELL);
 
@@ -3202,49 +3197,43 @@ function lgRender() {
   C.lineWidth = .5;
   LUDO_PATH.forEach(([r,c], idx) => {
     let fill = '#ffffff';
-    if (c === 6 && r > 6) fill = '#fce4ec';  // User home-run approach
-    if (c === 6 && r < 6) fill = '#ede9fe';  // Char home-run approach
+    if (c === 6 && r > 6) fill = '#fce4ec';
+    if (c === 6 && r < 6) fill = '#ede9fe';
     if (LUDO_SAFE.has(idx)) fill = '#fef9c3';
     C.fillStyle = fill;
     C.strokeStyle = 'rgba(160,100,200,.1)';
     C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
     if (LUDO_SAFE.has(idx)) {
-      C.fillStyle = '#d97706';
-      C.font = `${CELL*.52}px serif`;
+      C.fillStyle = 'rgba(217,119,6,.75)';
+      C.font = `${CELL*.48}px serif`;
       C.textAlign = 'center'; C.textBaseline = 'middle';
-      C.fillText('⭐', c*CELL+CELL/2, r*CELL+CELL/2);
+      C.fillText('★', c*CELL+CELL/2, r*CELL+CELL/2);
     }
   });
 
-  // ── Event square markers (🎀 pulsing ribbon, centered) ──
+  // ── Event markers — USER PATH ONLY (fix: 仅标注用户路径，避免误判) ──
   {
-    const pulse = 0.6 + 0.4 * Math.abs(Math.sin(Date.now() / 700));
+    const pulse = 0.5 + 0.5 * Math.abs(Math.sin(Date.now() / 800));
     C.save();
-    C.textAlign = 'center'; C.textBaseline = 'middle';
-    C.font = `${CELL * 0.42}px serif`;
-    C.globalAlpha = 0.55 + 0.35 * pulse;
-    const drawnCells = new Set();
     Object.keys(SQUARE_EVENTS).forEach(posStr => {
       const pos = parseInt(posStr);
       if (pos >= 1 && pos <= 48) {
         const uIdx = (USER_ENTRY + pos - 1) % LUDO_PATH_LEN;
         const [ur, uc] = LUDO_PATH[uIdx];
-        const uKey = `${ur},${uc}`;
-        if (!drawnCells.has(uKey)) {
-          C.fillText('🎀', uc * CELL + CELL * 0.5, ur * CELL + CELL * 0.5);
-          drawnCells.add(uKey);
-        }
-        const cIdx = (CHAR_ENTRY + pos - 1) % LUDO_PATH_LEN;
-        const [cr, cc] = LUDO_PATH[cIdx];
-        const cKey = `${cr},${cc}`;
-        if (!drawnCells.has(cKey)) {
-          C.fillText('🎀', cc * CELL + CELL * 0.5, cr * CELL + CELL * 0.5);
-          drawnCells.add(cKey);
-        }
+        const mx = uc * CELL + CELL * 0.5;
+        const my = ur * CELL + CELL * 0.5;
+        const r  = CELL * 0.17 * (0.85 + 0.15 * pulse);
+        C.beginPath();
+        C.moveTo(mx,     my - r);
+        C.lineTo(mx + r, my    );
+        C.lineTo(mx,     my + r);
+        C.lineTo(mx - r, my    );
+        C.closePath();
+        C.fillStyle = `rgba(219,39,119,${0.45 + 0.3 * pulse})`;
+        C.fill();
       }
     });
-    C.globalAlpha = 1;
     C.restore();
   }
 
@@ -3260,15 +3249,32 @@ function lgRender() {
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
 
-  // ── Home zone labels ──
-  C.textAlign = 'center'; C.textBaseline = 'middle';
-  C.font = `${CELL*1.6}px serif`;
-  C.fillText('🌸', 2.5*CELL, 10.5*CELL);   // User home
-  C.fillText('🌙', 10.5*CELL, 2.5*CELL);   // Char home
+  // ── Home zone markers (canvas circles, no emoji) ──
+  const drawHome = (cx, cy, color, light) => {
+    C.beginPath(); C.arc(cx, cy, CELL*1.1, 0, Math.PI*2);
+    C.fillStyle = light; C.globalAlpha = 0.45; C.fill(); C.globalAlpha = 1;
+    C.beginPath(); C.arc(cx, cy, CELL*0.68, 0, Math.PI*2);
+    C.fillStyle = color; C.globalAlpha = 0.82; C.fill(); C.globalAlpha = 1;
+    C.beginPath(); C.arc(cx, cy, CELL*0.68, 0, Math.PI*2);
+    C.strokeStyle = 'rgba(255,255,255,0.75)'; C.lineWidth = 1.5; C.stroke();
+  };
+  drawHome(2.5*CELL, 10.5*CELL, '#ec4899', '#fce7f3');
+  drawHome(10.5*CELL, 2.5*CELL, '#7c3aed', '#ede9fe');
 
-  // ── Centre finish ──
-  C.font = `${CELL*1.8}px serif`;
-  C.fillText('✨', 6.5*CELL, 6.5*CELL);
+  // ── Centre star (canvas-drawn) ──
+  {
+    const cx = 6.5*CELL, cy = 6.5*CELL, oR = CELL*0.52, iR = CELL*0.2;
+    C.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a = i * Math.PI * 2 / 5 - Math.PI / 2;
+      C.lineTo(cx + oR * Math.cos(a), cy + oR * Math.sin(a));
+      C.lineTo(cx + iR * Math.cos(a + Math.PI/5), cy + iR * Math.sin(a + Math.PI/5));
+    }
+    C.closePath();
+    C.fillStyle = 'rgba(255,255,255,0.9)';
+    C.shadowColor = 'rgba(255,255,255,0.5)'; C.shadowBlur = 5;
+    C.fill(); C.shadowBlur = 0;
+  }
 
   // ── Pieces ──
   lgDrawPiece(C, 'user', LG.userPos, CELL);
@@ -3278,12 +3284,14 @@ function lgRender() {
 function lgDrawPiece(C, player, pos, CELL) {
   if (pos >= 54) return;
   const {x, y} = lgCoords(player, pos);
-  C.shadowColor = 'rgba(0,0,0,.18)';
-  C.shadowBlur  = 5;
-  C.font = `${CELL*.82}px serif`;
-  C.textAlign = 'center'; C.textBaseline = 'middle';
-  C.fillText(player === 'user' ? '🌸' : '🌙', x, y);
+  const color = player === 'user' ? '#ec4899' : '#7c3aed';
+  const ring  = player === 'user' ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.85)';
+  C.shadowColor = 'rgba(0,0,0,0.2)'; C.shadowBlur = 5;
+  C.beginPath(); C.arc(x, y, CELL*0.38, 0, Math.PI*2);
+  C.fillStyle = color; C.fill();
   C.shadowBlur = 0;
+  C.beginPath(); C.arc(x, y, CELL*0.38, 0, Math.PI*2);
+  C.strokeStyle = ring; C.lineWidth = 1.8; C.stroke();
 }
 
 function lgRoll() { return Math.floor(Math.random() * 6) + 1; }
@@ -3422,8 +3430,8 @@ async function lgMove(player, steps) {
     if (opPos >= 1 && opPos <= 48) {
       const opAbs = ((!isUser ? USER_ENTRY : CHAR_ENTRY) + opPos - 1) % LUDO_PATH_LEN;
       if (myAbs === opAbs && !LUDO_SAFE.has(myAbs)) {
-        if (isUser) { LG.charPos = 0; lgMsg('sys', `💥 你的🌸吃掉了${LG.charName}的🌙！`); }
-        else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}的🌙吃掉了你的🌸！`); }
+        if (isUser) { LG.charPos = 0; lgMsg('sys', `💥 你吃掉了${LG.charName}的棋子！`); }
+        else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}吃掉了你的棋子！`); }
         lgRender();
         await new Promise(r => setTimeout(r, 300));
       }
