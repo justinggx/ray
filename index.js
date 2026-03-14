@@ -705,84 +705,99 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
 .rp-view{z-index:1}
 
-/* ══ LUDO GAME — Midnight Blossom 午夜樱花 ══ */
-#rp-view-game{background:linear-gradient(160deg,#130620 0%,#0c0416 55%,#0a0314 100%);display:flex;flex-direction:column}
-#rp-view-game .rp-nav-bar{background:transparent!important;border-bottom:1px solid rgba(255,255,255,.06)!important}
-#rp-view-game .rp-nav-title{color:#fff!important;text-shadow:0 0 24px rgba(255,100,180,.45)}
-#rp-view-game .rp-back{color:rgba(255,150,200,.9)!important}
-/* Board wrap — centered */
+/* ══ LUDO GAME — Candy Garden 糖果花园 ══ */
+#rp-view-game{background:linear-gradient(160deg,#fff5f9 0%,#f6f0ff 60%,#f0f5ff 100%);display:flex;flex-direction:column}
+.rp-dark #rp-view-game{background:linear-gradient(160deg,#1e0a18 0%,#130820 60%,#0c0e1e 100%)}
+#rp-view-game .rp-nav-bar{background:rgba(255,255,255,.75)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(180,120,200,.15)!important}
+#rp-view-game .rp-nav-title{color:#4a1060!important;font-weight:700}
+.rp-dark #rp-view-game .rp-nav-title{color:#e8d0ff!important}
+#rp-view-game .rp-back{color:#b060d0!important}
+/* Board */
 #rp-game-board-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;overflow:hidden;min-height:0}
-#rp-ludo-canvas{border-radius:14px;max-width:262px;max-height:262px;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 0 40px rgba(255,80,160,.1),0 10px 36px rgba(0,0,0,.55)}
-/* Controls glass bar */
-#rp-game-controls{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:10px}
+#rp-ludo-canvas{border-radius:16px;max-width:262px;max-height:262px;display:block;box-shadow:0 4px 24px rgba(160,80,200,.18),0 1px 0 rgba(255,255,255,.9) inset,0 8px 32px rgba(0,0,0,.08)}
+/* Controls */
+#rp-game-controls{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(180,120,200,.12);flex-shrink:0;gap:10px}
+.rp-dark #rp-game-controls{background:rgba(30,10,40,.7);border-top-color:rgba(200,120,255,.1)}
 .rp-game-info{flex:1;min-width:0}
-.rp-game-players{font-size:12px;font-weight:700;color:#fff;letter-spacing:.2px}
-.rp-dark .rp-game-players{color:#fff}
-.rp-game-status{font-size:10.5px;color:rgba(255,170,210,.6);margin-top:2px}
-.rp-dark .rp-game-status{color:rgba(255,170,210,.6)}
-/* Dice button — glowing rose */
-#rp-dice-btn{width:52px;height:52px;border-radius:26px;background:linear-gradient(145deg,#ff5fa0,#cc2060);border:none;color:#fff;font-size:24px;cursor:pointer;display:flex!important;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(255,80,150,.12),0 0 18px rgba(255,80,150,.35),0 4px 12px rgba(0,0,0,.4);transition:transform .15s,box-shadow .15s;flex-shrink:0;visibility:visible!important;opacity:1!important;pointer-events:auto!important;animation:diceGlow 2.5s ease-in-out infinite}
-@keyframes diceGlow{0%,100%{box-shadow:0 0 0 4px rgba(255,80,150,.12),0 0 18px rgba(255,80,150,.35),0 4px 12px rgba(0,0,0,.4)}50%{box-shadow:0 0 0 6px rgba(255,80,150,.2),0 0 28px rgba(255,100,180,.52),0 4px 14px rgba(0,0,0,.4)}}
-#rp-dice-btn:active{transform:scale(.88);animation:none;box-shadow:0 0 8px rgba(255,80,150,.3),0 2px 8px rgba(0,0,0,.3)}
-#rp-dice-btn:disabled{opacity:.35!important;cursor:default;animation:none!important}
+.rp-game-players{font-size:12px;font-weight:700;color:#4a1060}
+.rp-dark .rp-game-players{color:#e8d0ff}
+.rp-game-status{font-size:10.5px;color:#a060c0;margin-top:2px}
+.rp-dark .rp-game-status{color:rgba(220,170,255,.6)}
+/* Dice */
+#rp-dice-btn{width:50px;height:50px;border-radius:25px;background:linear-gradient(145deg,#f472b6,#a855f7);border:none;color:#fff;font-size:22px;cursor:pointer;display:flex!important;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(168,85,247,.4),0 1px 3px rgba(0,0,0,.1);transition:transform .15s,box-shadow .2s;flex-shrink:0;visibility:visible!important;opacity:1!important;pointer-events:auto!important;animation:diceGlow 2.5s ease-in-out infinite}
+@keyframes diceGlow{0%,100%{box-shadow:0 4px 16px rgba(168,85,247,.4),0 1px 3px rgba(0,0,0,.1)}50%{box-shadow:0 4px 24px rgba(244,114,182,.6),0 1px 6px rgba(0,0,0,.12)}}
+#rp-dice-btn:active{transform:scale(.88);animation:none}
+#rp-dice-btn:disabled{opacity:.4!important;cursor:default;animation:none!important}
 #rp-dice-face{font-size:30px;min-width:36px;text-align:center;flex-shrink:0}
 /* Chat log */
-#rp-game-chat{max-height:64px;overflow-y:auto;padding:5px 14px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;background:transparent;border-top:1px solid rgba(255,255,255,.05);scrollbar-width:none;cursor:pointer;transition:background .2s}
-#rp-game-chat:hover{background:rgba(255,255,255,.03)}
+#rp-game-chat{max-height:64px;overflow-y:auto;padding:5px 14px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;background:rgba(255,255,255,.6);border-top:1px solid rgba(180,120,200,.1);scrollbar-width:none;cursor:pointer;transition:background .2s}
+#rp-game-chat:hover{background:rgba(255,255,255,.85)}
 #rp-game-chat::-webkit-scrollbar{display:none}
-#rp-game-chat-hint{font-size:9.5px;color:rgba(255,120,180,.4);text-align:right;padding:0 14px 1px;flex-shrink:0}
-/* Full-screen chat overlay */
-#rp-game-chat-fs{position:absolute;top:12%;bottom:0;left:0;right:0;z-index:200;background:rgba(11,3,20,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column}
-#rp-game-chat-fs-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-#rp-game-chat-fs-title{font-size:14px;font-weight:600;color:#fff}
-#rp-game-chat-fs-close{width:30px;height:30px;border-radius:15px;background:rgba(255,255,255,.1);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;position:relative;z-index:10;pointer-events:auto}
+.rp-dark #rp-game-chat{background:rgba(30,10,40,.4);border-top-color:rgba(200,120,255,.08)}
+#rp-game-chat-hint{font-size:9.5px;color:rgba(160,80,200,.5);text-align:right;padding:0 14px 1px;flex-shrink:0}
+/* Full-screen chat */
+#rp-game-chat-fs{position:absolute;top:12%;bottom:0;left:0;right:0;z-index:200;background:rgba(250,245,255,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column}
+.rp-dark #rp-game-chat-fs{background:rgba(18,8,28,.97)}
+#rp-game-chat-fs-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(180,120,200,.15);flex-shrink:0}
+#rp-game-chat-fs-title{font-size:14px;font-weight:600;color:#4a1060}
+.rp-dark #rp-game-chat-fs-title{color:#e8d0ff}
+#rp-game-chat-fs-close{width:30px;height:30px;border-radius:15px;background:rgba(160,80,200,.1);border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7030a0;position:relative;z-index:10;pointer-events:auto}
+.rp-dark #rp-game-chat-fs-close{background:rgba(200,120,255,.15);color:#e8d0ff}
 #rp-game-chat-fs-body{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
 #rp-game-chat-fs-body .game-msg{font-size:13px;line-height:1.6;padding:3px 0}
-#rp-game-chat-fs-hint{font-size:10px;color:rgba(255,120,180,.5);text-align:center;padding:2px 0 1px;flex-shrink:0}
-/* Message colors */
+#rp-game-chat-fs-hint{font-size:10px;color:rgba(160,80,200,.5);text-align:center;padding:2px 0 1px;flex-shrink:0}
+/* Messages */
 .game-msg{font-size:11px;line-height:1.45;padding:1px 0}
-.game-msg-user{color:#ff9cc4;text-align:right}
-.game-msg-char{color:#7ab8ff}
-.rp-dark .game-msg-char{color:#7ab8ff}
-.game-msg-sys{color:rgba(255,255,255,.3);text-align:center;font-style:italic}
-.rp-dark .game-msg-sys{color:rgba(255,255,255,.3)}
-/* ── Square Event Popup — glass dark card ── */
-#rp-sq-event{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;border-radius:48px}
-#rp-sq-event-box{background:linear-gradient(145deg,rgba(22,6,38,.97),rgba(12,3,22,.97));border:1px solid rgba(255,120,180,.18);border-radius:24px;padding:22px 20px;max-width:228px;text-align:center;box-shadow:0 0 40px rgba(255,80,160,.12),0 12px 48px rgba(0,0,0,.6)}
-#rp-sq-event-sq{font-size:10px;color:rgba(255,160,210,.45);margin-bottom:8px;letter-spacing:1.5px;text-transform:uppercase}
+.game-msg-user{color:#db2777;text-align:right;font-weight:500}
+.game-msg-char{color:#7c3aed;font-weight:500}
+.rp-dark .game-msg-char{color:#c084fc}
+.game-msg-sys{color:#9ca3af;text-align:center;font-style:italic}
+.rp-dark .game-msg-sys{color:rgba(255,255,255,.35)}
+/* ── Square Event Popup — bright clean card ── */
+#rp-sq-event{position:absolute;inset:0;z-index:60;background:rgba(100,50,150,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;border-radius:48px}
+#rp-sq-event-box{background:#fff;border:1px solid rgba(200,150,255,.3);border-radius:24px;padding:24px 22px;max-width:230px;text-align:center;box-shadow:0 8px 40px rgba(150,80,200,.2),0 2px 8px rgba(0,0,0,.08)}
+.rp-dark #rp-sq-event-box{background:linear-gradient(145deg,#1e0a30,#120520)}
+#rp-sq-event-sq{font-size:10px;color:#b07ad0;margin-bottom:8px;letter-spacing:1.5px;text-transform:uppercase}
+.rp-dark #rp-sq-event-sq{color:rgba(220,170,255,.5)}
 #rp-sq-event-emoji{font-size:44px;margin-bottom:10px;line-height:1}
-#rp-sq-event-text{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.5}
-#rp-sq-event-note{font-size:11px;color:rgba(255,190,220,.5);margin-bottom:18px;line-height:1.5}
-#rp-sq-event-done{background:linear-gradient(135deg,#e0407a,#ff6da0);color:#fff;border:none;border-radius:22px;padding:10px 28px;font-size:14px;cursor:pointer;font-weight:700;letter-spacing:.3px;box-shadow:0 4px 18px rgba(224,64,122,.4)}
+#rp-sq-event-text{font-size:15px;font-weight:700;color:#2d1060;margin-bottom:8px;line-height:1.5}
+.rp-dark #rp-sq-event-text{color:#f0e0ff}
+#rp-sq-event-note{font-size:11px;color:#9070b0;margin-bottom:18px;line-height:1.5}
+.rp-dark #rp-sq-event-note{color:rgba(220,180,255,.5)}
+#rp-sq-event-done{background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:22px;padding:10px 28px;font-size:14px;cursor:pointer;font-weight:700;letter-spacing:.3px;box-shadow:0 4px 16px rgba(168,85,247,.35)}
 #rp-sq-event-done:active{transform:scale(.96)}
-/* ── Task bar — bottom glass panel ── */
-#rp-sq-task-bar{position:absolute;bottom:56px;left:10px;right:10px;top:auto;transform:none;width:auto;background:linear-gradient(135deg,rgba(22,4,38,.95),rgba(100,8,50,.9));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,100,170,.2);color:#fff;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px;z-index:55;box-shadow:0 0 28px rgba(200,30,100,.15),0 8px 32px rgba(0,0,0,.5);text-align:center}
-#rp-sq-task-text{font-size:12.5px;font-weight:700;line-height:1.5;margin-bottom:10px;white-space:normal;word-break:break-all}
-#rp-sq-task-done-btn{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.35);border-radius:20px;color:#fff;padding:7px 24px;font-size:13px;cursor:pointer;font-weight:700;transition:background .2s,box-shadow .2s}
-#rp-sq-task-done-btn:not(:disabled):hover{background:rgba(255,255,255,.22);box-shadow:0 2px 12px rgba(255,100,180,.3)}
-#rp-sq-task-done-btn:disabled{opacity:.3;cursor:not-allowed}
+/* ── Task bar — 居中弹窗 ── */
+#rp-sq-task-bar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;background:#fff;border:1px solid rgba(200,150,255,.3);color:#2d1060;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 20px;z-index:55;box-shadow:0 8px 40px rgba(150,80,200,.2),0 2px 10px rgba(0,0,0,.08);text-align:center}
+.rp-dark #rp-sq-task-bar{background:linear-gradient(145deg,#1e0a30,#120520);color:#f0e0ff;border-color:rgba(200,150,255,.2)}
+#rp-sq-task-text{font-size:13px;font-weight:700;line-height:1.5;margin-bottom:12px;white-space:normal;word-break:break-all;color:#2d1060}
+.rp-dark #rp-sq-task-text{color:#f0e0ff}
+#rp-sq-task-done-btn{background:linear-gradient(135deg,#f472b6,#a855f7);border:none;border-radius:20px;color:#fff;padding:8px 26px;font-size:13px;cursor:pointer;font-weight:700;box-shadow:0 3px 12px rgba(168,85,247,.35);transition:opacity .2s,transform .15s}
+#rp-sq-task-done-btn:not(:disabled):hover{opacity:.9}
+#rp-sq-task-done-btn:disabled{opacity:.35;cursor:not-allowed;background:#ccc;box-shadow:none}
 #rp-sq-task-done-btn:not(:disabled):active{transform:scale(.95)}
-#rp-sq-task-hint{font-size:10px;color:rgba(255,200,230,.7);margin-top:8px;animation:taskHintBlink 1.3s ease-in-out infinite}
-@keyframes taskHintBlink{0%,100%{opacity:1}50%{opacity:.15}}
+#rp-sq-task-hint{font-size:10px;color:#a070c0;margin-top:8px;animation:taskHintBlink 1.3s ease-in-out infinite}
+.rp-dark #rp-sq-task-hint{color:rgba(220,170,255,.6)}
+@keyframes taskHintBlink{0%,100%{opacity:1}50%{opacity:.2}}
 /* Input row */
-#rp-game-input-row{display:flex;gap:6px;padding:6px 12px 20px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;align-items:center}
-.rp-dark #rp-game-input-row{background:rgba(255,255,255,.03);border-top-color:rgba(255,255,255,.06)}
-#rp-game-input{flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:7px 14px;font-size:12px;font-family:inherit;color:#fff;outline:none;transition:border-color .2s,background .2s}
-.rp-dark #rp-game-input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:#fff}
-#rp-game-input:focus{border-color:rgba(255,100,180,.4);background:rgba(255,255,255,.11)}
-#rp-game-input::placeholder{color:rgba(255,255,255,.3)}
-#rp-game-send{width:28px!important;height:28px!important;min-width:28px!important;border-radius:14px!important;background:linear-gradient(135deg,#ff5090,#cc2060)!important;border:none!important;color:#fff!important;font-size:14px!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;padding:0!important;margin:0!important;box-shadow:0 2px 8px rgba(200,30,100,.35)!important}
+#rp-game-input-row{display:flex;gap:6px;padding:6px 12px 20px;background:rgba(255,255,255,.7);border-top:1px solid rgba(180,120,200,.1);flex-shrink:0;align-items:center}
+.rp-dark #rp-game-input-row{background:rgba(20,8,32,.6);border-top-color:rgba(180,120,255,.1)}
+#rp-game-input{flex:1;min-width:0;background:rgba(255,255,255,.9);border:1.5px solid rgba(180,120,200,.25);border-radius:18px;padding:7px 14px;font-size:12px;font-family:inherit;color:#2d1060;outline:none;transition:border-color .2s}
+.rp-dark #rp-game-input{background:rgba(255,255,255,.07);border-color:rgba(180,120,255,.2);color:#f0e0ff}
+#rp-game-input:focus{border-color:#a855f7}
+#rp-game-input::placeholder{color:rgba(120,80,160,.4)}
+.rp-dark #rp-game-input::placeholder{color:rgba(220,170,255,.3)}
+#rp-game-send{width:28px!important;height:28px!important;min-width:28px!important;border-radius:14px!important;background:linear-gradient(135deg,#f472b6,#a855f7)!important;border:none!important;color:#fff!important;font-size:14px!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-shrink:0!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;padding:0!important;margin:0!important;box-shadow:0 2px 8px rgba(168,85,247,.35)!important}
 #rp-game-send:hover{opacity:.85!important}
 /* Win overlay */
-#rp-game-win{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
-.game-win-box{background:linear-gradient(145deg,rgba(28,6,44,.98),rgba(14,3,24,.98));border:1px solid rgba(255,130,180,.15);border-radius:28px;padding:32px 24px;text-align:center;max-width:224px;width:88%;box-shadow:0 0 60px rgba(255,80,160,.15),0 20px 64px rgba(0,0,0,.7)}
-.rp-dark .game-win-box{background:linear-gradient(145deg,rgba(28,6,44,.98),rgba(14,3,24,.98))}
+#rp-game-win{position:absolute;inset:0;background:rgba(120,60,180,.3);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
+.game-win-box{background:#fff;border:1px solid rgba(200,150,255,.3);border-radius:28px;padding:32px 24px;text-align:center;max-width:224px;width:88%;box-shadow:0 12px 48px rgba(160,80,200,.25),0 2px 8px rgba(0,0,0,.06)}
+.rp-dark .game-win-box{background:linear-gradient(145deg,#1e0a30,#120520);border-color:rgba(200,150,255,.2)}
 .game-win-emoji{font-size:66px;margin-bottom:10px;line-height:1}
-.game-win-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;letter-spacing:-.2px}
-.rp-dark .game-win-title{color:#fff}
-.game-win-sub{font-size:13px;color:rgba(255,190,220,.65);margin-bottom:22px;line-height:1.6}
-.rp-dark .game-win-sub{color:rgba(255,190,220,.65)}
-.game-win-btn{width:100%!important;padding:14px!important;background:linear-gradient(135deg,#ff5090,#cc2060)!important;color:#fff!important;border:none!important;border-radius:18px!important;font-size:15px!important;font-weight:800!important;cursor:pointer!important;font-family:inherit!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;letter-spacing:.3px!important;box-shadow:0 4px 20px rgba(200,30,100,.4)!important}
+.game-win-title{font-size:22px;font-weight:800;color:#2d1060;margin-bottom:8px;letter-spacing:-.2px}
+.rp-dark .game-win-title{color:#f0e0ff}
+.game-win-sub{font-size:13px;color:#9070b0;margin-bottom:22px;line-height:1.6}
+.rp-dark .game-win-sub{color:rgba(220,180,255,.6)}
+.game-win-btn{width:100%!important;padding:14px!important;background:linear-gradient(135deg,#f472b6,#a855f7)!important;color:#fff!important;border:none!important;border-radius:18px!important;font-size:15px!important;font-weight:800!important;cursor:pointer!important;font-family:inherit!important;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;letter-spacing:.3px!important;box-shadow:0 4px 18px rgba(168,85,247,.4)!important}
 .game-win-btn:hover{opacity:.88!important}
 @keyframes rp-dice-roll{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
 .ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
@@ -1104,7 +1119,7 @@ const HTML = `
           </div>
           <div id="rp-game-controls">
             <div class="rp-game-info">
-              <div class="rp-game-players">❤️ 你 vs 💙 <span id="rp-game-char-name">对方</span></div>
+              <div class="rp-game-players">🌸 你 vs 🌙 <span id="rp-game-char-name">对方</span></div>
               <div class="rp-game-status" id="rp-game-status-text">按骰子开始！</div>
             </div>
             <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
@@ -3116,7 +3131,7 @@ function lgInit() {
   };
   LG._animFrame = requestAnimationFrame(_animLoop);
   lgStatus('你先出手 — 按🎲掷骰子！');
-  lgMsg('sys', `游戏开始！掷骰子即可出发，先到终点者胜。❤️=你  💙=${LG.charName}`);
+  lgMsg('sys', `游戏开始！掷骰子即可出发，先到终点者胜。🌸=你  🌙=${LG.charName}`);
   setTimeout(() => lgCharComment('game_start'), 900);
 }
 
@@ -3150,66 +3165,65 @@ function lgRender() {
   C.clearRect(0, 0, W, W);
 
   // ── Background ──
-  C.fillStyle = '#0e0420';
+  C.fillStyle = '#faf5ff';
   C.fillRect(0, 0, W, W);
 
   // ── Cross arms ──
-  C.fillStyle = '#1a0c30';
-  C.fillRect(5*CELL, 0, 3*CELL, W);    // vertical
-  C.fillRect(0, 5*CELL, W, 3*CELL);    // horizontal
+  C.fillStyle = '#f3e8ff';
+  C.fillRect(5*CELL, 0, 3*CELL, W);
+  C.fillRect(0, 5*CELL, W, 3*CELL);
 
   // ── Home zones ──
-  // User (bottom-left) deep rose
+  // User (bottom-left) soft rose pink
   const ugrd = C.createRadialGradient(2.5*CELL, 11*CELL, 4, 2.5*CELL, 11*CELL, 65);
-  ugrd.addColorStop(0, '#4a0028'); ugrd.addColorStop(1, '#270012');
+  ugrd.addColorStop(0, '#fce4ec'); ugrd.addColorStop(1, '#f8bbd0');
   C.fillStyle = ugrd;
   C.fillRect(0, 8*CELL, 5*CELL, 5*CELL);
-  // Char (top-right) deep navy
+  // Char (top-right) soft periwinkle
   const cgrd = C.createRadialGradient(10.5*CELL, 2*CELL, 4, 10.5*CELL, 2*CELL, 65);
-  cgrd.addColorStop(0, '#001c4a'); cgrd.addColorStop(1, '#000c28');
+  cgrd.addColorStop(0, '#ede9fe'); cgrd.addColorStop(1, '#c4b5fd');
   C.fillStyle = cgrd;
   C.fillRect(8*CELL, 0, 5*CELL, 5*CELL);
-  // Other two (dark near-black)
-  C.fillStyle = '#14101e';
+  // Unused (light gray)
+  C.fillStyle = '#f1f5f9';
   C.fillRect(0, 0, 5*CELL, 5*CELL);
   C.fillRect(8*CELL, 8*CELL, 5*CELL, 5*CELL);
 
-  // ── Centre finish (jewel gradient) ──
+  // ── Centre finish (candy gradient) ──
   const grad = C.createRadialGradient(6.5*CELL, 6.5*CELL, 2, 6.5*CELL, 6.5*CELL, 36);
-  grad.addColorStop(0,   '#ff4d90');
-  grad.addColorStop(.35, '#9b30ff');
-  grad.addColorStop(.75, '#1e40af');
-  grad.addColorStop(1,   '#0a1050');
+  grad.addColorStop(0,   '#f9a8d4');
+  grad.addColorStop(.35, '#c084fc');
+  grad.addColorStop(.75, '#818cf8');
+  grad.addColorStop(1,   '#bfdbfe');
   C.fillStyle = grad;
   C.fillRect(5*CELL, 5*CELL, 3*CELL, 3*CELL);
 
   // ── Path squares ──
   C.lineWidth = .5;
   LUDO_PATH.forEach(([r,c], idx) => {
-    let fill = '#1c1230';
-    if (c === 6 && r > 6) fill = '#2a0016';  // User home-run approach
-    if (c === 6 && r < 6) fill = '#001430';  // Char home-run approach
-    if (LUDO_SAFE.has(idx)) fill = '#1a1600';
+    let fill = '#ffffff';
+    if (c === 6 && r > 6) fill = '#fce4ec';  // User home-run approach
+    if (c === 6 && r < 6) fill = '#ede9fe';  // Char home-run approach
+    if (LUDO_SAFE.has(idx)) fill = '#fef9c3';
     C.fillStyle = fill;
-    C.strokeStyle = 'rgba(255,255,255,.07)';
+    C.strokeStyle = 'rgba(160,100,200,.1)';
     C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
     if (LUDO_SAFE.has(idx)) {
-      C.fillStyle = '#ffd700';
+      C.fillStyle = '#d97706';
       C.font = `${CELL*.52}px serif`;
       C.textAlign = 'center'; C.textBaseline = 'middle';
-      C.fillText('★', c*CELL+CELL/2, r*CELL+CELL/2);
+      C.fillText('⭐', c*CELL+CELL/2, r*CELL+CELL/2);
     }
   });
 
-  // ── Event square markers (tiny pulsing ♥, centered) ──
+  // ── Event square markers (🎀 pulsing ribbon, centered) ──
   {
     const pulse = 0.6 + 0.4 * Math.abs(Math.sin(Date.now() / 700));
     C.save();
     C.textAlign = 'center'; C.textBaseline = 'middle';
-    C.shadowBlur = 0;
-    C.font = `${CELL * 0.38}px serif`;
-    C.fillStyle = `rgba(255,80,160,${0.55 + 0.35 * pulse})`;
+    C.font = `${CELL * 0.42}px serif`;
+    C.globalAlpha = 0.55 + 0.35 * pulse;
     const drawnCells = new Set();
     Object.keys(SQUARE_EVENTS).forEach(posStr => {
       const pos = parseInt(posStr);
@@ -3218,29 +3232,30 @@ function lgRender() {
         const [ur, uc] = LUDO_PATH[uIdx];
         const uKey = `${ur},${uc}`;
         if (!drawnCells.has(uKey)) {
-          C.fillText('♥', uc * CELL + CELL * 0.5, ur * CELL + CELL * 0.5);
+          C.fillText('🎀', uc * CELL + CELL * 0.5, ur * CELL + CELL * 0.5);
           drawnCells.add(uKey);
         }
         const cIdx = (CHAR_ENTRY + pos - 1) % LUDO_PATH_LEN;
         const [cr, cc] = LUDO_PATH[cIdx];
         const cKey = `${cr},${cc}`;
         if (!drawnCells.has(cKey)) {
-          C.fillText('♥', cc * CELL + CELL * 0.5, cr * CELL + CELL * 0.5);
+          C.fillText('🎀', cc * CELL + CELL * 0.5, cr * CELL + CELL * 0.5);
           drawnCells.add(cKey);
         }
       }
     });
+    C.globalAlpha = 1;
     C.restore();
   }
 
   // ── Home-run lanes ──
   USER_HOME_RUN.forEach(([r,c]) => {
-    C.fillStyle = '#3d001e'; C.strokeStyle = 'rgba(255,80,140,.15)';
+    C.fillStyle = '#fbcfe8'; C.strokeStyle = 'rgba(236,72,153,.15)';
     C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
   CHAR_HOME_RUN.forEach(([r,c]) => {
-    C.fillStyle = '#001234'; C.strokeStyle = 'rgba(80,140,255,.15)';
+    C.fillStyle = '#ddd6fe'; C.strokeStyle = 'rgba(139,92,246,.15)';
     C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
@@ -3248,12 +3263,12 @@ function lgRender() {
   // ── Home zone labels ──
   C.textAlign = 'center'; C.textBaseline = 'middle';
   C.font = `${CELL*1.6}px serif`;
-  C.fillText('❤️', 2.5*CELL, 10.5*CELL);
-  C.fillText('💙', 10.5*CELL, 2.5*CELL);
+  C.fillText('🌸', 2.5*CELL, 10.5*CELL);   // User home
+  C.fillText('🌙', 10.5*CELL, 2.5*CELL);   // Char home
 
-  // ── Centre heart ──
+  // ── Centre finish ──
   C.font = `${CELL*1.8}px serif`;
-  C.fillText('💗', 6.5*CELL, 6.5*CELL);
+  C.fillText('✨', 6.5*CELL, 6.5*CELL);
 
   // ── Pieces ──
   lgDrawPiece(C, 'user', LG.userPos, CELL);
@@ -3263,12 +3278,11 @@ function lgRender() {
 function lgDrawPiece(C, player, pos, CELL) {
   if (pos >= 54) return;
   const {x, y} = lgCoords(player, pos);
-  // shadow
-  C.shadowColor = 'rgba(0,0,0,.25)';
-  C.shadowBlur  = 4;
-  C.font = `${CELL*.78}px serif`;
+  C.shadowColor = 'rgba(0,0,0,.18)';
+  C.shadowBlur  = 5;
+  C.font = `${CELL*.82}px serif`;
   C.textAlign = 'center'; C.textBaseline = 'middle';
-  C.fillText(player === 'user' ? '❤️' : '💙', x, y);
+  C.fillText(player === 'user' ? '🌸' : '🌙', x, y);
   C.shadowBlur = 0;
 }
 
@@ -3408,8 +3422,8 @@ async function lgMove(player, steps) {
     if (opPos >= 1 && opPos <= 48) {
       const opAbs = ((!isUser ? USER_ENTRY : CHAR_ENTRY) + opPos - 1) % LUDO_PATH_LEN;
       if (myAbs === opAbs && !LUDO_SAFE.has(myAbs)) {
-        if (isUser) { LG.charPos = 0; lgMsg('sys', `💥 你吃掉了${LG.charName}的棋子！`); }
-        else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}吃掉了你的棋子！`); }
+        if (isUser) { LG.charPos = 0; lgMsg('sys', `💥 你的🌸吃掉了${LG.charName}的🌙！`); }
+        else        { LG.userPos = 0; lgMsg('sys', `💥 ${LG.charName}的🌙吃掉了你的🌸！`); }
         lgRender();
         await new Promise(r => setTimeout(r, 300));
       }
