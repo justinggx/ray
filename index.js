@@ -1354,6 +1354,45 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-color: rgba(130,90,255,.4) !important;
 }
 #rp-phone.rp-theme-star #rp-game-chat-fs #rp-input::placeholder { color: rgba(180,165,255,.4) !important; }
+
+/* ── 🌿 MISTY: Ludo game text legibility ── */
+#rp-phone.rp-theme-misty .rp-game-status { color: #1a3050 !important; font-weight: 600 !important; text-shadow: 0 0 8px rgba(255,255,255,.8) !important; }
+#rp-phone.rp-theme-misty .rp-game-players { color: #1a2e44 !important; font-weight: 600 !important; text-shadow: 0 0 8px rgba(255,255,255,.8) !important; }
+#rp-phone.rp-theme-misty .rp-game-info { color: #1a2e44 !important; }
+#rp-phone.rp-theme-misty #rp-game-controls span,
+#rp-phone.rp-theme-misty #rp-game-controls div { color: #1a2e44 !important; }
+/* Dice button: steel blue */
+#rp-phone.rp-theme-misty #rp-dice-btn {
+  background: linear-gradient(145deg, #2d6d9a, #4a8fbf) !important;
+  box-shadow: 0 4px 16px rgba(45,109,154,.35), 0 1px 3px rgba(0,0,0,.15) !important;
+}
+/* Game chat area */
+#rp-phone.rp-theme-misty #rp-game-chat {
+  background: rgba(240,248,255,.55) !important;
+  border-top-color: rgba(130,175,215,.2) !important;
+}
+#rp-phone.rp-theme-misty #rp-game-chat * { color: #1a3050 !important; }
+#rp-phone.rp-theme-misty #rp-game-chat-hint { color: rgba(45,109,154,.6) !important; }
+/* Nav title in game */
+#rp-phone.rp-theme-misty #rp-view-game .rp-nav-title {
+  color: #1a2e44 !important;
+  text-shadow: 0 0 10px rgba(255,255,255,.75) !important;
+}
+/* Fullscreen chat */
+#rp-phone.rp-theme-misty #rp-game-chat-fs {
+  background: rgba(240,248,255,.96) !important;
+}
+#rp-phone.rp-theme-misty #rp-game-chat-fs-title { color: #1a2e44 !important; }
+#rp-phone.rp-theme-misty #rp-game-chat-fs #rp-input {
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(130,175,215,.45) !important;
+  color: #1a2e44 !important;
+}
+/* Roll info / task button */
+#rp-phone.rp-theme-misty #rp-task-done-btn {
+  background: linear-gradient(135deg, #2d6d9a, #4a8fbf) !important;
+  color: #fff !important; border: none !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
