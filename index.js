@@ -40,7 +40,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-bat-border:rgba(0,0,0,.4);
   --rp-bat-nub:rgba(0,0,0,.3);
   /* Lock screen */
-  --rp-lock-wall:linear-gradient(rgba(255,230,240,.22),rgba(255,210,225,.28)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-lock-wall:linear-gradient(rgba(255,230,240,.10),rgba(255,210,225,.12)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#4a1030;
   --rp-lock-time:#3a0a20;
   --rp-swipe-color:rgba(120,40,70,.4);
@@ -48,7 +48,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-ln-bd:rgba(0,0,0,.06);
   --rp-ln-text:rgba(0,0,0,.85);
   /* Home screen */
-  --rp-home-wall:linear-gradient(rgba(255,230,240,.18),rgba(255,215,228,.22)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-home-wall:linear-gradient(rgba(255,230,240,.08),rgba(255,215,228,.10)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-clock-color:#3a0a20;
   --rp-app-lbl:rgba(60,10,30,.9);
   --rp-app-lbl-sh:0 1px 4px rgba(255,255,255,.7);
@@ -63,7 +63,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-bd:rgba(255,180,200,.2);
   --rp-nav-title:#4a1030;
   --rp-nav-btn:#c0306a;
-  --rp-nav-blur:16px;
   /* Messages / thread */
   --rp-msg-bg:#fff;
   --rp-bubbles-bg:#fff;
@@ -134,14 +133,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-sbar-color:#c8c0f5;
   --rp-bat-border:rgba(180,160,255,.4);
   --rp-bat-nub:rgba(180,160,255,.3);
-  --rp-lock-wall:linear-gradient(rgba(8,4,20,.5),rgba(12,6,30,.55)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-lock-wall:linear-gradient(rgba(8,4,20,.35),rgba(12,6,30,.4)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#e8e0ff;
   --rp-lock-time:#f2eeff;
   --rp-swipe-color:rgba(180,160,255,.3);
   --rp-ln-bg:rgba(15,10,42,.88);
   --rp-ln-bd:rgba(150,120,255,.12);
   --rp-ln-text:rgba(220,210,255,.85);
-  --rp-home-wall:linear-gradient(rgba(8,4,20,.48),rgba(12,6,30,.52)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-home-wall:linear-gradient(rgba(8,4,20,.32),rgba(12,6,30,.38)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-clock-color:#f2eeff;
   --rp-app-lbl:rgba(225,215,255,.95);
   --rp-app-lbl-sh:0 1px 4px rgba(0,0,0,.85);
@@ -154,7 +153,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-bd:rgba(168,85,247,.2);
   --rp-nav-title:#e8e0ff;
   --rp-nav-btn:#a78bfa;
-  --rp-nav-blur:18px;
   --rp-msg-bg:#08082a;
   --rp-bubbles-bg:#08082a;
   --rp-sent-bg:linear-gradient(135deg,#5b21b6,#7c3aed);
@@ -322,7 +320,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* widget */
 #rp-widget {
-  background:var(--rp-widget-bg); backdrop-filter:blur(20px);
+  background:var(--rp-widget-bg);
   border:1px solid var(--rp-widget-bd); border-radius:var(--rp-widget-radius);
   margin:18px 16px 0; padding:13px 16px; width:calc(100% - 32px); color:var(--rp-widget-color);
   box-shadow:var(--rp-widget-sh);
@@ -401,8 +399,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-top:1px solid var(--rp-composer-bd) !important;
   flex-shrink:0 !important;
   background:var(--rp-composer-bg) !important;
-  backdrop-filter:blur(var(--rp-nav-blur,0px)) !important;
-  -webkit-backdrop-filter:blur(var(--rp-nav-blur,0px)) !important;
 }
 #rp-input {
   flex:1 !important;
@@ -459,9 +455,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-bottom:1px solid var(--rp-nav-bd);
   background:var(--rp-nav-bg);
   box-shadow:var(--rp-nav-sh);
-  backdrop-filter:blur(var(--rp-nav-blur,0px));
-  -webkit-backdrop-filter:blur(var(--rp-nav-blur,0px));
 }
+
 .rp-nav-title { font-size:17px; font-weight:600; color:var(--rp-nav-title); }
 .rp-back {
   background:none !important; border:none !important;
@@ -563,6 +558,26 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-app-off{opacity:.2}
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
 
+
+/* ── THEME BUTTON COLORS ── */
+/* Candy: warm rose tones on icons */
+#rp-phone.rp-theme-candy .rp-app-ico { filter:saturate(1.1) brightness(1.05); }
+#rp-phone.rp-theme-candy #rp-input { border-color:rgba(192,48,106,.25) !important; }
+
+/* Star: desaturate + darken icons, purple tint */
+#rp-phone.rp-theme-star .rp-app-ico { filter:saturate(0.55) brightness(0.82) hue-rotate(240deg); }
+#rp-phone.rp-theme-star #rp-input { border-color:rgba(140,80,255,.35) !important; }
+#rp-phone.rp-theme-star #rp-view-game .rp-nav-bar { background:rgba(12,6,30,.88)!important; }
+#rp-phone.rp-theme-star #rp-game-controls { background:rgba(12,6,30,.85); border-top-color:rgba(140,80,255,.15); }
+
+/* Misty: cool blue-shift on icons */
+#rp-phone.rp-theme-misty .rp-app-ico { filter:saturate(0.75) brightness(1.0) hue-rotate(200deg); }
+#rp-phone.rp-theme-misty #rp-input { border-color:rgba(61,110,154,.25) !important; }
+
+/* Theme-aware lock screen bottom nav pills */
+#rp-phone.rp-theme-star .rp-ln { background:rgba(80,40,180,.2) !important; }
+#rp-phone.rp-theme-misty .rp-ln { background:rgba(61,110,154,.15) !important; }
+#rp-phone.rp-theme-candy .rp-ln { background:rgba(200,60,100,.12) !important; }
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -575,14 +590,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-sbar-color:#2c4a6a;
   --rp-bat-border:rgba(44,74,106,.4);
   --rp-bat-nub:rgba(44,74,106,.3);
-  --rp-lock-wall:linear-gradient(rgba(200,225,245,.15),rgba(180,215,240,.2)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-lock-wall:linear-gradient(rgba(200,225,245,.08),rgba(180,215,240,.10)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#1e3a54;
   --rp-lock-time:#1a2e44;
   --rp-swipe-color:rgba(44,74,106,.35);
   --rp-ln-bg:rgba(240,246,252,.85);
   --rp-ln-bd:rgba(140,175,210,.2);
   --rp-ln-text:rgba(30,58,84,.85);
-  --rp-home-wall:linear-gradient(rgba(200,225,245,.12),rgba(180,215,240,.16)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-home-wall:linear-gradient(rgba(200,225,245,.06),rgba(180,215,240,.08)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-clock-color:#1a2e44;
   --rp-app-lbl:rgba(26,46,68,.85);
   --rp-app-lbl-sh:0 1px 3px rgba(255,255,255,.9);
@@ -595,7 +610,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-bd:rgba(140,175,210,.25);
   --rp-nav-title:#1a2e44;
   --rp-nav-btn:#3d6e9a;
-  --rp-nav-blur:20px;
   --rp-msg-bg:#f0f5fa;
   --rp-bubbles-bg:#f0f5fa;
   --rp-sent-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
