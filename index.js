@@ -153,8 +153,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-bd:rgba(168,85,247,.2);
   --rp-nav-title:#e8e0ff;
   --rp-nav-btn:#a78bfa;
-  --rp-msg-bg:#08082a;
-  --rp-bubbles-bg:#08082a;
+  --rp-msg-bg:transparent;
+  --rp-bubbles-bg:transparent;
   --rp-sent-bg:linear-gradient(135deg,#5b21b6,#7c3aed);
   --rp-recv-bg:rgba(40,28,90,.9);
   --rp-recv-color:#ddd4ff;
@@ -192,7 +192,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-themes-bg:transparent;
   --rp-themes-label:#c8b4ff;
   --rp-tc-bg:rgba(20,14,55,.9);
-  --rp-threads-bg:#08082a;
+  --rp-threads-bg:transparent;
   --rp-thread-bd:rgba(140,110,255,.1);
   --rp-thread-hover:rgba(255,255,255,.03);
   --rp-tn-color:#e0d8ff;
@@ -200,7 +200,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-tt-color:rgba(180,165,255,.4);
   --rp-hd-name:rgba(180,165,255,.7);
   --rp-bts-color:rgba(180,165,255,.35);
-  --rp-moments-bg:#08082a;
+  --rp-moments-bg:transparent;
   --rp-moment-card:rgba(20,14,55,.9);
   --rp-moment-name:#a78bfa;
   --rp-moment-text:#d5ccff;
@@ -1425,8 +1425,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-bd:rgba(140,175,210,.25);
   --rp-nav-title:#1a2e44;
   --rp-nav-btn:#3d6e9a;
-  --rp-msg-bg:#f0f5fa;
-  --rp-bubbles-bg:#f0f5fa;
+  --rp-msg-bg:transparent;
+  --rp-bubbles-bg:transparent;
   --rp-sent-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
   --rp-recv-bg:rgba(255,255,255,.88);
   --rp-recv-color:#1a2e44;
@@ -1464,7 +1464,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-themes-bg:transparent;
   --rp-themes-label:#3d6e9a;
   --rp-tc-bg:rgba(240,246,252,.9);
-  --rp-threads-bg:#f0f5fa;
+  --rp-threads-bg:transparent;
   --rp-thread-bd:rgba(140,175,210,.18);
   --rp-thread-hover:rgba(140,175,210,.08);
   --rp-tn-color:#1a2e44;
@@ -1472,7 +1472,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-tt-color:rgba(44,74,106,.4);
   --rp-hd-name:rgba(44,74,106,.6);
   --rp-bts-color:rgba(44,74,106,.35);
-  --rp-moments-bg:#e8f0f8;
+  --rp-moments-bg:transparent;
   --rp-moment-card:rgba(240,246,252,.88);
   --rp-moment-name:#3d6e9a;
   --rp-moment-text:#1a2e44;
