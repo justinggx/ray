@@ -31,39 +31,45 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    📱 MOBILE RESPONSIVE ADAPTATION
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* FAB: bigger, higher (above ST input bar), safe-area aware */
+  /* FAB: bright gradient so it's visible on any ST background,
+     positioned mid-right to avoid bottom input bar conflicts */
   #rp-fab {
-    width: 58px !important;
-    height: 58px !important;
-    font-size: 28px !important;
-    right: 14px !important;
-    bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
-    box-shadow: 0 6px 28px rgba(0,0,0,.28), 0 0 0 3px rgba(255,255,255,.6) !important;
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 26px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: linear-gradient(135deg, #f472b6, #a855f7) !important;
+    border: 2.5px solid rgba(255,255,255,.9) !important;
+    box-shadow: 0 4px 24px rgba(168,85,247,.55), 0 0 0 4px rgba(255,255,255,.25) !important;
+    backdrop-filter: none !important;
     z-index: 2147483646 !important;
   }
-  /* Phone: float centered, scale to fit screen */
+  /* Phone: centered in viewport */
   #rp-phone {
     right: 50% !important;
     bottom: 50% !important;
+    top: auto !important;
     transform: translate(50%, 50%) !important;
     z-index: 2147483645 !important;
   }
-  /* Phone frame: scale down to fit narrow screens */
+  /* Phone frame: fit narrow screens */
   #rp-frame {
     width: min(286px, calc(100vw - 20px)) !important;
-    height: min(580px, calc(100dvh - 120px)) !important;
+    height: min(580px, calc(100dvh - 80px)) !important;
   }
-  /* Screen fills frame */
   #rp-screen {
     border-radius: min(40px, 6vw) !important;
   }
 }
 
-/* Very small screens (< 360px width) */
+/* Very small screens */
 @media (max-width: 360px) {
   #rp-frame {
     width: calc(100vw - 16px) !important;
-    height: calc(100dvh - 100px) !important;
+    height: calc(100dvh - 60px) !important;
   }
 }
 /* ── CSS THEME TOKENS ── */
