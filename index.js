@@ -603,11 +603,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-radius: 22px !important;
 }
 #rp-phone.rp-theme-candy #rp-home-clock {
-  color: #e06080 !important;
-  font-weight: 100 !important;
+  color: #c03060 !important;
+  font-weight: 200 !important;
   font-size: 58px !important;
   letter-spacing: -3px !important;
-  text-shadow: 0 2px 20px rgba(224,96,128,.3) !important;
+  text-shadow:
+    0 0 28px rgba(255,255,255,.92),
+    0 0 10px rgba(255,255,255,.7),
+    0 2px 6px rgba(255,255,255,.4) !important;
 }
 /* Candy nav bars: pink glass */
 #rp-phone.rp-theme-candy .rp-nav-bar {
@@ -880,15 +883,22 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ══ CANDY HOME: Full Beauty Pass ══ */
 /* Status bar: rose pink */
 #rp-phone.rp-theme-candy #rp-sbar {
-  color: #d4607a !important;
+  color: #b02850 !important;
+  text-shadow: 0 0 10px rgba(255,255,255,.85) !important;
 }
 /* Home date line */
 #rp-home-date {
   font-size:12px; font-weight:500; letter-spacing:.3px;
-  color:var(--rp-clock-color); opacity:.55; margin-top:-16px; margin-bottom:26px;
+  color:var(--rp-clock-color); opacity:.7; margin-top:-14px; margin-bottom:24px;
 }
 #rp-phone.rp-theme-candy #rp-home-date {
-  color: #e06080 !important; opacity: .65 !important;
+  color: #b02850 !important;
+  opacity: 1 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-shadow:
+    0 0 16px rgba(255,255,255,.95),
+    0 0 6px rgba(255,255,255,.7) !important;
 }
 #rp-phone.rp-theme-star #rp-home-date {
   color: #b09ef0 !important; opacity: .6 !important;
@@ -920,11 +930,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy .rp-bat-fill { background: #d4607a !important; }
 /* Candy lock screen: rose clock/date */
 #rp-phone.rp-theme-candy #rp-lock-time {
-  color: #e06080 !important;
-  text-shadow: 0 2px 20px rgba(224,96,128,.25) !important;
+  color: #c03060 !important;
+  text-shadow:
+    0 0 28px rgba(255,255,255,.9),
+    0 0 10px rgba(255,255,255,.6) !important;
 }
 #rp-phone.rp-theme-candy #rp-lock-date {
-  color: rgba(224,96,128,.7) !important;
+  color: #b02850 !important;
+  text-shadow: 0 0 14px rgba(255,255,255,.9) !important;
 }
 #rp-phone.rp-theme-candy #rp-swipe-hint {
   color: rgba(212,96,122,.55) !important;
