@@ -4407,7 +4407,7 @@ const RP_THEME_ICONS = {
   }
 };
 
-tion lgRenderHomeIcons() {
+function lgRenderHomeIcons() {
   const theme = localStorage.getItem('rp_theme') || 'candy';
   const icons = RP_THEME_ICONS[theme] || RP_THEME_ICONS.candy;
   document.querySelectorAll('#rp-app-grid [data-app]').forEach(el => {
