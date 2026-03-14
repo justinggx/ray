@@ -12,11 +12,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   position:fixed; right:20px; bottom:20px; z-index:2147483646;
   width:52px; height:52px; border-radius:50%;
   background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
-  border:1px solid rgba(0,0,0,.08);
+  border:1px solid rgba(0,0,0,.1);
   display:flex; align-items:center; justify-content:center;
-  font-size:24px; cursor:pointer;
-  box-shadow:0 4px 24px rgba(0,0,0,.15);
-  transition:transform .15s;
+  font-size:24px; cursor:grab;
+  box-shadow:0 4px 24px rgba(0,0,0,.18);
+  transition:box-shadow .15s;
+  user-select:none; touch-action:none;
 }
 #rp-fab:hover { transform:scale(1.1); }
 
@@ -31,23 +32,20 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    📱 MOBILE RESPONSIVE ADAPTATION
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* FAB: bright gradient so it's visible on any ST background,
-     positioned mid-right to avoid bottom input bar conflicts */
   #rp-fab {
-    width: 56px !important;
-    height: 56px !important;
-    font-size: 26px !important;
-    right: 10px !important;
-    bottom: auto !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: linear-gradient(135deg, #f472b6, #a855f7) !important;
-    border: 2.5px solid rgba(255,255,255,.9) !important;
-    box-shadow: 0 4px 24px rgba(168,85,247,.55), 0 0 0 4px rgba(255,255,255,.25) !important;
-    backdrop-filter: none !important;
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 24px !important;
+    right: 14px;
+    bottom: 72px;
+    top: auto;
+    transform: none;
+    background: rgba(255,255,255,.95) !important;
+    border: 1px solid rgba(0,0,0,.1) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.22), 0 0 0 2px rgba(255,255,255,.5) !important;
+    backdrop-filter: blur(12px) !important;
     z-index: 2147483646 !important;
   }
-  /* Phone: centered in viewport */
   #rp-phone {
     right: 50% !important;
     bottom: 50% !important;
@@ -55,7 +53,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     transform: translate(50%, 50%) !important;
     z-index: 2147483645 !important;
   }
-  /* Phone frame: fit narrow screens */
   #rp-frame {
     width: min(286px, calc(100vw - 20px)) !important;
     height: min(580px, calc(100dvh - 80px)) !important;
@@ -64,8 +61,6 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     border-radius: min(40px, 6vw) !important;
   }
 }
-
-/* Very small screens */
 @media (max-width: 360px) {
   #rp-frame {
     width: calc(100vw - 16px) !important;
@@ -2716,6 +2711,7 @@ async function init() {
 
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
+  setTimeout(lgInitFabDrag, 100);
   if (!document.getElementById('rp-live-chat')) {
     $('body').append('<div id="rp-live-chat"></div>');
   }
@@ -4845,6 +4841,77 @@ const LG = {
 };
 
 const DICE_EMOJI = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+
+
+/* ═══ FAB drag-to-move ═══ */
+function lgInitFabDrag() {
+  const fab = document.getElementById('rp-fab');
+  if (!fab || fab._rpDrag) return;
+  fab._rpDrag = true;
+
+  let dragging = false, moved = false;
+
+  function startDrag(cx, cy) {
+    dragging = true; moved = false;
+    const r = fab.getBoundingClientRect();
+    fab._dx = cx; fab._dy = cy;
+    fab._il = r.left; fab._it = r.top;
+    fab.style.right = 'auto'; fab.style.bottom = 'auto';
+    fab.style.top = r.top + 'px'; fab.style.left = r.left + 'px';
+    fab.style.cursor = 'grabbing'; fab.style.transition = 'none';
+  }
+
+  function moveDrag(cx, cy) {
+    if (!dragging) return;
+    const dx = cx - fab._dx, dy = cy - fab._dy;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    const nL = Math.max(0, Math.min(window.innerWidth  - fab.offsetWidth,  fab._il + dx));
+    const nT = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, fab._it + dy));
+    fab.style.left = nL + 'px'; fab.style.top = nT + 'px';
+  }
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    fab.style.cursor = 'grab'; fab.style.transition = '';
+    if (moved) localStorage.setItem('rp_fab_pos',
+      JSON.stringify({ left: fab.style.left, top: fab.style.top }));
+  }
+
+  // Mouse
+  fab.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    startDrag(e.clientX, e.clientY);
+    const mm = e2 => moveDrag(e2.clientX, e2.clientY);
+    const mu = () => { endDrag(); document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); };
+    document.addEventListener('mousemove', mm);
+    document.addEventListener('mouseup', mu);
+  });
+
+  // Touch
+  fab.addEventListener('touchstart', e => {
+    const t = e.touches[0]; startDrag(t.clientX, t.clientY);
+    const tm = e2 => { e2.preventDefault(); const t2 = e2.touches[0]; moveDrag(t2.clientX, t2.clientY); };
+    const te = () => { endDrag(); fab.removeEventListener('touchmove', tm); fab.removeEventListener('touchend', te); };
+    fab.addEventListener('touchmove', tm, { passive: false });
+    fab.addEventListener('touchend', te);
+  }, { passive: true });
+
+  // Block click after drag
+  fab.addEventListener('click', e => { if (moved) { moved = false; e.stopImmediatePropagation(); } }, true);
+
+  // Restore saved position
+  try {
+    const s = JSON.parse(localStorage.getItem('rp_fab_pos') || 'null');
+    if (s) {
+      const l = Math.max(0, Math.min(window.innerWidth  - fab.offsetWidth,  parseFloat(s.left)));
+      const t = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, parseFloat(s.top)));
+      fab.style.right = 'auto'; fab.style.bottom = 'auto';
+      fab.style.left = l + 'px'; fab.style.top = t + 'px';
+    }
+  } catch(e) {}
+}
 
 function lgInit() {
   LG.active   = true;
