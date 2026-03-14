@@ -77,6 +77,31 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-input-color:#000;
   --rp-send-bg:#2563eb;
   /* Themes view */
+  /* Shape & Animation tokens */
+  --rp-ico-radius:13px;
+  --rp-ico-sh:0 2px 10px rgba(0,0,0,.15);
+  --rp-ico-hover-sh:0 6px 20px rgba(0,0,0,.18);
+  --rp-ico-hover-lift:translateY(-2px) scale(1.06);
+  --rp-ico-active:scale(.84);
+  --rp-send-size:34px;
+  --rp-send-radius:17px;
+  --rp-send-sh:0 2px 8px rgba(37,99,235,.35);
+  --rp-send-hover-sh:0 4px 14px rgba(37,99,235,.5);
+  --rp-input-radius:22px;
+  --rp-input-sh:none;
+  --rp-input-focus-sh:0 0 0 3px rgba(37,99,235,.15);
+  --rp-bubble-radius:19px;
+  --rp-bubble-radius-out:19px 19px 5px 19px;
+  --rp-bubble-radius-in:19px 19px 19px 5px;
+  --rp-nav-btn-radius:0px;
+  --rp-nav-sh:none;
+  --rp-thread-radius:0px;
+  --rp-thread-mx:0px;
+  --rp-thread-sh:none;
+  --rp-moment-radius:0px;
+  --rp-widget-radius:18px;
+  --rp-widget-sh:0 2px 12px rgba(0,0,0,.08);
+  --rp-transition:transform .12s ease, box-shadow .12s ease;
   --rp-themes-bg:linear-gradient(170deg,#f5efff,#ede8ff);
   --rp-themes-label:#7c3aed;
   --rp-tc-bg:#fff;
@@ -139,6 +164,31 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-input-bd:rgba(140,110,255,.2);
   --rp-input-color:#e0d8ff;
   --rp-send-bg:linear-gradient(135deg,#6d28d9,#a855f7);
+  /* Shape & Animation */
+  --rp-ico-radius:8px;
+  --rp-ico-sh:0 2px 12px rgba(0,0,0,.6),0 0 0 1px rgba(140,110,255,.15);
+  --rp-ico-hover-sh:0 0 16px rgba(168,85,247,.7),0 0 0 1px rgba(168,85,247,.5);
+  --rp-ico-hover-lift:translateY(-1px) scale(1.04);
+  --rp-ico-active:scale(.88);
+  --rp-send-size:34px;
+  --rp-send-radius:8px;
+  --rp-send-sh:0 0 12px rgba(109,40,217,.6);
+  --rp-send-hover-sh:0 0 20px rgba(168,85,247,.85);
+  --rp-input-radius:8px;
+  --rp-input-sh:inset 0 0 0 1px rgba(140,110,255,.2);
+  --rp-input-focus-sh:0 0 0 2px rgba(168,85,247,.5),inset 0 0 8px rgba(140,110,255,.1);
+  --rp-bubble-radius:8px;
+  --rp-bubble-radius-out:8px 8px 2px 8px;
+  --rp-bubble-radius-in:8px 8px 8px 2px;
+  --rp-nav-btn-radius:6px;
+  --rp-nav-sh:0 1px 0 rgba(140,110,255,.15);
+  --rp-thread-radius:0px;
+  --rp-thread-mx:0px;
+  --rp-thread-sh:none;
+  --rp-moment-radius:0px;
+  --rp-widget-radius:10px;
+  --rp-widget-sh:0 0 20px rgba(109,40,217,.3),0 0 0 1px rgba(140,110,255,.2);
+  --rp-transition:transform .08s ease, box-shadow .08s ease;
   --rp-themes-bg:linear-gradient(170deg,#0e0e2e,#10103c);
   --rp-themes-label:#c8b4ff;
   --rp-tc-bg:rgba(20,14,55,.9);
@@ -249,12 +299,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* app grid */
 #rp-app-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:0 18px; width:100%; }
 .rp-app { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; transition:transform .12s; }
-.rp-app:active { transform:scale(.88); }
+.rp-app:active .rp-app-ico { transform:var(--rp-ico-active); }
+.rp-app:not(:active):hover .rp-app-ico { transform:var(--rp-ico-hover-lift); box-shadow:var(--rp-ico-hover-sh); }
 .rp-app-off { opacity:.35; pointer-events:none; }
 .rp-app-ico {
-  width:52px; height:52px; border-radius:13px;
+  width:52px; height:52px; border-radius:var(--rp-ico-radius);
   display:flex; align-items:center; justify-content:center; font-size:26px;
-  position:relative; box-shadow:0 2px 10px rgba(0,0,0,.15);
+  position:relative; box-shadow:var(--rp-ico-sh);
+  transition:var(--rp-transition);
 }
 .rp-app-ico svg { width:100%; height:100%; }
 .rp-app-lbl { font-size:10px; color:var(--rp-app-lbl); text-shadow:var(--rp-app-lbl-sh); }
@@ -269,9 +321,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* widget */
 #rp-widget {
   background:var(--rp-widget-bg); backdrop-filter:blur(20px);
-  border:1px solid var(--rp-widget-bd); border-radius:18px;
+  border:1px solid var(--rp-widget-bd); border-radius:var(--rp-widget-radius);
   margin:18px 16px 0; padding:13px 16px; width:calc(100% - 32px); color:var(--rp-widget-color);
-  box-shadow:0 2px 12px rgba(0,0,0,.08);
+  box-shadow:var(--rp-widget-sh);
 }
 .rp-wd-label { font-size:10px; text-transform:uppercase; letter-spacing:.8px; opacity:.45; font-weight:600; }
 .rp-wd-stage { font-size:14px; font-weight:600; margin:5px 0 7px; }
@@ -334,8 +386,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-out { align-items:flex-end; }
 .rp-in  { align-items:flex-start; }
 .rp-bubble { max-width:72%; padding:9px 13px; border-radius:19px; font-size:13px; line-height:1.45; word-break:break-word; }
-.rp-sent { background:var(--rp-sent-bg); color:#fff; border-bottom-right-radius:5px; }
-.rp-recv { background:var(--rp-recv-bg); color:var(--rp-recv-color); border-bottom-left-radius:5px; }
+.rp-sent { background:var(--rp-sent-bg); color:#fff; border-radius:var(--rp-bubble-radius-out); }
+.rp-recv { background:var(--rp-recv-bg); color:var(--rp-recv-color); border-radius:var(--rp-bubble-radius-in); }
 .rp-bts  { font-size:10px; color:var(--rp-bts-color); padding:0 4px; }
 
 /* composer */
@@ -352,9 +404,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   flex:1 !important;
   background:var(--rp-input-bg) !important;
   border:1px solid var(--rp-input-bd) !important;
-  border-radius:22px !important;
+  border-radius:var(--rp-input-radius) !important;
   padding:9px 16px !important;
   color:var(--rp-input-color) !important;
+  box-shadow:var(--rp-input-sh) !important;
+  transition:box-shadow .18s ease, border-color .18s ease !important;
   font-size:13px !important;
   outline:none !important;
   font-family:inherit !important;
@@ -362,13 +416,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-sizing:border-box !important;
 }
 #rp-input::placeholder { color:rgba(0,0,0,.4); }
+#rp-input:focus { box-shadow:var(--rp-input-focus-sh) !important; border-color:rgba(0,0,0,.3) !important; }
 
 /* ✅ FIX2: 强制显示发送按钮，防止 SillyTavern 全局 CSS 覆盖 */
 #rp-send {
-  width:32px !important;
-  height:32px !important;
-  min-width:32px !important;
-  border-radius:16px !important;
+  width:var(--rp-send-size) !important;
+  height:var(--rp-send-size) !important;
+  min-width:var(--rp-send-size) !important;
+  border-radius:var(--rp-send-radius) !important;
   background:var(--rp-send-bg) !important;
   border:none !important;
   color:#fff !important;
@@ -379,7 +434,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   align-items:center !important;
   justify-content:center !important;
   flex-shrink:0 !important;
-  transition:opacity .15s;
+  box-shadow:var(--rp-send-sh) !important;
+  transition:var(--rp-transition), opacity .15s !important;
   visibility:visible !important;
   opacity:1 !important;
   pointer-events:auto !important;
@@ -389,7 +445,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow:none !important;
   outline:none !important;
 }
-#rp-send:hover { opacity:.82 !important; }
+#rp-send:hover { opacity:.92 !important; box-shadow:var(--rp-send-hover-sh) !important; transform:scale(1.06) !important; }
 
 /* ── NAV BAR (共用) ── */
 .rp-nav-bar {
@@ -398,6 +454,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   padding-left:6px; padding-right:16px;
   border-bottom:1px solid var(--rp-nav-bd);
   background:var(--rp-nav-bg);
+  box-shadow:var(--rp-nav-sh);
 }
 .rp-nav-title { font-size:17px; font-weight:600; color:var(--rp-nav-title); }
 .rp-back {
@@ -543,6 +600,31 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-input-bd:rgba(140,175,210,.3);
   --rp-input-color:#1a2e44;
   --rp-send-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
+  /* Shape & Animation */
+  --rp-ico-radius:18px;
+  --rp-ico-sh:0 4px 14px rgba(80,120,160,.18),0 0 0 1px rgba(140,175,210,.2);
+  --rp-ico-hover-sh:0 8px 24px rgba(80,120,160,.28),0 0 0 1.5px rgba(91,143,185,.4);
+  --rp-ico-hover-lift:translateY(-3px) scale(1.05);
+  --rp-ico-active:scale(.88);
+  --rp-send-size:34px;
+  --rp-send-radius:20px 14px 14px 20px;
+  --rp-send-sh:0 4px 12px rgba(74,127,168,.4);
+  --rp-send-hover-sh:0 6px 20px rgba(74,127,168,.55);
+  --rp-input-radius:20px;
+  --rp-input-sh:0 2px 8px rgba(140,175,210,.15);
+  --rp-input-focus-sh:0 0 0 3px rgba(91,143,185,.25),0 4px 12px rgba(140,175,210,.2);
+  --rp-bubble-radius:22px;
+  --rp-bubble-radius-out:22px 22px 6px 22px;
+  --rp-bubble-radius-in:22px 22px 22px 6px;
+  --rp-nav-btn-radius:20px;
+  --rp-nav-sh:0 2px 12px rgba(140,175,210,.15);
+  --rp-thread-radius:14px;
+  --rp-thread-mx:10px;
+  --rp-thread-sh:0 2px 8px rgba(80,120,160,.08);
+  --rp-moment-radius:14px;
+  --rp-widget-radius:22px;
+  --rp-widget-sh:0 4px 20px rgba(80,120,160,.15),0 0 0 1px rgba(140,175,210,.2);
+  --rp-transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
   --rp-themes-bg:linear-gradient(170deg,#dce8f4,#e8f1f8);
   --rp-themes-label:#3d6e9a;
   --rp-tc-bg:rgba(240,246,252,.9);
@@ -1825,7 +1907,8 @@ function bindUI() {
   });
 
   // 主题切换
-  $(document).on('click', '.rp-theme-card[data-tid]', function() {
+  $(document).on('click', '.rp-theme-card[data-tid]', function(e) {
+    e.stopPropagation();
     lgApplyTheme($(this).data('tid'));
     lgRenderThemePicker();
   });
