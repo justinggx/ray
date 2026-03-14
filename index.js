@@ -33,17 +33,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
   #rp-fab {
-    width: 52px !important;
-    height: 52px !important;
-    font-size: 24px !important;
-    right: 14px;
-    bottom: 72px;
-    top: auto;
-    transform: none;
-    background: rgba(255,255,255,.95) !important;
-    border: 1px solid rgba(0,0,0,.1) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,.22), 0 0 0 2px rgba(255,255,255,.5) !important;
-    backdrop-filter: blur(12px) !important;
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 26px !important;
+    right: 14px !important;
+    bottom: 110px !important;
+    top: auto !important;
+    transform: none !important;
+    background: rgba(120,60,210,.82) !important;
+    border: 2.5px solid rgba(255,255,255,.92) !important;
+    box-shadow: 0 4px 22px rgba(100,40,200,.45), 0 2px 8px rgba(0,0,0,.3) !important;
+    backdrop-filter: none !important;
     z-index: 2147483646 !important;
   }
   #rp-phone {
