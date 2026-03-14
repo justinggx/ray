@@ -334,7 +334,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-home-indicator { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:var(--rp-indicator); border-radius:2px; }
 
 /* ── MESSAGES VIEW ── */
-#rp-view-messages { background:var(--rp-threads-bg); display:flex; flex-direction:column; }
+#rp-view-messages { background:transparent !important; display:flex; flex-direction:column; }
 #rp-thread-list { flex:1; overflow-y:auto; scrollbar-width:none; }
 #rp-thread-list::-webkit-scrollbar { display:none; }
 
@@ -354,7 +354,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-tbadge { background:#2563eb; color:#fff; font-size:10px; font-weight:700; min-width:19px; height:19px; border-radius:10px; padding:0 5px; display:flex; align-items:center; justify-content:center; }
 
 /* ── THREAD VIEW ── */
-#rp-view-thread { background:var(--rp-msg-bg); display:flex; flex-direction:column; }
+#rp-view-thread { background:transparent !important; display:flex; flex-direction:column; }
 
 /* bubbles */
 #rp-bubbles { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:3px; scrollbar-width:none; }
@@ -1397,6 +1397,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   background: linear-gradient(135deg, #2d6d9a, #4a8fbf) !important;
   color: #fff !important; border: none !important;
 }
+
+/* ══ NUCLEAR: ALL views always transparent ══ */
+#rp-view-messages,#rp-view-thread,#rp-bubbles,#rp-view-moments,#rp-view-settings,#rp-view-api-settings,#rp-view-game,#rp-view-themes {
+  background: transparent !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -1507,7 +1512,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-wd-status{color:rgba(160,175,255,.52)}
 .rp-dark .rp-home-indicator{background:rgba(255,255,255,.22)}
 /* ── DARK MESSAGES ── */
-.rp-dark #rp-view-messages{background:transparent}
+
 .rp-dark .rp-thread{border-bottom-color:rgba(255,255,255,.05)}
 .rp-dark .rp-thread:hover{background:rgba(255,255,255,.03)}
 .rp-dark .rp-tn{color:#dde0f2}
@@ -1519,8 +1524,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-nav-add{color:#7090f0 !important}
 .rp-dark .rp-hd-name{color:rgba(160,175,255,.62)}
 /* ── DARK THREAD ── */
-.rp-dark #rp-view-thread{background:transparent}
-.rp-dark #rp-bubbles{background:transparent}
+
+
 .rp-dark .rp-recv{background:#161628;color:#dde0f2}
 .rp-dark .rp-bts{color:rgba(160,175,255,.3)}
 .rp-dark #rp-composer{background:#0c0c1a !important;border-top-color:rgba(255,255,255,.06) !important}
@@ -1539,8 +1544,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-nb-time{color:rgba(160,175,255,.36)}
 .rp-dark #rp-home-ind{background:rgba(255,255,255,.22)}
 /* ── MOMENTS VIEW ── */
-#rp-view-moments{background:var(--rp-moments-bg);display:flex;flex-direction:column}
-.rp-dark #rp-view-moments{background:transparent}
+#rp-view-moments{background:transparent !important;display:flex;flex-direction:column}
+
 #rp-moments-list{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:8px}
 #rp-moments-list::-webkit-scrollbar{display:none}
 .rp-moment{background:var(--rp-moment-card);margin-bottom:8px;padding:14px 16px}
