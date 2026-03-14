@@ -269,10 +269,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   font-size:70px; font-weight:100; letter-spacing:-4px; line-height:1;
   color:var(--rp-lock-time); text-shadow:0 2px 8px rgba(0,0,0,.08);
 }
-#rp-lock-date {
-  font-size:15px; font-weight:400; opacity:.6; margin-top:6px;
-  letter-spacing:.3px;
-}
+#rp-lock-date { display:none !important; }
 #rp-lock-notifs { width:100%; padding:14px 16px; display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 .rp-ln {
   background:var(--rp-ln-bg); backdrop-filter:blur(24px);
@@ -547,7 +544,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-lock-bg{background:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,60,200,.35),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(40,60,200,.25),transparent 55%),linear-gradient(180deg,#0c0c1a,#08080f,#0c0c1a)}
 .rp-dark .rp-lock-body{color:#e0e2f0}
 .rp-dark #rp-lock-time{color:#eef0ff}
-.rp-dark #rp-lock-date{color:rgba(200,210,255,.55)}
+.rp-dark #rp-lock-date{display:none!important}
 .rp-dark .rp-ln{background:rgba(12,12,24,.88);border-color:rgba(255,255,255,.07)}
 .rp-dark .rp-ln-type{color:rgba(160,175,255,.45)}
 .rp-dark .rp-ln-text{color:rgba(210,218,255,.85)}
@@ -927,10 +924,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     0 0 28px rgba(255,255,255,.9),
     0 0 10px rgba(255,255,255,.6) !important;
 }
-#rp-phone.rp-theme-candy #rp-lock-date {
-  color: #b02850 !important;
-  text-shadow: 0 0 14px rgba(255,255,255,.9) !important;
-}
+#rp-phone.rp-theme-candy #rp-lock-date { display:none !important; }
 #rp-phone.rp-theme-candy #rp-swipe-hint {
   color: rgba(212,96,122,.55) !important;
 }
