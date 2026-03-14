@@ -3439,10 +3439,21 @@ async function lgMove(player, steps) {
   }
 
   // Trigger square event if applicable
+  // 任务格基于【绝对物理格子】，user 和 char 踩到同一个物理格都触发
+  // USER_ENTRY=0，所以 user 逻辑位 L → 绝对索引 L-1，userKey = absIdx+1
+  // char 逻辑位 M → 绝对索引 (CHAR_ENTRY+M-1)%LEN → 同一套 userKey
   const finalPos = isUser ? LG.userPos : LG.charPos;
-  if (finalPos > 0 && finalPos <= 53 && SQUARE_EVENTS[finalPos]) {
-    await lgTriggerSquareEvent(player, finalPos);
+  let _evKey = null;
+  if (finalPos >= 49 && finalPos <= 53) {
+    // 回家跑道：保持各自逻辑位
+    if (SQUARE_EVENTS[finalPos]) _evKey = finalPos;
+  } else if (finalPos >= 1 && finalPos <= 48) {
+    const _entry  = isUser ? USER_ENTRY : CHAR_ENTRY;
+    const _absIdx = (_entry + finalPos - 1) % LUDO_PATH_LEN;
+    const _userKey = _absIdx + 1; // USER_ENTRY=0 → abs+1 = user逻辑位
+    if (SQUARE_EVENTS[_userKey]) _evKey = _userKey;
   }
+  if (_evKey !== null) await lgTriggerSquareEvent(player, _evKey);
 }
 
 function lgStatus(txt) { $('#rp-game-status-text').text(txt); }
