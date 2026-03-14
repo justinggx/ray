@@ -1024,6 +1024,74 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-nav-bar { background: transparent !important; border-bottom-color: rgba(255,255,255,.15) !important; }
 #rp-phone.rp-theme-star .rp-nav-bar { border-bottom-color: rgba(130,90,255,.15) !important; }
 #rp-phone.rp-theme-misty .rp-nav-bar { border-bottom-color: rgba(130,175,215,.2) !important; }
+
+/* ══ API 设置页可读性修复 ══ */
+/* 说明卡片: 更不透明的白底 + 深色文字 */
+#rp-view-api-settings [style*="background:rgba(168,85,247"] {
+  background: rgba(255,255,255,.80) !important;
+  border: 1px solid rgba(200,150,220,.3) !important;
+  color: #3a1060 !important;
+  border-radius: 14px !important;
+}
+/* DeepSeek 建议行 */
+#rp-api-blink { color: #9b30d0 !important; }
+/* 标题 ⚡ 自定义API设置 */
+#rp-view-api-settings [style*="color:#2d1060"],
+#rp-phone.rp-theme-candy #rp-view-api-settings [style*="color:#2d1060"] {
+  color: #5a1090 !important;
+  text-shadow: 0 0 12px rgba(255,255,255,.8);
+}
+/* 说明文字颜色 */
+#rp-view-api-settings [style*="color:#9070b0"] {
+  color: #5a3080 !important;
+}
+/* Radio labels */
+#rp-view-api-settings .rp-api-opt {
+  color: #3a1060 !important;
+  font-weight: 500 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.7);
+}
+/* 预设按钮 */
+#rp-phone.rp-theme-candy .rp-api-preset-btn {
+  background: rgba(255,255,255,.82) !important;
+  border: 1.5px solid rgba(180,120,220,.4) !important;
+  color: #5a1090 !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+}
+/* 输入框 */
+#rp-phone.rp-theme-candy #rp-view-api-settings input[type="text"],
+#rp-phone.rp-theme-candy #rp-view-api-settings input[type="url"],
+#rp-phone.rp-theme-candy #rp-view-api-settings input[type="password"],
+#rp-phone.rp-theme-candy #rp-view-api-settings input {
+  background: rgba(255,255,255,.85) !important;
+  border: 1.5px solid rgba(180,120,220,.4) !important;
+  color: #3a1060 !important;
+  border-radius: 12px !important;
+}
+/* 模型列表下拉 */
+#rp-model-list {
+  background: rgba(255,255,255,.88) !important;
+  border: 1.5px solid rgba(180,120,220,.35) !important;
+  color: #3a1060 !important;
+  border-radius: 12px !important;
+}
+/* 保存按钮 */
+#rp-phone.rp-theme-candy #rp-api-save-v {
+  background: linear-gradient(135deg, #c03060, #e06080) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(192,48,96,.35) !important;
+  border-radius: 14px !important;
+}
+/* 获取模型按钮 */
+#rp-phone.rp-theme-candy #rp-fetch-models-btn {
+  background: rgba(255,255,255,.75) !important;
+  border: 1.5px solid rgba(180,120,220,.4) !important;
+  color: #5a1090 !important;
+  border-radius: 10px !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
