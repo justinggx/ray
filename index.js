@@ -801,6 +801,30 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .game-win-btn:hover{opacity:.88!important}
 @keyframes rp-dice-roll{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
 .ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
+/* API settings */
+#rp-api-btn{width:30px;height:30px;border-radius:15px;background:rgba(168,85,247,.1);border:1.5px solid rgba(168,85,247,.22);color:#7c3aed;font-size:12px;cursor:pointer;display:flex!important;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;font-weight:700;padding:0;visibility:visible!important;pointer-events:auto!important}
+#rp-api-btn:hover{background:rgba(168,85,247,.22)}
+.rp-dark #rp-api-btn{background:rgba(168,85,247,.15);border-color:rgba(168,85,247,.3);color:#c084fc}
+#rp-api-panel{position:absolute;inset:0;z-index:80;background:rgba(80,30,130,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;border-radius:48px}
+#rp-api-box{background:#fff;border:1px solid rgba(200,150,255,.3);border-radius:24px;padding:22px 20px;width:222px;max-width:92%;box-shadow:0 8px 40px rgba(150,80,200,.22)}
+.rp-dark #rp-api-box{background:linear-gradient(145deg,#1e0a30,#120520);border-color:rgba(200,150,255,.2)}
+.rp-api-title{font-size:15px;font-weight:800;color:#2d1060;margin-bottom:5px}
+.rp-dark .rp-api-title{color:#f0e0ff}
+.rp-api-desc{font-size:10.5px;color:#9070b0;margin-bottom:14px;line-height:1.55}
+.rp-dark .rp-api-desc{color:rgba(220,180,255,.6)}
+.rp-api-opt{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#2d1060;margin-bottom:7px;cursor:pointer}
+.rp-dark .rp-api-opt{color:#e8d0ff}
+#rp-api-custom-fields{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+.rp-api-presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px}
+.rp-api-preset-btn{padding:3px 9px;border-radius:10px;border:1px solid rgba(168,85,247,.3);background:transparent;color:#7c3aed;font-size:10px;cursor:pointer;transition:background .15s}
+.rp-api-preset-btn:hover{background:rgba(168,85,247,.12)}
+.rp-api-input{background:rgba(255,255,255,.9);border:1.5px solid rgba(180,120,200,.25);border-radius:12px;padding:7px 12px;font-size:11.5px;color:#2d1060;font-family:inherit;outline:none;width:100%;box-sizing:border-box}
+.rp-dark .rp-api-input{background:rgba(255,255,255,.08);border-color:rgba(180,120,255,.2);color:#f0e0ff}
+.rp-api-input:focus{border-color:#a855f7}
+.rp-api-input::placeholder{color:rgba(120,80,160,.4)}
+.rp-api-save-row{display:flex;gap:8px;margin-top:16px}
+.rp-api-save-btn{flex:1;padding:9px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer}
+.rp-api-cancel-btn{padding:9px 14px;background:rgba(120,60,180,.08);border:1px solid rgba(168,85,247,.2);border-radius:16px;font-size:13px;color:#7c3aed;cursor:pointer}
 
 `;
 
@@ -1122,6 +1146,7 @@ const HTML = `
               <div class="rp-game-players"><span style="color:#ec4899">●</span> 你 vs <span style="color:#7c3aed">●</span> <span id="rp-game-char-name">对方</span></div>
               <div class="rp-game-status" id="rp-game-status-text">按骰子开始！</div>
             </div>
+            <button id="rp-api-btn" type="button" title="API 设置">⚡</button>
             <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
             <div id="rp-dice-face"></div>
           </div>
@@ -1137,6 +1162,29 @@ const HTML = `
               <div class="game-win-title" id="game-win-title">恭喜你赢了！</div>
               <div class="game-win-sub" id="game-win-sub">你率先抵达终点，赢得了这场飞行棋！</div>
               <button class="game-win-btn" id="game-restart-btn" type="button">再来一局</button>
+            </div>
+          </div>
+          <!-- API 设置面板 -->
+          <div id="rp-api-panel" style="display:none">
+            <div id="rp-api-box">
+              <div class="rp-api-title">⚡ 回复速度设置</div>
+              <div class="rp-api-desc">建议接入 DeepSeek 等国产模型<br>让角色在飞行棋任务中回复更快<br><span style="color:#a855f7;font-weight:600">接入后直接调用真实 API，需自备 Key</span></div>
+              <label class="rp-api-opt"><input type="radio" name="rp-api-mode" value="st" id="rp-api-mode-st" checked> 使用当前 API（SillyTavern）</label>
+              <label class="rp-api-opt"><input type="radio" name="rp-api-mode" value="custom" id="rp-api-mode-custom"> 接入其他 API</label>
+              <div id="rp-api-custom-fields" style="display:none">
+                <div class="rp-api-presets">
+                  <button class="rp-api-preset-btn" data-url="https://api.deepseek.com/v1" data-model="deepseek-chat">DeepSeek</button>
+                  <button class="rp-api-preset-btn" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1" data-model="qwen-turbo">通义</button>
+                  <button class="rp-api-preset-btn" data-url="https://open.bigmodel.cn/api/paas/v4" data-model="glm-4-flash">GLM</button>
+                </div>
+                <input class="rp-api-input" id="rp-api-url" placeholder="API 地址 (如 https://api.deepseek.com/v1)" type="url">
+                <input class="rp-api-input" id="rp-api-key" placeholder="API Key" type="password">
+                <input class="rp-api-input" id="rp-api-model" placeholder="模型名称 (如 deepseek-chat)">
+              </div>
+              <div class="rp-api-save-row">
+                <button class="rp-api-save-btn" id="rp-api-save">保存</button>
+                <button class="rp-api-cancel-btn" id="rp-api-cancel">取消</button>
+              </div>
             </div>
           </div>
           <!-- 格子事件弹窗 -->
@@ -1400,6 +1448,49 @@ function bindUI() {
     if (!LG.active) lgInit();
     else lgRender();
     go('game');
+  });
+
+  // ── API 面板事件 ──
+  $(document).on('click', '#rp-api-btn', function() {
+    const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+    if (cfg.mode === 'custom') {
+      $('#rp-api-mode-custom').prop('checked', true);
+      $('#rp-api-url').val(cfg.url || '');
+      $('#rp-api-key').val(cfg.key || '');
+      $('#rp-api-model').val(cfg.model || '');
+      $('#rp-api-custom-fields').show();
+    } else {
+      $('#rp-api-mode-st').prop('checked', true);
+      $('#rp-api-custom-fields').hide();
+    }
+    $('#rp-api-panel').show();
+  });
+  $(document).on('change', 'input[name="rp-api-mode"]', function() {
+    if ($(this).val() === 'custom') $('#rp-api-custom-fields').show();
+    else $('#rp-api-custom-fields').hide();
+  });
+  $(document).on('click', '.rp-api-preset-btn', function(e) {
+    e.preventDefault();
+    $('#rp-api-url').val($(this).data('url'));
+    $('#rp-api-model').val($(this).data('model'));
+    $('#rp-api-key').val('').focus();
+  });
+  $(document).on('click', '#rp-api-save', function() {
+    const mode = $('input[name="rp-api-mode"]:checked').val() || 'st';
+    const cfg = { mode };
+    if (mode === 'custom') {
+      cfg.url   = $('#rp-api-url').val().trim();
+      cfg.key   = $('#rp-api-key').val().trim();
+      cfg.model = $('#rp-api-model').val().trim() || 'deepseek-chat';
+    }
+    localStorage.setItem('rp_ludo_api', JSON.stringify(cfg));
+    $('#rp-api-panel').hide();
+    lgMsg('sys', mode === 'custom'
+      ? `⚡ 已切换到 ${cfg.model}（自定义 API）`
+      : '⚡ 已切换回 SillyTavern API');
+  });
+  $(document).on('click', '#rp-api-cancel', function() {
+    $('#rp-api-panel').hide();
   });
 
   $(document).on('click', '#rp-dice-btn', function() {
@@ -3664,6 +3755,37 @@ function lgSelectPool(personaText) {
 
 
 // ── Square event trigger (两步流程) ──────────────────────────────
+// ── 自定义 API 调用（支持 DeepSeek / 通义 / GLM 等 OpenAI 兼容格式）──
+async function lgCallAPI(prompt, maxTokens = 150) {
+  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+  if (cfg.mode === 'custom' && cfg.url && cfg.key) {
+    try {
+      const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.key}` },
+        body: JSON.stringify({
+          model: cfg.model || 'deepseek-chat',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+          temperature: 0.9
+        })
+      });
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content?.trim();
+      if (text) return text;
+    } catch(e) { console.warn('[Ludo] custom API error:', e.message); }
+  }
+  // Fallback: ST generateRaw
+  try {
+    const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
+    if (typeof generateRaw === 'function') {
+      const resp = await generateRaw({ prompt, max_new_tokens: maxTokens, quiet: true });
+      if (resp && resp.trim()) return resp.trim();
+    }
+  } catch(e) { /* ignore */ }
+  return null;
+}
+
 async function lgTriggerSquareEvent(player, pos) {
   const ev = SQUARE_EVENTS[pos];
   if (!ev) return;
@@ -3739,21 +3861,14 @@ async function lgTriggerSquareEvent(player, pos) {
     const hintEl = document.getElementById('rp-sq-task-hint');
     if (hintEl) hintEl.textContent = `请耐心等待${LG.charName}的回答`;
 
-    // AI 生成 char 完成任务的话
+    // AI 生成 char 完成任务的话（支持自定义 API）
     const persona   = lgGetPersona();
     const actHint   = ev.type === 'action' ? '（动作描写用*动作*格式，≤8字）' : '';
     const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字，必须包含实际说话内容，不许只有动作描写）：`;
-    let replied = false;
-    try {
-      const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
-      if (typeof generateRaw === 'function') {
-        const resp = await generateRaw({ prompt, max_new_tokens: 150, quiet: true });
-        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); replied = true; }
-      }
-    } catch(e) { /* ignore */ }
-    if (!replied) {
-      lgMsg('char', ev.type === 'action' ? `*完成${ev.text}*` : `（关于${ev.text}……）`);
-    }
+    const rawReply = await lgCallAPI(prompt, 150);
+    const replied  = !!(rawReply && rawReply.trim());
+    if (replied) lgMsg('char', cleanGameReply(rawReply, LG.charName));
+    else lgMsg('char', ev.type === 'action' ? `*完成${ev.text}*` : `（关于${ev.text}……）`);
 
     txt.textContent = `💙 ${LG.charName} 完成了吗？`;
     btn.disabled = false;
