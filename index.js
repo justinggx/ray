@@ -1032,7 +1032,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star #rp-game-controls { background: rgba(14,8,38,.65) !important; border-top-color: rgba(130,90,255,.2) !important; }
 
 /* Theme picker cards */
-.rp-theme-card { background: rgba(255,255,255,.55) !important; }
+/* theme card uses --rp-tc-bg per theme */
+.rp-theme-card { background: var(--rp-tc-bg) !important; }
+#rp-phone.rp-theme-candy .rp-theme-card { background: rgba(255,255,255,.72) !important; }
+#rp-phone.rp-theme-star .rp-theme-card { background: rgba(20,14,55,.88) !important; border: 1px solid rgba(130,90,255,.3) !important; }
+#rp-phone.rp-theme-misty .rp-theme-card { background: rgba(240,248,255,.75) !important; border: 1px solid rgba(130,175,215,.25) !important; }
 
 /* Nav bars: transparent to show wallpaper */
 .rp-nav-bar { background: transparent !important; border-bottom-color: rgba(255,255,255,.15) !important; }
@@ -1581,6 +1585,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: #e0d4ff !important;
   border-radius: 12px !important;
 }
+
+/* ── Theme card text contrast ── */
+#rp-phone.rp-theme-star .rp-theme-name { color: #e0d4ff !important; font-weight: 700 !important; }
+#rp-phone.rp-theme-star .rp-theme-desc { color: rgba(200,185,255,.85) !important; }
+#rp-phone.rp-theme-misty .rp-theme-name { color: #1a2e44 !important; font-weight: 700 !important; }
+#rp-phone.rp-theme-misty .rp-theme-desc { color: rgba(44,74,106,.75) !important; }
+#rp-phone.rp-theme-candy .rp-theme-name { color: #5a1030 !important; font-weight: 700 !important; }
+#rp-phone.rp-theme-candy .rp-theme-desc { color: rgba(100,30,60,.7) !important; }
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
