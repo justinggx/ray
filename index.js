@@ -788,24 +788,50 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ══ STAR THEME: Settings & API dark styling ══ */
 #rp-phone.rp-theme-star #rp-view-settings { background: transparent !important; }
 #rp-phone.rp-theme-star #rp-view-api-settings { background: transparent !important; }
-/* Star: settings section headers */
-#rp-phone.rp-theme-star .rp-settings-section-title,
-#rp-phone.rp-theme-star [style*="font-size:11px;color:#888"],
-#rp-phone.rp-theme-star [style*="color:#888;"] {
-  color: rgba(180,160,255,.65) !important;
+/* Section title labels */
+#rp-phone.rp-theme-star .rp-set-section-title {
+  color: rgba(180,160,255,.7) !important;
+  font-weight: 600 !important;
 }
-/* Star: settings list rows */
-#rp-phone.rp-theme-star .rp-settings-row,
-#rp-phone.rp-theme-star [style*="background:#fff"],
-#rp-phone.rp-theme-star [style*="background: #fff"] {
+/* Section white box → dark glass */
+#rp-phone.rp-theme-star .rp-set-section {
   background: rgba(20,12,50,.82) !important;
-  border-color: rgba(130,90,255,.2) !important;
-  color: #e0d4ff !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(130,90,255,.2) !important;
+  overflow: hidden !important;
 }
-/* Star: all white/light bg panels in settings */
-#rp-phone.rp-theme-star #rp-view-settings > *,
-#rp-phone.rp-theme-star #rp-view-api-settings > * {
-  color: #e0d4ff;
+/* Each row inside section */
+#rp-phone.rp-theme-star .rp-set-row {
+  background: transparent !important;
+  border-bottom-color: rgba(130,90,255,.12) !important;
+}
+/* Row label text */
+#rp-phone.rp-theme-star .rp-set-key {
+  color: #d4c8ff !important;
+}
+/* Dropdown select */
+#rp-phone.rp-theme-star .rp-set-select {
+  background: rgba(35,20,70,.8) !important;
+  border: 1px solid rgba(130,90,255,.4) !important;
+  color: #d4c8ff !important;
+  border-radius: 10px !important;
+}
+/* Upload / action buttons */
+#rp-phone.rp-theme-star .rp-avatar-upload-btn,
+#rp-phone.rp-theme-star .rp-set-upload-btn {
+  background: rgba(60,30,120,.65) !important;
+  border: 1px solid rgba(130,90,255,.45) !important;
+  color: #d4c8ff !important;
+  border-radius: 12px !important;
+}
+/* "恢复默认" button override */
+#rp-phone.rp-theme-star #rp-wall-reset {
+  background: rgba(30,18,60,.5) !important;
+  color: rgba(180,165,255,.7) !important;
+}
+/* Inline style overrides */
+#rp-phone.rp-theme-star #rp-view-settings [style*="color:#8a8a9a"] {
+  color: rgba(160,145,255,.55) !important;
 }
 #rp-phone.rp-theme-star #rp-view-settings input,
 #rp-phone.rp-theme-star #rp-view-api-settings input[type="text"],
@@ -1298,9 +1324,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow: 0 0 24px rgba(100,50,220,.35), 0 4px 20px rgba(0,0,0,.5) !important;
 }
 /* Game status text (你 vs SillyTavern) */
-#rp-phone.rp-theme-star .rp-game-status {
-  color: rgba(200,180,255,.85) !important;
-}
+#rp-phone.rp-theme-star .rp-game-status { color: rgba(200,180,255,.88) !important; }
+#rp-phone.rp-theme-star .rp-game-players { color: rgba(200,185,255,.9) !important; }
+#rp-phone.rp-theme-star .rp-game-info { color: rgba(200,185,255,.9) !important; }
 /* Dice face emoji */
 #rp-phone.rp-theme-star #rp-dice-face {
   filter: drop-shadow(0 0 4px rgba(160,130,255,.5));
