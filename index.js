@@ -40,29 +40,30 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-bat-border:rgba(0,0,0,.4);
   --rp-bat-nub:rgba(0,0,0,.3);
   /* Lock screen */
-  --rp-lock-wall:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(200,220,255,.6),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(220,230,255,.5),transparent 55%),linear-gradient(180deg,#e8f0ff,#f0f5ff,#e8f0ff);
-  --rp-lock-color:#000;
-  --rp-lock-time:#000;
-  --rp-swipe-color:rgba(0,0,0,.3);
+  --rp-lock-wall:linear-gradient(rgba(255,230,240,.22),rgba(255,210,225,.28)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-lock-color:#4a1030;
+  --rp-lock-time:#3a0a20;
+  --rp-swipe-color:rgba(120,40,70,.4);
   --rp-ln-bg:rgba(255,255,255,.85);
   --rp-ln-bd:rgba(0,0,0,.06);
   --rp-ln-text:rgba(0,0,0,.85);
   /* Home screen */
-  --rp-home-wall:radial-gradient(ellipse 100% 70% at 20% 10%,rgba(220,235,255,.7),transparent 50%),radial-gradient(ellipse 100% 70% at 80% 90%,rgba(230,240,255,.6),transparent 50%),linear-gradient(170deg,#e8f2ff,#f0f6ff,#e8f2ff);
-  --rp-clock-color:#000;
-  --rp-app-lbl:rgba(0,0,0,.85);
-  --rp-app-lbl-sh:0 1px 2px rgba(255,255,255,.8);
+  --rp-home-wall:linear-gradient(rgba(255,230,240,.18),rgba(255,215,228,.22)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
+  --rp-clock-color:#3a0a20;
+  --rp-app-lbl:rgba(60,10,30,.9);
+  --rp-app-lbl-sh:0 1px 4px rgba(255,255,255,.7);
   --rp-indicator:rgba(0,0,0,.25);
   /* Widget */
-  --rp-widget-bg:rgba(255,255,255,.75);
+  --rp-widget-bg:rgba(255,255,255,.6);
   --rp-widget-bd:rgba(0,0,0,.08);
   --rp-widget-color:#000;
   --rp-wd-fill:linear-gradient(90deg,#2563eb,#60a5fa);
   /* Nav bar */
-  --rp-nav-bg:#fff;
-  --rp-nav-bd:rgba(0,0,0,.08);
-  --rp-nav-title:#000;
-  --rp-nav-btn:#2563eb;
+  --rp-nav-bg:rgba(255,255,255,.72);
+  --rp-nav-bd:rgba(255,180,200,.2);
+  --rp-nav-title:#4a1030;
+  --rp-nav-btn:#c0306a;
+  --rp-nav-blur:16px;
   /* Messages / thread */
   --rp-msg-bg:#fff;
   --rp-bubbles-bg:#fff;
@@ -70,12 +71,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-recv-bg:#e9ecef;
   --rp-recv-color:#000;
   /* Composer */
-  --rp-composer-bg:#fff;
-  --rp-composer-bd:rgba(0,0,0,.08);
+  --rp-composer-bg:rgba(255,255,255,.75);
+  --rp-composer-bd:rgba(255,180,200,.2);
   --rp-input-bg:rgba(0,0,0,.04);
   --rp-input-bd:rgba(0,0,0,.12);
   --rp-input-color:#000;
-  --rp-send-bg:#2563eb;
+  --rp-send-bg:linear-gradient(135deg,#e0567a,#f472b6);
   /* Themes view */
   /* Shape & Animation tokens */
   --rp-ico-radius:13px;
@@ -133,14 +134,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-sbar-color:#c8c0f5;
   --rp-bat-border:rgba(180,160,255,.4);
   --rp-bat-nub:rgba(180,160,255,.3);
-  --rp-lock-wall:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,40,180,.45),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(50,20,140,.35),transparent 55%),linear-gradient(180deg,#0d0d28,#090924,#0d0d28);
+  --rp-lock-wall:linear-gradient(rgba(8,4,20,.5),rgba(12,6,30,.55)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#e8e0ff;
   --rp-lock-time:#f2eeff;
   --rp-swipe-color:rgba(180,160,255,.3);
   --rp-ln-bg:rgba(15,10,42,.88);
   --rp-ln-bd:rgba(150,120,255,.12);
   --rp-ln-text:rgba(220,210,255,.85);
-  --rp-home-wall:radial-gradient(ellipse 130% 70% at 15% 10%,rgba(90,55,210,.45),transparent 48%),radial-gradient(ellipse 100% 70% at 85% 90%,rgba(50,30,170,.35),transparent 48%),radial-gradient(ellipse 60% 50% at 50% 45%,rgba(30,15,90,.25),transparent 65%),linear-gradient(170deg,#0e0e2e,#10103c,#0e0e2e);
+  --rp-home-wall:linear-gradient(rgba(8,4,20,.48),rgba(12,6,30,.52)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-clock-color:#f2eeff;
   --rp-app-lbl:rgba(225,215,255,.95);
   --rp-app-lbl-sh:0 1px 4px rgba(0,0,0,.85);
@@ -149,10 +150,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-widget-bd:rgba(140,110,255,.18);
   --rp-widget-color:#e8e0ff;
   --rp-wd-fill:linear-gradient(90deg,#7c3aed,#a855f7);
-  --rp-nav-bg:rgba(12,8,36,.96);
-  --rp-nav-bd:rgba(140,110,255,.12);
+  --rp-nav-bg:rgba(12,6,30,.78);
+  --rp-nav-bd:rgba(168,85,247,.2);
   --rp-nav-title:#e8e0ff;
   --rp-nav-btn:#a78bfa;
+  --rp-nav-blur:18px;
   --rp-msg-bg:#08082a;
   --rp-bubbles-bg:#08082a;
   --rp-sent-bg:linear-gradient(135deg,#5b21b6,#7c3aed);
@@ -399,6 +401,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-top:1px solid var(--rp-composer-bd) !important;
   flex-shrink:0 !important;
   background:var(--rp-composer-bg) !important;
+  backdrop-filter:blur(var(--rp-nav-blur,0px)) !important;
+  -webkit-backdrop-filter:blur(var(--rp-nav-blur,0px)) !important;
 }
 #rp-input {
   flex:1 !important;
@@ -455,6 +459,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-bottom:1px solid var(--rp-nav-bd);
   background:var(--rp-nav-bg);
   box-shadow:var(--rp-nav-sh);
+  backdrop-filter:blur(var(--rp-nav-blur,0px));
+  -webkit-backdrop-filter:blur(var(--rp-nav-blur,0px));
 }
 .rp-nav-title { font-size:17px; font-weight:600; color:var(--rp-nav-title); }
 .rp-back {
@@ -569,26 +575,27 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-sbar-color:#2c4a6a;
   --rp-bat-border:rgba(44,74,106,.4);
   --rp-bat-nub:rgba(44,74,106,.3);
-  --rp-lock-wall:radial-gradient(ellipse 120% 90% at 20% 0%,rgba(184,210,230,.8),transparent 50%),radial-gradient(ellipse 100% 80% at 80% 100%,rgba(196,218,238,.7),transparent 50%),radial-gradient(ellipse 80% 60% at 50% 50%,rgba(220,232,244,.5),transparent 60%),linear-gradient(180deg,#dce8f4,#e8f0f8,#dce8f4);
+  --rp-lock-wall:linear-gradient(rgba(200,225,245,.15),rgba(180,215,240,.2)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#1e3a54;
   --rp-lock-time:#1a2e44;
   --rp-swipe-color:rgba(44,74,106,.35);
   --rp-ln-bg:rgba(240,246,252,.85);
   --rp-ln-bd:rgba(140,175,210,.2);
   --rp-ln-text:rgba(30,58,84,.85);
-  --rp-home-wall:radial-gradient(ellipse 130% 80% at 15% 5%,rgba(176,206,228,.6),transparent 45%),radial-gradient(ellipse 110% 70% at 85% 95%,rgba(188,214,234,.5),transparent 45%),radial-gradient(ellipse 80% 60% at 50% 50%,rgba(210,228,244,.4),transparent 60%),linear-gradient(170deg,#dde8f2,#e8f1f8,#dde8f2);
+  --rp-home-wall:linear-gradient(rgba(200,225,245,.12),rgba(180,215,240,.16)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-clock-color:#1a2e44;
   --rp-app-lbl:rgba(26,46,68,.85);
   --rp-app-lbl-sh:0 1px 3px rgba(255,255,255,.9);
   --rp-indicator:rgba(44,74,106,.22);
-  --rp-widget-bg:rgba(240,246,252,.82);
+  --rp-widget-bg:rgba(240,248,255,.62);
   --rp-widget-bd:rgba(140,175,210,.28);
   --rp-widget-color:#1a2e44;
   --rp-wd-fill:linear-gradient(90deg,#5b8fb9,#8ab4d4);
-  --rp-nav-bg:rgba(240,246,252,.92);
-  --rp-nav-bd:rgba(140,175,210,.2);
+  --rp-nav-bg:rgba(240,248,255,.7);
+  --rp-nav-bd:rgba(140,175,210,.25);
   --rp-nav-title:#1a2e44;
   --rp-nav-btn:#3d6e9a;
+  --rp-nav-blur:20px;
   --rp-msg-bg:#f0f5fa;
   --rp-bubbles-bg:#f0f5fa;
   --rp-sent-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
@@ -3406,19 +3413,19 @@ function toggleDarkMode() {
 // ================================================================
 const THEMES = {
   candy: {
-    name: '糖果花园', emoji: '🌸', desc: '清新淡雅，粉蓝渐变',
-    clockColor: 'rgba(0,0,0,.85)',
-    bg: 'linear-gradient(170deg,#dbeafe,#ede9fe,#fce7f3)',
+    name: '糖果花园', emoji: '🌸', desc: '粉色海边，温柔包裹',
+    clockColor: '#3a0a20',
+    bg: `linear-gradient(rgba(255,230,240,.3),rgba(255,210,225,.35)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat`,
   },
   star: {
-    name: '星夜', emoji: '✨', desc: '深邃暗夜，繁星闪烁',
+    name: '星夜', emoji: '✨', desc: '暗夜栀子，深邃迷人',
     clockColor: '#f2eeff',
-    bg: 'linear-gradient(170deg,#0e0e2e,#10103c,#12082e)',
+    bg: `linear-gradient(rgba(8,4,20,.5),rgba(12,6,30,.55)),url('https://i.postimg.cc/DfjgWdyn/wan-an-bi-zhi-an-se-xi-hua-hua-bi-zhi-1-bai-le-you-de-bai-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat`,
   },
   misty: {
-    name: '烟蓝·绣球', emoji: '🌿', desc: '晨雾绣球，清幽柔蓝',
+    name: '烟蓝·绣球', emoji: '🌿', desc: '蓝色绣球，海边浪漫',
     clockColor: '#1a2e44',
-    bg: 'linear-gradient(170deg,#dde8f2,#e8f1f8,#dde8f2)',
+    bg: `linear-gradient(rgba(200,225,245,.2),rgba(180,215,240,.25)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat`,
   }
 };
 
