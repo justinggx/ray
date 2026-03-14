@@ -1602,6 +1602,41 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-theme-desc { color: rgba(44,74,106,.75) !important; }
 #rp-phone.rp-theme-candy .rp-theme-name { color: #5a1030 !important; font-weight: 700 !important; }
 #rp-phone.rp-theme-candy .rp-theme-desc { color: rgba(100,30,60,.7) !important; }
+
+/* ══ Wallpaper direct-apply on all inner views (bulletproof) ══ */
+#rp-phone.rp-theme-candy #rp-view-messages,
+#rp-phone.rp-theme-candy #rp-view-thread,
+#rp-phone.rp-theme-candy #rp-view-moments,
+#rp-phone.rp-theme-candy #rp-view-settings,
+#rp-phone.rp-theme-candy #rp-view-api-settings,
+#rp-phone.rp-theme-candy #rp-view-game,
+#rp-phone.rp-theme-candy #rp-view-themes {
+  background: var(--rp-home-wall) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+#rp-phone.rp-theme-star #rp-view-messages,
+#rp-phone.rp-theme-star #rp-view-thread,
+#rp-phone.rp-theme-star #rp-view-moments,
+#rp-phone.rp-theme-star #rp-view-settings,
+#rp-phone.rp-theme-star #rp-view-api-settings,
+#rp-phone.rp-theme-star #rp-view-game,
+#rp-phone.rp-theme-star #rp-view-themes {
+  background: var(--rp-home-wall) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+#rp-phone.rp-theme-misty #rp-view-messages,
+#rp-phone.rp-theme-misty #rp-view-thread,
+#rp-phone.rp-theme-misty #rp-view-moments,
+#rp-phone.rp-theme-misty #rp-view-settings,
+#rp-phone.rp-theme-misty #rp-view-api-settings,
+#rp-phone.rp-theme-misty #rp-view-game,
+#rp-phone.rp-theme-misty #rp-view-themes {
+  background: var(--rp-home-wall) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -4475,8 +4510,8 @@ const RP_THEME_ICONS = {
     ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="8" cy="12" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="12" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="#e8e0ff" stroke="none"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="9" cy="10" r="1.6" fill="#e8e0ff" stroke="none"/><circle cx="15" cy="10" r="1.6" fill="rgba(232,224,255,.8)" stroke="none"/><circle cx="9" cy="15" r="1.6" fill="rgba(232,224,255,.7)" stroke="none"/><circle cx="15" cy="15" r="1.6" fill="rgba(232,224,255,.6)" stroke="none"/></svg>'
   },
   misty: {
-    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
-    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#4a7da8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
+    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#2d5f88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
   }
 };
 
