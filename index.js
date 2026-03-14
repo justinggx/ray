@@ -1493,19 +1493,8 @@ function bindUI() {
   // ── API 面板事件 ──
   // ── API Settings VIEW (首页入口) ──
   $(document).on('click', '[data-app="api-settings"]', function() {
-    const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
-    if (cfg.mode === 'custom') {
-      $('#rp-api-mode-custom-v').prop('checked', true);
-      $('#rp-api-url-v').val(cfg.url || '');
-      $('#rp-api-key-v').val(cfg.key || '');
-      $('#rp-api-model-v').val(cfg.model || '');
-      $('#rp-api-custom-fields-v').css('display','flex');
-    } else {
-      $('#rp-api-mode-st-v').prop('checked', true);
-      $('#rp-api-custom-fields-v').hide();
-    }
-    $('#rp-api-status-v').text('');
-    rpNav('api-settings');
+    lgFillAPIView();
+    go('api-settings');
   });
   $(document).on('change', 'input[name="rp-api-mode-v"]', function() {
     if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
@@ -1524,8 +1513,14 @@ function bindUI() {
       }
     }
     localStorage.setItem('rp_ludo_api', JSON.stringify(cfg));
-    $('#rp-api-status-v').text(mode === 'custom' ? `✓ 已保存：${cfg.model}` : '✓ 已切换回 SillyTavern API');
-    setTimeout(() => rpNav('home'), 1200);
+    // 保存成功 toast
+    const $btn = $('#rp-api-save-v');
+    const origText = $btn.text();
+    $btn.text('✓ 保存成功').css('background','linear-gradient(135deg,#34d399,#059669)');
+    setTimeout(() => {
+      $btn.text(origText).css('background','linear-gradient(135deg,#f472b6,#a855f7)');
+      go('home');
+    }, 1400);
   });
 
   $(document).on('click', '#rp-api-btn', function() {
@@ -1919,6 +1914,7 @@ function renderThreadList() {
 function go(view) {
   if (view === 'darkmode') { toggleDarkMode(); return; }
   if (view === 'ludo') { try { if (!LG.active) lgInit(); else lgRender(); } catch(e) { console.warn('[Ludo]', e); } view = 'game'; }
+  if (view === 'api-settings') { lgFillAPIView(); }
   $('.rp-view').hide();
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
@@ -1930,6 +1926,22 @@ function go(view) {
   if (view === 'moments') {
     renderMoments();
   }
+}
+
+// 读取已保存 API 配置并填入 view 表单
+function lgFillAPIView() {
+  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+  if (cfg.mode === 'custom') {
+    $('#rp-api-mode-custom-v').prop('checked', true);
+    $('#rp-api-url-v').val(cfg.url || '');
+    $('#rp-api-key-v').val(cfg.key || '');
+    $('#rp-api-model-v').val(cfg.model || '');
+    $('#rp-api-custom-fields-v').css('display','flex');
+  } else {
+    $('#rp-api-mode-st-v').prop('checked', true);
+    $('#rp-api-custom-fields-v').hide();
+  }
+  $('#rp-api-status-v').text('');
 }
 
 function openThread(threadId) {
