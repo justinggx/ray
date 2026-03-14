@@ -102,7 +102,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-widget-radius:18px;
   --rp-widget-sh:0 2px 12px rgba(0,0,0,.08);
   --rp-transition:transform .12s ease, box-shadow .12s ease;
-  --rp-themes-bg:linear-gradient(170deg,#f5efff,#ede8ff);
+  --rp-themes-bg:transparent;
   --rp-themes-label:#7c3aed;
   --rp-tc-bg:#fff;
   /* Thread list */
@@ -189,7 +189,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-widget-radius:10px;
   --rp-widget-sh:0 0 20px rgba(109,40,217,.3),0 0 0 1px rgba(140,110,255,.2);
   --rp-transition:transform .08s ease, box-shadow .08s ease;
-  --rp-themes-bg:linear-gradient(170deg,#0e0e2e,#10103c);
+  --rp-themes-bg:transparent;
   --rp-themes-label:#c8b4ff;
   --rp-tc-bg:rgba(20,14,55,.9);
   --rp-threads-bg:#08082a;
@@ -1160,7 +1160,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-widget-radius:22px;
   --rp-widget-sh:0 4px 20px rgba(80,120,160,.15),0 0 0 1px rgba(140,175,210,.2);
   --rp-transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
-  --rp-themes-bg:linear-gradient(170deg,#dce8f4,#e8f1f8);
+  --rp-themes-bg:transparent;
   --rp-themes-label:#3d6e9a;
   --rp-tc-bg:rgba(240,246,252,.9);
   --rp-threads-bg:#f0f5fa;
@@ -1183,7 +1183,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-lock-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
 /* star particles – only visible in star theme (via home-bg pseudo-element) */
 #rp-phone.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
-#rp-view-themes{background:var(--rp-themes-bg);display:flex;flex-direction:column}
+#rp-view-themes{background:transparent !important;display:flex;flex-direction:column}
 .rp-theme-card{background:var(--rp-tc-bg);border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
 .rp-theme-card:active{transform:scale(.94)}
 .rp-theme-card.rp-tc-active{box-shadow:0 0 0 2.5px #a855f7,0 3px 14px rgba(130,60,200,.25)}
