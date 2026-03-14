@@ -64,8 +64,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-nav-title:#4a1030;
   --rp-nav-btn:#c0306a;
   /* Messages / thread */
-  --rp-msg-bg:#fff;
-  --rp-bubbles-bg:#fff;
+  --rp-msg-bg:transparent;
+  --rp-bubbles-bg:transparent;
   --rp-sent-bg:#2563eb;
   --rp-recv-bg:#e9ecef;
   --rp-recv-color:#000;
@@ -106,7 +106,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-themes-label:#7c3aed;
   --rp-tc-bg:#fff;
   /* Thread list */
-  --rp-threads-bg:#fff;
+  --rp-threads-bg:transparent;
   --rp-thread-bd:rgba(0,0,0,.08);
   --rp-thread-hover:rgba(0,0,0,.03);
   --rp-tn-color:#000;
@@ -115,7 +115,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-hd-name:rgba(0,0,0,.6);
   --rp-bts-color:rgba(0,0,0,.4);
   /* Moments */
-  --rp-moments-bg:#f2f3f7;
+  --rp-moments-bg:transparent;
   --rp-moment-card:#fff;
   --rp-moment-name:#2563eb;
   --rp-moment-text:#1a1a1a;
@@ -788,12 +788,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 
 /* ══ STAR THEME: Settings & API dark styling ══ */
-#rp-phone.rp-theme-star #rp-view-settings {
-  background: linear-gradient(rgba(8,4,20,.45),rgba(12,6,30,.5)), var(--rp-home-wall) !important;
-}
-#rp-phone.rp-theme-star #rp-view-api-settings {
-  background: linear-gradient(rgba(8,4,20,.45),rgba(12,6,30,.5)), var(--rp-home-wall) !important;
-}
+#rp-phone.rp-theme-star #rp-view-settings { background: transparent !important; }
+#rp-phone.rp-theme-star #rp-view-api-settings { background: transparent !important; }
 /* Star: settings section headers */
 #rp-phone.rp-theme-star .rp-settings-section-title,
 #rp-phone.rp-theme-star [style*="font-size:11px;color:#888"],
@@ -868,12 +864,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: #c4b0ff !important;
 }
 /* Misty: settings/api theming */
-#rp-phone.rp-theme-misty #rp-view-settings {
-  background: linear-gradient(rgba(200,225,245,.1),rgba(180,215,240,.12)), var(--rp-home-wall) !important;
-}
-#rp-phone.rp-theme-misty #rp-view-api-settings {
-  background: linear-gradient(rgba(200,225,245,.1),rgba(180,215,240,.12)), var(--rp-home-wall) !important;
-}
+#rp-phone.rp-theme-misty #rp-view-settings { background: transparent !important; }
+#rp-phone.rp-theme-misty #rp-view-api-settings { background: transparent !important; }
 #rp-phone.rp-theme-misty #rp-view-settings > div,
 #rp-phone.rp-theme-misty #rp-view-api-settings > div {
   background: rgba(240,248,255,.88) !important;
@@ -964,6 +956,80 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(4){animation-delay:.20s}
 #rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(5){animation-delay:.25s}
 #rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(6){animation-delay:.30s}
+
+/* ══ WALLPAPER BLEED-THROUGH: Inner content glass cards ══ */
+
+/* Thread rows */
+.rp-thread {
+  background: rgba(255,255,255,.58) !important;
+  border-bottom-color: rgba(255,255,255,.25) !important;
+}
+.rp-thread:hover { background: rgba(255,255,255,.72) !important; }
+
+/* Star theme threads */
+#rp-phone.rp-theme-star .rp-thread { background: rgba(14,8,38,.62) !important; border-bottom-color: rgba(130,90,255,.15) !important; }
+#rp-phone.rp-theme-star .rp-thread:hover { background: rgba(20,12,50,.75) !important; }
+/* Misty theme threads */
+#rp-phone.rp-theme-misty .rp-thread { background: rgba(240,248,255,.6) !important; border-bottom-color: rgba(130,175,215,.2) !important; }
+
+/* Moments posts */
+.rp-moment {
+  background: rgba(255,255,255,.6) !important;
+  border-radius: 16px !important;
+  margin: 4px 8px 4px !important;
+  border: 1px solid rgba(255,255,255,.35) !important;
+}
+#rp-phone.rp-theme-star .rp-moment { background: rgba(14,8,38,.65) !important; border-color: rgba(130,90,255,.15) !important; }
+#rp-phone.rp-theme-misty .rp-moment { background: rgba(240,248,255,.62) !important; border-color: rgba(130,175,215,.2) !important; }
+
+/* Chat bubbles area stays transparent; sent/recv bubbles keep their own bg */
+#rp-bubbles { background: transparent !important; }
+
+/* Settings sections: each child div becomes a glass card */
+#rp-view-settings > div,
+#rp-view-settings > section {
+  background: rgba(255,255,255,.58) !important;
+  border-radius: 16px !important;
+  margin: 6px 10px !important;
+  border: 1px solid rgba(255,255,255,.3) !important;
+}
+#rp-phone.rp-theme-star #rp-view-settings > div { background: rgba(14,8,38,.65) !important; border-color: rgba(130,90,255,.2) !important; }
+#rp-phone.rp-theme-misty #rp-view-settings > div { background: rgba(240,248,255,.62) !important; border-color: rgba(130,175,215,.2) !important; }
+
+/* API settings content area */
+#rp-view-api-settings > div:not(.rp-nav-bar) {
+  background: rgba(255,255,255,.0) !important;
+}
+/* API inner info card */
+#rp-view-api-settings [style*="background:rgba(168,85,247,.06)"],
+#rp-phone.rp-theme-candy #rp-view-api-settings [style*="background:rgba"] {
+  background: rgba(255,255,255,.45) !important;
+  border: 1px solid rgba(200,150,220,.25) !important;
+  border-radius: 14px !important;
+}
+/* API preset buttons: glass */
+.rp-api-preset-btn {
+  background: rgba(255,255,255,.5) !important;
+  border: 1.5px solid rgba(180,130,220,.3) !important;
+  color: #6a2090 !important;
+  border-radius: 12px !important;
+}
+#rp-phone.rp-theme-star .rp-api-preset-btn { background: rgba(40,20,90,.5) !important; border-color: rgba(130,90,255,.4) !important; color: #c4b0ff !important; }
+
+/* Game canvas glass */
+#rp-ludo-canvas { background: rgba(255,255,255,.62) !important; }
+#rp-phone.rp-theme-star #rp-ludo-canvas { background: rgba(14,8,38,.72) !important; }
+#rp-phone.rp-theme-star #rp-game-controls { background: rgba(14,8,38,.65) !important; border-top-color: rgba(130,90,255,.2) !important; }
+
+/* Theme picker cards */
+.rp-theme-card { background: rgba(255,255,255,.55) !important; }
+
+/* Nav bars on all inner views: semi-transparent */
+.rp-nav-bar {
+  background: rgba(255,255,255,.65) !important;
+}
+#rp-phone.rp-theme-star .rp-nav-bar { background: rgba(12,6,32,.72) !important; }
+#rp-phone.rp-theme-misty .rp-nav-bar { background: rgba(240,248,255,.65) !important; }
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -1074,7 +1140,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-wd-status{color:rgba(160,175,255,.52)}
 .rp-dark .rp-home-indicator{background:rgba(255,255,255,.22)}
 /* ── DARK MESSAGES ── */
-.rp-dark #rp-view-messages{background:#07070e}
+.rp-dark #rp-view-messages{background:transparent}
 .rp-dark .rp-thread{border-bottom-color:rgba(255,255,255,.05)}
 .rp-dark .rp-thread:hover{background:rgba(255,255,255,.03)}
 .rp-dark .rp-tn{color:#dde0f2}
@@ -1086,8 +1152,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-nav-add{color:#7090f0 !important}
 .rp-dark .rp-hd-name{color:rgba(160,175,255,.62)}
 /* ── DARK THREAD ── */
-.rp-dark #rp-view-thread{background:#050510}
-.rp-dark #rp-bubbles{background:#050510}
+.rp-dark #rp-view-thread{background:transparent}
+.rp-dark #rp-bubbles{background:transparent}
 .rp-dark .rp-recv{background:#161628;color:#dde0f2}
 .rp-dark .rp-bts{color:rgba(160,175,255,.3)}
 .rp-dark #rp-composer{background:#0c0c1a !important;border-top-color:rgba(255,255,255,.06) !important}
@@ -1107,7 +1173,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-home-ind{background:rgba(255,255,255,.22)}
 /* ── MOMENTS VIEW ── */
 #rp-view-moments{background:var(--rp-moments-bg);display:flex;flex-direction:column}
-.rp-dark #rp-view-moments{background:#050510}
+.rp-dark #rp-view-moments{background:transparent}
 #rp-moments-list{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:8px}
 #rp-moments-list::-webkit-scrollbar{display:none}
 .rp-moment{background:var(--rp-moment-card);margin-bottom:8px;padding:14px 16px}
@@ -1149,9 +1215,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-av-img,.rp-moment-av.rp-av-img{overflow:hidden;padding:0}
 .rp-av-photo{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
 /* ── SETTINGS VIEW ── */
-#rp-view-settings{background:#f2f3f7;display:flex;flex-direction:column;overflow-y:auto}
-#rp-view-api-settings{background:#fff;display:flex;flex-direction:column}
-.rp-dark #rp-view-settings{background:#060610}
+#rp-view-settings{background:transparent;display:flex;flex-direction:column;overflow-y:auto}
+#rp-view-api-settings{background:transparent;display:flex;flex-direction:column}
+.rp-dark #rp-view-settings{background:transparent}
 .rp-set-section{background:#fff;border-radius:12px;margin:10px 12px 0;padding:0 14px;overflow:hidden}
 .rp-dark .rp-set-section{background:rgba(255,255,255,.04)}
 .rp-set-section-title{font-size:11.5px;font-weight:600;color:#8a8a9a;text-transform:uppercase;letter-spacing:.04em;margin:14px 12px 4px;padding:0}
@@ -1396,9 +1462,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-view{z-index:1}
 
 /* ══ LUDO GAME — Candy Garden 糖果花园 ══ */
-#rp-view-game{background:linear-gradient(160deg,#fff5f9 0%,#f6f0ff 60%,#f0f5ff 100%);display:flex;flex-direction:column}
-.rp-dark #rp-view-game{background:linear-gradient(160deg,#1e0a18 0%,#130820 60%,#0c0e1e 100%)}
-#rp-view-game .rp-nav-bar{background:rgba(255,255,255,.75)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(180,120,200,.15)!important}
+#rp-view-game{background:transparent;display:flex;flex-direction:column}
+.rp-dark #rp-view-game{background:transparent}
+#rp-view-game .rp-nav-bar{background:rgba(255,255,255,.55)!important;border-bottom:1px solid rgba(180,120,200,.2)!important}
 #rp-view-game .rp-nav-title{color:#4a1060!important;font-weight:700}
 .rp-dark #rp-view-game .rp-nav-title{color:#e8d0ff!important}
 #rp-view-game .rp-back{color:#b060d0!important}
@@ -1406,7 +1472,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-game-board-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 0;overflow:hidden;min-height:0}
 #rp-ludo-canvas{border-radius:16px;max-width:262px;max-height:262px;display:block;box-shadow:0 4px 24px rgba(160,80,200,.18),0 1px 0 rgba(255,255,255,.9) inset,0 8px 32px rgba(0,0,0,.08)}
 /* Controls */
-#rp-game-controls{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(180,120,200,.12);flex-shrink:0;gap:10px}
+#rp-game-controls{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.55);border-top:1px solid rgba(180,120,200,.18);flex-shrink:0;gap:10px}
 .rp-dark #rp-game-controls{background:rgba(30,10,40,.7);border-top-color:rgba(200,120,255,.1)}
 .rp-game-info{flex:1;min-width:0}
 .rp-game-players{font-size:12px;font-weight:700;color:#4a1060}
