@@ -574,13 +574,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ══ 🌸 CANDY: PINK BUBBLES — perfect circles, pearl glass ══ */
 #rp-phone.rp-theme-candy .rp-app-ico {
-  background: rgba(255,210,225,.54) !important;
-  border: 1.5px solid rgba(225,130,165,.32) !important;
-  border-radius: 50% !important;
-  box-shadow:
-    0 8px 24px rgba(200,100,140,.22),
-    inset 0 1.5px 0 rgba(255,255,255,.8),
-    inset 0 -1px 0 rgba(200,100,140,.12) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   font-size: 26px !important;
 }
 #rp-phone.rp-theme-candy .rp-app-ico:active {
@@ -633,14 +629,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ══ ✨ STAR: DARK TECH CHIPS — sharp rectangles, neon glow ══ */
 #rp-phone.rp-theme-star .rp-app-ico {
-  background: rgba(18,10,48,.72) !important;
-  border: 1px solid rgba(150,100,255,.5) !important;
-  border-radius: 12px !important;
-  box-shadow:
-    0 0 12px rgba(120,60,255,.28),
-    0 4px 18px rgba(0,0,0,.65),
-    inset 0 1px 0 rgba(200,170,255,.12),
-    inset 0 0 0 1px rgba(150,100,255,.08) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   font-size: 24px !important;
 }
 #rp-phone.rp-theme-star .rp-app-ico:active {
@@ -690,14 +681,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ══ 🌿 MISTY: WATERCOLOR OVALS — soft rounded, pearl white ══ */
 #rp-phone.rp-theme-misty .rp-app-ico {
-  background: rgba(255,255,255,.48) !important;
-  border: 1.5px solid rgba(130,175,215,.38) !important;
-  border-radius: 20px !important;
-  box-shadow:
-    0 6px 20px rgba(100,145,195,.18),
-    inset 0 1.5px 0 rgba(255,255,255,.75),
-    inset 0 -1px 0 rgba(100,145,195,.08) !important;
-  font-size: 26px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 #rp-phone.rp-theme-misty .rp-app-ico:active {
   transform: scale(.9) !important;
@@ -2101,7 +2087,7 @@ const HTML = `
                 <div class="rp-app-lbl">信息</div>
               </div>
               <div class="rp-app" data-app="moments">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#3d8b65,#2d7a55)">
+                <div class="rp-app-ico">
                   <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#mcg2)"/><defs><linearGradient id="mcg2" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#3d8b65"/><stop offset="100%" stop-color="#2d7a55"/></linearGradient></defs><circle cx="20" cy="14" r="3.5" fill="white" opacity=".9"/><rect x="10" y="20" width="20" height="2" rx="1" fill="white" opacity=".7"/><rect x="12" y="24" width="16" height="2" rx="1" fill="white" opacity=".5"/><rect x="14" y="28" width="12" height="2" rx="1" fill="white" opacity=".35"/></svg>
                 </div>
                 <div class="rp-app-lbl">朋友圈</div>
@@ -2109,20 +2095,20 @@ const HTML = `
 
               <!-- row 2: 设置 飞行棋 占位 -->
               <div class="rp-app" data-app="settings">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#636380,#48485e)">⚙️</div>
+                <div class="rp-app-ico">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
               </div>
               <div class="rp-app" data-app="ludo">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff6b8a,#c0294a)">🎲</div>
+                <div class="rp-app-ico">🎲</div>
                 <div class="rp-app-lbl">飞行棋</div>
               </div>
               <div class="rp-app" data-app="api-settings">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#a855f7,#7c3aed)">⚡</div>
+                <div class="rp-app-ico">⚡</div>
                 <div class="rp-app-lbl">API</div>
               </div>
               <!-- row 3: 美化 -->
               <div class="rp-app" data-app="themes">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#f472b6,#c026d3)">🎨</div>
+                <div class="rp-app-ico">🎨</div>
                 <div class="rp-app-lbl">主题</div>
               </div>
             </div>
