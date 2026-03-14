@@ -42,16 +42,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   /* Lock screen */
   --rp-lock-wall:linear-gradient(rgba(255,230,240,.10),rgba(255,210,225,.12)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
   --rp-lock-color:#4a1030;
-  --rp-lock-time:#3a0a20;
+  --rp-lock-time:#e06080;
   --rp-swipe-color:rgba(120,40,70,.4);
   --rp-ln-bg:rgba(255,255,255,.85);
   --rp-ln-bd:rgba(0,0,0,.06);
   --rp-ln-text:rgba(0,0,0,.85);
   /* Home screen */
   --rp-home-wall:linear-gradient(rgba(255,230,240,.08),rgba(255,215,228,.10)),url('https://i.postimg.cc/Hx8NSZL6/shou-ji-bi-zhi-fen-xiang-fen-se-da-hai-wen-rou-bao-ji-1-chao-ji-kun-dan-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
-  --rp-clock-color:#3a0a20;
-  --rp-app-lbl:rgba(60,10,30,.9);
-  --rp-app-lbl-sh:0 1px 4px rgba(255,255,255,.7);
+  --rp-clock-color:#e06080;
+  --rp-app-lbl:#c04870;
+  --rp-app-lbl-sh:0 1px 6px rgba(255,255,255,.8);
   --rp-indicator:rgba(0,0,0,.25);
   /* Widget */
   --rp-widget-bg:rgba(255,255,255,.6);
@@ -603,9 +603,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-radius: 22px !important;
 }
 #rp-phone.rp-theme-candy #rp-home-clock {
-  color: #8a1545 !important;
-  font-weight: 200 !important;
-  letter-spacing: -1px !important;
+  color: #e06080 !important;
+  font-weight: 100 !important;
+  font-size: 58px !important;
+  letter-spacing: -3px !important;
+  text-shadow: 0 2px 20px rgba(224,96,128,.3) !important;
 }
 /* Candy nav bars: pink glass */
 #rp-phone.rp-theme-candy .rp-nav-bar {
@@ -874,6 +876,83 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   background: rgba(240,248,255,.88) !important;
   border-radius: 16px !important;
 }
+
+/* ══ CANDY HOME: Full Beauty Pass ══ */
+/* Status bar: rose pink */
+#rp-phone.rp-theme-candy #rp-sbar {
+  color: #d4607a !important;
+}
+/* Home date line */
+#rp-home-date {
+  font-size:12px; font-weight:500; letter-spacing:.3px;
+  color:var(--rp-clock-color); opacity:.55; margin-top:-16px; margin-bottom:26px;
+}
+#rp-phone.rp-theme-candy #rp-home-date {
+  color: #e06080 !important; opacity: .65 !important;
+}
+#rp-phone.rp-theme-star #rp-home-date {
+  color: #b09ef0 !important; opacity: .6 !important;
+}
+#rp-phone.rp-theme-misty #rp-home-date {
+  color: #3d7eb0 !important; opacity: .6 !important;
+}
+/* Candy home indicator: rose */
+#rp-phone.rp-theme-candy .rp-home-indicator {
+  background: rgba(212,96,122,.45) !important;
+  width: 100px !important;
+}
+/* Candy app grid: more generous spacing */
+#rp-phone.rp-theme-candy #rp-app-grid {
+  gap: 20px !important;
+  padding: 0 22px !important;
+}
+/* Candy app label: refined typography */
+#rp-phone.rp-theme-candy .rp-app-lbl {
+  color: #c04870 !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .2px !important;
+  text-shadow: 0 1px 5px rgba(255,255,255,.85) !important;
+}
+/* Candy status bar battery color */
+#rp-phone.rp-theme-candy .rp-bat-body,
+#rp-phone.rp-theme-candy .rp-bat-fill { border-color: #d4607a !important; }
+#rp-phone.rp-theme-candy .rp-bat-fill { background: #d4607a !important; }
+/* Candy lock screen: rose clock/date */
+#rp-phone.rp-theme-candy #rp-lock-time {
+  color: #e06080 !important;
+  text-shadow: 0 2px 20px rgba(224,96,128,.25) !important;
+}
+#rp-phone.rp-theme-candy #rp-lock-date {
+  color: rgba(224,96,128,.7) !important;
+}
+#rp-phone.rp-theme-candy #rp-swipe-hint {
+  color: rgba(212,96,122,.55) !important;
+}
+/* Candy: home bottom vignette for depth */
+#rp-phone.rp-theme-candy .rp-home-bg::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 90px;
+  background: linear-gradient(transparent, rgba(255,230,238,.22));
+  pointer-events: none;
+  border-radius: 0 0 38px 38px;
+}
+/* Candy icon: gentle float animation on first load */
+@keyframes rp-candy-ico-in {
+  from { opacity:0; transform:translateY(8px) scale(.92); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app {
+  animation: rp-candy-ico-in .4s ease both;
+}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(1){animation-delay:.05s}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(2){animation-delay:.10s}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(3){animation-delay:.15s}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(4){animation-delay:.20s}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(5){animation-delay:.25s}
+#rp-phone.rp-theme-candy #rp-app-grid .rp-app:nth-child(6){animation-delay:.30s}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -1595,6 +1674,7 @@ const HTML = `
           <div class="rp-home-bg"></div>
           <div class="rp-home-body">
             <div id="rp-home-clock"></div>
+            <div id="rp-home-date"></div>
             <div id="rp-app-grid">
               <!-- row 1: 信息 朋友圈 夜间 -->
               <div class="rp-app" data-app="messages">
@@ -2016,7 +2096,7 @@ function updateClock() {
   const d    = `${days[now.getDay()]}  ${now.getMonth()+1}月${now.getDate()}日`;
 
   $('#rp-sbar-time, #rp-lock-time, #rp-home-clock').text(t);
-  $('#rp-lock-date').text(d);
+  $('#rp-lock-date, #rp-home-date').text(d);
 }
 
 // ================================================================
