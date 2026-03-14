@@ -611,10 +611,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     0 0 10px rgba(255,255,255,.7),
     0 2px 6px rgba(255,255,255,.4) !important;
 }
-/* Candy nav bars: pink glass */
+/* Candy nav bars: transparent */
 #rp-phone.rp-theme-candy .rp-nav-bar {
-  background: rgba(255,230,240,.82) !important;
-  border-bottom: 1px solid rgba(220,130,165,.2) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(220,130,165,.15) !important;
 }
 /* Candy send button: rose circle */
 #rp-phone.rp-theme-candy #rp-send {
@@ -666,10 +666,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   font-weight: 100 !important;
   text-shadow: 0 0 30px rgba(140,100,255,.4) !important;
 }
-/* Star nav bars: deep dark */
+/* Star nav bars: transparent */
 #rp-phone.rp-theme-star .rp-nav-bar {
-  background: rgba(12,6,32,.9) !important;
-  border-bottom: 1px solid rgba(150,100,255,.2) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(150,100,255,.15) !important;
 }
 /* Star send button: purple neon */
 #rp-phone.rp-theme-star #rp-send {
@@ -722,10 +722,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   font-weight: 100 !important;
   letter-spacing: -2px !important;
 }
-/* Misty nav bars: white-blue glass */
+/* Misty nav bars: transparent */
 #rp-phone.rp-theme-misty .rp-nav-bar {
-  background: rgba(240,248,255,.82) !important;
-  border-bottom: 1px solid rgba(130,175,215,.25) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(130,175,215,.2) !important;
 }
 /* Misty send button: steel-blue oval */
 #rp-phone.rp-theme-misty #rp-send {
@@ -1020,12 +1020,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* Theme picker cards */
 .rp-theme-card { background: rgba(255,255,255,.55) !important; }
 
-/* Nav bars on all inner views: semi-transparent */
-.rp-nav-bar {
-  background: rgba(255,255,255,.65) !important;
-}
-#rp-phone.rp-theme-star .rp-nav-bar { background: rgba(12,6,32,.72) !important; }
-#rp-phone.rp-theme-misty .rp-nav-bar { background: rgba(240,248,255,.65) !important; }
+/* Nav bars: transparent to show wallpaper */
+.rp-nav-bar { background: transparent !important; border-bottom-color: rgba(255,255,255,.15) !important; }
+#rp-phone.rp-theme-star .rp-nav-bar { border-bottom-color: rgba(130,90,255,.15) !important; }
+#rp-phone.rp-theme-misty .rp-nav-bar { border-bottom-color: rgba(130,175,215,.2) !important; }
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
