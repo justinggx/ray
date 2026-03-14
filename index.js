@@ -1091,6 +1091,169 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: #5a1090 !important;
   border-radius: 10px !important;
 }
+
+/* ════════════════════════════════════════════════════
+   ✨ STAR THEME — Complete inner-page polish
+   ════════════════════════════════════════════════════ */
+
+/* Clock: lavender glow on dark wallpaper */
+#rp-phone.rp-theme-star #rp-home-clock {
+  color: #d4ccff !important;
+  font-weight: 100 !important;
+  font-size: 58px !important;
+  letter-spacing: -3px !important;
+  text-shadow:
+    0 0 30px rgba(160,130,255,.5),
+    0 0 10px rgba(200,180,255,.3) !important;
+}
+/* Status bar */
+#rp-phone.rp-theme-star #rp-sbar {
+  color: #c8c0f5 !important;
+}
+/* Lock screen time */
+#rp-phone.rp-theme-star #rp-lock-time {
+  color: #e8e0ff !important;
+  text-shadow: 0 2px 20px rgba(140,100,255,.35) !important;
+}
+/* Home indicator */
+#rp-phone.rp-theme-star .rp-home-indicator {
+  background: rgba(160,130,255,.4) !important;
+}
+/* Thread name/preview text already via CSS vars */
+/* Moment text */
+#rp-phone.rp-theme-star .rp-moment-name { color: #b09ef0 !important; }
+#rp-phone.rp-theme-star .rp-moment-time { color: rgba(180,165,255,.55) !important; }
+#rp-phone.rp-theme-star .rp-moment-body { color: #d4ccff !important; }
+#rp-phone.rp-theme-star .rp-moment-actions span { color: rgba(160,140,255,.6) !important; }
+/* Thread list: name / time */
+#rp-phone.rp-theme-star .rp-tn { color: #e0d8ff !important; }
+#rp-phone.rp-theme-star .rp-tp { color: rgba(180,165,255,.55) !important; }
+#rp-phone.rp-theme-star .rp-tt { color: rgba(180,165,255,.45) !important; }
+/* Settings rows text */
+#rp-phone.rp-theme-star #rp-view-settings * { color: #d8d0ff !important; }
+/* Avatar border */
+#rp-phone.rp-theme-star .rp-av {
+  border-radius: 10px !important;
+  box-shadow: 0 0 8px rgba(120,80,255,.3) !important;
+}
+/* Game nav & controls */
+#rp-phone.rp-theme-star #rp-view-game .rp-nav-bar {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(130,90,255,.15) !important;
+}
+#rp-phone.rp-theme-star #rp-game-controls {
+  background: rgba(14,8,38,.72) !important;
+  border-top-color: rgba(130,90,255,.2) !important;
+}
+/* Nav back/title for star */
+#rp-phone.rp-theme-star .rp-nav-title {
+  color: #e0d8ff !important;
+  text-shadow: 0 0 12px rgba(160,130,255,.4) !important;
+}
+#rp-phone.rp-theme-star .rp-back,
+#rp-phone.rp-theme-star .rp-nav-add { color: #a78bfa !important; }
+
+/* ════════════════════════════════════════════════════
+   🌿 MISTY THEME — Complete inner-page polish
+   ════════════════════════════════════════════════════ */
+
+/* Clock: deep navy with white contrast glow */
+#rp-phone.rp-theme-misty #rp-home-clock {
+  color: #1a3050 !important;
+  font-weight: 100 !important;
+  font-size: 58px !important;
+  letter-spacing: -3px !important;
+  text-shadow:
+    0 0 24px rgba(255,255,255,.9),
+    0 0 8px rgba(255,255,255,.6) !important;
+}
+/* Status bar */
+#rp-phone.rp-theme-misty #rp-sbar {
+  color: #1a3050 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.75) !important;
+}
+/* Lock screen time */
+#rp-phone.rp-theme-misty #rp-lock-time {
+  color: #1a2e44 !important;
+  text-shadow:
+    0 0 20px rgba(255,255,255,.9),
+    0 0 6px rgba(255,255,255,.6) !important;
+}
+/* Home indicator */
+#rp-phone.rp-theme-misty .rp-home-indicator {
+  background: rgba(61,110,154,.4) !important;
+}
+/* Moments text */
+#rp-phone.rp-theme-misty .rp-moment-name { color: #2d6d9a !important; }
+#rp-phone.rp-theme-misty .rp-moment-time { color: rgba(44,74,106,.55) !important; }
+#rp-phone.rp-theme-misty .rp-moment-body { color: #1a3050 !important; }
+#rp-phone.rp-theme-misty .rp-moment-actions span { color: rgba(61,110,154,.7) !important; }
+/* Thread text */
+#rp-phone.rp-theme-misty .rp-tn { color: #1a2e44 !important; }
+#rp-phone.rp-theme-misty .rp-tp { color: rgba(44,74,106,.6) !important; }
+#rp-phone.rp-theme-misty .rp-tt { color: rgba(61,110,154,.5) !important; }
+/* Settings text */
+#rp-phone.rp-theme-misty #rp-view-settings * { color: #1a3050 !important; }
+/* Avatar */
+#rp-phone.rp-theme-misty .rp-av {
+  border-radius: 20px !important;
+  box-shadow: 0 3px 12px rgba(100,145,195,.2) !important;
+}
+/* Nav title */
+#rp-phone.rp-theme-misty .rp-nav-title {
+  color: #1a2e44 !important;
+  text-shadow: 0 0 10px rgba(255,255,255,.75) !important;
+}
+#rp-phone.rp-theme-misty .rp-back,
+#rp-phone.rp-theme-misty .rp-nav-add { color: #3d7eb0 !important; }
+/* Game controls */
+#rp-phone.rp-theme-misty #rp-view-game .rp-nav-bar {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(130,175,215,.2) !important;
+}
+#rp-phone.rp-theme-misty #rp-game-controls {
+  background: rgba(240,248,255,.68) !important;
+  border-top-color: rgba(130,175,215,.25) !important;
+}
+#rp-phone.rp-theme-misty #rp-ludo-canvas { background: rgba(240,248,255,.65) !important; }
+
+/* ── MISTY API settings legibility ── */
+#rp-phone.rp-theme-misty #rp-view-api-settings [style*="background:rgba(168,85,247"] {
+  background: rgba(240,248,255,.85) !important;
+  border: 1px solid rgba(130,175,215,.35) !important;
+  color: #1a3050 !important;
+  border-radius: 14px !important;
+}
+#rp-phone.rp-theme-misty #rp-api-blink { color: #2d6d9a !important; }
+#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#2d1060"] { color: #1a3050 !important; }
+#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#9070b0"] { color: rgba(44,74,106,.85) !important; }
+#rp-phone.rp-theme-misty .rp-api-opt { color: #1a3050 !important; font-weight: 500 !important; text-shadow: 0 0 8px rgba(255,255,255,.7) !important; }
+#rp-phone.rp-theme-misty .rp-api-preset-btn {
+  background: rgba(240,248,255,.85) !important;
+  border: 1.5px solid rgba(130,175,215,.45) !important;
+  color: #1a3050 !important; font-weight: 600 !important;
+}
+#rp-phone.rp-theme-misty #rp-view-api-settings input {
+  background: rgba(240,248,255,.88) !important;
+  border: 1.5px solid rgba(130,175,215,.45) !important;
+  color: #1a3050 !important; border-radius: 12px !important;
+}
+#rp-phone.rp-theme-misty #rp-api-save-v {
+  background: linear-gradient(135deg, #2d6d9a, #4a8fbf) !important;
+  color: #fff !important; font-weight: 700 !important;
+  border: none !important; border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(45,109,154,.3) !important;
+}
+#rp-phone.rp-theme-misty #rp-fetch-models-btn {
+  background: rgba(240,248,255,.8) !important;
+  border: 1.5px solid rgba(130,175,215,.4) !important;
+  color: #2d6d9a !important; border-radius: 10px !important;
+}
+#rp-phone.rp-theme-misty #rp-model-list {
+  background: rgba(240,248,255,.9) !important;
+  border: 1.5px solid rgba(130,175,215,.4) !important;
+  color: #1a3050 !important; border-radius: 12px !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
