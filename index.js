@@ -887,10 +887,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 0 10px rgba(255,255,255,.85) !important;
 }
 /* Home date line */
-#rp-home-date {
-  font-size:12px; font-weight:500; letter-spacing:.3px;
-  color:var(--rp-clock-color); opacity:.7; margin-top:-14px; margin-bottom:24px;
-}
+#rp-home-date { display:none; }
 #rp-phone.rp-theme-candy #rp-home-date {
   color: #b02850 !important;
   opacity: 1 !important;
