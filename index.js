@@ -461,6 +461,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-av-photo{width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit}
 /* ── SETTINGS VIEW ── */
 #rp-view-settings{background:#f2f3f7;display:flex;flex-direction:column;overflow-y:auto}
+#rp-view-api-settings{background:#fff;display:flex;flex-direction:column}
 .rp-dark #rp-view-settings{background:#060610}
 .rp-set-section{background:#fff;border-radius:12px;margin:10px 12px 0;padding:0 14px;overflow:hidden}
 .rp-dark .rp-set-section{background:rgba(255,255,255,.04)}
@@ -1045,10 +1046,10 @@ const HTML = `
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">API 设置</span>
           </div>
-          <div style="flex:1;overflow-y:auto;padding:18px 18px 10px;display:flex;flex-direction:column;gap:0">
+          <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 10px;display:flex;flex-direction:column;gap:0">
             <div style="font-size:17px;color:#2d1060;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-.2px">⚡ 自定义API设置</div>
             <div style="font-size:11px;color:#9070b0;line-height:1.7;margin-bottom:16px;background:rgba(168,85,247,.06);border-radius:12px;padding:10px 12px">
-              本API会使用在除信息以外的全部小手机功能中，信息功能仍使用您原本的酒馆API<br>
+              本API将使用在除信息、朋友圈以外的全部小手机功能中，信息和朋友圈功能仍使用原本的酒馆API<br>
               <span id="rp-api-blink" style="color:#a855f7;font-weight:700">建议接入 DeepSeek 等国产模型，让生成速度更快。</span><br>
               接入后直接调用真实 API，需自备 Key。
             </div>
