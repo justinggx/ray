@@ -292,6 +292,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-home-bg {
   position:absolute; inset:0;
   background:var(--rp-home-wall);
+  image-rendering: high-quality;
 }
 .rp-home-body { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; padding-top:54px; }
 #rp-home-clock { font-size:52px; font-weight:100; color:var(--rp-clock-color); letter-spacing:-3px; margin-bottom:22px; }
@@ -559,19 +560,36 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
 
 
+/* ── TRANSPARENT MINIMALIST ICONS ── */
+#rp-phone .rp-app-ico {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  font-size: 30px !important;
+  width:54px; height:54px;
+}
+/* Candy: readable dark labels */
+#rp-phone.rp-theme-candy .rp-app-lbl {
+  color: rgba(50,10,25,.95) !important;
+  text-shadow: 0 1px 4px rgba(255,255,255,.65);
+}
+/* Star: white labels with shadow */
+#rp-phone.rp-theme-star .rp-app-lbl {
+  color: rgba(255,255,255,.92) !important;
+  text-shadow: 0 1px 6px rgba(0,0,0,.85);
+}
+/* Misty: dark navy labels */
+#rp-phone.rp-theme-misty .rp-app-lbl {
+  color: rgba(20,35,60,.95) !important;
+  text-shadow: 0 1px 4px rgba(255,255,255,.65);
+}
 /* ── THEME BUTTON COLORS ── */
-/* Candy: warm rose tones on icons */
-#rp-phone.rp-theme-candy .rp-app-ico { filter:saturate(1.1) brightness(1.05); }
 #rp-phone.rp-theme-candy #rp-input { border-color:rgba(192,48,106,.25) !important; }
 
-/* Star: desaturate + darken icons, purple tint */
-#rp-phone.rp-theme-star .rp-app-ico { filter:saturate(0.55) brightness(0.82) hue-rotate(240deg); }
 #rp-phone.rp-theme-star #rp-input { border-color:rgba(140,80,255,.35) !important; }
 #rp-phone.rp-theme-star #rp-view-game .rp-nav-bar { background:rgba(12,6,30,.88)!important; }
 #rp-phone.rp-theme-star #rp-game-controls { background:rgba(12,6,30,.85); border-top-color:rgba(140,80,255,.15); }
 
-/* Misty: cool blue-shift on icons */
-#rp-phone.rp-theme-misty .rp-app-ico { filter:saturate(0.75) brightness(1.0) hue-rotate(200deg); }
 #rp-phone.rp-theme-misty #rp-input { border-color:rgba(61,110,154,.25) !important; }
 
 /* Theme-aware lock screen bottom nav pills */
