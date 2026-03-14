@@ -894,11 +894,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy #rp-home-date {
   color: #b02850 !important;
   opacity: 1 !important;
-  font-size: 13px !important;
+  font-size: 12.5px !important;
   font-weight: 500 !important;
-  text-shadow:
-    0 0 16px rgba(255,255,255,.95),
-    0 0 6px rgba(255,255,255,.7) !important;
+  background: rgba(255,255,255,.20) !important;
+  border-radius: 20px !important;
+  padding: 3px 14px !important;
+  text-shadow: none !important;
 }
 #rp-phone.rp-theme-star #rp-home-date {
   color: #b09ef0 !important; opacity: .6 !important;
