@@ -968,40 +968,39 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* Thread rows */
 .rp-thread {
-  background: rgba(255,255,255,.58) !important;
-  border-bottom-color: rgba(255,255,255,.25) !important;
+  background: transparent !important;
+  border-bottom-color: rgba(0,0,0,.07) !important;
 }
-.rp-thread:hover { background: rgba(255,255,255,.72) !important; }
+.rp-thread:hover { background: rgba(255,255,255,.12) !important; }
 
 /* Star theme threads */
-#rp-phone.rp-theme-star .rp-thread { background: rgba(14,8,38,.62) !important; border-bottom-color: rgba(130,90,255,.15) !important; }
-#rp-phone.rp-theme-star .rp-thread:hover { background: rgba(20,12,50,.75) !important; }
+#rp-phone.rp-theme-star .rp-thread { background: transparent !important; border-bottom-color: rgba(130,90,255,.12) !important; }
+#rp-phone.rp-theme-star .rp-thread:hover { background: rgba(130,90,255,.1) !important; }
 /* Misty theme threads */
-#rp-phone.rp-theme-misty .rp-thread { background: rgba(240,248,255,.6) !important; border-bottom-color: rgba(130,175,215,.2) !important; }
+#rp-phone.rp-theme-misty .rp-thread { background: transparent !important; border-bottom-color: rgba(130,175,215,.15) !important; }
 
 /* Moments posts */
 .rp-moment {
-  background: rgba(255,255,255,.6) !important;
-  border-radius: 16px !important;
-  margin: 4px 8px 4px !important;
-  border: 1px solid rgba(255,255,255,.35) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0,0,0,.07) !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border-left: none !important; border-right: none !important; border-top: none !important;
 }
-#rp-phone.rp-theme-star .rp-moment { background: rgba(14,8,38,.65) !important; border-color: rgba(130,90,255,.15) !important; }
-#rp-phone.rp-theme-misty .rp-moment { background: rgba(240,248,255,.62) !important; border-color: rgba(130,175,215,.2) !important; }
+#rp-phone.rp-theme-star .rp-moment { background: transparent !important; border-bottom-color: rgba(130,90,255,.1) !important; }
+#rp-phone.rp-theme-misty .rp-moment { background: transparent !important; border-bottom-color: rgba(130,175,215,.12) !important; }
 
 /* Chat bubbles area stays transparent; sent/recv bubbles keep their own bg */
 #rp-bubbles { background: transparent !important; }
 
-/* Settings sections: each child div becomes a glass card */
+/* Settings sections: transparent */
 #rp-view-settings > div,
 #rp-view-settings > section {
-  background: rgba(255,255,255,.58) !important;
-  border-radius: 16px !important;
-  margin: 6px 10px !important;
-  border: 1px solid rgba(255,255,255,.3) !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  border: none !important;
 }
-#rp-phone.rp-theme-star #rp-view-settings > div { background: rgba(14,8,38,.65) !important; border-color: rgba(130,90,255,.2) !important; }
-#rp-phone.rp-theme-misty #rp-view-settings > div { background: rgba(240,248,255,.62) !important; border-color: rgba(130,175,215,.2) !important; }
 
 /* API settings content area */
 #rp-view-api-settings > div:not(.rp-nav-bar) {
@@ -1024,8 +1023,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-api-preset-btn { background: rgba(40,20,90,.5) !important; border-color: rgba(130,90,255,.4) !important; color: #c4b0ff !important; }
 
 /* Game canvas glass */
-#rp-ludo-canvas { background: rgba(255,255,255,.62) !important; }
-#rp-phone.rp-theme-star #rp-ludo-canvas { background: rgba(14,8,38,.72) !important; }
+#rp-ludo-canvas { background: rgba(255,255,255,.45) !important; }
+#rp-phone.rp-theme-star #rp-ludo-canvas { background: rgba(14,8,38,.55) !important; }
 #rp-phone.rp-theme-star #rp-game-controls { background: rgba(14,8,38,.65) !important; border-top-color: rgba(130,90,255,.2) !important; }
 
 /* Theme picker cards */
