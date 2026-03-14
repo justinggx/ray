@@ -560,42 +560,187 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
 
 
-/* ── TRANSPARENT MINIMALIST ICONS ── */
+/* ══════════════════════════════════════════════════════
+   THEME ICON SYSTEM — each theme gets its own visual language
+   ══════════════════════════════════════════════════════ */
+
+/* ── Base: remove all hardcoded inline bg on icons ── */
 #rp-phone .rp-app-ico {
   background: transparent !important;
   box-shadow: none !important;
   border: none !important;
-  font-size: 30px !important;
-  width:54px; height:54px;
+  font-size: 28px !important;
+  transition: transform .14s ease, box-shadow .14s ease !important;
 }
-/* Candy: readable dark labels */
+#rp-phone .rp-app-ico:active { transform: scale(.88) !important; }
+
+/* ══ 🌸 CANDY: PINK BUBBLES — perfect circles, pearl glass ══ */
+#rp-phone.rp-theme-candy .rp-app-ico {
+  background: rgba(255,210,225,.54) !important;
+  border: 1.5px solid rgba(225,130,165,.32) !important;
+  border-radius: 50% !important;
+  box-shadow:
+    0 8px 24px rgba(200,100,140,.22),
+    inset 0 1.5px 0 rgba(255,255,255,.8),
+    inset 0 -1px 0 rgba(200,100,140,.12) !important;
+  font-size: 26px !important;
+}
+#rp-phone.rp-theme-candy .rp-app-ico:active {
+  transform: scale(.88) !important;
+  box-shadow: 0 3px 10px rgba(200,100,140,.3), inset 0 1px 0 rgba(255,255,255,.6) !important;
+}
 #rp-phone.rp-theme-candy .rp-app-lbl {
-  color: rgba(50,10,25,.95) !important;
-  text-shadow: 0 1px 4px rgba(255,255,255,.65);
+  color: #7a1038 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 4px rgba(255,255,255,.7);
 }
-/* Star: white labels with shadow */
+/* Candy widget: pearl pink glass */
+#rp-phone.rp-theme-candy #rp-widget {
+  background: rgba(255,228,238,.62) !important;
+  border: 1.5px solid rgba(220,130,165,.28) !important;
+  box-shadow: 0 8px 28px rgba(200,100,140,.18), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  border-radius: 22px !important;
+}
+#rp-phone.rp-theme-candy #rp-home-clock {
+  color: #8a1545 !important;
+  font-weight: 200 !important;
+  letter-spacing: -1px !important;
+}
+/* Candy nav bars: pink glass */
+#rp-phone.rp-theme-candy .rp-nav-bar {
+  background: rgba(255,230,240,.82) !important;
+  border-bottom: 1px solid rgba(220,130,165,.2) !important;
+}
+/* Candy send button: rose circle */
+#rp-phone.rp-theme-candy #rp-send {
+  background: linear-gradient(135deg, #e8648a, #f472b6) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 16px rgba(220,80,130,.35) !important;
+}
+#rp-phone.rp-theme-candy #rp-input {
+  border-color: rgba(220,130,165,.35) !important;
+  border-radius: 20px !important;
+}
+/* Candy thread list items */
+#rp-phone.rp-theme-candy .rp-av {
+  border-radius: 50% !important;
+  box-shadow: 0 3px 12px rgba(200,100,140,.2) !important;
+}
+
+/* ══ ✨ STAR: DARK TECH CHIPS — sharp rectangles, neon glow ══ */
+#rp-phone.rp-theme-star .rp-app-ico {
+  background: rgba(18,10,48,.72) !important;
+  border: 1px solid rgba(150,100,255,.5) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 0 12px rgba(120,60,255,.28),
+    0 4px 18px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(200,170,255,.12),
+    inset 0 0 0 1px rgba(150,100,255,.08) !important;
+  font-size: 24px !important;
+}
+#rp-phone.rp-theme-star .rp-app-ico:active {
+  transform: scale(.9) !important;
+  box-shadow: 0 0 20px rgba(140,80,255,.5), 0 2px 8px rgba(0,0,0,.7) !important;
+}
 #rp-phone.rp-theme-star .rp-app-lbl {
-  color: rgba(255,255,255,.92) !important;
-  text-shadow: 0 1px 6px rgba(0,0,0,.85);
+  color: rgba(210,195,255,.9) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-shadow: 0 0 8px rgba(140,80,255,.6);
 }
-/* Misty: dark navy labels */
+/* Star widget: deep space glass */
+#rp-phone.rp-theme-star #rp-widget {
+  background: rgba(14,8,40,.88) !important;
+  border: 1px solid rgba(150,100,255,.35) !important;
+  box-shadow: 0 0 20px rgba(100,50,220,.25), 0 8px 32px rgba(0,0,0,.7) !important;
+  border-radius: 14px !important;
+}
+#rp-phone.rp-theme-star #rp-home-clock {
+  color: #d4ccff !important;
+  font-weight: 100 !important;
+  text-shadow: 0 0 30px rgba(140,100,255,.4) !important;
+}
+/* Star nav bars: deep dark */
+#rp-phone.rp-theme-star .rp-nav-bar {
+  background: rgba(12,6,32,.9) !important;
+  border-bottom: 1px solid rgba(150,100,255,.2) !important;
+}
+/* Star send button: purple neon */
+#rp-phone.rp-theme-star #rp-send {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 14px rgba(120,60,255,.5) !important;
+}
+#rp-phone.rp-theme-star #rp-input {
+  border-color: rgba(150,100,255,.4) !important;
+  border-radius: 8px !important;
+  background: rgba(20,12,50,.6) !important;
+  color: #e0d4ff !important;
+}
+/* Star thread items: purple chip hover */
+#rp-phone.rp-theme-star .rp-av {
+  border-radius: 10px !important;
+  box-shadow: 0 0 8px rgba(120,60,255,.25) !important;
+}
+
+/* ══ 🌿 MISTY: WATERCOLOR OVALS — soft rounded, pearl white ══ */
+#rp-phone.rp-theme-misty .rp-app-ico {
+  background: rgba(255,255,255,.48) !important;
+  border: 1.5px solid rgba(130,175,215,.38) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 6px 20px rgba(100,145,195,.18),
+    inset 0 1.5px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(100,145,195,.08) !important;
+  font-size: 26px !important;
+}
+#rp-phone.rp-theme-misty .rp-app-ico:active {
+  transform: scale(.9) !important;
+  box-shadow: 0 3px 12px rgba(100,145,195,.25), inset 0 1px 0 rgba(255,255,255,.5) !important;
+}
 #rp-phone.rp-theme-misty .rp-app-lbl {
-  color: rgba(20,35,60,.95) !important;
-  text-shadow: 0 1px 4px rgba(255,255,255,.65);
+  color: #1a3050 !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 4px rgba(255,255,255,.6);
 }
-/* ── THEME BUTTON COLORS ── */
-#rp-phone.rp-theme-candy #rp-input { border-color:rgba(192,48,106,.25) !important; }
+/* Misty widget: white-blue glass */
+#rp-phone.rp-theme-misty #rp-widget {
+  background: rgba(240,248,255,.62) !important;
+  border: 1.5px solid rgba(130,175,215,.3) !important;
+  box-shadow: 0 8px 28px rgba(100,145,195,.15), inset 0 1px 0 rgba(255,255,255,.7) !important;
+  border-radius: 22px !important;
+}
+#rp-phone.rp-theme-misty #rp-home-clock {
+  color: #1a3050 !important;
+  font-weight: 100 !important;
+  letter-spacing: -2px !important;
+}
+/* Misty nav bars: white-blue glass */
+#rp-phone.rp-theme-misty .rp-nav-bar {
+  background: rgba(240,248,255,.82) !important;
+  border-bottom: 1px solid rgba(130,175,215,.25) !important;
+}
+/* Misty send button: steel-blue oval */
+#rp-phone.rp-theme-misty #rp-send {
+  background: linear-gradient(135deg, #4d8fbf, #2d6d9a) !important;
+  border-radius: 20px 14px 14px 20px !important;
+  box-shadow: 0 4px 14px rgba(70,120,180,.3) !important;
+}
+#rp-phone.rp-theme-misty #rp-input {
+  border-color: rgba(130,175,215,.35) !important;
+  border-radius: 16px !important;
+}
+#rp-phone.rp-theme-misty .rp-av {
+  border-radius: 20px !important;
+  box-shadow: 0 3px 12px rgba(100,145,195,.2) !important;
+}
 
-#rp-phone.rp-theme-star #rp-input { border-color:rgba(140,80,255,.35) !important; }
-#rp-phone.rp-theme-star #rp-view-game .rp-nav-bar { background:rgba(12,6,30,.88)!important; }
-#rp-phone.rp-theme-star #rp-game-controls { background:rgba(12,6,30,.85); border-top-color:rgba(140,80,255,.15); }
-
-#rp-phone.rp-theme-misty #rp-input { border-color:rgba(61,110,154,.25) !important; }
-
-/* Theme-aware lock screen bottom nav pills */
-#rp-phone.rp-theme-star .rp-ln { background:rgba(80,40,180,.2) !important; }
-#rp-phone.rp-theme-misty .rp-ln { background:rgba(61,110,154,.15) !important; }
-#rp-phone.rp-theme-candy .rp-ln { background:rgba(200,60,100,.12) !important; }
+/* ── SHARED: icon grid spacing & app grid for icon-only style ── */
+#rp-phone #rp-app-grid { gap: 16px !important; }
+/* ══════════════════════════════════════════════════════ */
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
