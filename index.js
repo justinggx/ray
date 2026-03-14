@@ -452,9 +452,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   height:92px; padding-top:46px; flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between;
   padding-left:6px; padding-right:16px;
-  border-bottom:1px solid var(--rp-nav-bd);
-  background:var(--rp-nav-bg);
-  box-shadow:var(--rp-nav-sh);
+  background:transparent;
+  border-bottom:1px solid transparent;
 }
 
 .rp-nav-title { font-size:17px; font-weight:600; color:var(--rp-nav-title); }
