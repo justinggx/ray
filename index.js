@@ -379,6 +379,41 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-app-ico{box-shadow:0 2px 10px rgba(0,0,0,.5)}
 .rp-dark .rp-app-off{opacity:.2}
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
+
+/* ── THEME: 星夜 ── */
+.rp-theme-star .rp-lock-bg{background:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,40,180,.45),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(50,20,140,.35),transparent 55%),linear-gradient(180deg,#0d0d28,#090924,#0d0d28)}
+.rp-theme-star .rp-lock-body{color:#e8e0ff}
+.rp-theme-star #rp-lock-time{color:#f2eeff}
+.rp-theme-star #rp-lock-date{color:rgba(200,180,255,.55)}
+.rp-theme-star .rp-ln{background:rgba(15,10,42,.88);border-color:rgba(150,120,255,.12)}
+.rp-theme-star .rp-ln-text{color:rgba(220,210,255,.85)}
+.rp-theme-star #rp-swipe-hint{color:rgba(180,160,255,.3)}
+.rp-theme-star #rp-sbar{color:#c8c0f5}
+.rp-theme-star .rp-home-bg{background:radial-gradient(ellipse 130% 70% at 15% 10%,rgba(90,55,210,.45),transparent 48%),radial-gradient(ellipse 100% 70% at 85% 90%,rgba(50,30,170,.35),transparent 48%),radial-gradient(ellipse 60% 50% at 50% 45%,rgba(30,15,90,.25),transparent 65%),linear-gradient(170deg,#0e0e2e,#10103c,#0e0e2e)}
+.rp-theme-star #rp-home-clock{color:#f2eeff}
+.rp-theme-star .rp-app-lbl{color:rgba(225,215,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.85)}
+.rp-theme-star .rp-app-ico{box-shadow:0 3px 14px rgba(0,0,0,.6)}
+.rp-theme-star #rp-widget{background:rgba(14,10,45,.82);border-color:rgba(140,110,255,.18);color:#e8e0ff;box-shadow:0 2px 14px rgba(0,0,0,.55)}
+.rp-theme-star .rp-wd-fill{background:linear-gradient(90deg,#7c3aed,#a855f7)}
+.rp-theme-star .rp-wd-label{opacity:.5}
+.rp-theme-star .rp-home-indicator{background:rgba(255,255,255,.22)}
+/* star particles on home bg */
+.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
+
+/* ── THEMES VIEW ── */
+#rp-view-themes{background:linear-gradient(170deg,#f5efff,#ede8ff);display:flex;flex-direction:column}
+.rp-theme-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
+.rp-theme-card:active{transform:scale(.94)}
+.rp-theme-card.rp-tc-active{box-shadow:0 0 0 2.5px #a855f7,0 3px 14px rgba(130,60,200,.25)}
+.rp-theme-preview{height:96px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.rp-theme-mini{display:flex;flex-direction:column;align-items:center;gap:7px}
+.rp-theme-mini-clock{font-size:20px;font-weight:100;letter-spacing:-1px;opacity:.9}
+.rp-theme-mini-dots{display:flex;gap:5px}
+.rp-theme-mini-dot{width:16px;height:16px;border-radius:5px;background:rgba(255,255,255,.65);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.rp-theme-check{position:absolute;top:8px;right:9px;width:20px;height:20px;background:#a855f7;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(168,85,247,.5)}
+.rp-theme-info{padding:8px 12px 12px}
+.rp-theme-name{font-size:12px;font-weight:700;color:#2d1060;margin-bottom:2px}
+.rp-theme-desc{font-size:10px;color:#9070b0;line-height:1.4}
 .rp-dark .rp-wd-label{color:rgba(160,175,255,.4)}
 .rp-dark .rp-wd-stage{color:#dde0f2}
 .rp-dark .rp-wd-track{background:rgba(255,255,255,.1)}
@@ -1027,6 +1062,11 @@ const HTML = `
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#a855f7,#7c3aed)">⚡</div>
                 <div class="rp-app-lbl">API</div>
               </div>
+              <!-- row 3: 美化 -->
+              <div class="rp-app" data-app="themes">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#f472b6,#c026d3)">🎨</div>
+                <div class="rp-app-lbl">美化</div>
+              </div>
             </div>
 
 
@@ -1074,6 +1114,18 @@ const HTML = `
           </div>
           <div style="padding:10px 18px 28px;flex-shrink:0">
             <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
+          </div>
+        </div>
+
+        <!-- 美化/主题 -->
+        <div id="rp-view-themes" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">美化</span>
+          </div>
+          <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px">
+            <div style="font-size:13px;font-weight:600;color:#7c3aed;text-align:center;margin-bottom:18px;opacity:.75;letter-spacing:.4px">✨ 选择主题</div>
+            <div id="rp-theme-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
           </div>
         </div>
 
@@ -1317,6 +1369,7 @@ async function init() {
   }
 
   if (STATE.darkMode) { $('#rp-phone').addClass('rp-dark'); $('.rp-dm-ico').text('☀️'); $('#rp-dm-lbl').text('日间'); }
+  lgInitTheme();
 
   updateClock();
   setInterval(updateClock, 1000);
@@ -1607,6 +1660,12 @@ function bindUI() {
     $('#rp-api-model-v').val($(this).data('model'));
     $('#rp-model-list').hide();
     $('#rp-api-status-v').text('已选择：' + $(this).data('model'));
+  });
+
+  // 主题切换
+  $(document).on('click', '.rp-theme-card[data-tid]', function() {
+    lgApplyTheme($(this).data('tid'));
+    lgRenderThemePicker();
   });
 
   $(document).on('click', '#rp-dice-btn', function() {
@@ -1915,6 +1974,7 @@ function go(view) {
   if (view === 'darkmode') { toggleDarkMode(); return; }
   if (view === 'ludo') { try { if (!LG.active) lgInit(); else lgRender(); } catch(e) { console.warn('[Ludo]', e); } view = 'game'; }
   if (view === 'api-settings') { lgFillAPIView(); }
+  if (view === 'themes') { lgRenderThemePicker(); }
   $('.rp-view').hide();
   $(`#rp-view-${view}`).show();
   $('#rp-home-ind').toggle(view !== 'lock');
@@ -3094,6 +3154,60 @@ function toggleDarkMode() {
   $('.rp-dm-ico').text(STATE.darkMode ? '☀️' : '🌙');
   $('#rp-dm-lbl').text(STATE.darkMode ? '日间' : '夜间');
   saveState();
+}
+
+// ================================================================
+//  THEMES
+// ================================================================
+const THEMES = {
+  candy: {
+    name: '糖果花园', emoji: '🌸', desc: '清新淡雅，粉蓝渐变',
+    clockColor: 'rgba(0,0,0,.85)',
+    bg: 'linear-gradient(170deg,#dbeafe,#ede9fe,#fce7f3)',
+  },
+  star: {
+    name: '星夜', emoji: '✨', desc: '深邃暗夜，繁星闪烁',
+    clockColor: '#f2eeff',
+    bg: 'linear-gradient(170deg,#0e0e2e,#10103c,#12082e)',
+  }
+};
+
+function lgApplyTheme(id) {
+  const phone = document.getElementById('rp-phone');
+  Object.keys(THEMES).forEach(k => phone.classList.remove(`rp-theme-${k}`));
+  if (id && id !== 'candy') phone.classList.add(`rp-theme-${id}`);
+  localStorage.setItem('rp_theme', id || 'candy');
+}
+
+function lgInitTheme() {
+  lgApplyTheme(localStorage.getItem('rp_theme') || 'candy');
+}
+
+function lgRenderThemePicker() {
+  const cur = localStorage.getItem('rp_theme') || 'candy';
+  const $c = $('#rp-theme-cards').empty();
+  Object.entries(THEMES).forEach(([id, t]) => {
+    const active = id === cur;
+    $c.append(`
+      <div class="rp-theme-card${active ? ' rp-tc-active' : ''}" data-tid="${id}">
+        <div class="rp-theme-preview" style="background:${t.bg}">
+          <div class="rp-theme-mini">
+            <div class="rp-theme-mini-clock" style="color:${t.clockColor}">12:00</div>
+            <div class="rp-theme-mini-dots">
+              <div class="rp-theme-mini-dot"></div>
+              <div class="rp-theme-mini-dot"></div>
+              <div class="rp-theme-mini-dot"></div>
+            </div>
+          </div>
+          ${active ? '<div class="rp-theme-check">✓</div>' : ''}
+        </div>
+        <div class="rp-theme-info">
+          <div class="rp-theme-name">${t.emoji} ${t.name}</div>
+          <div class="rp-theme-desc">${t.desc}</div>
+        </div>
+      </div>
+    `);
+  });
 }
 
 // ================================================================
