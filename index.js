@@ -3225,14 +3225,14 @@ function lgRender() {
         const [ur, uc] = LUDO_PATH[uIdx];
         const mx = uc * CELL + CELL * 0.5;
         const my = ur * CELL + CELL * 0.5;
-        const r  = CELL * 0.17 * (0.85 + 0.15 * pulse);
+        const r  = CELL * 0.14 * (0.85 + 0.15 * pulse);
         C.beginPath();
         C.moveTo(mx,     my - r);
         C.lineTo(mx + r, my    );
         C.lineTo(mx,     my + r);
         C.lineTo(mx - r, my    );
         C.closePath();
-        C.fillStyle = `rgba(219,39,119,${0.45 + 0.3 * pulse})`;
+        C.fillStyle = `rgba(219,39,119,${0.18 + 0.12 * pulse})`;
         C.fill();
       }
     });
@@ -3251,62 +3251,36 @@ function lgRender() {
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
 
-  // ── Home zone markers (皇冠风格) ──
+  // ── Home zone markers (皇冠) ──
   const drawCrown = (cx, cy, color) => {
-    const s  = CELL * 0.72;  // half-width
-    const ht = CELL * 0.54;  // total height
-    const bh = CELL * 0.17;  // base bar height
-    const ty = cy - ht * 0.5;  // top of crown
-    const by = cy + ht * 0.5;  // bottom of crown
-
-    // crown silhouette path
+    const w   = CELL * 1.5;
+    const ht  = CELL * 1.3;
+    const bh  = CELL * 0.38;
+    const top     = cy - ht / 2;
+    const bot     = cy + ht / 2;
+    const baseTop = bot - bh;
+    const sideTop = top + ht * 0.42;
+    const valley  = baseTop - ht * 0.08;
     C.beginPath();
-    C.moveTo(cx - s, by);
-    C.lineTo(cx - s, by - bh);
-    // left point
-    C.lineTo(cx - s * 0.62, ty + bh * 0.8);
-    // left-centre valley
-    C.lineTo(cx - s * 0.28, by - bh * 0.6);
-    // centre point (tallest)
-    C.lineTo(cx, ty);
-    // right-centre valley
-    C.lineTo(cx + s * 0.28, by - bh * 0.6);
-    // right point
-    C.lineTo(cx + s * 0.62, ty + bh * 0.8);
-    C.lineTo(cx + s, by - bh);
-    C.lineTo(cx + s, by);
+    C.moveTo(cx - w,        bot);
+    C.lineTo(cx - w,        baseTop);
+    C.lineTo(cx - w * 0.60, sideTop);
+    C.lineTo(cx - w * 0.26, valley);
+    C.lineTo(cx,            top);
+    C.lineTo(cx + w * 0.26, valley);
+    C.lineTo(cx + w * 0.60, sideTop);
+    C.lineTo(cx + w,        baseTop);
+    C.lineTo(cx + w,        bot);
     C.closePath();
-
-    // fill
-    C.fillStyle = color;
-    C.globalAlpha = 0.72;
-    C.fill();
-    C.globalAlpha = 1;
-
-    // outline
-    C.strokeStyle = 'rgba(255,255,255,0.65)';
-    C.lineWidth = 1.2;
-    C.stroke();
-
-    // gems on each point tip
-    const gems = [
-      [cx - s * 0.62, ty + bh * 0.8],
-      [cx,            ty            ],
-      [cx + s * 0.62, ty + bh * 0.8],
-    ];
-    gems.forEach(([gx, gy]) => {
-      C.beginPath();
-      C.arc(gx, gy, CELL * 0.1, 0, Math.PI * 2);
-      C.fillStyle = 'rgba(255,255,255,0.88)';
-      C.fill();
+    C.fillStyle = color; C.globalAlpha = 0.68; C.fill(); C.globalAlpha = 1;
+    C.strokeStyle = 'rgba(255,255,255,0.55)'; C.lineWidth = 1.3; C.stroke();
+    [[cx - w*0.60, sideTop], [cx, top], [cx + w*0.60, sideTop]].forEach(([gx, gy]) => {
+      C.beginPath(); C.arc(gx, gy, CELL * 0.13, 0, Math.PI * 2);
+      C.fillStyle = 'rgba(255,255,255,0.9)'; C.fill();
     });
-
-    // small dots along base bar for decoration
-    [-s*0.6, -s*0.2, s*0.2, s*0.6].forEach(dx => {
-      C.beginPath();
-      C.arc(cx + dx, by - bh * 0.5, CELL * 0.06, 0, Math.PI * 2);
-      C.fillStyle = 'rgba(255,255,255,0.5)';
-      C.fill();
+    [-0.55, 0, 0.55].forEach(dx => {
+      C.beginPath(); C.arc(cx + dx * w, (bot + baseTop)/2, CELL*0.08, 0, Math.PI*2);
+      C.fillStyle = 'rgba(255,255,255,0.45)'; C.fill();
     });
   };
   drawCrown(2.5*CELL, 10.5*CELL, '#ec4899');
