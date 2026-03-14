@@ -3606,15 +3606,48 @@ const THEMES = {
   }
 };
 
+
+// ══ Per-theme icon sets ══
+const RP_THEME_ICONS = {
+  candy: {
+    messages: '💌', moments: '🌸', settings: '⚙️',
+    ludo: '🎲', 'api-settings': '⚡', themes: '🎨'
+  },
+  star: {
+    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="11" r=".9" fill="#a78bfa" stroke="none"/><circle cx="12" cy="11" r=".9" fill="#a78bfa" stroke="none"/><circle cx="15" cy="11" r=".9" fill="#a78bfa" stroke="none"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.07" y2="7.07"/><line x1="16.93" y1="16.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.93" y2="7.07"/><line x1="7.07" y1="16.93" x2="4.93" y2="19.07"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.2" fill="#a78bfa" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="#a78bfa" stroke="none"/><circle cx="8" cy="12" r="1.2" fill="#a78bfa" stroke="none"/><circle cx="16" cy="12" r="1.2" fill="#a78bfa" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="#a78bfa" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="#a78bfa" stroke="none"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="9" cy="10" r="1.6" fill="#a78bfa" stroke="none"/><circle cx="15" cy="10" r="1.6" fill="#c084fc" stroke="none"/><circle cx="9" cy="15" r="1.6" fill="#8b5cf6" stroke="none"/><circle cx="15" cy="15" r="1.6" fill="#7c3aed" stroke="none"/></svg>'
+  },
+  misty: {
+    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#3d7eb0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
+  }
+};
+
+function lgRenderHomeIcons() {
+  const theme = localStorage.getItem('rp_theme') || 'candy';
+  const icons = RP_THEME_ICONS[theme] || RP_THEME_ICONS.candy;
+  document.querySelectorAll('#rp-app-grid [data-app]').forEach(el => {
+    const appId = el.dataset.app;
+    const ico = el.querySelector('.rp-app-ico');
+    if (!ico || !icons[appId]) return;
+    // Preserve badge element
+    const badge = ico.querySelector('.rp-badge');
+    ico.innerHTML = icons[appId];
+    if (badge) ico.prepend(badge);
+  });
+}
+
 function lgApplyTheme(id) {
   const phone = document.getElementById('rp-phone');
   Object.keys(THEMES).forEach(k => phone.classList.remove(`rp-theme-${k}`));
   if (id && id !== 'candy') phone.classList.add(`rp-theme-${id}`);
   localStorage.setItem('rp_theme', id || 'candy');
+  lgRenderHomeIcons();
 }
 
 function lgInitTheme() {
   lgApplyTheme(localStorage.getItem('rp_theme') || 'candy');
+  lgRenderHomeIcons();
 }
 
 function lgRenderThemePicker() {
