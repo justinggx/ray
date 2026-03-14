@@ -1020,9 +1020,9 @@ const HTML = `
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff6b8a,#c0294a)">🎲</div>
                 <div class="rp-app-lbl">飞行棋</div>
               </div>
-              <div class="rp-app rp-app-off" style="pointer-events:none;visibility:hidden">
-                <div class="rp-app-ico" style="background:rgba(0,0,0,.06)"></div>
-                <div class="rp-app-lbl"></div>
+              <div class="rp-app" data-app="api-settings">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#a855f7,#7c3aed)">⚡</div>
+                <div class="rp-app-lbl">接口</div>
               </div>
             </div>
 
@@ -1035,6 +1035,35 @@ const HTML = `
             </div>
           </div>
           <div class="rp-home-indicator"></div>
+        </div>
+
+        <!-- API 设置 -->
+        <div id="rp-view-api-settings" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">接口设置</span>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:0">
+            <div style="font-size:13px;color:#7c3aed;font-weight:700;margin-bottom:6px">⚡ 回复速度设置</div>
+            <div style="font-size:11px;color:#9070b0;line-height:1.6;margin-bottom:16px">建议接入 DeepSeek 等国产模型，让角色回复更快。<br>接入后直接调用真实 API，需自备 Key。<br>此设置对整个扩展的 AI 对话生效。</div>
+            <label class="rp-api-opt" style="margin-bottom:10px"><input type="radio" name="rp-api-mode-v" value="st" id="rp-api-mode-st-v" checked> 使用当前 API（SillyTavern）</label>
+            <label class="rp-api-opt" style="margin-bottom:12px"><input type="radio" name="rp-api-mode-v" value="custom" id="rp-api-mode-custom-v"> 接入其他 API</label>
+            <div id="rp-api-custom-fields-v" style="display:none;flex-direction:column;gap:8px">
+              <div class="rp-api-presets" style="margin-bottom:4px">
+                <button class="rp-api-preset-btn" data-url="https://api.deepseek.com/v1" data-model="deepseek-chat">DeepSeek</button>
+                <button class="rp-api-preset-btn" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1" data-model="qwen-turbo">通义</button>
+                <button class="rp-api-preset-btn" data-url="https://open.bigmodel.cn/api/paas/v4" data-model="glm-4-flash">GLM</button>
+                <button class="rp-api-preset-btn" data-url="" data-model="">其他 OpenAI</button>
+              </div>
+              <input class="rp-api-input" id="rp-api-url-v" placeholder="API 地址 (如 https://api.deepseek.com/v1)" type="url">
+              <input class="rp-api-input" id="rp-api-key-v" placeholder="API Key" type="password">
+              <input class="rp-api-input" id="rp-api-model-v" placeholder="模型名称 (如 deepseek-chat)">
+            </div>
+            <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
+          </div>
+          <div style="padding:10px 18px 28px;flex-shrink:0">
+            <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
+          </div>
         </div>
 
         <!-- 信息列表 -->
@@ -1146,7 +1175,6 @@ const HTML = `
               <div class="rp-game-players"><span style="color:#ec4899">●</span> 你 vs <span style="color:#7c3aed">●</span> <span id="rp-game-char-name">对方</span></div>
               <div class="rp-game-status" id="rp-game-status-text">按骰子开始！</div>
             </div>
-            <button id="rp-api-btn" type="button" title="API 设置">⚡</button>
             <button id="rp-dice-btn" type="button" title="掷骰子">🎲</button>
             <div id="rp-dice-face"></div>
           </div>
@@ -1176,6 +1204,7 @@ const HTML = `
                   <button class="rp-api-preset-btn" data-url="https://api.deepseek.com/v1" data-model="deepseek-chat">DeepSeek</button>
                   <button class="rp-api-preset-btn" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1" data-model="qwen-turbo">通义</button>
                   <button class="rp-api-preset-btn" data-url="https://open.bigmodel.cn/api/paas/v4" data-model="glm-4-flash">GLM</button>
+                  <button class="rp-api-preset-btn" data-url="" data-model="">其他 OpenAI</button>
                 </div>
                 <input class="rp-api-input" id="rp-api-url" placeholder="API 地址 (如 https://api.deepseek.com/v1)" type="url">
                 <input class="rp-api-input" id="rp-api-key" placeholder="API Key" type="password">
@@ -1451,6 +1480,43 @@ function bindUI() {
   });
 
   // ── API 面板事件 ──
+  // ── API Settings VIEW (首页入口) ──
+  $(document).on('click', '[data-app="api-settings"]', function() {
+    const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+    if (cfg.mode === 'custom') {
+      $('#rp-api-mode-custom-v').prop('checked', true);
+      $('#rp-api-url-v').val(cfg.url || '');
+      $('#rp-api-key-v').val(cfg.key || '');
+      $('#rp-api-model-v').val(cfg.model || '');
+      $('#rp-api-custom-fields-v').css('display','flex');
+    } else {
+      $('#rp-api-mode-st-v').prop('checked', true);
+      $('#rp-api-custom-fields-v').hide();
+    }
+    $('#rp-api-status-v').text('');
+    rpNav('api-settings');
+  });
+  $(document).on('change', 'input[name="rp-api-mode-v"]', function() {
+    if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
+    else $('#rp-api-custom-fields-v').hide();
+  });
+  $(document).on('click', '#rp-api-save-v', function() {
+    const mode = $('input[name="rp-api-mode-v"]:checked').val() || 'st';
+    const cfg = { mode };
+    if (mode === 'custom') {
+      cfg.url   = $('#rp-api-url-v').val().trim();
+      cfg.key   = $('#rp-api-key-v').val().trim();
+      cfg.model = $('#rp-api-model-v').val().trim() || 'deepseek-chat';
+      if (!cfg.url || !cfg.key) {
+        $('#rp-api-status-v').text('⚠️ 请填写 API 地址和 Key');
+        return;
+      }
+    }
+    localStorage.setItem('rp_ludo_api', JSON.stringify(cfg));
+    $('#rp-api-status-v').text(mode === 'custom' ? `✓ 已保存：${cfg.model}` : '✓ 已切换回 SillyTavern API');
+    setTimeout(() => rpNav('home'), 1200);
+  });
+
   $(document).on('click', '#rp-api-btn', function() {
     const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
     if (cfg.mode === 'custom') {
@@ -1471,9 +1537,16 @@ function bindUI() {
   });
   $(document).on('click', '.rp-api-preset-btn', function(e) {
     e.preventDefault();
-    $('#rp-api-url').val($(this).data('url'));
-    $('#rp-api-model').val($(this).data('model'));
-    $('#rp-api-key').val('').focus();
+    const url   = $(this).data('url');
+    const model = $(this).data('model');
+    // In-game panel inputs
+    $('#rp-api-url').val(url);
+    $('#rp-api-model').val(model);
+    if (!url) { $('#rp-api-url').focus(); } else { $('#rp-api-key').val('').focus(); }
+    // View inputs
+    $('#rp-api-url-v').val(url);
+    $('#rp-api-model-v').val(model);
+    if (!url) { $('#rp-api-url-v').focus(); } else { $('#rp-api-key-v').val('').focus(); }
   });
   $(document).on('click', '#rp-api-save', function() {
     const mode = $('input[name="rp-api-mode"]:checked').val() || 'st';
