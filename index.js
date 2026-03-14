@@ -801,6 +801,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .game-win-btn:hover{opacity:.88!important}
 @keyframes rp-dice-roll{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
 .ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
+@keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
+#rp-api-blink{animation:rpApiBlink 1.6s ease-in-out infinite}
 /* API settings */
 #rp-api-btn{width:30px;height:30px;border-radius:15px;background:rgba(168,85,247,.1);border:1.5px solid rgba(168,85,247,.22);color:#7c3aed;font-size:12px;cursor:pointer;display:flex!important;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;font-weight:700;padding:0;visibility:visible!important;pointer-events:auto!important}
 #rp-api-btn:hover{background:rgba(168,85,247,.22)}
@@ -1022,7 +1024,7 @@ const HTML = `
               </div>
               <div class="rp-app" data-app="api-settings">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#a855f7,#7c3aed)">⚡</div>
-                <div class="rp-app-lbl">接口</div>
+                <div class="rp-app-lbl">API</div>
               </div>
             </div>
 
@@ -1041,11 +1043,15 @@ const HTML = `
         <div id="rp-view-api-settings" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
-            <span class="rp-nav-title">接口设置</span>
+            <span class="rp-nav-title">API 设置</span>
           </div>
-          <div style="flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:0">
-            <div style="font-size:13px;color:#7c3aed;font-weight:700;margin-bottom:6px">⚡ 回复速度设置</div>
-            <div style="font-size:11px;color:#9070b0;line-height:1.6;margin-bottom:16px">建议接入 DeepSeek 等国产模型，让角色回复更快。<br>接入后直接调用真实 API，需自备 Key。<br>此设置对整个扩展的 AI 对话生效。</div>
+          <div style="flex:1;overflow-y:auto;padding:18px 18px 10px;display:flex;flex-direction:column;gap:0">
+            <div style="font-size:17px;color:#2d1060;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-.2px">⚡ 自定义API设置</div>
+            <div style="font-size:11px;color:#9070b0;line-height:1.7;margin-bottom:16px;background:rgba(168,85,247,.06);border-radius:12px;padding:10px 12px">
+              本API会使用在除信息以外的全部小手机功能中，信息功能仍使用您原本的酒馆API<br>
+              <span id="rp-api-blink" style="color:#a855f7;font-weight:700">建议接入 DeepSeek 等国产模型，让生成速度更快。</span><br>
+              接入后直接调用真实 API，需自备 Key。
+            </div>
             <label class="rp-api-opt" style="margin-bottom:10px"><input type="radio" name="rp-api-mode-v" value="st" id="rp-api-mode-st-v" checked> 使用当前 API（SillyTavern）</label>
             <label class="rp-api-opt" style="margin-bottom:12px"><input type="radio" name="rp-api-mode-v" value="custom" id="rp-api-mode-custom-v"> 接入其他 API</label>
             <div id="rp-api-custom-fields-v" style="display:none;flex-direction:column;gap:8px">
@@ -1053,11 +1059,15 @@ const HTML = `
                 <button class="rp-api-preset-btn" data-url="https://api.deepseek.com/v1" data-model="deepseek-chat">DeepSeek</button>
                 <button class="rp-api-preset-btn" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1" data-model="qwen-turbo">通义</button>
                 <button class="rp-api-preset-btn" data-url="https://open.bigmodel.cn/api/paas/v4" data-model="glm-4-flash">GLM</button>
-                <button class="rp-api-preset-btn" data-url="" data-model="">其他 OpenAI</button>
+                <button class="rp-api-preset-btn" data-url="" data-model="">其他OpenAI</button>
               </div>
               <input class="rp-api-input" id="rp-api-url-v" placeholder="API 地址 (如 https://api.deepseek.com/v1)" type="url">
               <input class="rp-api-input" id="rp-api-key-v" placeholder="API Key" type="password">
-              <input class="rp-api-input" id="rp-api-model-v" placeholder="模型名称 (如 deepseek-chat)">
+              <div style="display:flex;gap:6px;align-items:center">
+                <input class="rp-api-input" id="rp-api-model-v" placeholder="模型名称 (如 deepseek-chat)" style="flex:1;min-width:0">
+                <button id="rp-api-fetch-models" style="flex-shrink:0;padding:7px 10px;border-radius:12px;border:1.5px solid rgba(168,85,247,.3);background:rgba(168,85,247,.08);color:#7c3aed;font-size:11px;cursor:pointer;white-space:nowrap;font-weight:600">获取模型</button>
+              </div>
+              <div id="rp-model-list" style="display:none;background:rgba(255,255,255,.95);border:1px solid rgba(168,85,247,.2);border-radius:12px;max-height:140px;overflow-y:auto"></div>
             </div>
             <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
           </div>
@@ -1564,6 +1574,43 @@ function bindUI() {
   });
   $(document).on('click', '#rp-api-cancel', function() {
     $('#rp-api-panel').hide();
+  });
+
+  // 获取模型列表
+  $(document).on('click', '#rp-api-fetch-models', async function() {
+    const url   = $('#rp-api-url-v').val().trim();
+    const key   = $('#rp-api-key-v').val().trim();
+    const $btn  = $(this);
+    const $list = $('#rp-model-list');
+    if (!url || !key) {
+      $('#rp-api-status-v').text('请先填写 API 地址和 Key');
+      return;
+    }
+    $btn.text('获取中…').prop('disabled', true);
+    $list.hide().empty();
+    try {
+      const res  = await fetch(`${url.replace(/\/+$/, '')}/models`, {
+        headers: { 'Authorization': `Bearer ${key}` }
+      });
+      const data = await res.json();
+      const models = (data.data || data.models || []).map(m => typeof m === 'string' ? m : (m.id || m.name || '')).filter(Boolean);
+      if (models.length === 0) { $('#rp-api-status-v').text('未获取到模型，请检查 URL/Key'); }
+      else {
+        models.forEach(m => {
+          $list.append(`<div class="rp-model-item" data-model="${m}" style="padding:8px 12px;font-size:12px;color:#2d1060;cursor:pointer;border-bottom:1px solid rgba(168,85,247,.08)">${m}</div>`);
+        });
+        $list.show();
+        $('#rp-api-status-v').text(`找到 ${models.length} 个模型，点击选择`);
+      }
+    } catch(e) {
+      $('#rp-api-status-v').text('请求失败：' + e.message);
+    }
+    $btn.text('获取模型').prop('disabled', false);
+  });
+  $(document).on('click', '.rp-model-item', function() {
+    $('#rp-api-model-v').val($(this).data('model'));
+    $('#rp-model-list').hide();
+    $('#rp-api-status-v').text('已选择：' + $(this).data('model'));
   });
 
   $(document).on('click', '#rp-dice-btn', function() {
