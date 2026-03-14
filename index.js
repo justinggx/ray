@@ -741,6 +741,139 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── SHARED: icon grid spacing & app grid for icon-only style ── */
 #rp-phone #rp-app-grid { gap: 16px !important; }
 /* ══════════════════════════════════════════════════════ */
+
+/* ── LOCK SCREEN WIDGET ── */
+#rp-lock-widget {
+  position:absolute; bottom:72px; left:50%; transform:translateX(-50%);
+  width:calc(100% - 40px); max-width:220px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:18px; padding:12px 16px;
+  color:#fff; text-align:left;
+  display:none;
+}
+#rp-lock-widget .rp-lw-label {
+  font-size:10px; font-weight:700; letter-spacing:.8px;
+  text-transform:uppercase; opacity:.55; margin-bottom:5px;
+}
+#rp-lock-widget .rp-lw-stage {
+  font-size:16px; font-weight:600; margin-bottom:4px; letter-spacing:-.3px;
+}
+#rp-lock-widget .rp-lw-status {
+  font-size:11px; opacity:.7;
+}
+/* Star theme lock widget */
+#rp-phone.rp-theme-star #rp-lock-widget {
+  background:rgba(60,30,120,.35);
+  border-color:rgba(160,120,255,.35);
+  color:#e8e0ff;
+  box-shadow:0 4px 20px rgba(80,40,180,.3);
+}
+/* Misty theme lock widget */
+#rp-phone.rp-theme-misty #rp-lock-widget {
+  background:rgba(255,255,255,.3);
+  border-color:rgba(140,180,220,.4);
+  color:#0a2040;
+}
+/* Candy theme lock widget */
+#rp-phone.rp-theme-candy #rp-lock-widget {
+  background:rgba(255,220,235,.35);
+  border-color:rgba(220,130,165,.35);
+  color:#5a1028;
+}
+
+/* ══ STAR THEME: Settings & API dark styling ══ */
+#rp-phone.rp-theme-star #rp-view-settings {
+  background: linear-gradient(rgba(8,4,20,.45),rgba(12,6,30,.5)), var(--rp-home-wall) !important;
+}
+#rp-phone.rp-theme-star #rp-view-api-settings {
+  background: linear-gradient(rgba(8,4,20,.45),rgba(12,6,30,.5)), var(--rp-home-wall) !important;
+}
+/* Star: settings section headers */
+#rp-phone.rp-theme-star .rp-settings-section-title,
+#rp-phone.rp-theme-star [style*="font-size:11px;color:#888"],
+#rp-phone.rp-theme-star [style*="color:#888;"] {
+  color: rgba(180,160,255,.65) !important;
+}
+/* Star: settings list rows */
+#rp-phone.rp-theme-star .rp-settings-row,
+#rp-phone.rp-theme-star [style*="background:#fff"],
+#rp-phone.rp-theme-star [style*="background: #fff"] {
+  background: rgba(20,12,50,.82) !important;
+  border-color: rgba(130,90,255,.2) !important;
+  color: #e0d4ff !important;
+}
+/* Star: all white/light bg panels in settings */
+#rp-phone.rp-theme-star #rp-view-settings > *,
+#rp-phone.rp-theme-star #rp-view-api-settings > * {
+  color: #e0d4ff;
+}
+#rp-phone.rp-theme-star #rp-view-settings input,
+#rp-phone.rp-theme-star #rp-view-api-settings input[type="text"],
+#rp-phone.rp-theme-star #rp-view-api-settings input[type="url"],
+#rp-phone.rp-theme-star #rp-view-api-settings input[type="password"] {
+  background: rgba(20,12,50,.8) !important;
+  border: 1px solid rgba(130,90,255,.4) !important;
+  color: #e0d4ff !important;
+  border-radius: 10px !important;
+}
+#rp-phone.rp-theme-star #rp-view-settings input::placeholder,
+#rp-phone.rp-theme-star #rp-view-api-settings input::placeholder {
+  color: rgba(160,140,220,.5) !important;
+}
+/* Star: API section card */
+#rp-phone.rp-theme-star #rp-view-api-settings [style*="background:rgba(168,85,247,.06)"] {
+  background: rgba(80,40,160,.25) !important;
+  border: 1px solid rgba(140,90,255,.2) !important;
+  color: rgba(200,180,255,.85) !important;
+  border-radius: 14px !important;
+}
+/* Star: API preset buttons */
+#rp-phone.rp-theme-star .rp-api-preset-btn {
+  background: rgba(80,40,160,.4) !important;
+  border: 1px solid rgba(140,90,255,.4) !important;
+  color: #c4b0ff !important;
+  border-radius: 10px !important;
+}
+#rp-phone.rp-theme-star .rp-api-preset-btn:hover {
+  background: rgba(100,50,200,.5) !important;
+}
+/* Star: save button */
+#rp-phone.rp-theme-star #rp-api-save-v {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(100,50,220,.4) !important;
+}
+/* Star: radio labels */
+#rp-phone.rp-theme-star .rp-api-opt {
+  color: #d4c8ff !important;
+}
+/* Star: API title */
+#rp-phone.rp-theme-star [style*="color:#2d1060"] {
+  color: #b09ef0 !important;
+}
+#rp-phone.rp-theme-star [style*="color:#9070b0"] {
+  color: rgba(180,160,255,.75) !important;
+}
+/* Star: settings upload buttons */
+#rp-phone.rp-theme-star .rp-btn-outline {
+  background: rgba(60,30,120,.4) !important;
+  border: 1px solid rgba(140,90,255,.4) !important;
+  color: #c4b0ff !important;
+}
+/* Misty: settings/api theming */
+#rp-phone.rp-theme-misty #rp-view-settings {
+  background: linear-gradient(rgba(200,225,245,.1),rgba(180,215,240,.12)), var(--rp-home-wall) !important;
+}
+#rp-phone.rp-theme-misty #rp-view-api-settings {
+  background: linear-gradient(rgba(200,225,245,.1),rgba(180,215,240,.12)), var(--rp-home-wall) !important;
+}
+#rp-phone.rp-theme-misty #rp-view-settings > div,
+#rp-phone.rp-theme-misty #rp-view-api-settings > div {
+  background: rgba(240,248,255,.88) !important;
+  border-radius: 16px !important;
+}
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
@@ -1452,6 +1585,7 @@ const HTML = `
             <div id="rp-lock-date"></div>
             <div id="rp-lock-notifs"></div>
           </div>
+          <div id="rp-lock-widget"></div>
           <div id="rp-swipe-hint">向上轻扫以解锁</div>
           <div id="rp-swipe-zone"></div>
         </div>
@@ -1498,12 +1632,6 @@ const HTML = `
             </div>
 
 
-            <div id="rp-widget">
-              <div class="rp-wd-label">Augustine · 关系进度</div>
-              <div class="rp-wd-stage" id="rp-wd-stage">Stage 1 · 初识</div>
-              <div class="rp-wd-track"><div class="rp-wd-fill" id="rp-wd-fill"></div></div>
-              <div class="rp-wd-status">当前状态：<span id="rp-wd-status">乖巧</span></div>
-            </div>
           </div>
           <div class="rp-home-indicator"></div>
         </div>
@@ -3610,8 +3738,8 @@ const THEMES = {
 // ══ Per-theme icon sets ══
 const RP_THEME_ICONS = {
   candy: {
-    messages: '💌', moments: '🌸', settings: '⚙️',
-    ludo: '🎲', 'api-settings': '⚡', themes: '🎨'
+    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 14h5" stroke="#d4607a" opacity=".7"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2c0 0 1.5 2.5 0 5s-3 .5-3 3 2.5 3 1.5 6" opacity=".4"/><ellipse cx="12" cy="5" rx="2" ry="3" opacity=".8"/><ellipse cx="12" cy="19" rx="2" ry="3" opacity=".8"/><ellipse cx="5" cy="12" rx="3" ry="2" opacity=".8"/><ellipse cx="19" cy="12" rx="3" ry="2" opacity=".8"/><ellipse cx="7" cy="7" rx="2" ry="3" transform="rotate(-45 7 7)" opacity=".6"/><ellipse cx="17" cy="7" rx="2" ry="3" transform="rotate(45 17 7)" opacity=".6"/><ellipse cx="7" cy="17" rx="2" ry="3" transform="rotate(45 7 17)" opacity=".6"/><ellipse cx="17" cy="17" rx="2" ry="3" transform="rotate(-45 17 17)" opacity=".6"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M18 18l1.78 1.78M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M18 6l1.78-1.78"/></svg>',
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="6"/><circle cx="8.5" cy="8.5" r="1.2" fill="#d4607a" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="#d4607a" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="#d4607a" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="#d4607a" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="#d4607a" stroke="none"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 13h7l-1 9 9-11h-7z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#d4607a" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><circle cx="9" cy="9.5" r="1.4" fill="#f472b6" stroke="none"/><circle cx="15" cy="9.5" r="1.4" fill="#e879a8" stroke="none"/><circle cx="9" cy="14.5" r="1.4" fill="#fb7185" stroke="none"/><circle cx="15" cy="14.5" r="1.4" fill="#d4607a" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="#fca5a5" stroke="none"/></svg>'
   },
   star: {
     messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="9" cy="11" r=".9" fill="#a78bfa" stroke="none"/><circle cx="12" cy="11" r=".9" fill="#a78bfa" stroke="none"/><circle cx="15" cy="11" r=".9" fill="#a78bfa" stroke="none"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.07" y2="7.07"/><line x1="16.93" y1="16.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.93" y2="7.07"/><line x1="7.07" y1="16.93" x2="4.93" y2="19.07"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
