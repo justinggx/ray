@@ -756,7 +756,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-sq-task-bar{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);width:170px;background:linear-gradient(135deg,#c23060,#e0407a);color:#fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 14px;z-index:55;box-shadow:0 6px 20px rgba(0,0,0,.35);text-align:center;}
 #rp-sq-task-text{font-size:12px;font-weight:700;line-height:1.5;margin-bottom:10px;white-space:normal;word-break:break-all;}
 #rp-sq-task-done-btn{background:rgba(255,255,255,.28);border:1.5px solid rgba(255,255,255,.55);border-radius:20px;color:#fff;padding:6px 22px;font-size:13px;cursor:pointer;font-weight:700;}
-#rp-sq-task-done-btn:active{transform:scale(.95);}#rp-sq-task-hint{font-size:10px;color:rgba(255,255,255,.85);margin-top:7px;animation:taskHintBlink 1.3s ease-in-out infinite;}@keyframes taskHintBlink{0%,100%{opacity:1;}50%{opacity:.15;}}
+#rp-sq-task-done-btn:disabled{opacity:.35;cursor:not-allowed;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);}
+#rp-sq-task-done-btn:not(:disabled):active{transform:scale(.95);}#rp-sq-task-hint{font-size:10px;color:rgba(255,255,255,.85);margin-top:7px;animation:taskHintBlink 1.3s ease-in-out infinite;}@keyframes taskHintBlink{0%,100%{opacity:1;}50%{opacity:.15;}}
 
 .rp-dark #rp-sq-event-box{background:#1a1a2e;color:#e0e2f0;}
 .rp-dark #rp-sq-event-text{color:#e0e2f0;}
@@ -3653,6 +3654,8 @@ async function lgTriggerSquareEvent(player, pos) {
   if (!isUser) {
     // ── Char 任务：AI 自动生成完成动作，user 点「已完成」确认 ──
     txt.textContent = `💙 ${LG.charName} 任务中…`;
+    btn.disabled = true;
+    btn.textContent = '☐ 已完成';
     bar.style.display = 'flex';
     const hintEl = document.getElementById('rp-sq-task-hint');
     if (hintEl) hintEl.textContent = `请耐心等待${LG.charName}的回答`;
@@ -3674,6 +3677,8 @@ async function lgTriggerSquareEvent(player, pos) {
     }
 
     txt.textContent = `💙 ${LG.charName} 完成了吗？`;
+    btn.disabled = false;
+    btn.textContent = '✅ 已完成';
   } else {
     // ── User 任务：显示小条，user 自行在聊天框完成后点「已完成」 ──
     txt.textContent = `💬 ${ev.text}`;
@@ -3697,12 +3702,31 @@ function lgCharComment(event) {
   const n      = LG.lastDice;
   const cPos   = LG.charPos;
   const uPos   = LG.userPos;
+  const persona = lgGetPersona();
+
+  // ── game_start：游戏开场白，单独处理 ──────────────────────────
+  if (event === 'game_start') {
+    const pool = LG_FALLBACK['game_start'] || ['让我们开始吧！', '准备好输给我了吗？', '公平竞争哦~'];
+    (async () => {
+      try {
+        const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
+        if (typeof generateRaw === 'function') {
+          const prompt = `${persona}\n[飞行棋对局刚刚开始]${LG.charName}向玩家说一句简短的开场白（15字以内，语气自然贴合角色，不许提掷骰子步数）：`;
+          const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
+          const cleaned = resp && resp.trim() ? cleanGameReply(resp, LG.charName) : '';
+          if (cleaned) { lgMsg('char', cleaned); return; }
+        }
+      } catch(e) { /* ignore */ }
+      lgMsg('char', pool[Math.floor(Math.random() * pool.length)]);
+    })();
+    return;
+  }
+
   const isCharTurn = event.endsWith('_char');
   const lead   = cPos > uPos + 5 ? '，我目前领先' : cPos < uPos - 5 ? '，我目前落后' : '';
   const subject = isCharTurn
     ? `我掷出了${n}点${lead}`
     : `对方掷出了${n}点${lead}`;
-  const persona = lgGetPersona();
   const prompt  = `${persona}
 [飞行棋游戏]当前状况：${subject}。
 ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气自然贴合角色）：`;
@@ -3713,7 +3737,8 @@ ${LG.charName}对玩家说一句简短的游戏内评论（15字以内，语气�
       const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
       if (typeof generateRaw === 'function') {
         const resp = await generateRaw({ prompt, max_new_tokens: 80, quiet: true });
-        if (resp && resp.trim()) { lgMsg('char', cleanGameReply(resp, LG.charName)); return; }
+        const cleaned = resp && resp.trim() ? cleanGameReply(resp, LG.charName) : '';
+        if (cleaned) { lgMsg('char', cleaned); return; }
       }
     } catch(e) { /* ignore */ }
     // 兜底：pool 回复
@@ -3764,6 +3789,7 @@ Object.assign(window, {
 //  ENTRY
 // ================================================================
 jQuery(async () => { await init(); });
+
 
 
 
