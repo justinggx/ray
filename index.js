@@ -9,7 +9,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ── FAB ── */
 #rp-fab {
-  position:fixed; right:20px; bottom:20px; z-index:10001;
+  position:fixed; right:20px; bottom:20px; z-index:2147483646;
   width:52px; height:52px; border-radius:50%;
   background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
   border:1px solid rgba(0,0,0,.08);
@@ -26,6 +26,46 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   cursor:default;
 }
 
+
+/* ══════════════════════════════════════
+   📱 MOBILE RESPONSIVE ADAPTATION
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* FAB: bigger, higher (above ST input bar), safe-area aware */
+  #rp-fab {
+    width: 58px !important;
+    height: 58px !important;
+    font-size: 28px !important;
+    right: 14px !important;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+    box-shadow: 0 6px 28px rgba(0,0,0,.28), 0 0 0 3px rgba(255,255,255,.6) !important;
+    z-index: 2147483646 !important;
+  }
+  /* Phone: float centered, scale to fit screen */
+  #rp-phone {
+    right: 50% !important;
+    bottom: 50% !important;
+    transform: translate(50%, 50%) !important;
+    z-index: 2147483645 !important;
+  }
+  /* Phone frame: scale down to fit narrow screens */
+  #rp-frame {
+    width: min(286px, calc(100vw - 20px)) !important;
+    height: min(580px, calc(100dvh - 120px)) !important;
+  }
+  /* Screen fills frame */
+  #rp-screen {
+    border-radius: min(40px, 6vw) !important;
+  }
+}
+
+/* Very small screens (< 360px width) */
+@media (max-width: 360px) {
+  #rp-frame {
+    width: calc(100vw - 16px) !important;
+    height: calc(100dvh - 100px) !important;
+  }
+}
 /* ── CSS THEME TOKENS ── */
 #rp-phone {
   /* Frame */
