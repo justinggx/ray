@@ -3199,12 +3199,14 @@ function lgRender() {
     let fill = '#ffffff';
     if (c === 6 && r > 6) fill = '#fce4ec';
     if (c === 6 && r < 6) fill = '#ede9fe';
-    if (LUDO_SAFE.has(idx)) fill = '#fef9c3';
+    // 只有玩家入口格（index 0 和 24）显示金星+黄色，index 12/36 是两人局不使用的入口，普通白格
+    const isPlayerEntry = (idx === 0 || idx === 24);
+    if (isPlayerEntry) fill = '#fef9c3';
     C.fillStyle = fill;
     C.strokeStyle = 'rgba(160,100,200,.1)';
     C.fillRect(c*CELL+.5, r*CELL+.5, CELL-1, CELL-1);
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
-    if (LUDO_SAFE.has(idx)) {
+    if (isPlayerEntry) {
       C.fillStyle = 'rgba(217,119,6,.75)';
       C.font = `${CELL*.48}px serif`;
       C.textAlign = 'center'; C.textBaseline = 'middle';
@@ -3249,26 +3251,66 @@ function lgRender() {
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
 
-  // ── Home zone markers (靶心风格) ──
-  const drawHome = (cx, cy, color) => {
-    // 外晕圈
-    C.beginPath(); C.arc(cx, cy, CELL*1.55, 0, Math.PI*2);
-    C.strokeStyle = color; C.lineWidth = 1; C.globalAlpha = 0.18; C.stroke(); C.globalAlpha = 1;
-    // 中圈（轮廓）
-    C.beginPath(); C.arc(cx, cy, CELL*1.0, 0, Math.PI*2);
-    C.strokeStyle = color; C.lineWidth = 1.5; C.globalAlpha = 0.35; C.stroke(); C.globalAlpha = 1;
-    // 实心内圆
-    C.beginPath(); C.arc(cx, cy, CELL*0.6, 0, Math.PI*2);
-    C.fillStyle = color; C.globalAlpha = 0.75; C.fill(); C.globalAlpha = 1;
-    // 高光白点
-    C.beginPath(); C.arc(cx - CELL*0.18, cy - CELL*0.18, CELL*0.16, 0, Math.PI*2);
-    C.fillStyle = 'rgba(255,255,255,0.6)'; C.fill();
-    // 中心白点
-    C.beginPath(); C.arc(cx, cy, CELL*0.18, 0, Math.PI*2);
-    C.fillStyle = 'rgba(255,255,255,0.85)'; C.fill();
+  // ── Home zone markers (皇冠风格) ──
+  const drawCrown = (cx, cy, color) => {
+    const s  = CELL * 0.72;  // half-width
+    const ht = CELL * 0.54;  // total height
+    const bh = CELL * 0.17;  // base bar height
+    const ty = cy - ht * 0.5;  // top of crown
+    const by = cy + ht * 0.5;  // bottom of crown
+
+    // crown silhouette path
+    C.beginPath();
+    C.moveTo(cx - s, by);
+    C.lineTo(cx - s, by - bh);
+    // left point
+    C.lineTo(cx - s * 0.62, ty + bh * 0.8);
+    // left-centre valley
+    C.lineTo(cx - s * 0.28, by - bh * 0.6);
+    // centre point (tallest)
+    C.lineTo(cx, ty);
+    // right-centre valley
+    C.lineTo(cx + s * 0.28, by - bh * 0.6);
+    // right point
+    C.lineTo(cx + s * 0.62, ty + bh * 0.8);
+    C.lineTo(cx + s, by - bh);
+    C.lineTo(cx + s, by);
+    C.closePath();
+
+    // fill
+    C.fillStyle = color;
+    C.globalAlpha = 0.72;
+    C.fill();
+    C.globalAlpha = 1;
+
+    // outline
+    C.strokeStyle = 'rgba(255,255,255,0.65)';
+    C.lineWidth = 1.2;
+    C.stroke();
+
+    // gems on each point tip
+    const gems = [
+      [cx - s * 0.62, ty + bh * 0.8],
+      [cx,            ty            ],
+      [cx + s * 0.62, ty + bh * 0.8],
+    ];
+    gems.forEach(([gx, gy]) => {
+      C.beginPath();
+      C.arc(gx, gy, CELL * 0.1, 0, Math.PI * 2);
+      C.fillStyle = 'rgba(255,255,255,0.88)';
+      C.fill();
+    });
+
+    // small dots along base bar for decoration
+    [-s*0.6, -s*0.2, s*0.2, s*0.6].forEach(dx => {
+      C.beginPath();
+      C.arc(cx + dx, by - bh * 0.5, CELL * 0.06, 0, Math.PI * 2);
+      C.fillStyle = 'rgba(255,255,255,0.5)';
+      C.fill();
+    });
   };
-  drawHome(2.5*CELL, 10.5*CELL, '#ec4899');
-  drawHome(10.5*CELL, 2.5*CELL, '#7c3aed');
+  drawCrown(2.5*CELL, 10.5*CELL, '#ec4899');
+  drawCrown(10.5*CELL, 2.5*CELL, '#7c3aed');
 
   // ── Centre star (canvas-drawn) ──
   {
