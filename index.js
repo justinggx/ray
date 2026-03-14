@@ -26,22 +26,111 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   cursor:default;
 }
 
+/* ── CSS THEME TOKENS ── */
+#rp-phone {
+  /* Frame */
+  --rp-frame-bg:linear-gradient(160deg,#e8e8e8,#d0d0d0);
+  --rp-frame-sh:0 0 0 1.5px rgba(0,0,0,.12),0 0 0 9px #f5f5f5,0 0 0 10px rgba(0,0,0,.08),0 36px 80px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5);
+  --rp-btn-bg:#c0c0c0;
+  --rp-island-bg:#000;
+  --rp-island-ring:#f5f5f5;
+  --rp-screen-bg:#fff;
+  /* Status bar */
+  --rp-sbar-color:#000;
+  --rp-bat-border:rgba(0,0,0,.4);
+  --rp-bat-nub:rgba(0,0,0,.3);
+  /* Lock screen */
+  --rp-lock-wall:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(200,220,255,.6),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(220,230,255,.5),transparent 55%),linear-gradient(180deg,#e8f0ff,#f0f5ff,#e8f0ff);
+  --rp-lock-color:#000;
+  --rp-lock-time:#000;
+  --rp-swipe-color:rgba(0,0,0,.3);
+  --rp-ln-bg:rgba(255,255,255,.85);
+  --rp-ln-bd:rgba(0,0,0,.06);
+  --rp-ln-text:rgba(0,0,0,.85);
+  /* Home screen */
+  --rp-home-wall:radial-gradient(ellipse 100% 70% at 20% 10%,rgba(220,235,255,.7),transparent 50%),radial-gradient(ellipse 100% 70% at 80% 90%,rgba(230,240,255,.6),transparent 50%),linear-gradient(170deg,#e8f2ff,#f0f6ff,#e8f2ff);
+  --rp-clock-color:#000;
+  --rp-app-lbl:rgba(0,0,0,.85);
+  --rp-app-lbl-sh:0 1px 2px rgba(255,255,255,.8);
+  --rp-indicator:rgba(0,0,0,.25);
+  /* Widget */
+  --rp-widget-bg:rgba(255,255,255,.75);
+  --rp-widget-bd:rgba(0,0,0,.08);
+  --rp-widget-color:#000;
+  --rp-wd-fill:linear-gradient(90deg,#2563eb,#60a5fa);
+  /* Nav bar */
+  --rp-nav-bg:#fff;
+  --rp-nav-bd:rgba(0,0,0,.08);
+  --rp-nav-title:#000;
+  --rp-nav-btn:#2563eb;
+  /* Messages / thread */
+  --rp-msg-bg:#fff;
+  --rp-bubbles-bg:#fff;
+  --rp-sent-bg:#2563eb;
+  --rp-recv-bg:#e9ecef;
+  --rp-recv-color:#000;
+  /* Composer */
+  --rp-composer-bg:#fff;
+  --rp-composer-bd:rgba(0,0,0,.08);
+  --rp-input-bg:rgba(0,0,0,.04);
+  --rp-input-bd:rgba(0,0,0,.12);
+  --rp-input-color:#000;
+  --rp-send-bg:#2563eb;
+}
+/* ── Star Night Theme ── */
+#rp-phone.rp-theme-star {
+  --rp-frame-bg:linear-gradient(160deg,#2c1070,#1a0850);
+  --rp-frame-sh:0 0 0 1.5px rgba(100,60,200,.3),0 0 0 9px #0e0a30,0 0 0 10px rgba(100,60,200,.15),0 36px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(120,80,255,.2);
+  --rp-btn-bg:#3a1a80;
+  --rp-island-bg:#0a0620;
+  --rp-island-ring:#0e0a30;
+  --rp-screen-bg:#0e0e2e;
+  --rp-sbar-color:#c8c0f5;
+  --rp-bat-border:rgba(180,160,255,.4);
+  --rp-bat-nub:rgba(180,160,255,.3);
+  --rp-lock-wall:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,40,180,.45),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(50,20,140,.35),transparent 55%),linear-gradient(180deg,#0d0d28,#090924,#0d0d28);
+  --rp-lock-color:#e8e0ff;
+  --rp-lock-time:#f2eeff;
+  --rp-swipe-color:rgba(180,160,255,.3);
+  --rp-ln-bg:rgba(15,10,42,.88);
+  --rp-ln-bd:rgba(150,120,255,.12);
+  --rp-ln-text:rgba(220,210,255,.85);
+  --rp-home-wall:radial-gradient(ellipse 130% 70% at 15% 10%,rgba(90,55,210,.45),transparent 48%),radial-gradient(ellipse 100% 70% at 85% 90%,rgba(50,30,170,.35),transparent 48%),radial-gradient(ellipse 60% 50% at 50% 45%,rgba(30,15,90,.25),transparent 65%),linear-gradient(170deg,#0e0e2e,#10103c,#0e0e2e);
+  --rp-clock-color:#f2eeff;
+  --rp-app-lbl:rgba(225,215,255,.95);
+  --rp-app-lbl-sh:0 1px 4px rgba(0,0,0,.85);
+  --rp-indicator:rgba(255,255,255,.22);
+  --rp-widget-bg:rgba(14,10,45,.82);
+  --rp-widget-bd:rgba(140,110,255,.18);
+  --rp-widget-color:#e8e0ff;
+  --rp-wd-fill:linear-gradient(90deg,#7c3aed,#a855f7);
+  --rp-nav-bg:rgba(12,8,36,.96);
+  --rp-nav-bd:rgba(140,110,255,.12);
+  --rp-nav-title:#e8e0ff;
+  --rp-nav-btn:#a78bfa;
+  --rp-msg-bg:#08082a;
+  --rp-bubbles-bg:#08082a;
+  --rp-sent-bg:linear-gradient(135deg,#5b21b6,#7c3aed);
+  --rp-recv-bg:rgba(40,28,90,.9);
+  --rp-recv-color:#ddd4ff;
+  --rp-composer-bg:rgba(10,8,30,.97);
+  --rp-composer-bd:rgba(140,110,255,.12);
+  --rp-input-bg:rgba(255,255,255,.06);
+  --rp-input-bd:rgba(140,110,255,.2);
+  --rp-input-color:#e0d8ff;
+  --rp-send-bg:linear-gradient(135deg,#6d28d9,#a855f7);
+}
 /* ── frame (iPhone 15 Pro) ── */
 #rp-frame {
   position:relative; width:286px; height:580px;
-  background:linear-gradient(160deg,#e8e8e8,#d0d0d0);
+  background:var(--rp-frame-bg);
   border-radius:50px;
-  box-shadow:
-    0 0 0 1.5px rgba(0,0,0,.12),
-    0 0 0 9px #f5f5f5,
-    0 0 0 10px rgba(0,0,0,.08),
-    0 36px 80px rgba(0,0,0,.25),
-    inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow:var(--rp-frame-sh);
   padding:11px;
 }
 
 /* side buttons */
-.rp-btn { position:absolute; border-radius:2px; background:#c0c0c0; }
+.rp-btn { position:absolute; border-radius:2px; background:var(--rp-btn-bg); }
 .rp-vol-up  { left:-3px; top:88px;  width:3px; height:34px; }
 .rp-vol-dn  { left:-3px; top:130px; width:3px; height:34px; }
 .rp-power   { right:-3px; top:106px; width:3px; height:46px; }
@@ -49,7 +138,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── screen ── */
 #rp-screen {
   width:100%; height:100%;
-  background:#fff; border-radius:40px; overflow:hidden;
+  background:var(--rp-screen-bg); border-radius:40px; overflow:hidden;
   position:relative;
   font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
 }
@@ -57,20 +146,20 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* Dynamic Island */
 #rp-island {
   position:absolute; top:11px; left:50%; transform:translateX(-50%);
-  width:86px; height:28px; background:#000; border-radius:20px; z-index:200;
-  box-shadow:0 0 0 2px #f5f5f5;
+  width:86px; height:28px; background:var(--rp-island-bg); border-radius:20px; z-index:200;
+  box-shadow:0 0 0 2px var(--rp-island-ring);
 }
 
 /* ── status bar ── */
 #rp-sbar {
   position:absolute; top:0; left:0; right:0; height:48px;
   display:flex; align-items:flex-end; justify-content:space-between;
-  padding:0 20px 7px; z-index:199; color:#000;
+  padding:0 20px 7px; z-index:199; color:var(--rp-sbar-color);
   font-size:12px; font-weight:600; letter-spacing:-.2px;
 }
 .rp-sbar-r { display:flex; align-items:center; gap:6px; }
-#rp-bat { width:22px; height:11px; border:1.5px solid rgba(0,0,0,.4); border-radius:3px; padding:1.5px; position:relative; }
-#rp-bat::after { content:''; position:absolute; right:-4px; top:50%; transform:translateY(-50%); width:2px; height:5px; background:rgba(0,0,0,.3); border-radius:0 1px 1px 0; }
+#rp-bat { width:22px; height:11px; border:1.5px solid var(--rp-bat-border); border-radius:3px; padding:1.5px; position:relative; }
+#rp-bat::after { content:''; position:absolute; right:-4px; top:50%; transform:translateY(-50%); width:2px; height:5px; background:var(--rp-bat-nub); border-radius:0 1px 1px 0; }
 #rp-bat-fill { height:100%; width:85%; background:#34c759; border-radius:1.5px; }
 
 /* ── views ── */
@@ -79,19 +168,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── LOCK SCREEN ── */
 .rp-lock-bg {
   position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 120% 80% at 30% 15%, rgba(200,220,255,.6), transparent 55%),
-    radial-gradient(ellipse 100% 80% at 80% 85%, rgba(220,230,255,.5), transparent 55%),
-    linear-gradient(180deg,#e8f0ff,#f0f5ff,#e8f0ff);
+  background:var(--rp-lock-wall);
 }
 .rp-lock-body {
   position:absolute; inset:0;
   display:flex; flex-direction:column; align-items:center; padding-top:64px;
-  cursor:pointer; color:#000;
+  cursor:pointer; color:var(--rp-lock-color);
 }
 #rp-lock-time {
   font-size:70px; font-weight:100; letter-spacing:-4px; line-height:1;
-  text-shadow:0 2px 8px rgba(0,0,0,.08);
+  color:var(--rp-lock-time); text-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 #rp-lock-date {
   font-size:15px; font-weight:400; opacity:.6; margin-top:6px;
@@ -99,17 +185,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 #rp-lock-notifs { width:100%; padding:14px 16px; display:flex; flex-direction:column; gap:8px; margin-top:10px; }
 .rp-ln {
-  background:rgba(255,255,255,.85); backdrop-filter:blur(24px);
-  border:1px solid rgba(0,0,0,.06); border-radius:14px;
+  background:var(--rp-ln-bg); backdrop-filter:blur(24px);
+  border:1px solid var(--rp-ln-bd); border-radius:14px;
   padding:10px 14px; display:flex; flex-direction:column; gap:4px;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 .rp-ln-type { font-size:10px; font-weight:700; color:rgba(0,0,0,.4); text-transform:uppercase; letter-spacing:.6px; }
-.rp-ln-text { font-size:12px; color:rgba(0,0,0,.85); line-height:1.4; }
+.rp-ln-text { font-size:12px; color:var(--rp-ln-text); line-height:1.4; }
 
 #rp-swipe-hint {
   position:absolute; bottom:30px; left:0; right:0; text-align:center;
-  font-size:12px; color:rgba(0,0,0,.3);
+  font-size:12px; color:var(--rp-swipe-color);
   animation:rp-breathe 2.2s ease-in-out infinite;
 }
 @keyframes rp-breathe { 0%,100%{opacity:.2} 50%{opacity:.5} }
@@ -118,13 +204,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── HOME SCREEN ── */
 .rp-home-bg {
   position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 100% 70% at 20% 10%, rgba(220,235,255,.7), transparent 50%),
-    radial-gradient(ellipse 100% 70% at 80% 90%, rgba(230,240,255,.6), transparent 50%),
-    linear-gradient(170deg,#e8f2ff,#f0f6ff,#e8f2ff);
+  background:var(--rp-home-wall);
 }
 .rp-home-body { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; padding-top:54px; }
-#rp-home-clock { font-size:52px; font-weight:100; color:#000; letter-spacing:-3px; margin-bottom:22px; }
+#rp-home-clock { font-size:52px; font-weight:100; color:var(--rp-clock-color); letter-spacing:-3px; margin-bottom:22px; }
 
 /* app grid */
 #rp-app-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:0 18px; width:100%; }
@@ -137,7 +220,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   position:relative; box-shadow:0 2px 10px rgba(0,0,0,.15);
 }
 .rp-app-ico svg { width:100%; height:100%; }
-.rp-app-lbl { font-size:10px; color:rgba(0,0,0,.85); text-shadow:0 1px 2px rgba(255,255,255,.8); }
+.rp-app-lbl { font-size:10px; color:var(--rp-app-lbl); text-shadow:var(--rp-app-lbl-sh); }
 .rp-badge {
   position:absolute; top:-5px; right:-5px;
   background:#ff3b30; color:#fff; font-size:10px; font-weight:700;
@@ -148,21 +231,21 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* widget */
 #rp-widget {
-  background:rgba(255,255,255,.75); backdrop-filter:blur(20px);
-  border:1px solid rgba(0,0,0,.08); border-radius:18px;
-  margin:18px 16px 0; padding:13px 16px; width:calc(100% - 32px); color:#000;
+  background:var(--rp-widget-bg); backdrop-filter:blur(20px);
+  border:1px solid var(--rp-widget-bd); border-radius:18px;
+  margin:18px 16px 0; padding:13px 16px; width:calc(100% - 32px); color:var(--rp-widget-color);
   box-shadow:0 2px 12px rgba(0,0,0,.08);
 }
 .rp-wd-label { font-size:10px; text-transform:uppercase; letter-spacing:.8px; opacity:.45; font-weight:600; }
 .rp-wd-stage { font-size:14px; font-weight:600; margin:5px 0 7px; }
 .rp-wd-track { height:3px; background:rgba(0,0,0,.08); border-radius:2px; overflow:hidden; }
-.rp-wd-fill  { height:100%; width:0%; background:linear-gradient(90deg,#2563eb,#60a5fa); border-radius:2px; transition:width .9s ease; }
+.rp-wd-fill  { height:100%; width:0%; background:var(--rp-wd-fill); border-radius:2px; transition:width .9s ease; }
 .rp-wd-status { font-size:11px; opacity:.55; margin-top:7px; }
 
-.rp-home-indicator { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:rgba(0,0,0,.25); border-radius:2px; }
+.rp-home-indicator { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:var(--rp-indicator); border-radius:2px; }
 
 /* ── MESSAGES VIEW ── */
-#rp-view-messages { background:#fff; display:flex; flex-direction:column; }
+#rp-view-messages { background:var(--rp-msg-bg); display:flex; flex-direction:column; }
 #rp-thread-list { flex:1; overflow-y:auto; scrollbar-width:none; }
 #rp-thread-list::-webkit-scrollbar { display:none; }
 
@@ -182,7 +265,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-tbadge { background:#2563eb; color:#fff; font-size:10px; font-weight:700; min-width:19px; height:19px; border-radius:10px; padding:0 5px; display:flex; align-items:center; justify-content:center; }
 
 /* ── THREAD VIEW ── */
-#rp-view-thread { background:#fff; display:flex; flex-direction:column; }
+#rp-view-thread { background:var(--rp-msg-bg); display:flex; flex-direction:column; }
 
 /* bubbles */
 #rp-bubbles { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:3px; scrollbar-width:none; }
@@ -214,8 +297,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-out { align-items:flex-end; }
 .rp-in  { align-items:flex-start; }
 .rp-bubble { max-width:72%; padding:9px 13px; border-radius:19px; font-size:13px; line-height:1.45; word-break:break-word; }
-.rp-sent { background:#2563eb; color:#fff; border-bottom-right-radius:5px; }
-.rp-recv { background:#e9ecef; color:#000; border-bottom-left-radius:5px; }
+.rp-sent { background:var(--rp-sent-bg); color:#fff; border-bottom-right-radius:5px; }
+.rp-recv { background:var(--rp-recv-bg); color:var(--rp-recv-color); border-bottom-left-radius:5px; }
 .rp-bts  { font-size:10px; color:rgba(0,0,0,.4); padding:0 4px; }
 
 /* composer */
@@ -224,17 +307,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   align-items:center !important;
   gap:8px !important;
   padding:8px 12px 22px !important;
-  border-top:1px solid rgba(0,0,0,.08) !important;
+  border-top:1px solid var(--rp-composer-bd) !important;
   flex-shrink:0 !important;
-  background:#fff !important;
+  background:var(--rp-composer-bg) !important;
 }
 #rp-input {
   flex:1 !important;
-  background:rgba(0,0,0,.04) !important;
-  border:1px solid rgba(0,0,0,.12) !important;
+  background:var(--rp-input-bg) !important;
+  border:1px solid var(--rp-input-bd) !important;
   border-radius:22px !important;
   padding:9px 16px !important;
-  color:#000 !important;
+  color:var(--rp-input-color) !important;
   font-size:13px !important;
   outline:none !important;
   font-family:inherit !important;
@@ -249,7 +332,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   height:32px !important;
   min-width:32px !important;
   border-radius:16px !important;
-  background:#2563eb !important;
+  background:var(--rp-send-bg) !important;
   border:none !important;
   color:#fff !important;
   font-size:16px !important;
@@ -276,13 +359,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   height:92px; padding-top:46px; flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between;
   padding-left:6px; padding-right:16px;
-  border-bottom:1px solid rgba(0,0,0,.08);
-  background:#fff;
+  border-bottom:1px solid var(--rp-nav-bd);
+  background:var(--rp-nav-bg);
 }
-.rp-nav-title { font-size:17px; font-weight:600; color:#000; }
+.rp-nav-title { font-size:17px; font-weight:600; color:var(--rp-nav-title); }
 .rp-back {
   background:none !important; border:none !important;
-  color:#2563eb !important; font-size:30px !important;
+  color:var(--rp-nav-btn) !important; font-size:30px !important;
   line-height:1 !important; cursor:pointer !important;
   padding:0 6px !important; font-family:inherit !important;
   display:inline-flex !important; visibility:visible !important;
@@ -290,7 +373,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 .rp-nav-add {
   background:none !important; border:none !important;
-  color:#2563eb !important; font-size:28px !important;
+  color:var(--rp-nav-btn) !important; font-size:28px !important;
   line-height:1 !important; cursor:pointer !important;
   padding:0 6px !important; font-family:inherit !important;
   font-weight:300 !important; display:inline-flex !important;
@@ -380,27 +463,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-app-off{opacity:.2}
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
 
-/* ── THEME: 星夜 ── */
-.rp-theme-star .rp-lock-bg{background:radial-gradient(ellipse 120% 80% at 30% 15%,rgba(80,40,180,.45),transparent 55%),radial-gradient(ellipse 100% 80% at 80% 85%,rgba(50,20,140,.35),transparent 55%),linear-gradient(180deg,#0d0d28,#090924,#0d0d28)}
-.rp-theme-star .rp-lock-body{color:#e8e0ff}
-.rp-theme-star #rp-lock-time{color:#f2eeff}
-.rp-theme-star #rp-lock-date{color:rgba(200,180,255,.55)}
-.rp-theme-star .rp-ln{background:rgba(15,10,42,.88);border-color:rgba(150,120,255,.12)}
-.rp-theme-star .rp-ln-text{color:rgba(220,210,255,.85)}
-.rp-theme-star #rp-swipe-hint{color:rgba(180,160,255,.3)}
-.rp-theme-star #rp-sbar{color:#c8c0f5}
-.rp-theme-star .rp-home-bg{background:radial-gradient(ellipse 130% 70% at 15% 10%,rgba(90,55,210,.45),transparent 48%),radial-gradient(ellipse 100% 70% at 85% 90%,rgba(50,30,170,.35),transparent 48%),radial-gradient(ellipse 60% 50% at 50% 45%,rgba(30,15,90,.25),transparent 65%),linear-gradient(170deg,#0e0e2e,#10103c,#0e0e2e)}
-.rp-theme-star #rp-home-clock{color:#f2eeff}
-.rp-theme-star .rp-app-lbl{color:rgba(225,215,255,.95);text-shadow:0 1px 4px rgba(0,0,0,.85)}
-.rp-theme-star .rp-app-ico{box-shadow:0 3px 14px rgba(0,0,0,.6)}
-.rp-theme-star #rp-widget{background:rgba(14,10,45,.82);border-color:rgba(140,110,255,.18);color:#e8e0ff;box-shadow:0 2px 14px rgba(0,0,0,.55)}
-.rp-theme-star .rp-wd-fill{background:linear-gradient(90deg,#7c3aed,#a855f7)}
-.rp-theme-star .rp-wd-label{opacity:.5}
-.rp-theme-star .rp-home-indicator{background:rgba(255,255,255,.22)}
-/* star particles on home bg */
-.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
-
 /* ── THEMES VIEW ── */
+/* star particles – only visible in star theme (via home-bg pseudo-element) */
+#rp-phone.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
 #rp-view-themes{background:linear-gradient(170deg,#f5efff,#ede8ff);display:flex;flex-direction:column}
 .rp-theme-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
 .rp-theme-card:active{transform:scale(.94)}
