@@ -3835,6 +3835,8 @@ function lgSelectPool(personaText) {
 // ── 自定义 API 调用（支持 DeepSeek / 通义 / GLM 等 OpenAI 兼容格式）──
 async function lgCallAPI(prompt, maxTokens = 150) {
   const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+
+  // 用户设置了自定义 API → 只用自定义，绝不 fallback 到 ST
   if (cfg.mode === 'custom' && cfg.url && cfg.key) {
     try {
       const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
@@ -3850,9 +3852,14 @@ async function lgCallAPI(prompt, maxTokens = 150) {
       const data = await res.json();
       const text = data.choices?.[0]?.message?.content?.trim();
       if (text) return text;
-    } catch(e) { console.warn('[Ludo] custom API error:', e.message); }
+      console.warn('[Ludo] custom API returned empty response');
+    } catch(e) {
+      console.warn('[Ludo] custom API error:', e.message);
+    }
+    return null; // 自定义 API 失败，不走 ST，直接返回 null（触发 fallback 文本）
   }
-  // Fallback: ST generateRaw
+
+  // 未设置自定义 API → 走 ST generateRaw
   try {
     const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
     if (typeof generateRaw === 'function') {
