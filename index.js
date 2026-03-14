@@ -76,7 +76,27 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-input-bd:rgba(0,0,0,.12);
   --rp-input-color:#000;
   --rp-send-bg:#2563eb;
+  /* Themes view */
+  --rp-themes-bg:linear-gradient(170deg,#f5efff,#ede8ff);
+  --rp-themes-label:#7c3aed;
+  --rp-tc-bg:#fff;
+  /* Thread list */
+  --rp-threads-bg:#fff;
+  --rp-thread-bd:rgba(0,0,0,.08);
+  --rp-thread-hover:rgba(0,0,0,.03);
+  --rp-tn-color:#000;
+  --rp-tp-color:rgba(0,0,0,.5);
+  --rp-tt-color:rgba(0,0,0,.4);
+  --rp-hd-name:rgba(0,0,0,.6);
+  --rp-bts-color:rgba(0,0,0,.4);
+  /* Moments */
+  --rp-moments-bg:#f2f3f7;
+  --rp-moment-card:#fff;
+  --rp-moment-name:#2563eb;
+  --rp-moment-text:#1a1a1a;
+  --rp-moment-bd:rgba(0,0,0,.06);
 }
+
 /* ── Star Night Theme ── */
 #rp-phone.rp-theme-star {
   --rp-frame-bg:linear-gradient(160deg,#2c1070,#1a0850);
@@ -119,7 +139,24 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-input-bd:rgba(140,110,255,.2);
   --rp-input-color:#e0d8ff;
   --rp-send-bg:linear-gradient(135deg,#6d28d9,#a855f7);
+  --rp-themes-bg:linear-gradient(170deg,#0e0e2e,#10103c);
+  --rp-themes-label:#c8b4ff;
+  --rp-tc-bg:rgba(20,14,55,.9);
+  --rp-threads-bg:#08082a;
+  --rp-thread-bd:rgba(140,110,255,.1);
+  --rp-thread-hover:rgba(255,255,255,.03);
+  --rp-tn-color:#e0d8ff;
+  --rp-tp-color:rgba(180,165,255,.5);
+  --rp-tt-color:rgba(180,165,255,.4);
+  --rp-hd-name:rgba(180,165,255,.7);
+  --rp-bts-color:rgba(180,165,255,.35);
+  --rp-moments-bg:#08082a;
+  --rp-moment-card:rgba(20,14,55,.9);
+  --rp-moment-name:#a78bfa;
+  --rp-moment-text:#d5ccff;
+  --rp-moment-bd:rgba(140,110,255,.1);
 }
+
 /* ── frame (iPhone 15 Pro) ── */
 #rp-frame {
   position:relative; width:286px; height:580px;
@@ -245,23 +282,23 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-home-indicator { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:90px; height:4px; background:var(--rp-indicator); border-radius:2px; }
 
 /* ── MESSAGES VIEW ── */
-#rp-view-messages { background:var(--rp-msg-bg); display:flex; flex-direction:column; }
+#rp-view-messages { background:var(--rp-threads-bg); display:flex; flex-direction:column; }
 #rp-thread-list { flex:1; overflow-y:auto; scrollbar-width:none; }
 #rp-thread-list::-webkit-scrollbar { display:none; }
 
 .rp-thread {
   display:flex; align-items:center; gap:12px;
-  padding:11px 16px; border-bottom:1px solid rgba(0,0,0,.08);
+  padding:11px 16px; border-bottom:1px solid var(--rp-thread-bd);
   cursor:pointer; transition:background .12s;
 }
-.rp-thread:hover { background:rgba(0,0,0,.03); }
+.rp-thread:hover { background:var(--rp-thread-hover); }
 
 .rp-av { width:46px; height:46px; border-radius:23px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
 .rp-ti { flex:1; min-width:0; }
-.rp-tn { font-size:14px; font-weight:600; color:#000; }
-.rp-tp { font-size:12px; color:rgba(0,0,0,.5); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px; }
+.rp-tn { font-size:14px; font-weight:600; color:var(--rp-tn-color); }
+.rp-tp { font-size:12px; color:var(--rp-tp-color); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px; }
 .rp-tm { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
-.rp-tt { font-size:11px; color:rgba(0,0,0,.4); }
+.rp-tt { font-size:11px; color:var(--rp-tt-color); }
 .rp-tbadge { background:#2563eb; color:#fff; font-size:10px; font-weight:700; min-width:19px; height:19px; border-radius:10px; padding:0 5px; display:flex; align-items:center; justify-content:center; }
 
 /* ── THREAD VIEW ── */
@@ -299,7 +336,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-bubble { max-width:72%; padding:9px 13px; border-radius:19px; font-size:13px; line-height:1.45; word-break:break-word; }
 .rp-sent { background:var(--rp-sent-bg); color:#fff; border-bottom-right-radius:5px; }
 .rp-recv { background:var(--rp-recv-bg); color:var(--rp-recv-color); border-bottom-left-radius:5px; }
-.rp-bts  { font-size:10px; color:rgba(0,0,0,.4); padding:0 4px; }
+.rp-bts  { font-size:10px; color:var(--rp-bts-color); padding:0 4px; }
 
 /* composer */
 #rp-composer {
@@ -382,7 +419,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 .rp-thread-hd { display:flex; flex-direction:column; align-items:center; gap:4px; }
 .rp-hd-av { width:32px; height:32px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
-.rp-hd-name { font-size:11px; color:rgba(0,0,0,.6); }
+.rp-hd-name { font-size:11px; color:var(--rp-hd-name); }
 
 /* ── ADD CONTACT MODAL ── */
 /* ✅ FIX3: modal 已移至 #rp-screen 内部，position:absolute; inset:0 现在正确覆盖手机屏幕 */
@@ -464,10 +501,73 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-widget{background:rgba(12,12,24,.78);border-color:rgba(255,255,255,.07);box-shadow:0 2px 12px rgba(0,0,0,.4)}
 
 /* ── THEMES VIEW ── */
+/* ── Misty Blue Hydrangea Theme ── */
+#rp-phone.rp-theme-misty {
+  --rp-frame-bg:linear-gradient(160deg,#f0f4f8,#dce6ef,#e8eff5);
+  --rp-frame-sh:0 0 0 1.5px rgba(140,170,200,.3),0 0 0 9px #f5f8fc,0 0 0 10px rgba(140,170,200,.15),0 36px 80px rgba(80,110,140,.25),inset 0 1px 0 rgba(255,255,255,.9);
+  --rp-btn-bg:#b0c4d8;
+  --rp-island-bg:#1a2635;
+  --rp-island-ring:#e8eff5;
+  --rp-screen-bg:#eef2f7;
+  --rp-sbar-color:#2c4a6a;
+  --rp-bat-border:rgba(44,74,106,.4);
+  --rp-bat-nub:rgba(44,74,106,.3);
+  --rp-lock-wall:radial-gradient(ellipse 120% 90% at 20% 0%,rgba(184,210,230,.8),transparent 50%),radial-gradient(ellipse 100% 80% at 80% 100%,rgba(196,218,238,.7),transparent 50%),radial-gradient(ellipse 80% 60% at 50% 50%,rgba(220,232,244,.5),transparent 60%),linear-gradient(180deg,#dce8f4,#e8f0f8,#dce8f4);
+  --rp-lock-color:#1e3a54;
+  --rp-lock-time:#1a2e44;
+  --rp-swipe-color:rgba(44,74,106,.35);
+  --rp-ln-bg:rgba(240,246,252,.85);
+  --rp-ln-bd:rgba(140,175,210,.2);
+  --rp-ln-text:rgba(30,58,84,.85);
+  --rp-home-wall:radial-gradient(ellipse 130% 80% at 15% 5%,rgba(176,206,228,.6),transparent 45%),radial-gradient(ellipse 110% 70% at 85% 95%,rgba(188,214,234,.5),transparent 45%),radial-gradient(ellipse 80% 60% at 50% 50%,rgba(210,228,244,.4),transparent 60%),linear-gradient(170deg,#dde8f2,#e8f1f8,#dde8f2);
+  --rp-clock-color:#1a2e44;
+  --rp-app-lbl:rgba(26,46,68,.85);
+  --rp-app-lbl-sh:0 1px 3px rgba(255,255,255,.9);
+  --rp-indicator:rgba(44,74,106,.22);
+  --rp-widget-bg:rgba(240,246,252,.82);
+  --rp-widget-bd:rgba(140,175,210,.28);
+  --rp-widget-color:#1a2e44;
+  --rp-wd-fill:linear-gradient(90deg,#5b8fb9,#8ab4d4);
+  --rp-nav-bg:rgba(240,246,252,.92);
+  --rp-nav-bd:rgba(140,175,210,.2);
+  --rp-nav-title:#1a2e44;
+  --rp-nav-btn:#3d6e9a;
+  --rp-msg-bg:#f0f5fa;
+  --rp-bubbles-bg:#f0f5fa;
+  --rp-sent-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
+  --rp-recv-bg:rgba(255,255,255,.88);
+  --rp-recv-color:#1a2e44;
+  --rp-composer-bg:rgba(240,246,252,.95);
+  --rp-composer-bd:rgba(140,175,210,.2);
+  --rp-input-bg:rgba(255,255,255,.7);
+  --rp-input-bd:rgba(140,175,210,.3);
+  --rp-input-color:#1a2e44;
+  --rp-send-bg:linear-gradient(135deg,#4a7fa8,#6fa3c4);
+  --rp-themes-bg:linear-gradient(170deg,#dce8f4,#e8f1f8);
+  --rp-themes-label:#3d6e9a;
+  --rp-tc-bg:rgba(240,246,252,.9);
+  --rp-threads-bg:#f0f5fa;
+  --rp-thread-bd:rgba(140,175,210,.18);
+  --rp-thread-hover:rgba(140,175,210,.08);
+  --rp-tn-color:#1a2e44;
+  --rp-tp-color:rgba(44,74,106,.5);
+  --rp-tt-color:rgba(44,74,106,.4);
+  --rp-hd-name:rgba(44,74,106,.6);
+  --rp-bts-color:rgba(44,74,106,.35);
+  --rp-moments-bg:#e8f0f8;
+  --rp-moment-card:rgba(240,246,252,.88);
+  --rp-moment-name:#3d6e9a;
+  --rp-moment-text:#1a2e44;
+  --rp-moment-bd:rgba(140,175,210,.15);
+}
+/* misty home-bg grain texture */
+#rp-phone.rp-theme-misty .rp-home-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
+/* misty lock same grain */
+#rp-phone.rp-theme-misty .rp-lock-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
 /* star particles – only visible in star theme (via home-bg pseudo-element) */
 #rp-phone.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
-#rp-view-themes{background:linear-gradient(170deg,#f5efff,#ede8ff);display:flex;flex-direction:column}
-.rp-theme-card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
+#rp-view-themes{background:var(--rp-themes-bg);display:flex;flex-direction:column}
+.rp-theme-card{background:var(--rp-tc-bg);border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
 .rp-theme-card:active{transform:scale(.94)}
 .rp-theme-card.rp-tc-active{box-shadow:0 0 0 2.5px #a855f7,0 3px 14px rgba(130,60,200,.25)}
 .rp-theme-preview{height:96px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -477,8 +577,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-theme-mini-dot{width:16px;height:16px;border-radius:5px;background:rgba(255,255,255,.65);box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .rp-theme-check{position:absolute;top:8px;right:9px;width:20px;height:20px;background:#a855f7;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(168,85,247,.5)}
 .rp-theme-info{padding:8px 12px 12px}
-.rp-theme-name{font-size:12px;font-weight:700;color:#2d1060;margin-bottom:2px}
-.rp-theme-desc{font-size:10px;color:#9070b0;line-height:1.4}
+.rp-theme-name{font-size:12px;font-weight:700;color:var(--rp-nav-title);margin-bottom:2px}
+.rp-theme-desc{font-size:10px;color:var(--rp-tp-color);line-height:1.4}
 .rp-dark .rp-wd-label{color:rgba(160,175,255,.4)}
 .rp-dark .rp-wd-stage{color:#dde0f2}
 .rp-dark .rp-wd-track{background:rgba(255,255,255,.1)}
@@ -517,22 +617,22 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-nb-time{color:rgba(160,175,255,.36)}
 .rp-dark #rp-home-ind{background:rgba(255,255,255,.22)}
 /* ── MOMENTS VIEW ── */
-#rp-view-moments{background:#f2f3f7;display:flex;flex-direction:column}
+#rp-view-moments{background:var(--rp-moments-bg);display:flex;flex-direction:column}
 .rp-dark #rp-view-moments{background:#050510}
 #rp-moments-list{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:8px}
 #rp-moments-list::-webkit-scrollbar{display:none}
-.rp-moment{background:#fff;margin-bottom:8px;padding:14px 16px}
+.rp-moment{background:var(--rp-moment-card);margin-bottom:8px;padding:14px 16px}
 .rp-dark .rp-moment{background:#0e0e20}
 .rp-moment-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .rp-moment-av{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 .rp-moment-meta{flex:1;min-width:0}
-.rp-moment-name{font-size:14px;font-weight:700;color:#2563eb}
+.rp-moment-name{font-size:14px;font-weight:700;color:var(--rp-moment-name)}
 .rp-dark .rp-moment-name{color:#8aaef0}
 .rp-moment-time{font-size:10.5px;color:rgba(0,0,0,.38);margin-top:2px;font-weight:600}
 .rp-dark .rp-moment-time{color:rgba(160,175,255,.38)}
-.rp-moment-text{font-size:14px;color:#1a1a1a;line-height:1.65;margin-bottom:10px;word-break:break-word}
+.rp-moment-text{font-size:14px;color:var(--rp-moment-text);line-height:1.65;margin-bottom:10px;word-break:break-word}
 .rp-dark .rp-moment-text{color:#d5d8f0}
-.rp-moment-bar{display:flex;align-items:center;justify-content:flex-end;gap:2px;padding:6px 0 2px;border-top:1px solid rgba(0,0,0,.06)}
+.rp-moment-bar{display:flex;align-items:center;justify-content:flex-end;gap:2px;padding:6px 0 2px;border-top:1px solid var(--rp-moment-bd)}
 .rp-dark .rp-moment-bar{border-top-color:rgba(255,255,255,.06)}
 .rp-moment-act{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600;color:rgba(0,0,0,.42);cursor:pointer;transition:background .12s,color .12s;border:none;background:none;font-family:inherit}
 .rp-dark .rp-moment-act{color:rgba(160,175,255,.42)}
@@ -1110,10 +1210,7 @@ const HTML = `
                 </div>
                 <div class="rp-app-lbl">朋友圈</div>
               </div>
-              <div class="rp-app" id="rp-dm-app" data-app="darkmode">
-                <div class="rp-app-ico rp-dm-ico" style="background:linear-gradient(145deg,#4a4a6a,#32324e)">🌙</div>
-                <div class="rp-app-lbl" id="rp-dm-lbl">夜间</div>
-              </div>
+
               <!-- row 2: 设置 飞行棋 占位 -->
               <div class="rp-app" data-app="settings">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#636380,#48485e)">⚙️</div>
@@ -1130,7 +1227,7 @@ const HTML = `
               <!-- row 3: 美化 -->
               <div class="rp-app" data-app="themes">
                 <div class="rp-app-ico" style="background:linear-gradient(145deg,#f472b6,#c026d3)">🎨</div>
-                <div class="rp-app-lbl">美化</div>
+                <div class="rp-app-lbl">主题</div>
               </div>
             </div>
 
@@ -1186,10 +1283,10 @@ const HTML = `
         <div id="rp-view-themes" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
-            <span class="rp-nav-title">美化</span>
+            
           </div>
           <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px">
-            <div style="font-size:13px;font-weight:600;color:#7c3aed;text-align:center;margin-bottom:18px;opacity:.75;letter-spacing:.4px">✨ 选择主题</div>
+            <div style="font-size:13px;font-weight:600;color:var(--rp-themes-label);text-align:center;margin-bottom:18px;opacity:.75;letter-spacing:.4px">✨ 选择主题</div>
             <div id="rp-theme-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
           </div>
         </div>
@@ -3234,6 +3331,11 @@ const THEMES = {
     name: '星夜', emoji: '✨', desc: '深邃暗夜，繁星闪烁',
     clockColor: '#f2eeff',
     bg: 'linear-gradient(170deg,#0e0e2e,#10103c,#12082e)',
+  },
+  misty: {
+    name: '烟蓝·绣球', emoji: '🌿', desc: '晨雾绣球，清幽柔蓝',
+    clockColor: '#1a2e44',
+    bg: 'linear-gradient(170deg,#dde8f2,#e8f1f8,#dde8f2)',
   }
 };
 
