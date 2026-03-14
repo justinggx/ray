@@ -3249,17 +3249,26 @@ function lgRender() {
     C.strokeRect(c*CELL, r*CELL, CELL, CELL);
   });
 
-  // ── Home zone markers (canvas circles, no emoji) ──
-  const drawHome = (cx, cy, color, light) => {
-    C.beginPath(); C.arc(cx, cy, CELL*1.1, 0, Math.PI*2);
-    C.fillStyle = light; C.globalAlpha = 0.45; C.fill(); C.globalAlpha = 1;
-    C.beginPath(); C.arc(cx, cy, CELL*0.68, 0, Math.PI*2);
-    C.fillStyle = color; C.globalAlpha = 0.82; C.fill(); C.globalAlpha = 1;
-    C.beginPath(); C.arc(cx, cy, CELL*0.68, 0, Math.PI*2);
-    C.strokeStyle = 'rgba(255,255,255,0.75)'; C.lineWidth = 1.5; C.stroke();
+  // ── Home zone markers (靶心风格) ──
+  const drawHome = (cx, cy, color) => {
+    // 外晕圈
+    C.beginPath(); C.arc(cx, cy, CELL*1.55, 0, Math.PI*2);
+    C.strokeStyle = color; C.lineWidth = 1; C.globalAlpha = 0.18; C.stroke(); C.globalAlpha = 1;
+    // 中圈（轮廓）
+    C.beginPath(); C.arc(cx, cy, CELL*1.0, 0, Math.PI*2);
+    C.strokeStyle = color; C.lineWidth = 1.5; C.globalAlpha = 0.35; C.stroke(); C.globalAlpha = 1;
+    // 实心内圆
+    C.beginPath(); C.arc(cx, cy, CELL*0.6, 0, Math.PI*2);
+    C.fillStyle = color; C.globalAlpha = 0.75; C.fill(); C.globalAlpha = 1;
+    // 高光白点
+    C.beginPath(); C.arc(cx - CELL*0.18, cy - CELL*0.18, CELL*0.16, 0, Math.PI*2);
+    C.fillStyle = 'rgba(255,255,255,0.6)'; C.fill();
+    // 中心白点
+    C.beginPath(); C.arc(cx, cy, CELL*0.18, 0, Math.PI*2);
+    C.fillStyle = 'rgba(255,255,255,0.85)'; C.fill();
   };
-  drawHome(2.5*CELL, 10.5*CELL, '#ec4899', '#fce7f3');
-  drawHome(10.5*CELL, 2.5*CELL, '#7c3aed', '#ede9fe');
+  drawHome(2.5*CELL, 10.5*CELL, '#ec4899');
+  drawHome(10.5*CELL, 2.5*CELL, '#7c3aed');
 
   // ── Centre star (canvas-drawn) ──
   {
@@ -3406,14 +3415,18 @@ async function lgMove(player, steps) {
   if (next < 0)  next = 0;
 
   // Animate step-by-step
+  // 出门时先在第1格停一帧，再继续
+  if (cur === 0) {
+    if (isUser) LG.userPos = 1; else LG.charPos = 1;
+    lgRender();
+    await new Promise(r => setTimeout(r, 200));
+  }
   const start = Math.max(cur, 1);
   for (let p = start + 1; p <= next; p++) {
     if (isUser) LG.userPos = p; else LG.charPos = p;
     lgRender();
     await new Promise(r => setTimeout(r, 320));
   }
-  // If entering board from yard, set to 1 first
-  if (cur === 0) { if (isUser) LG.userPos = 1; else LG.charPos = 1; lgRender(); await new Promise(r=>setTimeout(r,170)); }
 
   if (isUser) LG.userPos = next; else LG.charPos = next;
   lgRender();
@@ -3671,6 +3684,18 @@ async function lgTriggerSquareEvent(player, pos) {
       await new Promise(r => setTimeout(r, 320));
     }
     lgMsg('sys', ev.delta > 0 ? `${moverName}前进${ev.delta}格，到第${newPos}格` : `${moverName}后退${Math.abs(ev.delta)}格，到第${newPos}格`);
+    // 落地后检查新位置有没有任务格（Bug2修复）
+    await new Promise(r => setTimeout(r, 300));
+    let _chainKey = null;
+    if (newPos >= 49 && newPos <= 53) {
+      if (SQUARE_EVENTS[newPos]) _chainKey = newPos;
+    } else if (newPos >= 1 && newPos <= 48) {
+      const _e2 = isUser ? USER_ENTRY : CHAR_ENTRY;
+      const _a2 = (_e2 + newPos - 1) % LUDO_PATH_LEN;
+      const _k2 = _a2 + 1;
+      if (SQUARE_EVENTS[_k2]) _chainKey = _k2;
+    }
+    if (_chainKey !== null) await lgTriggerSquareEvent(player, _chainKey);
     return;
   }
   if (ev.type === 'skip') {
