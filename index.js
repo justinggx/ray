@@ -1402,6 +1402,133 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-view-messages,#rp-view-thread,#rp-bubbles,#rp-view-moments,#rp-view-settings,#rp-view-api-settings,#rp-view-game,#rp-view-themes {
   background: transparent !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   🌸 CANDY: Complete per-page polish (all missing rules)
+   ═══════════════════════════════════════════════════════════ */
+/* Nav bar title + back */
+#rp-phone.rp-theme-candy .rp-nav-title {
+  color: #5a1030 !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 14px rgba(255,255,255,.9), 0 1px 3px rgba(255,255,255,.7) !important;
+}
+#rp-phone.rp-theme-candy .rp-back,
+#rp-phone.rp-theme-candy .rp-nav-add {
+  color: #c03060 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.7) !important;
+}
+/* Settings sections: light rose glass */
+#rp-phone.rp-theme-candy .rp-set-section {
+  background: rgba(255,255,255,.48) !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(220,130,165,.2) !important;
+  overflow: hidden !important;
+}
+#rp-phone.rp-theme-candy .rp-set-section-title {
+  color: #9a2050 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.7) !important;
+}
+#rp-phone.rp-theme-candy .rp-set-row {
+  background: transparent !important;
+  border-bottom-color: rgba(220,130,165,.12) !important;
+}
+#rp-phone.rp-theme-candy .rp-set-key {
+  color: #6a1040 !important;
+  text-shadow: 0 0 6px rgba(255,255,255,.6) !important;
+}
+#rp-phone.rp-theme-candy .rp-set-select {
+  background: rgba(255,255,255,.75) !important;
+  border: 1px solid rgba(220,130,165,.35) !important;
+  color: #5a1030 !important; border-radius: 10px !important;
+}
+#rp-phone.rp-theme-candy .rp-avatar-upload-btn,
+#rp-phone.rp-theme-candy .rp-set-upload-btn {
+  background: rgba(255,220,235,.75) !important;
+  border: 1px solid rgba(220,130,165,.4) !important;
+  color: #8a1840 !important; border-radius: 12px !important;
+}
+/* Moments: rose glass */
+#rp-phone.rp-theme-candy .rp-moment {
+  background: rgba(255,255,255,.32) !important;
+  border-bottom: 1px solid rgba(220,130,165,.12) !important;
+  padding: 10px 14px !important;
+}
+#rp-phone.rp-theme-candy .rp-moment-name { color: #c03060 !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-candy .rp-moment-time { color: rgba(140,60,90,.55) !important; }
+#rp-phone.rp-theme-candy .rp-moment-body { color: #4a1028 !important; }
+/* Game text */
+#rp-phone.rp-theme-candy .rp-game-status {
+  color: #8a1840 !important; font-weight: 600 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.7) !important;
+}
+#rp-phone.rp-theme-candy .rp-game-players {
+  color: #6a1030 !important; font-weight: 600 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.7) !important;
+}
+#rp-phone.rp-theme-candy #rp-game-chat {
+  background: rgba(255,240,248,.55) !important;
+  border-top-color: rgba(220,130,165,.15) !important;
+}
+#rp-phone.rp-theme-candy #rp-game-chat * { color: #5a1028 !important; }
+#rp-phone.rp-theme-candy #rp-game-chat-hint { color: rgba(180,60,90,.55) !important; }
+/* Thread list names */
+#rp-phone.rp-theme-candy .rp-tn { color: #3a0a1e !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-candy .rp-tp { color: rgba(80,20,40,.6) !important; }
+#rp-phone.rp-theme-candy .rp-tt { color: rgba(140,60,90,.5) !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   🌿 MISTY: Missing settings sections + nav polish
+   ═══════════════════════════════════════════════════════════ */
+/* Settings sections: blue-white glass */
+#rp-phone.rp-theme-misty .rp-set-section {
+  background: rgba(240,248,255,.52) !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(130,175,215,.22) !important;
+  overflow: hidden !important;
+}
+#rp-phone.rp-theme-misty .rp-set-section-title {
+  color: rgba(44,74,106,.75) !important;
+  font-weight: 600 !important;
+  text-shadow: 0 0 8px rgba(255,255,255,.8) !important;
+}
+#rp-phone.rp-theme-misty .rp-set-row {
+  background: transparent !important;
+  border-bottom-color: rgba(130,175,215,.15) !important;
+}
+#rp-phone.rp-theme-misty .rp-set-key {
+  color: #1a3050 !important;
+  text-shadow: 0 0 6px rgba(255,255,255,.6) !important;
+}
+/* Moments: blue-white glass */
+#rp-phone.rp-theme-misty .rp-moment {
+  background: rgba(240,248,255,.40) !important;
+  border-bottom: 1px solid rgba(130,175,215,.15) !important;
+  padding: 10px 14px !important;
+}
+#rp-phone.rp-theme-misty .rp-moment-name { color: #2d6d9a !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-misty .rp-moment-time { color: rgba(44,74,106,.5) !important; }
+#rp-phone.rp-theme-misty .rp-moment-body { color: #1a3050 !important; }
+/* Thread list */
+#rp-phone.rp-theme-misty .rp-tn { color: #0e1f30 !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-misty .rp-tp { color: rgba(30,60,90,.65) !important; }
+#rp-phone.rp-theme-misty .rp-tt { color: rgba(44,74,106,.5) !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   ✨ STAR: Moments glass (was transparent, needs dark tint)
+   ═══════════════════════════════════════════════════════════ */
+#rp-phone.rp-theme-star .rp-moment {
+  background: rgba(14,8,38,.42) !important;
+  border-bottom: 1px solid rgba(130,90,255,.1) !important;
+  padding: 10px 14px !important;
+}
+#rp-phone.rp-theme-star .rp-moment-name { color: #b09ef0 !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-star .rp-moment-time { color: rgba(180,165,255,.5) !important; }
+#rp-phone.rp-theme-star .rp-moment-body { color: #d4ccff !important; }
+/* Thread list */
+#rp-phone.rp-theme-star .rp-tn { color: #e8e0ff !important; font-weight: 600 !important; }
+#rp-phone.rp-theme-star .rp-tp { color: rgba(200,185,255,.6) !important; }
+#rp-phone.rp-theme-star .rp-tt { color: rgba(180,165,255,.45) !important; }
 /* ── THEMES VIEW ── */
 /* ── Misty Blue Hydrangea Theme ── */
 #rp-phone.rp-theme-misty {
