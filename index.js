@@ -3889,9 +3889,10 @@ function bindUI() {
     e.stopPropagation();
     $(this).toggleClass('selected');
   });
-  $(document).on('click', '[data-action="grp-cancel"]', () => $('#rp-grp-create').remove());
-  $(document).on('click', '[data-action="grp-confirm"]', () => confirmCreateGroup());
+  $(document).on('click', '[data-action="grp-cancel"]', (e) => { e.stopPropagation(); $('#rp-grp-create').remove(); });
+  $(document).on('click', '[data-action="grp-confirm"]', (e) => { e.stopPropagation(); confirmCreateGroup(); });
   $(document).on('click', '#rp-grp-create', function(e) {
+    e.stopPropagation();
     if (e.target === this) $(this).remove();
   });
 
