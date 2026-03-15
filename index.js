@@ -2054,9 +2054,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   font-family:inherit; line-height:1.75;
   box-sizing:border-box;
 }
-#rp-phone.rp-theme-star  #rp-compose-text { color: #d4ccff !important; }
-#rp-phone.rp-theme-misty #rp-compose-text { color: #1a3050 !important; }
-.rp-dark #rp-compose-text { color: #dde0f2 !important; }
+/* compose-text: default(candy) card is white-ish → dark text; others override */
+#rp-compose-text { color: #1a1a2e !important; }
+#rp-phone.rp-theme-star  #rp-compose-text { color: #eae6ff !important; }
+#rp-phone.rp-theme-misty #rp-compose-text { color: #0f2035 !important; }
+.rp-dark #rp-compose-text { color: #e8e4ff !important; }
 
 .rp-compose-sep {
   height:1px;
@@ -2067,6 +2069,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-compose-sep { background: rgba(80,150,200,.15) !important; }
 .rp-dark .rp-compose-sep { background: rgba(255,255,255,.07) !important; }
 
+#rp-compose-text::placeholder { color: rgba(60,60,80,.38); }
+#rp-phone.rp-theme-star  #rp-compose-text::placeholder { color: rgba(200,190,255,.4) !important; }
+#rp-phone.rp-theme-misty #rp-compose-text::placeholder { color: rgba(44,90,140,.4) !important; }
+.rp-dark #rp-compose-text::placeholder { color: rgba(200,190,255,.35) !important; }
 .rp-compose-hint {
   font-size:11px; color:rgba(0,0,0,.35);
   text-align:right; letter-spacing:.3px; padding-top:2px;
