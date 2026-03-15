@@ -2143,7 +2143,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-add-choice-item{color:#e0e4ff;border-bottom-color:rgba(255,255,255,.06)}
 .rp-add-choice-item:last-child{border-bottom:none}
 .rp-add-choice-item:active{background:rgba(0,0,0,.04)}
-.rp-add-choice-delete{color:#ef4444!important}.rp-del-pick-item{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer}.rp-del-pick-item:active{background:rgba(0,0,0,.05)}.rp-del-chk{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.2);flex-shrink:0}.rp-del-pick-item.rp-del-selected .rp-del-chk{background:#ef4444;border-color:#ef4444}.rp-del-pick-item.rp-del-selected .rp-del-chk::after{content:"✓";color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;height:100%}
+.rp-add-choice-delete{color:#ef4444!important}.rp-del-picker-view{flex-direction:column!important;background:#f5f5f5}.rp-del-picker-view .rp-nav-bar{background:var(--rp-nav-bg,rgba(255,255,255,.9));border-bottom:1px solid var(--rp-nav-bd,rgba(0,0,0,.08))}.rp-del-picker-view #rp-del-cancel{color:var(--rp-nav-btn,#2563eb);background:none;border:none;cursor:pointer;font-size:15px}.rp-del-picker-view #rp-del-confirm{color:var(--rp-nav-btn,#2563eb);background:none;border:none;cursor:pointer;font-size:15px;font-weight:700}#rp-del-list{flex:1;overflow-y:auto;padding:0}.rp-del-pick-item{display:flex;align-items:center;gap:12px;padding:11px 18px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05);background:#fff;transition:background .12s}.rp-del-pick-item:active{background:rgba(0,0,0,.04)}.rp-del-pick-item.rp-del-selected{background:rgba(239,68,68,.04)}.rp-del-pick-name{flex:1;font-size:14px;font-weight:500;color:#222}.rp-del-chk{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center}.rp-del-pick-item.rp-del-selected .rp-del-chk{background:#ef4444;border-color:#ef4444}.rp-del-pick-item.rp-del-selected .rp-del-chk::after{content:"✓";color:#fff;font-size:13px}.rp-dark .rp-del-picker-view{background:#09091a}.rp-dark .rp-del-pick-item{background:#0f0f28;border-bottom-color:rgba(255,255,255,.05)}.rp-dark .rp-del-pick-item:active{background:rgba(255,255,255,.04)}.rp-dark .rp-del-pick-item.rp-del-selected{background:rgba(239,68,68,.1)}.rp-dark .rp-del-pick-name{color:#e0e4ff}.rp-dark .rp-del-chk{border-color:rgba(255,255,255,.25)}
 .rp-add-choice-cancel{padding:14px 20px;font-size:14px;color:rgba(0,0,0,.4);cursor:pointer;text-align:center;background:#fff;border-radius:12px;width:80%;max-width:240px;box-sizing:border-box;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .rp-dark .rp-add-choice-cancel{background:#111128;color:rgba(255,255,255,.3)}
 /* ── LIVE CHAT OVERLAY ── */
@@ -2220,7 +2220,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-grp-pick-item.selected{background:rgba(37,99,235,.06)}
 .rp-grp-pick-av{width:34px;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 .rp-grp-pick-name{flex:1;font-size:14px;font-weight:500;color:#222}
-.rp-dark .rp-grp-pick-name{color:#e0e4ff}
+.rp-dark .rp-grp-pick-name{color:#e0e4ff}#rp-phone.rp-theme-star .rp-del-picker-view{background:#09091a}#rp-phone.rp-theme-star .rp-del-pick-item{background:#0f0f22;border-bottom-color:rgba(130,90,255,.12)}#rp-phone.rp-theme-star .rp-del-pick-item:active{background:rgba(130,90,255,.08)}#rp-phone.rp-theme-star .rp-del-pick-item.rp-del-selected{background:rgba(239,68,68,.12)}#rp-phone.rp-theme-star .rp-del-pick-name{color:#dde0ff}#rp-phone.rp-theme-star .rp-del-chk{border-color:rgba(160,120,255,.4)}#rp-phone.rp-theme-candy .rp-del-picker-view{background:#fff0f5}#rp-phone.rp-theme-candy .rp-del-pick-item{background:#fff8fa;border-bottom-color:rgba(200,100,140,.12)}#rp-phone.rp-theme-candy .rp-del-pick-item:active{background:rgba(200,100,140,.06)}#rp-phone.rp-theme-candy .rp-del-pick-item.rp-del-selected{background:rgba(239,68,68,.05)}#rp-phone.rp-theme-candy .rp-del-pick-name{color:#4a1030}#rp-phone.rp-theme-candy .rp-del-chk{border-color:rgba(200,100,140,.35)}#rp-phone.rp-theme-misty .rp-del-picker-view{background:#eef5fb}#rp-phone.rp-theme-misty .rp-del-pick-item{background:#fff;border-bottom-color:rgba(100,160,210,.12)}#rp-phone.rp-theme-misty .rp-del-pick-item:active{background:rgba(100,160,210,.06)}#rp-phone.rp-theme-misty .rp-del-pick-item.rp-del-selected{background:rgba(239,68,68,.04)}#rp-phone.rp-theme-misty .rp-del-pick-name{color:#1a3a5c}#rp-phone.rp-theme-misty .rp-del-chk{border-color:rgba(100,160,210,.4)}
 .rp-grp-pick-chk{width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;flex-shrink:0;transition:all .15s}
 .rp-grp-pick-item.selected .rp-grp-pick-chk{background:#2563eb;border-color:#2563eb;color:#fff}
 .rp-grp-modal{background:#fff;border-radius:16px;overflow:hidden;width:90%;max-width:290px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
@@ -4931,11 +4931,11 @@ function showDeletePicker() {
     const avHtml = img
       ? `<div class="rp-grp-pick-av rp-av-img" style="overflow:hidden"><img src="${img}" style="width:100%;height:100%;object-fit:cover"/></div>`
       : `<div class="rp-grp-pick-av" style="background:${t.avatarBg}">${t.initials}</div>`;
-    return `<div class="rp-del-pick-item" data-tid="${escHtml(t.id)}">${avHtml}<span class="rp-grp-pick-name">${escHtml(t.name)}</span><div class="rp-del-chk"></div></div>`;
+    return `<div class="rp-del-pick-item" data-tid="${escHtml(t.id)}">${avHtml}<span class="rp-del-pick-name">${escHtml(t.name)}</span><div class="rp-del-chk"></div></div>`;
   }).join('');
 
   $('#rp-screen').append(`
-    <div class="rp-add-choice" id="rp-del-picker" style="flex-direction:column;background:#fff">
+    <div class="rp-add-choice rp-del-picker-view" id="rp-del-picker">
       <div class="rp-nav-bar">
         <button class="rp-back" id="rp-del-cancel">取消</button>
         <span style="font-weight:700">删除好友</span>
