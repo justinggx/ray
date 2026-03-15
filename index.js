@@ -49,16 +49,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     z-index: 2147483647 !important;
   }
   #rp-phone {
-    left: calc(50vw - 135px) !important;  /* 135 = 270px宽度的一半，水平居中 */
-    top: calc(50vh - 250px) !important;   /* 250 = 500px高度的一半，垂直居中 */
+    left: calc(50vw - 150px) !important;  /* 150 = 300px宽度的一半，水平居中 */
+    top: calc(50vh - 280px) !important;   /* 280 = 560px高度的一半，垂直居中 */
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
     z-index: 2147483645 !important;
   }
   #rp-frame {
-    width: 270px !important;
-    height: 500px !important;
+    width: 300px !important;
+    height: 560px !important;
     border-radius: 38px !important;
   }
   #rp-screen {
@@ -2754,10 +2754,10 @@ async function init() {
       _applyFabPos();
       setTimeout(_applyFabPos, 200);
       setTimeout(_applyFabPos, 800);
-      // 强制 frame 尺寸 270×500 (手机端专用)
+      // 强制 frame 尺寸 300×560 (手机端专用)
       if (frame) {
-        frame.style.setProperty('width', '270px', 'important');
-        frame.style.setProperty('height', '500px', 'important');
+        frame.style.setProperty('width', '300px', 'important');
+        frame.style.setProperty('height', '560px', 'important');
         frame.style.setProperty('border-radius', '38px', 'important');
       }
     } else {
@@ -2902,8 +2902,8 @@ function bindUI() {
         // 先强制 frame 尺寸，再测量居中（确保 offsetWidth/Height 正确）
         const frame = document.getElementById('rp-frame');
         if (frame) {
-          frame.style.setProperty('width', '270px', 'important');
-          frame.style.setProperty('height', '500px', 'important');
+          frame.style.setProperty('width', '300px', 'important');
+          frame.style.setProperty('height', '560px', 'important');
           frame.style.setProperty('border-radius', '38px', 'important');
         }
         const ph = phone[0].offsetHeight || 500;
