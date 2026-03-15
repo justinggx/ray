@@ -3945,10 +3945,13 @@ function parsePhone(block) {
     const fromRaw  = m[1].trim();
     const time     = m[2];
     const text     = m[3].trim();
-    const threadId = matchThread(fromRaw);
-    if (threadId) {
-      incomingMsg(threadId, text, time);
+    // 尝试匹配已有线程，找不到则自动创建新联系人
+    let threadId = matchThread(fromRaw);
+    if (!threadId) {
+      const newTh = findOrCreateThread(fromRaw);
+      threadId = newTh.id;
     }
+    incomingMsg(threadId, text, time);
   }
 
   const notifRe = /<NOTIFY\s+TYPE="([^"]+)"\s+TEXT="([^"]+)"\/>/gi;
@@ -4008,9 +4011,6 @@ function matchThread(fromRaw) {
     const thName = th.name.toLowerCase();
     if (lower.includes(thName) || thName.includes(lower)) return th.id;
   }
-
-  if (lower.includes('gaspard')) return 'gaspard';
-  if (lower.includes('raymond')) return 'raymond';
 
   return null;
 }
