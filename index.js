@@ -2986,9 +2986,13 @@ async function init() {
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 
-  // 延迟隐藏聊天框里的 <PHONE> 标签（DOM 渲染需要时间）
+  // 延迟：等 ctx 稳定后添加当前 char 联系人 + 清理 DOM
   setTimeout(function() {
-    try { hidePhoneTagsInChat(); } catch(e) {}
+    try {
+      // autoAddCharContact 内有 !ctx.chatId 守卫，主页无 char 时不执行
+      autoAddCharContact();
+      hidePhoneTagsInChat();
+    } catch(e) {}
   }, 800);
 }
 
