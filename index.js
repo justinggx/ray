@@ -2403,6 +2403,9 @@ const event_types = window.event_types || SillyTavern?.eventTypes;
 const setExtensionPrompt = window.setExtensionPrompt || SillyTavern?.setExtensionPrompt;
 const extension_prompt_types = window.extension_prompt_types || SillyTavern?.extensionPromptTypes;
 const getContext = window.getContext || SillyTavern?.getContext || (() => ({}));
+const _extSettings = () => window.extension_settings || (window.SillyTavern && window.SillyTavern.extensionSettings) || null;
+const _saveSettings = () => { try { const fn = window.saveSettingsDebounced || window.SillyTavern?.saveSettingsDebounced; if (typeof fn === 'function') fn(); } catch(e) {} };
+const EXT_KEY = 'ray_phone_v1'; // extension_settings 的命名空间键
 
 // ================================================================
 //  DEFAULT THREADS FACTORY
@@ -2568,21 +2571,48 @@ function saveState() {
         (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
       );
     }
-    localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify({
+    const payload = {
       threads,
       notifications: STATE.notifications,
       sync: STATE.sync,
       moments: STATE.moments,
       darkMode: STATE.darkMode,
       avatars: STATE.avatars || {},
-    }));
+    };
+    // 1. localStorage（快速读写，本地缓存）
+    localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
+    // 2. extension_settings（存服务端，PC/手机同步）
+    const es = _extSettings();
+    if (es) {
+      if (!es[EXT_KEY]) es[EXT_KEY] = {};
+      es[EXT_KEY][STATE.chatId] = payload;
+      _saveSettings();
+    }
   } catch(e) { console.warn('[Raymond Phone] saveState failed', e); }
 }
 
 function loadState(chatId) {
   try {
+    // 优先读 extension_settings（服务端，PC/手机共享）
+    const es = _extSettings();
+    if (es && es[EXT_KEY] && es[EXT_KEY][chatId]) {
+      // 同步回 localStorage 作为快速缓存
+      try { localStorage.setItem(`rp-phone-v1-${chatId}`, JSON.stringify(es[EXT_KEY][chatId])); } catch(e) {}
+      return es[EXT_KEY][chatId];
+    }
+    // 回退到 localStorage（兼容旧数据）
     const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
-    return raw ? JSON.parse(raw) : null;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // 旧数据迁移：写入 extension_settings
+      if (es) {
+        if (!es[EXT_KEY]) es[EXT_KEY] = {};
+        es[EXT_KEY][chatId] = parsed;
+        _saveSettings();
+      }
+      return parsed;
+    }
+    return null;
   } catch(e) { return null; }
 }
 
