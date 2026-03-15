@@ -1585,7 +1585,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-moment-comment { color: #1e3c5a !important; }
 #rp-phone.rp-theme-misty .rp-moment-cname { color: #2d6d9a !important; }
 #rp-phone.rp-theme-misty .rp-moment-reply-btn { color: rgba(40,90,140,.65) !important; }
-#rp-phone.rp-theme-misty .rp-moment-likes-row { color: rgba(44,90,140,.6) !important; }
+#rp-phone.rp-theme-misty .rp-moment-likes-row { color: rgba(24,68,112,.90) !important; }
 #rp-phone.rp-theme-misty .rp-moment-comments-wrap { background: rgba(60,120,180,.06) !important; }
 #rp-phone.rp-theme-misty .rp-moment-act { color: rgba(40,90,140,.5) !important; }
 #rp-phone.rp-theme-misty .rp-moment-bar { border-top-color: rgba(100,160,210,.18) !important; }
