@@ -4854,23 +4854,50 @@ function getMomentsCtx() {
   const knownNPCs = new Set();
   Object.values(STATE.threads || {}).forEach(th => { if (th.name && th.name !== charName) knownNPCs.add(th.name); });
   (STATE.moments || []).filter(m => m.from !== 'user' && m.name !== charName).forEach(m => knownNPCs.add(m.name));
-  // 主楼层近几条对话（ctx.chat 是主剧情对话，不是手机短信）
-  const recentChat = (ctx?.chat || []).slice(-8).map(m => {
+  // 主楼层近15条对话（更多上下文以捕捉NPC语气）
+  const recentChat = (ctx?.chat || []).slice(-15).map(m => {
     const spk = m.is_user ? userName : (m.name || charName);
-    return spk + ': ' + ((m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120));
+    return spk + ': ' + ((m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 150));
   }).join('\n') || '（暂无对话记录）';
-  return { charName, userName, npcs: [...knownNPCs].slice(0, 4), recentChat };
+  // 提取主角人设（description + personality + scenario）
+  let charPersona = '';
+  try {
+    const charObj = (ctx?.characters && ctx?.characterId !== undefined)
+      ? ctx.characters[ctx.characterId]
+      : (ctx?.char || null);
+    if (charObj) {
+      const parts = [];
+      if (charObj.description) parts.push(charObj.description.replace(/\s+/g, ' ').trim().slice(0, 350));
+      if (charObj.personality) parts.push('性格：' + charObj.personality.replace(/\s+/g, ' ').trim().slice(0, 150));
+      if (charObj.scenario)    parts.push('背景：' + charObj.scenario.replace(/\s+/g, ' ').trim().slice(0, 200));
+      charPersona = parts.filter(Boolean).join('\n');
+    }
+  } catch(e) { /* ignore */ }
+  return { charName, userName, npcs: [...knownNPCs].slice(0, 4), recentChat, charPersona };
 }
 
 async function generateAIMoments() {
   const btn = document.getElementById('rp-gen-moments');
   if (btn) { btn.disabled = true; btn.classList.add('rp-spinning'); }
   try {
-    const { charName, npcs, recentChat } = getMomentsCtx();
+    const { charName, npcs, recentChat, charPersona } = getMomentsCtx();
     const allChars = [charName, ...npcs];
     const charList = allChars.join('、');
-    const prompt = '你正在模拟角色扮演故事中的社交媒体朋友圈。登场角色：' + charList + '\n近期主线剧情（主楼层最新对话）：\n' + recentChat + '\n\n请为上述角色各写1条朋友圈动态，共3条（不同角色）。\n【强制要求】所有内容必须使用中文。\n格式：只返回JSON数组，例：[{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"}]\n要求：\n- 口语自然，1-3句话，体现角色性格\n- 内容与近期剧情有关联\n- 绝对不要返回JSON以外的任何文字';
-    const resp = await lgCallAPI(prompt, 600);
+    // system message：人设 + 规则
+    const sysMsg = '你是一个角色扮演故事中的社交媒体模拟器。\n\n'
+      + '【主角 ' + charName + ' 的人设】\n' + (charPersona || '（未获取到人设，请根据对话推断）') + '\n\n'
+      + (npcs.length > 0 ? '【故事中的其他角色】' + npcs.join('、') + '（根据近期剧情推断其语气风格）\n\n' : '')
+      + '【生成规则】\n'
+      + '1. 每个角色的语气、措辞必须严格符合其在故事中的性格和人设\n'
+      + '2. ' + charName + ' 必须用其人设中描述的语气说话，不得混用其他角色的口吻\n'
+      + '3. NPC 根据近期剧情中的言行推断其风格\n'
+      + '4. 所有内容必须使用中文\n'
+      + '5. 只返回 JSON 数组，不要任何其他文字';
+    const prompt = '近期主线剧情（主楼层最新对话）：\n' + recentChat
+      + '\n\n请为以下角色各写1条朋友圈动态，共 ' + allChars.length + ' 条，每人1条，不重复：'
+      + charList
+      + '\n格式：[{"from":"角色名","text":"动态内容（1-3句话，自然口语，与剧情有关）"},...]';
+    const resp = await lgCallAPI(prompt, 600, sysMsg);
     if (!resp) throw new Error('API无响应');
     const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
     if (!jsonStr) throw new Error('格式错误');
@@ -4897,7 +4924,7 @@ async function generateAIMoments() {
 async function momentAISocial(targetMomentId) {
   const moments = STATE.moments || [];
   if (moments.length === 0) return;
-  const { charName, npcs } = getMomentsCtx();
+  const { charName, npcs, charPersona } = getMomentsCtx();
   const allChars = [charName, ...npcs];
   if (allChars.length === 0) return;
   const targets = targetMomentId
@@ -4908,8 +4935,9 @@ async function momentAISocial(targetMomentId) {
     'ID="' + m.id + '" 作者="' + m.name + '" 内容="' + m.text.slice(0, 60) + '"'
   ).join('\n');
   const charList2 = allChars.join('、');
-  const prompt2 = '以下是朋友圈动态：\n' + momentsSummary + '\n登场角色：' + charList2 + '\n\n模拟角色之间的社交互动，生成2-4条互动（点赞或评论）。\n【强制要求】所有评论内容必须用中文。\n格式：只返回JSON数组，例：\n[{"type":"like","from":"角色名","momentId":"完整ID"},{"type":"comment","from":"角色名","momentId":"完整ID","text":"评论内容（中文）"}]\n要求：\n- 角色不能对自己的动态点赞或评论\n- momentId 必须与上方ID完全一致\n- 只返回JSON数组，不要其他文字';
-  const resp = await lgCallAPI(prompt2, 400);
+  const sysMsg2 = '你是角色扮演社交媒体互动模拟器。\n主角 ' + charName + ' 人设：' + (charPersona ? charPersona.slice(0, 200) : '（根据动态推断）') + '\n其他角色：' + (npcs.join('、') || '无') + '\n规则：互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。';
+  const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n为角色（' + charList2 + '）生成2-4条社交互动（like/comment）。\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，momentId必须与上方完全一致。';
+  const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
   try {
     const jsonStr2 = resp.match(/\[[\s\S]*\]/)?.[0];
@@ -4936,8 +4964,15 @@ async function generateAIReply(momentId, userCommentText, fromName) {
   const moment = STATE.moments?.find(m => m.id === momentId);
   if (!moment) return;
   const authorName = fromName || moment.name;
-  const prompt3 = authorName + '在朋友圈发了一条动态：「' + moment.text + '」\n用户评论：「' + userCommentText + '」\n请以' + authorName + '的身份，用中文写一句自然的回复（20字以内）。\n【强制要求】只返回回复内容本身，不要任何前缀或引号。';
-  const resp = await lgCallAPI(prompt3, 100);
+  const { charName, charPersona } = getMomentsCtx();
+  let sysMsg3 = '';
+  if (authorName === charName && charPersona) {
+    sysMsg3 = '你正在扮演 ' + charName + '，人设如下：\n' + charPersona.slice(0, 300) + '\n\n回复时必须严格符合该人设的语气和性格，用中文回复，不超过20字，只返回回复内容本身。';
+  } else {
+    sysMsg3 = '你正在扮演 ' + authorName + '，根据其在故事中的言行推断语气，用中文回复，不超过20字，只返回回复内容本身。';
+  }
+  const prompt3 = authorName + '的朋友圈：「' + moment.text + '」\n用户评论：「' + userCommentText + '」\n' + authorName + '回复：';
+  const resp = await lgCallAPI(prompt3, 100, sysMsg3);
   if (!resp) return;
   const now = new Date();
   const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
@@ -5812,18 +5847,21 @@ function lgSelectPool(personaText) {
 
 // ── Square event trigger (两步流程) ──────────────────────────────
 // ── 自定义 API 调用（支持 DeepSeek / 通义 / GLM 等 OpenAI 兼容格式）──
-async function lgCallAPI(prompt, maxTokens = 150) {
+async function lgCallAPI(prompt, maxTokens = 150, sysMsg = '') {
   const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
 
   // 用户设置了自定义 API → 只用自定义，绝不 fallback 到 ST
   if (cfg.mode === 'custom' && cfg.url && cfg.key) {
     try {
+      const msgs = [];
+      if (sysMsg) msgs.push({ role: 'system', content: sysMsg });
+      msgs.push({ role: 'user', content: prompt });
       const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.key}` },
         body: JSON.stringify({
           model: cfg.model || 'deepseek-chat',
-          messages: [{ role: 'user', content: prompt }],
+          messages: msgs,
           max_tokens: maxTokens,
           temperature: 0.9
         })
@@ -5838,11 +5876,12 @@ async function lgCallAPI(prompt, maxTokens = 150) {
     return null; // 自定义 API 失败，不走 ST，直接返回 null（触发 fallback 文本）
   }
 
-  // 未设置自定义 API → 走 ST generateRaw
+  // 未设置自定义 API → 走 ST generateRaw（sysMsg 拼入 prompt 前）
   try {
     const { generateRaw } = await import('../../../../script.js').catch(() => ({}));
     if (typeof generateRaw === 'function') {
-      const resp = await generateRaw({ prompt, max_new_tokens: maxTokens, quiet: true });
+      const fullPrompt = sysMsg ? sysMsg + '\n\n' + prompt : prompt;
+      const resp = await generateRaw({ prompt: fullPrompt, max_new_tokens: maxTokens, quiet: true });
       if (resp && resp.trim()) return resp.trim();
     }
   } catch(e) { /* ignore */ }
