@@ -9,7 +9,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ── FAB ── */
 #rp-fab {
-  position:fixed; right:20px; bottom:20px; z-index:2147483646;
+  position:fixed; right:20px; bottom:20px; z-index:2147483647;
   width:52px; height:52px; border-radius:50%;
   background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
   border:1px solid rgba(0,0,0,.1);
@@ -44,7 +44,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     border: 2.5px solid rgba(255,255,255,.92) !important;
     box-shadow: 0 4px 22px rgba(100,40,200,.45), 0 2px 8px rgba(0,0,0,.3) !important;
     backdrop-filter: none !important;
-    z-index: 2147483646 !important;
+    z-index: 2147483647 !important;
   }
   #rp-phone {
     right: 50% !important;
@@ -2349,8 +2349,8 @@ function loadState(chatId) {
 //  HTML
 // ================================================================
 const HTML = `
+<div id="rp-fab" title="打开手机">📱</div>
 <div id="rp-wrapper">
-  <div id="rp-fab" title="打开手机">📱</div>
 
   <div id="rp-phone" style="display:none">
     <div id="rp-frame">
@@ -2707,6 +2707,8 @@ async function init() {
   // Hot-reload safety: remove stale phone element & force CSS re-inject
   const stale = document.getElementById('rp-wrapper');
   if (stale) stale.remove();
+  const staleFab = document.getElementById('rp-fab');
+  if (staleFab) staleFab.remove();
   window._rpPhoneSheet = false;
 
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
