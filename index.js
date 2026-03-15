@@ -2408,24 +2408,8 @@ const getContext = window.getContext || SillyTavern?.getContext || (() => ({}));
 //  DEFAULT THREADS FACTORY
 // ================================================================
 function DEFAULT_THREADS() {
-  return {
-    raymond: {
-      id: 'raymond',
-      name: 'Raymond Augustine',
-      initials: 'RA',
-      avatarBg: 'linear-gradient(145deg,#1c1c2e,#2c2c4e)',
-      messages: [],
-      unread: 0,
-    },
-    gaspard: {
-      id: 'gaspard',
-      name: 'Gaspard de Valois',
-      initials: 'GV',
-      avatarBg: 'linear-gradient(145deg,#1a2e1a,#2a4a2a)',
-      messages: [],
-      unread: 0,
-    },
-  };
+  // 不硬编码联系人：联系人由 AI 发信时动态创建，每个对话框完全隔离
+  return {};
 }
 
 // ================================================================
@@ -2997,7 +2981,7 @@ function onChatChanged() {
   } else {
     const persisted = loadState(newChatId);
     if (persisted) {
-      STATE.threads = persisted.threads;
+      STATE.threads = persisted.threads || {};
       STATE.notifications = persisted.notifications || [];
       STATE.sync = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments = persisted.moments || [];
