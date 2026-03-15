@@ -1975,6 +1975,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-diary-send-btn{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
 #rp-phone.rp-theme-misty .rp-diary-empty{color:rgba(44,74,106,.4)}
 #rp-phone.rp-theme-misty #rp-gen-diary{color:#3d7eb0}
+#rp-phone.rp-theme-candy .rp-ico-diary svg{stroke:#c03060!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.8)) drop-shadow(0 1px 4px rgba(200,60,90,.55))!important}
+#rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="rgba(255,255,255,.12)"]{fill:rgba(192,48,96,.12)!important}
+#rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="white"]{fill:#c03060!important}
+#rp-phone.rp-theme-misty .rp-ico-diary svg{stroke:#2d6d9a!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 3px rgba(0,60,120,.4))!important}
+#rp-phone.rp-theme-misty .rp-ico-diary svg circle[fill="rgba(255,255,255,.12)"]{fill:rgba(45,109,154,.15)!important}
+#rp-phone.rp-theme-misty .rp-ico-diary svg circle[fill="white"]{fill:#2d6d9a!important}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
 /* ══════════════════════════════════════════════════════════
@@ -2915,7 +2921,7 @@ const HTML = `
                 <div class="rp-app-lbl">主题</div>
               </div>
               <div class="rp-app" data-app="diary">
-                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#dg)"/><defs><linearGradient id="dg" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs><rect x="11" y="10" width="18" height="22" rx="3" fill="white" opacity=".95"/><rect x="14" y="15" width="12" height="1.8" rx=".9" fill="#f97316"/><rect x="14" y="19" width="10" height="1.8" rx=".9" fill="#f97316" opacity=".7"/><rect x="14" y="23" width="8" height="1.8" rx=".9" fill="#f97316" opacity=".5"/><circle cx="28" cy="30" r="5" fill="#ec4899"/><path d="M26 30h4M28 28v4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="6" width="19" height="28" rx="4" stroke-width="2" fill="rgba(255,255,255,.12)"/><circle cx="12" cy="11" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="17" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="23" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="29" r="1.4" fill="white" stroke="none" opacity=".7"/><line x1="16" y1="14" x2="25" y2="14" stroke-width="1.8"/><line x1="16" y1="19" x2="25" y2="19" stroke-width="1.8" opacity=".7"/><line x1="16" y1="24" x2="23" y2="24" stroke-width="1.8" opacity=".5"/><circle cx="30" cy="32" r="5.5" stroke-width="1.5" fill="rgba(255,255,255,.18)"/><path d="M28.5 32h3M30 30.5v3" stroke-width="1.6"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
             </div>
@@ -4609,7 +4615,7 @@ function renderDiary() {
       ? (charAv ? '<div class="rp-diary-av rp-av-img" style="overflow:hidden"><img src="' + charAv + '" style="width:100%;height:100%;object-fit:cover"/></div>'
                : '<div class="rp-diary-av" style="background:' + charAvatarBg + '">' + charName.slice(0,2) + '</div>')
       : '<div class="rp-diary-av" style="background:linear-gradient(145deg,#64748b,#475569)">\u6211</div>';
-    var authorLabel = isAI ? charName + '<span class="rp-diary-ai-badge">AI</span>' : '\u6211';
+    var authorLabel = isAI ? charName : '\u6211';
     var replyHtml = '';
     if (!isAI && e.reply) {
       replyHtml = '<div class="rp-diary-reply"><div class="rp-diary-reply-name">' + escHtml(charName) + '</div>'
@@ -4684,7 +4690,7 @@ async function postUserDiary() {
     var sysMsg2 = '\u4f60\u662f' + charName2 + '\u3002'
       + (charPersona2 ? '\u4eba\u8bbe\uff1a' + charPersona2.slice(0,200) + '\n' : '')
       + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9\u4f60\uff0c\u7528\u6e29\u67d4\u81ea\u7136\u7684\u8bed\u6c14\u56de\u5e94\uff0c'
-      + '30-60\u5b57\uff0c\u4e2d\u6587\uff0c\u53ea\u8fd4\u56de\u56de\u5e94\u6b63\u6587\u3002';
+      + '30-60\u5b57\uff0c\u4e2d\u6587\uff0c\u53ea\u8fd4\u56de\u7eaf\u6587\u5b57\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\u548c\u661f\u53f7\u62ec\u53f7\u3002';
     var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n' + charName2 + '\u7684\u56de\u5e94\uff1a';
     var resp2 = await lgCallAPI(prompt2, 200, sysMsg2);
     if (resp2) {
