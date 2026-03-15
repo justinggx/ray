@@ -1296,14 +1296,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* ── MISTY API settings legibility ── */
 #rp-phone.rp-theme-misty #rp-view-api-settings [style*="background:rgba(168,85,247"] {
-  background: rgba(240,248,255,.38) !important;
-  border: 1px solid rgba(130,175,215,.22) !important;
-  color: #1a3050 !important;
-  border-radius: 14px !important;
+  background: rgba(30,90,160,.1) !important;
+  border: 1px solid rgba(60,130,200,.2) !important;
 }
-#rp-phone.rp-theme-misty #rp-api-blink { color: #2d6d9a !important; }
-#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#2d1060"] { color: #1a3050 !important; }
-#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#9070b0"] { color: rgba(44,74,106,.85) !important; }
+#rp-phone.rp-theme-misty #rp-api-blink { color: #0e5a8a !important; font-weight: 800 !important; }
+#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#2d1060"] { color: #0f2236 !important; }
+#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#9070b0"] { color: #1e4060 !important; }
 #rp-phone.rp-theme-misty .rp-api-opt { color: #1a3050 !important; font-weight: 500 !important; text-shadow: 0 0 8px rgba(255,255,255,.7) !important; }
 #rp-phone.rp-theme-misty .rp-api-preset-btn {
   background: rgba(240,248,255,.38) !important;
@@ -2854,7 +2852,7 @@ const HTML = `
           <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 10px;display:flex;flex-direction:column;gap:0">
             <div style="font-size:17px;color:#2d1060;font-weight:800;text-align:center;margin-bottom:12px;letter-spacing:-.2px">⚡ 自定义API设置</div>
             <div style="font-size:11px;color:#9070b0;line-height:1.7;margin-bottom:16px;background:rgba(168,85,247,.06);border-radius:12px;padding:10px 12px">
-              本API将使用在除信息、朋友圈以外的全部小手机功能中，信息和朋友圈功能仍使用原本的酒馆API<br>
+              本API将使用在除信息以外的全部小手机功能中，信息功能仍使用原本的酒馆API<br>
               <span id="rp-api-blink" style="color:#a855f7;font-weight:700">建议接入 DeepSeek 等国产模型，让生成速度更快。</span><br>
               接入后直接调用真实 API，需自备 Key。
             </div>
