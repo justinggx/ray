@@ -14,7 +14,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   background:rgba(255,255,255,.95); backdrop-filter:blur(12px);
   border:1px solid rgba(0,0,0,.1);
   display:flex; align-items:center; justify-content:center;
-  font-size:24px; cursor:grab;
+  padding:6px; overflow:hidden; cursor:grab;
   box-shadow:0 4px 24px rgba(0,0,0,.18);
   transition:box-shadow .15s;
   user-select:none; touch-action:none;
@@ -35,7 +35,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   #rp-fab {
     width: 32px !important;
     height: 32px !important;
-    font-size: 14px !important;
+    /* font-size removed: using image icon */
     /* ST 给 html 加 transform 导致 bottom: 失效，必须用 top: calc(100vh) 绕过 */
     top: calc(100vh - 142px) !important;
     bottom: auto !important;
@@ -2364,7 +2364,7 @@ function loadState(chatId) {
 //  HTML
 // ================================================================
 const HTML = `
-<div id="rp-fab" title="打开手机">📱</div>
+<div id="rp-fab" title="打开手机"><img src="https://i.postimg.cc/5NQnLXk7/ke-ai-shou-ji-tu-biao-she-ji.png" style="width:100%;height:100%;object-fit:contain;display:block;" draggable="false" /></div>
 <div id="rp-wrapper">
 
   <div id="rp-phone" style="display:none">
