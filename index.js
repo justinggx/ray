@@ -4876,8 +4876,11 @@ function lgInitFabDrag() {
     if (!dragging) return;
     dragging = false;
     fab.style.cursor = 'grab'; fab.style.transition = '';
-    if (moved) localStorage.setItem('rp_fab_pos',
-      JSON.stringify({ left: fab.style.left, top: fab.style.top }));
+    if (moved) {
+      const isMobile = window.innerWidth <= 768;
+      const posKey = isMobile ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
+      localStorage.setItem(posKey, JSON.stringify({ left: fab.style.left, top: fab.style.top }));
+    }
   }
 
   // Mouse
@@ -4903,12 +4906,16 @@ function lgInitFabDrag() {
   // Block click after drag
   fab.addEventListener('click', e => { if (moved) { moved = false; e.stopImmediatePropagation(); } }, true);
 
-  // Restore saved position
+  // Restore saved position (PC/mobile use separate keys to avoid position bleed)
   try {
-    const s = JSON.parse(localStorage.getItem('rp_fab_pos') || 'null');
+    const isMobile = window.innerWidth <= 768;
+    const posKey = isMobile ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
+    const s = JSON.parse(localStorage.getItem(posKey) || 'null');
     if (s) {
-      const l = Math.max(0, Math.min(window.innerWidth  - fab.offsetWidth,  parseFloat(s.left)));
-      const t = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, parseFloat(s.top)));
+      const fw = Math.max(fab.offsetWidth, 54);
+      const fh = Math.max(fab.offsetHeight, 54);
+      const l = Math.max(0, Math.min(window.innerWidth  - fw, parseFloat(s.left)));
+      const t = Math.max(0, Math.min(window.innerHeight - fh, parseFloat(s.top)));
       fab.style.right = 'auto'; fab.style.bottom = 'auto';
       fab.style.left = l + 'px'; fab.style.top = t + 'px';
     }
