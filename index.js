@@ -4935,7 +4935,7 @@ function showDeletePicker() {
   }).join('');
 
   $('#rp-screen').append(`
-    <div class="rp-grp-create" id="rp-del-picker">
+    <div class="rp-add-choice" id="rp-del-picker" style="flex-direction:column;background:#fff">
       <div class="rp-nav-bar">
         <button class="rp-back" id="rp-del-cancel">取消</button>
         <span style="font-weight:700">删除好友</span>
