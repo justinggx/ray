@@ -1913,57 +1913,89 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── Compose Modal ── */
 #rp-compose-modal {
   position:absolute; inset:0; z-index:700;
-  background: transparent;
+  background: #f2f3f7;
   display:flex; flex-direction:column;
 }
+/* theme overrides for compose modal bg */
+#rp-phone.rp-theme-star  #rp-compose-modal { background: #0a0620 !important; }
+#rp-phone.rp-theme-candy #rp-compose-modal { background: #fdf0f5 !important; }
+#rp-phone.rp-theme-misty #rp-compose-modal { background: #eaf4fc !important; }
+.rp-dark #rp-compose-modal { background: #06060e !important; }
+
+/* nav bar in compose: solid background for readability */
+#rp-compose-modal .rp-nav-bar {
+  background: rgba(255,255,255,.9) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(0,0,0,.07) !important;
+}
+#rp-phone.rp-theme-star  #rp-compose-modal .rp-nav-bar { background: rgba(16,8,42,.92) !important; border-bottom-color: rgba(140,110,255,.18) !important; }
+#rp-phone.rp-theme-candy #rp-compose-modal .rp-nav-bar { background: rgba(255,240,248,.92) !important; border-bottom-color: rgba(200,80,120,.12) !important; }
+#rp-phone.rp-theme-misty #rp-compose-modal .rp-nav-bar { background: rgba(230,244,255,.92) !important; border-bottom-color: rgba(80,150,200,.12) !important; }
+
+/* compose body */
 .rp-compose-body {
   flex:1; overflow-y:auto; padding:16px 16px 24px;
   display:flex; flex-direction:column; gap:14px;
 }
-.rp-compose-card {
-  background: rgba(255,255,255,.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.6);
-  box-shadow: 0 4px 24px rgba(0,0,0,.08);
-  padding: 14px 16px;
-  display:flex; flex-direction:column; gap:10px;
-}
-.rp-dark .rp-compose-card {
-  background: rgba(18,12,40,.75) !important;
-  border-color: rgba(140,110,255,.18) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,.35) !important;
-}
+
+/* user row at top of compose */
 .rp-compose-user-row {
-  display:flex; align-items:center; gap:10px;
+  display:flex; align-items:center; gap:12px;
+  padding: 14px 16px 0;
 }
 .rp-compose-avatar {
-  width:36px; height:36px; border-radius:50%;
+  width:40px; height:40px; border-radius:50%;
   background: linear-gradient(145deg, #64748b, #475569);
   display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; color:#fff; flex-shrink:0;
+  font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
 }
 .rp-compose-uname {
-  font-size:14px; font-weight:700; color:var(--rp-moment-name);
+  font-size:15px; font-weight:700; color:var(--rp-moment-name);
 }
+
+/* main text area card */
+.rp-compose-card {
+  background: rgba(255,255,255,.9);
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.06);
+  padding: 14px 16px;
+  display:flex; flex-direction:column; gap:0;
+  margin: 0;
+}
+#rp-phone.rp-theme-star  .rp-compose-card { background: rgba(30,16,70,.75) !important; border-color: rgba(140,110,255,.2) !important; }
+#rp-phone.rp-theme-candy .rp-compose-card { background: rgba(255,255,255,.88) !important; border-color: rgba(200,80,130,.1) !important; }
+#rp-phone.rp-theme-misty .rp-compose-card { background: rgba(255,255,255,.88) !important; border-color: rgba(80,150,200,.1) !important; }
+.rp-dark .rp-compose-card { background: rgba(18,12,40,.8) !important; border-color: rgba(140,110,255,.18) !important; }
+
 #rp-compose-text {
-  width:100%; min-height:90px;
+  width:100%; min-height:100px;
   border:none; background:transparent;
   font-size:15px; color:var(--rp-moment-text);
   resize:none; outline:none;
-  font-family:inherit; line-height:1.7;
+  font-family:inherit; line-height:1.75;
   box-sizing:border-box;
-  placeholder-color: rgba(0,0,0,.3);
 }
+#rp-phone.rp-theme-star  #rp-compose-text { color: #d4ccff !important; }
+#rp-phone.rp-theme-candy #rp-compose-text { color: #4a1028 !important; }
+#rp-phone.rp-theme-misty #rp-compose-text { color: #1a3050 !important; }
 .rp-dark #rp-compose-text { color: #dde0f2 !important; }
+
+.rp-compose-sep { height:1px; background:rgba(0,0,0,.06); margin: 10px 0; }
+#rp-phone.rp-theme-star  .rp-compose-sep { background: rgba(140,110,255,.15) !important; }
+#rp-phone.rp-theme-candy .rp-compose-sep { background: rgba(200,80,130,.1) !important; }
+#rp-phone.rp-theme-misty .rp-compose-sep { background: rgba(80,150,200,.12) !important; }
+
 .rp-compose-hint {
   font-size:11px; color:rgba(0,0,0,.3);
-  text-align:right; letter-spacing:.3px;
+  text-align:right; letter-spacing:.3px; padding-top:2px;
 }
+#rp-phone.rp-theme-star  .rp-compose-hint { color: rgba(180,165,255,.45) !important; }
+#rp-phone.rp-theme-candy .rp-compose-hint { color: rgba(160,50,80,.4) !important; }
+#rp-phone.rp-theme-misty .rp-compose-hint { color: rgba(44,90,140,.4) !important; }
 .rp-dark .rp-compose-hint { color: rgba(200,190,255,.35) !important; }
-.rp-compose-sep { height:1px; background:rgba(0,0,0,.07); margin:0; }
-.rp-dark .rp-compose-sep { background:rgba(255,255,255,.07) !important; }
+
+/* cancel / post buttons */
 .rp-compose-cancel {
   background:none !important; border:none !important;
   color: var(--rp-nav-btn) !important;
@@ -1974,14 +2006,19 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   opacity:1 !important; pointer-events:auto !important;
 }
 .rp-compose-post-btn {
-  background:none !important; border:none !important;
-  color: var(--rp-nav-btn) !important;
-  font-size:15px !important; font-weight:700 !important;
-  cursor:pointer !important; padding:0 10px !important;
+  background: var(--rp-nav-btn) !important;
+  border: none !important;
+  color: #fff !important;
+  font-size:13px !important; font-weight:600 !important;
+  cursor:pointer !important;
+  padding: 5px 14px !important;
+  border-radius: 20px !important;
   font-family:inherit !important; display:inline-flex !important;
   align-items:center !important; visibility:visible !important;
   opacity:1 !important; pointer-events:auto !important;
+  letter-spacing:.3px !important;
 }
+.rp-compose-post-btn:active { opacity:.75 !important; }
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
