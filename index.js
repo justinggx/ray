@@ -2719,13 +2719,21 @@ async function init() {
   $('body').append(HTML);
   // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
   // 用 window.innerHeight 直接计算真实视口位置
-  (function fixMobileFabPos() {
+  (function fixMobileLayout() {
     if (window.innerWidth > 768) return;
+    // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
     const fab = document.getElementById('rp-fab');
-    if (!fab) return;
-    const t = window.innerHeight - 142; // 142 = 32(height) + 110(bottom margin)
-    fab.style.setProperty('top', t + 'px', 'important');
-    fab.style.setProperty('bottom', 'auto', 'important');
+    if (fab) {
+      fab.style.setProperty('top', (window.innerHeight - 142) + 'px', 'important');
+      fab.style.setProperty('bottom', 'auto', 'important');
+    }
+    // 强制设置 phone frame 尺寸 (CSS !important 有时被 ST 管线覆盖，JS 最终胜出)
+    const frame = document.getElementById('rp-frame');
+    if (frame) {
+      frame.style.setProperty('width', '200px', 'important');
+      frame.style.setProperty('height', '380px', 'important');
+      frame.style.setProperty('border-radius', '30px', 'important');
+    }
   })();
   setTimeout(lgInitFabDrag, 100);
   if (!document.getElementById('rp-live-chat')) {
@@ -2856,6 +2864,13 @@ function bindUI() {
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (window.innerWidth <= 768) {
       setTimeout(() => {
+        // 先强制 frame 尺寸，再测量居中（确保 offsetWidth/Height 正确）
+        const frame = document.getElementById('rp-frame');
+        if (frame) {
+          frame.style.setProperty('width', '200px', 'important');
+          frame.style.setProperty('height', '380px', 'important');
+          frame.style.setProperty('border-radius', '30px', 'important');
+        }
         const ph = phone[0].offsetHeight || 380;
         const pw = phone[0].offsetWidth || 200;
         const t = Math.max(10, (window.innerHeight - ph) / 2);
