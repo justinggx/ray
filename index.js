@@ -2941,6 +2941,20 @@ async function init() {
 
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
+
+  // 初始化后延迟扫描历史消息（处理 first_mes 及已有 <PHONE> 内容）
+  setTimeout(function() {
+    try {
+      const ctx0 = getContext();
+      const msgs0 = (ctx0 && ctx0.chat) ? ctx0.chat : [];
+      let found0 = false;
+      msgs0.filter(function(m) { return !m.is_user && m.mes; }).forEach(function(m) {
+        const match = m.mes.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
+        if (match) { parsePhone(match[1]); found0 = true; }
+      });
+      if (found0) { renderThreadList(); saveState(); }
+    } catch(e) { console.warn('[Phone] initScan error', e); }
+  }, 1000);
 }
 
 // ================================================================
@@ -3004,6 +3018,21 @@ function onChatChanged() {
   refreshWidget();
   refreshLockNotifs();
   renderPendingQueue();
+
+  // 延迟扫描：first_mes 不触发 MESSAGE_RECEIVED，需在此手动扫描
+  // 600ms 等待 ST 将 first_mes 写入 ctx.chat
+  setTimeout(function() {
+    try {
+      const ctx2 = getContext();
+      const msgs = (ctx2 && ctx2.chat) ? ctx2.chat : [];
+      let found = false;
+      msgs.filter(function(m) { return !m.is_user && m.mes; }).forEach(function(m) {
+        const match = m.mes.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
+        if (match) { parsePhone(match[1]); found = true; }
+      });
+      if (found) { renderThreadList(); saveState(); }
+    } catch(e) { console.warn('[Phone] scanChatHistory error', e); }
+  }, 600);
 }
 
 // ================================================================
@@ -4021,6 +4050,10 @@ function matchThread(fromRaw) {
 function incomingMsg(threadId, text, time) {
   const th = STATE.threads[threadId];
   if (!th) return;
+
+  // 去重：相同 from+time+text 不重复插入（防止多次扫描历史消息产生重复）
+  const isDup = th.messages.some(m => m.from === threadId && m.time === time && m.text === text);
+  if (isDup) return;
 
   th.messages.push({ from: threadId, text, time });
 
