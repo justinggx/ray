@@ -940,7 +940,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #rp-view-api-settings { background: transparent !important; }
 #rp-phone.rp-theme-misty #rp-view-settings > div,
 #rp-phone.rp-theme-misty #rp-view-api-settings > div {
-  background: rgba(240,248,255,.88) !important;
+  background: rgba(220,238,255,.18) !important;
   border-radius: 16px !important;
 }
 
