@@ -2976,6 +2976,7 @@ function onChatChanged() {
       sync: { ...STATE.sync },
       currentThread: STATE.currentThread,
       moments: JSON.parse(JSON.stringify(STATE.moments || [])),
+      avatars: Object.assign({}, STATE.avatars || {}),
     };
     saveState();
   }
@@ -3006,6 +3007,8 @@ function onChatChanged() {
       STATE.threads = DEFAULT_THREADS();
       STATE.notifications = [];
       STATE.sync = { stage: 1, progress: 0, status: '乖巧' };
+      STATE.moments = [];
+      STATE.avatars = {};
       STATE.currentThread = null;
     }
   }
