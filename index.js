@@ -36,13 +36,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     width: 32px !important;
     height: 32px !important;
     font-size: 14px !important;
+    /* ST 给 html 加 transform 导致 bottom: 失效，必须用 top: calc(100vh) 绕过 */
+    top: calc(100vh - 142px) !important;
+    bottom: auto !important;
+    right: 14px !important;
+    left: auto !important;
     transform: none !important;
     background: rgba(255,255,255,.95) !important;
     border: 1px solid rgba(0,0,0,.1) !important;
     box-shadow: 0 4px 24px rgba(0,0,0,.18) !important;
     backdrop-filter: blur(12px) !important;
     z-index: 2147483647 !important;
-    /* top/right/bottom 由 JS setProperty('important') 精准控制，不在 CSS 写 !important */
   }
   #rp-phone {
     left: calc(50vw - 135px) !important;  /* 135 = 270px宽度的一半，水平居中 */
@@ -2719,18 +2723,26 @@ async function init() {
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
     const frame = document.getElementById('rp-frame');
-    if (window.innerWidth <= 768) {
+    // screen.width: 物理屏宽(CSS px)，不受 viewport 时序影响；window.innerWidth 可能在初始化时报错
+    if (screen.width <= 768 || window.innerWidth <= 768) {
       // ── 手机端(PE) ──
       // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
-      const fab = document.getElementById('rp-fab');
-      if (fab) {
-        // 手机端：用 setProperty!important 覆盖一切 CSS，确保 FAB 在视口内可见
-        // 142 = 32px(FAB高度) + 110px(距底部间距)
-        fab.style.setProperty('top',    (window.innerHeight - 142) + 'px', 'important');
-        fab.style.setProperty('bottom', 'auto', 'important');
-        fab.style.setProperty('right',  '14px', 'important');
-        fab.style.setProperty('left',   'auto', 'important');
+      // 手机端 FAB 位置修复（多重保险）
+      // screen.width 不受 viewport 初始化时序影响，比 window.innerWidth 更可靠
+      function _applyFabPos() {
+        const _fab = document.getElementById('rp-fab');
+        if (!_fab) return;
+        const _h = Math.max(_fab.offsetHeight, 32);
+        _fab.style.setProperty('top',        (window.innerHeight - 110 - _h) + 'px', 'important');
+        _fab.style.setProperty('bottom',     'auto',    'important');
+        _fab.style.setProperty('right',      '14px',    'important');
+        _fab.style.setProperty('left',       'auto',    'important');
+        _fab.style.setProperty('display',    'flex',    'important');
+        _fab.style.setProperty('visibility', 'visible', 'important');
       }
+      _applyFabPos();                          // 立即执行
+      setTimeout(_applyFabPos, 200);           // 200ms 后重试（等 ST 完成布局）
+      setTimeout(_applyFabPos, 800);           // 800ms 后再试（防止慢设备）
       // 强制 frame 尺寸 270×500 (手机端专用)
       if (frame) {
         frame.style.setProperty('width', '270px', 'important');
