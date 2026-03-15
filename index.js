@@ -33,11 +33,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
   #rp-fab {
-    width: 40px !important;
-    height: 40px !important;
-    font-size: 18px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
     right: 14px !important;
-    top: calc(100vh - 150px) !important; /* 150 = 40px高度 + 110px底部间距 */
+    top: calc(100vh - 142px) !important; /* 142 = 32px高度 + 110px底部间距 */
     bottom: auto !important;
     transform: none !important;
     background: rgba(255,255,255,.95) !important;
@@ -47,16 +47,16 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     z-index: 2147483647 !important;
   }
   #rp-phone {
-    left: calc(50vw - 143px) !important;  /* 143 = 286px宽度的一半，水平居中 */
-    top: calc(50vh - 290px) !important;   /* 290 = 580px高度的一半，垂直居中 */
+    left: calc(50vw - 130px) !important;  /* 130 = 260px宽度的一半，水平居中 */
+    top: calc(50vh - 250px) !important;   /* 250 = 500px高度的一半，垂直居中 */
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
     z-index: 2147483645 !important;
   }
   #rp-frame {
-    width: min(286px, calc(100vw - 20px)) !important;
-    height: min(580px, calc(100dvh - 80px)) !important;
+    width: min(260px, calc(100vw - 60px)) !important;  /* 两侧各留30px */
+    height: min(500px, calc(100dvh - 120px)) !important; /* 上下各留60px */
   }
   #rp-screen {
     border-radius: min(40px, 6vw) !important;
@@ -2720,7 +2720,7 @@ async function init() {
     if (window.innerWidth > 768) return;
     const fab = document.getElementById('rp-fab');
     if (!fab) return;
-    const t = window.innerHeight - 150; // 150 = 40(height) + 110(bottom margin)
+    const t = window.innerHeight - 142; // 142 = 32(height) + 110(bottom margin)
     fab.style.setProperty('top', t + 'px', 'important');
     fab.style.setProperty('bottom', 'auto', 'important');
   })();
