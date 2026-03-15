@@ -2143,6 +2143,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-add-choice-item{color:#e0e4ff;border-bottom-color:rgba(255,255,255,.06)}
 .rp-add-choice-item:last-child{border-bottom:none}
 .rp-add-choice-item:active{background:rgba(0,0,0,.04)}
+.rp-add-choice-delete{color:#ef4444!important}.rp-del-pick-item{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer}.rp-del-pick-item:active{background:rgba(0,0,0,.05)}.rp-del-chk{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.2);flex-shrink:0}.rp-del-pick-item.rp-del-selected .rp-del-chk{background:#ef4444;border-color:#ef4444}.rp-del-pick-item.rp-del-selected .rp-del-chk::after{content:"✓";color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;height:100%}
 .rp-add-choice-cancel{padding:14px 20px;font-size:14px;color:rgba(0,0,0,.4);cursor:pointer;text-align:center;background:#fff;border-radius:12px;width:80%;max-width:240px;box-sizing:border-box;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .rp-dark .rp-add-choice-cancel{background:#111128;color:rgba(255,255,255,.3)}
 /* ── LIVE CHAT OVERLAY ── */
@@ -3755,6 +3756,8 @@ function bindUI() {
       $('#rp-add-modal').show();
     } else if (action === 'group') {
       showGroupPicker();
+    } else if (action === 'delete') {
+      showDeletePicker();
     }
   });
   $(document).on('click', '#rp-add-choice .rp-add-choice-cancel', (e) => {
@@ -3763,6 +3766,30 @@ function bindUI() {
   });
   $(document).on('click', '#rp-add-choice', function(e) {
     if (e.target === this) $('#rp-add-choice').remove();
+  });
+
+  // ── Delete picker: toggle + confirm ──
+  $(document).on('click', '#rp-del-list .rp-del-pick-item', function(e) {
+    e.stopPropagation();
+    $(this).toggleClass('rp-del-selected');
+    const selected = $('#rp-del-list .rp-del-pick-item.rp-del-selected').length;
+    $('#rp-del-confirm').text(selected > 0 ? `删除(${selected})` : '删除');
+  });
+  $(document).on('click', '#rp-del-confirm', function(e) {
+    e.stopPropagation();
+    const toDelete = [];
+    $('#rp-del-list .rp-del-pick-item.rp-del-selected').each(function() {
+      toDelete.push($(this).data('tid'));
+    });
+    toDelete.forEach(function(tid) { delete STATE.threads[tid]; });
+    if (STATE.currentThread && toDelete.includes(STATE.currentThread)) STATE.currentThread = null;
+    $('#rp-del-picker').remove();
+    renderThreadList();
+    saveState();
+  });
+  $(document).on('click', '#rp-del-cancel', function(e) {
+    e.stopPropagation();
+    $('#rp-del-picker').remove();
   });
 
   // ── Group picker: toggle selection ──
@@ -4891,6 +4918,34 @@ function sendLocation() {
   }
 }
 
+
+// ================================================================
+//  DELETE CONTACT PICKER
+// ================================================================
+function showDeletePicker() {
+  $('#rp-del-picker').remove();
+  const contacts = Object.values(STATE.threads);
+  if (!contacts.length) return;
+  const items = contacts.map(t => {
+    const img = STATE.avatars?.[t.name];
+    const avHtml = img
+      ? `<div class="rp-grp-pick-av rp-av-img" style="overflow:hidden"><img src="${img}" style="width:100%;height:100%;object-fit:cover"/></div>`
+      : `<div class="rp-grp-pick-av" style="background:${t.avatarBg}">${t.initials}</div>`;
+    return `<div class="rp-del-pick-item" data-tid="${escHtml(t.id)}">${avHtml}<span class="rp-grp-pick-name">${escHtml(t.name)}</span><div class="rp-del-chk"></div></div>`;
+  }).join('');
+
+  $('#rp-screen').append(`
+    <div class="rp-grp-create" id="rp-del-picker">
+      <div class="rp-nav-bar">
+        <button class="rp-back" id="rp-del-cancel">取消</button>
+        <span style="font-weight:700">删除好友</span>
+        <button id="rp-del-confirm" style="color:var(--rp-nav-btn);font-weight:700;background:none;border:none;cursor:pointer;font-size:15px">删除</button>
+      </div>
+      <div id="rp-del-list" style="flex:1;overflow-y:auto;padding:8px 0">${items}</div>
+    </div>
+  `);
+}
+
 // ================================================================
 //  ADD CHOICE / CREATE GROUP
 // ================================================================
@@ -4901,6 +4956,7 @@ function showAddChoice() {
       <div class="rp-add-choice-box">
         <div class="rp-add-choice-item" data-action="contact">👤 添加联系人</div>
         <div class="rp-add-choice-item" data-action="group">👥 创建群聊</div>
+        <div class="rp-add-choice-item rp-add-choice-delete" data-action="delete">🗑️ 删除好友</div>
       </div>
       <div class="rp-add-choice-cancel" data-action="cancel">取消</div>
     </div>
