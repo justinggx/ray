@@ -3357,7 +3357,7 @@ function bindUI() {
     const phone = $('#rp-phone');
     if (!phone.is(':visible')) return;
     // 若有任何模态/浮层打开，跳过关闭判断（防止 grp-cancel/confirm 误触）
-    if ($('#rp-add-choice, #rp-grp-create, #rp-del-picker, #rp-add-modal, #rp-compose-modal:visible').length) return;
+    if ($('#rp-add-choice, #rp-grp-create, #rp-del-picker, #rp-add-modal:visible, #rp-compose-modal:visible').length) return;
     // 若 e.target 已被从 DOM 移除（事件传播期间被删），跳过
     if (!document.contains(e.target)) return;
     if (!$(e.target).closest('#rp-phone, #rp-fab').length) {
