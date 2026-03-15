@@ -1977,12 +1977,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #rp-gen-diary{color:#3d7eb0}
 /* Candy gen-diary explicit (candy has no theme class, CSS var handles it but be safe) */
 #rp-gen-diary{color:var(--rp-nav-btn,#c0306a)}
-#rp-phone.rp-theme-candy .rp-ico-diary svg{stroke:#c03060!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.8)) drop-shadow(0 1px 4px rgba(200,60,90,.55))!important}
-#rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="rgba(255,255,255,.12)"]{fill:rgba(192,48,96,.12)!important}
-#rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="white"]{fill:#c03060!important}
-#rp-phone.rp-theme-misty .rp-ico-diary svg{stroke:#2d6d9a!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 3px rgba(0,60,120,.4))!important}
-#rp-phone.rp-theme-misty .rp-ico-diary svg circle[fill="rgba(255,255,255,.12)"]{fill:rgba(45,109,154,.15)!important}
-#rp-phone.rp-theme-misty .rp-ico-diary svg circle[fill="white"]{fill:#2d6d9a!important}
+/* Diary icon — BASE = Candy (no theme class on #rp-phone for candy) */
+.rp-ico-diary{color:#c03060!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5))!important}
+/* Diary icon — Star override */
+#rp-phone.rp-theme-star .rp-ico-diary{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
+/* Diary icon — Misty override */
+#rp-phone.rp-theme-misty .rp-ico-diary{color:#2d6d9a!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 3px rgba(0,60,120,.4))!important}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
 /* ══════════════════════════════════════════════════════════
@@ -2927,7 +2927,7 @@ const HTML = `
                 <div class="rp-app-lbl">主题</div>
               </div>
               <div class="rp-app" data-app="diary">
-                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="6" width="19" height="28" rx="4" stroke-width="2" fill="rgba(255,255,255,.12)"/><circle cx="12" cy="11" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="17" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="23" r="1.4" fill="white" stroke="none" opacity=".7"/><circle cx="12" cy="29" r="1.4" fill="white" stroke="none" opacity=".7"/><line x1="16" y1="14" x2="25" y2="14" stroke-width="1.8"/><line x1="16" y1="19" x2="25" y2="19" stroke-width="1.8" opacity=".7"/><line x1="16" y1="24" x2="23" y2="24" stroke-width="1.8" opacity=".5"/><circle cx="30" cy="32" r="5.5" stroke-width="1.5" fill="rgba(255,255,255,.18)"/><path d="M28.5 32h3M30 30.5v3" stroke-width="1.6"/></svg></div>
+                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="6" width="19" height="28" rx="4" stroke-width="2" fill="rgba(255,255,255,.12)"/><circle cx="12" cy="11" r="1.4" fill="currentColor" stroke="none" opacity=".7"/><circle cx="12" cy="17" r="1.4" fill="currentColor" stroke="none" opacity=".7"/><circle cx="12" cy="23" r="1.4" fill="currentColor" stroke="none" opacity=".7"/><circle cx="12" cy="29" r="1.4" fill="currentColor" stroke="none" opacity=".7"/><line x1="16" y1="14" x2="25" y2="14" stroke-width="1.8"/><line x1="16" y1="19" x2="25" y2="19" stroke-width="1.8" opacity=".7"/><line x1="16" y1="24" x2="23" y2="24" stroke-width="1.8" opacity=".5"/><circle cx="30" cy="32" r="5.5" stroke-width="1.5" fill="rgba(255,255,255,.18)"/><path d="M28.5 32h3M30 30.5v3" stroke-width="1.6"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
             </div>
