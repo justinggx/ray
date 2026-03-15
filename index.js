@@ -47,16 +47,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     z-index: 2147483647 !important;
   }
   #rp-phone {
-    left: calc(50vw - 130px) !important;  /* 130 = 260px宽度的一半，水平居中 */
-    top: calc(50vh - 250px) !important;   /* 250 = 500px高度的一半，垂直居中 */
+    left: calc(50vw - 100px) !important;  /* 100 = 200px宽度的一半，水平居中 */
+    top: calc(50vh - 190px) !important;   /* 190 = 380px高度的一半，垂直居中 */
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
     z-index: 2147483645 !important;
   }
   #rp-frame {
-    width: min(260px, calc(100vw - 60px)) !important;  /* 两侧各留30px */
-    height: min(500px, calc(100dvh - 120px)) !important; /* 上下各留60px */
+    width: 200px !important;
+    height: 380px !important;
+    border-radius: 30px !important;
   }
   #rp-screen {
     border-radius: min(40px, 6vw) !important;
@@ -2710,6 +2711,8 @@ async function init() {
   if (stale) stale.remove();
   const staleFab = document.getElementById('rp-fab');
   if (staleFab) staleFab.remove();
+  const staleCSS = document.getElementById('rp-phone-css');
+  if (staleCSS) staleCSS.remove(); // 每次重载都重新注入最新CSS
   window._rpPhoneSheet = false;
 
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
@@ -2853,8 +2856,8 @@ function bindUI() {
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (window.innerWidth <= 768) {
       setTimeout(() => {
-        const ph = phone[0].offsetHeight || 540;
-        const pw = phone[0].offsetWidth || 286;
+        const ph = phone[0].offsetHeight || 380;
+        const pw = phone[0].offsetWidth || 200;
         const t = Math.max(10, (window.innerHeight - ph) / 2);
         const l = Math.max(0, (window.innerWidth - pw) / 2);
         phone[0].style.setProperty('top', t + 'px', 'important');
