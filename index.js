@@ -4689,12 +4689,19 @@ async function postUserDiary() {
     var charPersona2 = '';
     if (_ctx2 && _ctx2.characters && _ctx2.characterId !== undefined) {
       var ch2 = _ctx2.characters[_ctx2.characterId];
-      if (ch2) charPersona2 = (ch2.description || '') + ' ' + (ch2.personality || '');
+      if (ch2) charPersona2 = [
+        ch2.description || '',
+        ch2.personality || '',
+        ch2.scenario    || '',
+        ch2.mes_example || ''
+      ].filter(Boolean).join('\n');
     }
     var sysMsg2 = '\u4f60\u662f' + charName2 + '\u3002'
-      + (charPersona2 ? '\u4eba\u8bbe\uff1a' + charPersona2.slice(0,200) + '\n' : '')
-      + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9\u4f60\uff0c\u7528\u6e29\u67d4\u81ea\u7136\u7684\u8bed\u6c14\u56de\u5e94\uff0c'
-      + '30-60\u5b57\uff0c\u4e2d\u6587\uff0c\u53ea\u8fd4\u56de\u7eaf\u6587\u5b57\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\u548c\u661f\u53f7\u62ec\u53f7\u3002';
+      + (charPersona2 ? '\u4eba\u8bbe/\u5173\u7cfb\u80cc\u666f\uff1a\n' + charPersona2.slice(0, 800) + '\n\n' : '')
+      + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9\u4f60\uff0c\u6309\u7167\u4f60\u7684\u771f\u5b9e\u6027\u683c\u56de\u5e94\u3002'
+      + '\u56de\u5e94\u8981\u6c42\uff1a30-60\u5b57\u4e2d\u6587\u3001\u7eaf\u5bf9\u8bdd\u6587\u5b57\u3002'
+      + '\u4e25\u7981\uff1a\u4e0d\u5f97\u5199\u4efb\u4f55\u52a8\u4f5c\u63cf\u5199\uff08\u5305\u62ec\u4e2d\u82f1\u6587\u62ec\u53f7\u5185\u7684\u8282\u5c0f\u52a8\u4f5c\u300c\u5408\u4e0a\u65e5\u8bb0\u672c\u300d\u7b49\u300b\u3002'
+      + '\u4e0d\u5f97\u52a0\u5c0f\u6807\u9898\u3001\u6bb5\u843d\u3001\u661f\u53f7\u3001\u4e2d\u6587\u62ec\u53f7\uff08\uff09\u3001\u82f1\u6587\u62ec\u53f7()\uff0c\u76f4\u63a5\u8f93\u51fa\u56de\u5e94\u6b63\u6587\u3002';
     var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n' + charName2 + '\u7684\u56de\u5e94\uff1a';
     var resp2 = await lgCallAPI(prompt2, 200, sysMsg2);
     if (resp2) {
