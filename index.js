@@ -2895,6 +2895,7 @@ function bindUI() {
   $('#rp-fab').on('click', (e) => {
     e.stopPropagation();
     const phone = $('#rp-phone');
+    if (phone.is(':visible')) { phone.hide(); return; } // 已打开 → 点球关闭
     phone.show();
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
