@@ -4712,16 +4712,14 @@ function getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
-  // 已知 NPC：来自会话线程 + 已有动态（排除主角色）
   const knownNPCs = new Set();
   Object.values(STATE.threads || {}).forEach(th => { if (th.name && th.name !== charName) knownNPCs.add(th.name); });
   (STATE.moments || []).filter(m => m.from !== 'user' && m.name !== charName).forEach(m => knownNPCs.add(m.name));
-  // 主楼层近几条对话（ctx.chat 是主剧情，不是手机短信）
+  // 主楼层近几条对话（ctx.chat 是主剧情对话，不是手机短信）
   const recentChat = (ctx?.chat || []).slice(-8).map(m => {
     const spk = m.is_user ? userName : (m.name || charName);
-    return `${spk}: ${(m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120)}`;
-  }).join('
-') || '（暂无对话记录）';
+    return spk + ': ' + ((m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120));
+  }).join('\n') || '（暂无对话记录）';
   return { charName, userName, npcs: [...knownNPCs].slice(0, 4), recentChat };
 }
 
@@ -4731,17 +4729,8 @@ async function generateAIMoments() {
   try {
     const { charName, npcs, recentChat } = getMomentsCtx();
     const allChars = [charName, ...npcs];
-    const prompt = `你正在模拟角色扮演故事中的社交媒体朋友圈。登场角色：${allChars.join('、')}
-近期主线剧情（主楼层最新对话）：
-${recentChat}
-
-请为上述角色各写1条朋友圈动态，共3条（不同角色）。
-【强制要求】所有内容必须使用中文。
-格式：只返回JSON数组，例：[{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"}]
-要求：
-- 口语自然，1-3句话，体现角色性格
-- 内容与近期剧情有关联
-- 绝对不要返回JSON以外的任何文字`;
+    const charList = allChars.join('、');
+    const prompt = '你正在模拟角色扮演故事中的社交媒体朋友圈。登场角色：' + charList + '\n近期主线剧情（主楼层最新对话）：\n' + recentChat + '\n\n请为上述角色各写1条朋友圈动态，共3条（不同角色）。\n【强制要求】所有内容必须使用中文。\n格式：只返回JSON数组，例：[{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"}]\n要求：\n- 口语自然，1-3句话，体现角色性格\n- 内容与近期剧情有关联\n- 绝对不要返回JSON以外的任何文字';
     const resp = await lgCallAPI(prompt, 600);
     if (!resp) throw new Error('API无响应');
     const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
@@ -4751,11 +4740,10 @@ ${recentChat}
     posts.slice(0, 3).forEach((post, i) => {
       if (!post.from || !post.text) return;
       const d = new Date(now.getTime() + i * 60000);
-      const ts = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      const ts = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
       incomingMoment(post.from.trim(), ts, post.text.trim(), post.img || null);
     });
     if (STATE.currentView === 'moments') renderMoments();
-    // 生成后触发 AI 社交互动
     setTimeout(() => momentAISocial(null), 1000);
   } catch(e) {
     console.warn('[Moments] generateAIMoments error:', e);
@@ -4768,7 +4756,6 @@ ${recentChat}
 }
 
 async function momentAISocial(targetMomentId) {
-  // 让 AI 角色对动态进行点赞/评论互动
   const moments = STATE.moments || [];
   if (moments.length === 0) return;
   const { charName, npcs } = getMomentsCtx();
@@ -4779,29 +4766,18 @@ async function momentAISocial(targetMomentId) {
     : moments.slice(-6);
   if (targets.length === 0) return;
   const momentsSummary = targets.map(m =>
-    `ID="${m.id}" 作者="${m.name}" 内容="${m.text.slice(0, 60)}"`
-  ).join('
-');
-  const prompt = `以下是朋友圈动态：
-${momentsSummary}
-登场角色：${allChars.join('、')}
-
-模拟角色之间的社交互动，生成2-4条互动（点赞或评论）。
-【强制要求】所有评论内容必须用中文。
-格式：只返回JSON数组，例：
-[{"type":"like","from":"角色名","momentId":"完整ID"},{"type":"comment","from":"角色名","momentId":"完整ID","text":"评论内容（中文）"}]
-要求：
-- 角色不能对自己的动态点赞或评论
-- momentId 必须与上方ID完全一致
-- 只返回JSON数组，不要其他文字`;
-  const resp = await lgCallAPI(prompt, 400);
+    'ID="' + m.id + '" 作者="' + m.name + '" 内容="' + m.text.slice(0, 60) + '"'
+  ).join('\n');
+  const charList2 = allChars.join('、');
+  const prompt2 = '以下是朋友圈动态：\n' + momentsSummary + '\n登场角色：' + charList2 + '\n\n模拟角色之间的社交互动，生成2-4条互动（点赞或评论）。\n【强制要求】所有评论内容必须用中文。\n格式：只返回JSON数组，例：\n[{"type":"like","from":"角色名","momentId":"完整ID"},{"type":"comment","from":"角色名","momentId":"完整ID","text":"评论内容（中文）"}]\n要求：\n- 角色不能对自己的动态点赞或评论\n- momentId 必须与上方ID完全一致\n- 只返回JSON数组，不要其他文字';
+  const resp = await lgCallAPI(prompt2, 400);
   if (!resp) return;
   try {
-    const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
-    if (!jsonStr) return;
-    const actions = JSON.parse(jsonStr);
+    const jsonStr2 = resp.match(/\[[\s\S]*\]/)?.[0];
+    if (!jsonStr2) return;
+    const actions = JSON.parse(jsonStr2);
     const now = new Date();
-    const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
     actions.slice(0, 6).forEach(a => {
       if (!a.from || !a.momentId) return;
       const m = moments.find(mo => mo.id === a.momentId);
@@ -4821,14 +4797,11 @@ async function generateAIReply(momentId, userCommentText, fromName) {
   const moment = STATE.moments?.find(m => m.id === momentId);
   if (!moment) return;
   const authorName = fromName || moment.name;
-  const prompt = `${authorName}在朋友圈发了一条动态：「${moment.text}」
-用户评论：「${userCommentText}」
-请以${authorName}的身份，用中文写一句自然的回复（20字以内）。
-【强制要求】只返回回复内容本身，不要任何前缀或引号。`;
-  const resp = await lgCallAPI(prompt, 100);
+  const prompt3 = authorName + '在朋友圈发了一条动态：「' + moment.text + '」\n用户评论：「' + userCommentText + '」\n请以' + authorName + '的身份，用中文写一句自然的回复（20字以内）。\n【强制要求】只返回回复内容本身，不要任何前缀或引号。';
+  const resp = await lgCallAPI(prompt3, 100);
   if (!resp) return;
   const now = new Date();
-  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
   const cleaned = resp.trim().replace(/^[「"']|[」"']$/g, '');
   incomingComment(momentId, authorName, ts, cleaned, null);
 }
