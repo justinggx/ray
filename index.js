@@ -36,15 +36,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     width: 32px !important;
     height: 32px !important;
     font-size: 14px !important;
-    right: 14px !important;
-    top: calc(100vh - 142px) !important; /* 142 = 32px高度 + 110px底部间距 */
-    bottom: auto !important;
     transform: none !important;
     background: rgba(255,255,255,.95) !important;
     border: 1px solid rgba(0,0,0,.1) !important;
     box-shadow: 0 4px 24px rgba(0,0,0,.18) !important;
     backdrop-filter: blur(12px) !important;
     z-index: 2147483647 !important;
+    /* top/right/bottom 由 JS setProperty('important') 精准控制，不在 CSS 写 !important */
   }
   #rp-phone {
     left: calc(50vw - 135px) !important;  /* 135 = 270px宽度的一半，水平居中 */
@@ -2726,8 +2724,12 @@ async function init() {
       // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
       const fab = document.getElementById('rp-fab');
       if (fab) {
-        fab.style.setProperty('top', (window.innerHeight - 142) + 'px', 'important');
+        // 手机端：用 setProperty!important 覆盖一切 CSS，确保 FAB 在视口内可见
+        // 142 = 32px(FAB高度) + 110px(距底部间距)
+        fab.style.setProperty('top',    (window.innerHeight - 142) + 'px', 'important');
         fab.style.setProperty('bottom', 'auto', 'important');
+        fab.style.setProperty('right',  '14px', 'important');
+        fab.style.setProperty('left',   'auto', 'important');
       }
       // 强制 frame 尺寸 270×500 (手机端专用)
       if (frame) {
@@ -4919,8 +4921,11 @@ function lgInitFabDrag() {
     const r = fab.getBoundingClientRect();
     fab._dx = cx; fab._dy = cy;
     fab._il = r.left; fab._it = r.top;
-    fab.style.right = 'auto'; fab.style.bottom = 'auto';
-    fab.style.top = r.top + 'px'; fab.style.left = r.left + 'px';
+    // 用 !important 覆盖 CSS !important，确保拖拽时位置生效
+    fab.style.setProperty('right',  'auto',        'important');
+    fab.style.setProperty('bottom', 'auto',        'important');
+    fab.style.setProperty('left',   r.left + 'px', 'important');
+    fab.style.setProperty('top',    r.top  + 'px', 'important');
     fab.style.cursor = 'grabbing'; fab.style.transition = 'none';
   }
 
@@ -4930,7 +4935,8 @@ function lgInitFabDrag() {
     if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
     const nL = Math.max(0, Math.min(window.innerWidth  - fab.offsetWidth,  fab._il + dx));
     const nT = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, fab._it + dy));
-    fab.style.left = nL + 'px'; fab.style.top = nT + 'px';
+    fab.style.setProperty('left', nL + 'px', 'important');
+    fab.style.setProperty('top',  nT + 'px', 'important');
   }
 
   function endDrag() {
@@ -4977,8 +4983,10 @@ function lgInitFabDrag() {
       const fh = Math.max(fab.offsetHeight, 54);
       const l = Math.max(0, Math.min(window.innerWidth  - fw, parseFloat(s.left)));
       const t = Math.max(0, Math.min(window.innerHeight - fh, parseFloat(s.top)));
-      fab.style.right = 'auto'; fab.style.bottom = 'auto';
-      fab.style.left = l + 'px'; fab.style.top = t + 'px';
+      fab.style.setProperty('right',  'auto',      'important');
+      fab.style.setProperty('bottom', 'auto',      'important');
+      fab.style.setProperty('left',   l + 'px',    'important');
+      fab.style.setProperty('top',    t + 'px',    'important');
     }
   } catch(e) {}
 }
