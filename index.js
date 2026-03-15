@@ -2457,6 +2457,22 @@ function autoAddCharContact() {
   } catch(e) { /* ignore */ }
 }
 
+
+// 清理无效联系人（SillyTavern 本身、旧硬编码遗留等）
+function cleanInvalidContacts() {
+  const invalid = /^(sillytavern|tavern|system|assistant|ai)$/i;
+  let changed = false;
+  Object.keys(STATE.threads).forEach(function(k) {
+    const name = (STATE.threads[k] && STATE.threads[k].name) || '';
+    if (invalid.test(name.trim())) {
+      delete STATE.threads[k];
+      changed = true;
+      console.log('[Phone] 清理无效联系人：', name);
+    }
+  });
+  if (changed) { renderThreadList(); saveState(); }
+}
+
 /* ── HELPER: findOrCreateThread ── */
 function findOrCreateThread(nameRaw) {
   const lower = nameRaw.toLowerCase();
@@ -2967,19 +2983,14 @@ async function init() {
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 
-  // 初始化后扫描历史消息（不在此处自动添加联系人，等待真实 CHAT_CHANGED 事件）
+  // 初始化后清理无效联系人（移除旧存档里的 SillyTavern 等）
+  var _initChatId = STATE.chatId;
   setTimeout(function() {
     try {
-      const ctx0 = getContext();
-      const msgs0 = (ctx0 && ctx0.chat) ? ctx0.chat : [];
-      let found0 = false;
-      msgs0.filter(function(m) { return !m.is_user && m.mes; }).forEach(function(m) {
-        const match = m.mes.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
-        if (match) { parsePhone(match[1]); found0 = true; }
-      });
-      if (found0) { renderThreadList(); saveState(); }
+      if (STATE.chatId !== _initChatId) return;
+      cleanInvalidContacts();
       hidePhoneTagsInChat();
-    } catch(e) { console.warn('[Phone] initScan error', e); }
+    } catch(e) { console.warn('[Phone] initClean error', e); }
   }, 1000);
 }
 
@@ -3037,6 +3048,9 @@ function onChatChanged() {
     }
   }
 
+  // 加载后立即清理无效联系人（SillyTavern 等）
+  cleanInvalidContacts();
+
   // 重置 UI
   go('lock');
   renderThreadList();
@@ -3045,21 +3059,17 @@ function onChatChanged() {
   refreshLockNotifs();
   renderPendingQueue();
 
-  // 延迟扫描：等待 ctx.name2 和 ctx.chat 稳定（first_mes 也需等待）
+  // 延迟执行：等 ctx.name2 稳定后再添加联系人
+  // 记录当前 chatId，防止用户快速切换导致竞态
+  var _expectedChatId = STATE.chatId;
   setTimeout(function() {
     try {
-      // 延迟后 ctx 已稳定，再添加联系人（确保拿到真实角色名）
+      // 守卫：如果已经切到别的窗口，终止
+      if (STATE.chatId !== _expectedChatId) return;
+      cleanInvalidContacts();
       autoAddCharContact();
-      const ctx2 = getContext();
-      const msgs = (ctx2 && ctx2.chat) ? ctx2.chat : [];
-      let found = false;
-      msgs.filter(function(m) { return !m.is_user && m.mes; }).forEach(function(m) {
-        const match = m.mes.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
-        if (match) { parsePhone(match[1]); found = true; }
-      });
-      if (found) { renderThreadList(); saveState(); }
       hidePhoneTagsInChat();
-    } catch(e) { console.warn('[Phone] scanChatHistory error', e); }
+    } catch(e) { console.warn('[Phone] onChatChanged delayed error', e); }
   }, 600);
 }
 
