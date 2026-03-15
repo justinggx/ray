@@ -497,6 +497,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   height:92px; padding-top:46px; flex-shrink:0;
   display:flex; align-items:center; justify-content:space-between;
   padding-left:6px; padding-right:16px;
+  position:relative;
   background:transparent;
   border-bottom:1px solid transparent;
 }
@@ -1828,7 +1829,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-tp{color:rgba(160,175,255,.46)}
 .rp-dark .rp-tt{color:rgba(160,175,255,.36)}
 .rp-dark .rp-nav-bar{background:#0c0c1a;border-bottom-color:rgba(255,255,255,.07)}
-.rp-dark .rp-nav-title{color:#dde0f2}
+.rp-dark .rp-nav-title{position:absolute;left:0;right:0;text-align:center;pointer-events:none;font-size:16px;font-weight:600;color:#dde0f2}
 .rp-dark .rp-back{color:#7090f0 !important}
 .rp-dark .rp-nav-add{color:#7090f0 !important}
 .rp-dark .rp-hd-name{color:rgba(160,175,255,.62)}
