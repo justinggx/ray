@@ -2403,8 +2403,22 @@ const event_types = window.event_types || SillyTavern?.eventTypes;
 const setExtensionPrompt = window.setExtensionPrompt || SillyTavern?.setExtensionPrompt;
 const extension_prompt_types = window.extension_prompt_types || SillyTavern?.extensionPromptTypes;
 const getContext = window.getContext || SillyTavern?.getContext || (() => ({}));
-const _extSettings = () => window.extension_settings || (window.SillyTavern && window.SillyTavern.extensionSettings) || null;
-const _saveSettings = () => { try { const fn = window.saveSettingsDebounced || window.SillyTavern?.saveSettingsDebounced; if (typeof fn === 'function') fn(); } catch(e) {} };
+// 兼容 ST 各版本：extension_settings 有时不挂在 window 上
+const _extSettings = () => {
+  try {
+    if (typeof extension_settings !== 'undefined' && extension_settings && typeof extension_settings === 'object') return extension_settings;
+    if (window.extension_settings) return window.extension_settings;
+    if (window.SillyTavern?.extensionSettings) return window.SillyTavern.extensionSettings;
+  } catch(e) {}
+  return null;
+};
+const _saveSettings = () => {
+  try {
+    if (typeof saveSettingsDebounced === 'function') { saveSettingsDebounced(); return; }
+    if (typeof window.saveSettingsDebounced === 'function') { window.saveSettingsDebounced(); return; }
+    if (typeof window.SillyTavern?.saveSettingsDebounced === 'function') { window.SillyTavern.saveSettingsDebounced(); }
+  } catch(e) {}
+};
 const EXT_KEY = 'ray_phone_v1'; // extension_settings 的命名空间键
 
 // ================================================================
