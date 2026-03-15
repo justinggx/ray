@@ -2403,22 +2403,44 @@ const event_types = window.event_types || SillyTavern?.eventTypes;
 const setExtensionPrompt = window.setExtensionPrompt || SillyTavern?.setExtensionPrompt;
 const extension_prompt_types = window.extension_prompt_types || SillyTavern?.extensionPromptTypes;
 const getContext = window.getContext || SillyTavern?.getContext || (() => ({}));
-// 兼容 ST 各版本：extension_settings 有时不挂在 window 上
-const _extSettings = () => {
+// 通过 ST 模块系统加载 extension_settings（官方标准方式）
+// extension_settings 是 ES module export，不在 window 上
+let _rp_ext_settings = null;
+let _rp_save_fn = null;
+(async function _rpLoadModules() {
   try {
-    if (typeof extension_settings !== 'undefined' && extension_settings && typeof extension_settings === 'object') return extension_settings;
-    if (window.extension_settings) return window.extension_settings;
-    if (window.SillyTavern?.extensionSettings) return window.SillyTavern.extensionSettings;
-  } catch(e) {}
-  return null;
-};
+    const ext = await import('../../../extensions.js');
+    if (ext && ext.extension_settings) {
+      _rp_ext_settings = ext.extension_settings;
+      console.log('[Phone] extension_settings 加载成功 ✅');
+    }
+  } catch(e) { console.warn('[Phone] 无法加载 extensions.js:', e.message); }
+  try {
+    const scr = await import('../../../../script.js');
+    if (scr && typeof scr.saveSettingsDebounced === 'function') {
+      _rp_save_fn = scr.saveSettingsDebounced;
+      console.log('[Phone] saveSettingsDebounced 加载成功 ✅');
+    }
+  } catch(e) { console.warn('[Phone] 无法加载 script.js:', e.message); }
+})();
+
+const _extSettings = () =>
+  _rp_ext_settings ||
+  (typeof extension_settings !== 'undefined' ? extension_settings : null) ||
+  window.extension_settings ||
+  (window.SillyTavern && window.SillyTavern.extensionSettings) ||
+  null;
+
 const _saveSettings = () => {
   try {
-    if (typeof saveSettingsDebounced === 'function') { saveSettingsDebounced(); return; }
-    if (typeof window.saveSettingsDebounced === 'function') { window.saveSettingsDebounced(); return; }
-    if (typeof window.SillyTavern?.saveSettingsDebounced === 'function') { window.SillyTavern.saveSettingsDebounced(); }
+    const fn = _rp_save_fn ||
+      (typeof saveSettingsDebounced === 'function' ? saveSettingsDebounced : null) ||
+      window.saveSettingsDebounced ||
+      (window.SillyTavern && window.SillyTavern.saveSettingsDebounced);
+    if (typeof fn === 'function') fn();
   } catch(e) {}
 };
+
 const EXT_KEY = 'ray_phone_v1'; // extension_settings 的命名空间键
 
 // ================================================================
