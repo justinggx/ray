@@ -1515,6 +1515,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy .rp-moment-name { color: #c03060 !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-candy .rp-moment-time { color: rgba(140,60,90,.55) !important; }
 #rp-phone.rp-theme-candy .rp-moment-body { color: #4a1028 !important; }
+#rp-phone.rp-theme-candy .rp-moment-text { color: #4a1028 !important; }
+#rp-phone.rp-theme-candy .rp-moment-comment { color: #5a1530 !important; }
+#rp-phone.rp-theme-candy .rp-moment-cname { color: #c03060 !important; }
+#rp-phone.rp-theme-candy .rp-moment-reply-btn { color: rgba(180,40,80,.65) !important; }
+#rp-phone.rp-theme-candy .rp-moment-likes-row { color: rgba(160,50,80,.65) !important; }
+#rp-phone.rp-theme-candy .rp-moment-comments-wrap { background: rgba(220,80,120,.06) !important; }
+#rp-phone.rp-theme-candy .rp-moment-act { color: rgba(160,50,80,.5) !important; }
+#rp-phone.rp-theme-candy .rp-moment-bar { border-top-color: rgba(200,80,120,.15) !important; }
 /* Game text */
 #rp-phone.rp-theme-candy .rp-game-status {
   color: #8a1840 !important; font-weight: 600 !important;
@@ -1567,6 +1575,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-moment-name { color: #2d6d9a !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-misty .rp-moment-time { color: rgba(44,74,106,.5) !important; }
 #rp-phone.rp-theme-misty .rp-moment-body { color: #1a3050 !important; }
+#rp-phone.rp-theme-misty .rp-moment-text { color: #1a3050 !important; }
+#rp-phone.rp-theme-misty .rp-moment-comment { color: #1e3c5a !important; }
+#rp-phone.rp-theme-misty .rp-moment-cname { color: #2d6d9a !important; }
+#rp-phone.rp-theme-misty .rp-moment-reply-btn { color: rgba(40,90,140,.65) !important; }
+#rp-phone.rp-theme-misty .rp-moment-likes-row { color: rgba(44,90,140,.6) !important; }
+#rp-phone.rp-theme-misty .rp-moment-comments-wrap { background: rgba(60,120,180,.06) !important; }
+#rp-phone.rp-theme-misty .rp-moment-act { color: rgba(40,90,140,.5) !important; }
+#rp-phone.rp-theme-misty .rp-moment-bar { border-top-color: rgba(100,160,210,.18) !important; }
 /* Thread list */
 #rp-phone.rp-theme-misty .rp-tn { color: #0e1f30 !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-misty .rp-tp { color: rgba(30,60,90,.65) !important; }
@@ -1583,6 +1599,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-moment-name { color: #b09ef0 !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-star .rp-moment-time { color: rgba(180,165,255,.5) !important; }
 #rp-phone.rp-theme-star .rp-moment-body { color: #d4ccff !important; }
+#rp-phone.rp-theme-star .rp-moment-text { color: #d4ccff !important; }
+#rp-phone.rp-theme-star .rp-moment-comment { color: #c0b8ef !important; }
+#rp-phone.rp-theme-star .rp-moment-cname { color: #a98bff !important; }
+#rp-phone.rp-theme-star .rp-moment-reply-btn { color: rgba(160,140,255,.7) !important; }
+#rp-phone.rp-theme-star .rp-moment-likes-row { color: rgba(200,185,255,.6) !important; }
+#rp-phone.rp-theme-star .rp-moment-comments-wrap { background: rgba(80,50,180,.12) !important; }
+#rp-phone.rp-theme-star .rp-moment-act { color: rgba(180,165,255,.55) !important; }
+#rp-phone.rp-theme-star .rp-moment-bar { border-top-color: rgba(130,90,255,.15) !important; }
 /* Thread list */
 #rp-phone.rp-theme-star .rp-tn { color: #e8e0ff !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-star .rp-tp { color: rgba(200,185,255,.6) !important; }
@@ -1886,29 +1910,95 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-set-avatar-preview{width:38px;height:38px;border-radius:19px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
 
 /* ── COMPOSE MODAL ── */
-#rp-compose-modal{position:absolute;inset:0;z-index:700;background:#f2f3f7;display:flex;flex-direction:column}
-.rp-dark #rp-compose-modal{background:#06060e}
-.rp-compose-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-#rp-compose-text{width:100%;min-height:80px;border:none;background:transparent;font-size:15px;color:#1a1a1a;resize:none;outline:none;font-family:inherit;line-height:1.65;box-sizing:border-box}
-.rp-dark #rp-compose-text{color:#dde0f2}
-.rp-compose-sep{height:1px;background:rgba(0,0,0,.08);margin:0 -16px}
-.rp-dark .rp-compose-sep{background:rgba(255,255,255,.06)}
-.rp-compose-cancel{background:none !important;border:none !important;color:rgba(0,0,0,.5) !important;font-size:14px !important;font-weight:400 !important;cursor:pointer !important;padding:0 6px !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
-.rp-dark .rp-compose-cancel{color:rgba(180,190,255,.55) !important}
-.rp-compose-post-btn{background:none !important;border:none !important;color:#2563eb !important;font-size:15px !important;font-weight:700 !important;cursor:pointer !important;padding:0 10px !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important}
-.rp-dark .rp-compose-post-btn{color:#7090f0 !important}
+/* ── Compose Modal ── */
+#rp-compose-modal {
+  position:absolute; inset:0; z-index:700;
+  background: transparent;
+  display:flex; flex-direction:column;
+}
+.rp-compose-body {
+  flex:1; overflow-y:auto; padding:16px 16px 24px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.rp-compose-card {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.6);
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  padding: 14px 16px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.rp-dark .rp-compose-card {
+  background: rgba(18,12,40,.75) !important;
+  border-color: rgba(140,110,255,.18) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.35) !important;
+}
+.rp-compose-user-row {
+  display:flex; align-items:center; gap:10px;
+}
+.rp-compose-avatar {
+  width:36px; height:36px; border-radius:50%;
+  background: linear-gradient(145deg, #64748b, #475569);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.rp-compose-uname {
+  font-size:14px; font-weight:700; color:var(--rp-moment-name);
+}
+#rp-compose-text {
+  width:100%; min-height:90px;
+  border:none; background:transparent;
+  font-size:15px; color:var(--rp-moment-text);
+  resize:none; outline:none;
+  font-family:inherit; line-height:1.7;
+  box-sizing:border-box;
+  placeholder-color: rgba(0,0,0,.3);
+}
+.rp-dark #rp-compose-text { color: #dde0f2 !important; }
+.rp-compose-hint {
+  font-size:11px; color:rgba(0,0,0,.3);
+  text-align:right; letter-spacing:.3px;
+}
+.rp-dark .rp-compose-hint { color: rgba(200,190,255,.35) !important; }
+.rp-compose-sep { height:1px; background:rgba(0,0,0,.07); margin:0; }
+.rp-dark .rp-compose-sep { background:rgba(255,255,255,.07) !important; }
+.rp-compose-cancel {
+  background:none !important; border:none !important;
+  color: var(--rp-nav-btn) !important;
+  font-size:14px !important; font-weight:400 !important;
+  cursor:pointer !important; padding:0 6px !important;
+  font-family:inherit !important; display:inline-flex !important;
+  align-items:center !important; visibility:visible !important;
+  opacity:1 !important; pointer-events:auto !important;
+}
+.rp-compose-post-btn {
+  background:none !important; border:none !important;
+  color: var(--rp-nav-btn) !important;
+  font-size:15px !important; font-weight:700 !important;
+  cursor:pointer !important; padding:0 10px !important;
+  font-family:inherit !important; display:inline-flex !important;
+  align-items:center !important; visibility:visible !important;
+  opacity:1 !important; pointer-events:auto !important;
+}
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
 /* ── Moments generate button ── */
 #rp-gen-moments {
-  background: none; border: none; font-size: 18px; cursor: pointer;
-  padding: 2px 4px; border-radius: 8px; line-height: 1;
-  transition: transform .2s, opacity .2s;
+  background: none !important; border: none !important;
+  color: var(--rp-nav-btn) !important;
+  cursor: pointer !important; padding: 2px 4px !important;
+  display: inline-flex !important; align-items: center !important;
+  justify-content: center !important; border-radius: 6px !important;
+  transition: transform .25s, opacity .2s !important;
+  visibility: visible !important; opacity: 1 !important;
+  pointer-events: auto !important;
 }
-#rp-gen-moments:hover { transform: rotate(90deg); }
-#rp-gen-moments:disabled { opacity: .4; cursor: default; transform: none; }
-#rp-gen-moments.rp-spinning { animation: rpSpin .8s linear infinite; }
+#rp-gen-moments:hover { transform: rotate(180deg) !important; }
+#rp-gen-moments:disabled { opacity: .35 !important; cursor: default !important; transform: none !important; }
+#rp-gen-moments.rp-spinning { animation: rpSpin .7s linear infinite !important; }
 @keyframes rpSpin { to { transform: rotate(360deg); } }
 .rp-moment-likes-row { font-size: 11px; color: #999; padding: 2px 0 4px; line-height: 1.4; }
 .rp-dark .rp-moment-likes-row { color: rgba(200,190,255,.45); }
@@ -2554,7 +2644,7 @@ const HTML = `
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">朋友圈</span>
             <div style="display:flex;gap:4px;align-items:center">
-              <button id="rp-gen-moments" title="AI生成朋友圈">🔄</button>
+              <button id="rp-gen-moments" title="AI生成朋友圈"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64"/><polyline points="16 8 21 3 21 8"/><polyline points="8 16 3 21 3 16"/></svg></button>
               <button class="rp-nav-add" id="rp-moments-add" title="我要发动态">+</button>
             </div>
           </div>
@@ -2564,12 +2654,20 @@ const HTML = `
         <!-- 发朋友圈 -->
         <div id="rp-compose-modal" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
-            <button class="rp-back" id="rp-compose-cancel" style="font-size:14px;color:#2563eb !important">取消</button>
+            <button class="rp-back rp-compose-cancel" id="rp-compose-cancel">取消</button>
             <span class="rp-nav-title">发朋友圈</span>
             <button class="rp-compose-post-btn" id="rp-compose-post">发布</button>
           </div>
           <div class="rp-compose-body">
-            <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
+            <div class="rp-compose-card">
+              <div class="rp-compose-user-row">
+                <div class="rp-compose-avatar" id="rp-compose-av">我</div>
+                <div class="rp-compose-uname" id="rp-compose-uname">我</div>
+              </div>
+              <div class="rp-compose-sep"></div>
+              <textarea id="rp-compose-text" placeholder="这一刻的想法…" rows="4"></textarea>
+              <div class="rp-compose-hint">分享给朋友圈里的每个人</div>
+            </div>
           </div>
         </div>
 
@@ -3219,12 +3317,14 @@ function bindUI() {
   // Dark mode is handled via data-app='darkmode' in the app grid
 
   // Moments: like
-  $(document).on('click', '.rp-like-btn', function() {
+  $(document).on('click', '.rp-like-btn', function(e) {
+    e.stopPropagation();
     toggleLike($(this).data('moment'));
   });
 
   // Moments: comment toggle
-  $(document).on('click', '.rp-comment-toggle', function() {
+  $(document).on('click', '.rp-comment-toggle', function(e) {
+    e.stopPropagation();
     const id = $(this).data('moment');
     const row = $(`#rp-ci-${id}`);
     row.toggle();
@@ -3234,7 +3334,8 @@ function bindUI() {
   });
 
   // Moments: reply
-  $(document).on('click', '.rp-moment-reply-btn', function() {
+  $(document).on('click', '.rp-moment-reply-btn', function(e) {
+    e.stopPropagation();
     const momentId = $(this).data('moment');
     const rname = $(this).data('rname');
     const row = $(`#rp-ci-${momentId}`);
@@ -3243,7 +3344,8 @@ function bindUI() {
   });
 
   // Moments: send comment via button
-  $(document).on('click', '.rp-moment-csend', function() {
+  $(document).on('click', '.rp-moment-csend', function(e) {
+    e.stopPropagation();
     const momentId = $(this).data('moment');
     const row = $(`#rp-ci-${momentId}`);
     const input = row.find('.rp-moment-cinput');
