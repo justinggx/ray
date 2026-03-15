@@ -1295,13 +1295,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #rp-ludo-canvas { background: rgba(240,248,255,.65) !important; }
 
 /* ── MISTY API settings legibility ── */
-#rp-phone.rp-theme-misty #rp-view-api-settings [style*="background:rgba(168,85,247"] {
-  background: rgba(30,90,160,.1) !important;
-  border: 1px solid rgba(60,130,200,.2) !important;
-}
+/* Broad wildcard: override all inline colors in API settings view */
+#rp-phone.rp-theme-misty #rp-view-api-settings * { color: #1a3050 !important; }
 #rp-phone.rp-theme-misty #rp-api-blink { color: #0e5a8a !important; font-weight: 800 !important; }
-#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#2d1060"] { color: #0f2236 !important; }
-#rp-phone.rp-theme-misty #rp-view-api-settings [style*="color:#9070b0"] { color: #1e4060 !important; }
 #rp-phone.rp-theme-misty .rp-api-opt { color: #1a3050 !important; font-weight: 500 !important; text-shadow: 0 0 8px rgba(255,255,255,.7) !important; }
 #rp-phone.rp-theme-misty .rp-api-preset-btn {
   background: rgba(240,248,255,.38) !important;
@@ -4652,17 +4648,18 @@ async function generateAIDiary() {
     var charPersona = '';
     if (_ctx.characters && _ctx.characterId !== undefined) {
       var ch = _ctx.characters[_ctx.characterId];
-      if (ch) charPersona = (ch.description || '') + ' ' + (ch.personality || '');
+      if (ch) charPersona = [ch.description||'', ch.personality||'', ch.scenario||''].filter(Boolean).join('\n');
     }
     var recent = (_ctx.chat || []).slice(-12).map(function(m) {
       return (m.is_user ? '\u7528\u6237' : charName) + '\uff1a' + (m.mes || '').slice(0, 100);
     }).join('\n');
     var now = new Date();
     var dateStr = (now.getMonth()+1) + '/' + now.getDate();
-    var sysMsg = '\u4f60\u662f' + charName + '\u3002'
-      + (charPersona ? '\u4eba\u8bbe\uff1a' + charPersona.slice(0,200) + '\n' : '')
-      + '\u8bf7\u4ee5\u7b2c\u4e00\u4eba\u79f0\u5c55\u793a\u4e2a\u4eba\u89c6\u89d2\u5199\u4e00\u7bc7\u65e5\u8bb0\uff0c'
-      + '\u53cd\u6620\u4eca\u65e5\u548c\u7528\u6237\u7684\u4e92\u52a8\u611f\u53d7\uff0c150-250\u5b57\uff0c\u4e2d\u6587\u3002';
+    var sysMsg = '\u4f60\u662f' + charName + '\u3002\n'
+      + (charPersona ? '\u4eba\u8bbe\uff1a' + charPersona.slice(0,600) + '\n\n' : '')
+      + '\u8bf7\u4ee5\u7b2c\u4e00\u4eba\u79f0\u5199\u4eca\u5929\u7684\u4e2a\u4eba\u65e5\u8bb0\uff0c\u53cd\u6620\u4eca\u65e5\u4e0e\u7528\u6237\u7684\u4e92\u52a8\u611f\u53d7\uff0c150-250\u5b57\u4e2d\u6587\u3002\n'
+      + '\u53ea\u9700\u5199\u65e5\u671f\u548c\u65e5\u8bb0\u6b63\u6587\u5185\u5bb9\u3002\n'
+      + '\u4e25\u7981\uff1a\u4e0d\u5f97\u5305\u542b\u72b6\u6001\u680f\uff08\u4f53\u529b/\u7cbe\u795e/\u597d\u611f\u5ea6\u7b49\u6570\u503c\uff09\u3001\u4e16\u754c\u4e66\u7ec4\u4ef6\u3001\u7cfb\u7edf\u63d0\u793a\u683c\u5f0f\u3001Markdown\u683c\u5f0f\u3001HTML\u6807\u7b7e\u3001\u5c5e\u6027\u8868\u683c\uff0c\u76f4\u63a5\u5199\u7eaf\u6587\u5b57\u65e5\u8bb0\u5185\u5bb9\u3002';
     var prompt = '\u4eca\u65e5\u5bf9\u8bdd\uff1a\n' + recent + '\n\n' + charName + '\u7684\u4eca\u65e5\u65e5\u8bb0\uff1a';
     var resp = await lgCallAPI(prompt, 350, sysMsg);
     if (!resp) return;
@@ -4705,12 +4702,18 @@ async function postUserDiary() {
         ch2.mes_example || ''
       ].filter(Boolean).join('\n');
     }
-    var sysMsg2 = '\u4f60\u662f' + charName2 + '\u3002'
-      + (charPersona2 ? '\u4eba\u8bbe/\u5173\u7cfb\u80cc\u666f\uff1a\n' + charPersona2.slice(0, 800) + '\n\n' : '')
-      + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9\u4f60\uff0c\u6309\u7167\u4f60\u7684\u771f\u5b9e\u6027\u683c\u56de\u5e94\u3002'
-      + '\u56de\u5e94\u8981\u6c42\uff1a30-60\u5b57\u4e2d\u6587\u3001\u7eaf\u5bf9\u8bdd\u6587\u5b57\u3002'
-      + '\u4e25\u7981\uff1a\u4e0d\u5f97\u5199\u4efb\u4f55\u52a8\u4f5c\u63cf\u5199\uff08\u5305\u62ec\u4e2d\u82f1\u6587\u62ec\u53f7\u5185\u7684\u8282\u5c0f\u52a8\u4f5c\u300c\u5408\u4e0a\u65e5\u8bb0\u672c\u300d\u7b49\u300b\u3002'
-      + '\u4e0d\u5f97\u52a0\u5c0f\u6807\u9898\u3001\u6bb5\u843d\u3001\u661f\u53f7\u3001\u4e2d\u6587\u62ec\u53f7\uff08\uff09\u3001\u82f1\u6587\u62ec\u53f7()\uff0c\u76f4\u63a5\u8f93\u51fa\u56de\u5e94\u6b63\u6587\u3002';
+    // include recent chat for in-character context
+    var _recentCtx2 = (_ctx2.chat || []).slice(-8).map(function(m){
+      return (m.is_user ? '\u7528\u6237' : charName2) + '\uff1a' + (m.mes||'').slice(0,80);
+    }).join('\n');
+    var sysMsg2 = '\u4f60\u662f' + charName2
+      + '\uff0c\u8bf7\u4e25\u683c\u626e\u6f14\u8fd9\u4e2a\u89d2\u8272\uff0c\u4ee5TA\u7684\u8bed\u6c14\u548c\u6027\u683c\u76f4\u63a5\u8bf4\u8bdd\uff0c\u4e0d\u8981\u8df3\u51fa\u89d2\u8272\u3002\n'
+      + (charPersona2 ? '\u4eba\u8bbe/\u5173\u7cfb\u80cc\u666f\uff1a\n' + charPersona2.slice(0, 1000) + '\n\n' : '')
+      + (_recentCtx2 ? '\u4eca\u65e5\u6545\u4e8b\u80cc\u666f\uff1a\n' + _recentCtx2 + '\n\n' : '')
+      + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9' + charName2
+      + '\uff0c\u4ee5' + charName2 + '\u7684\u8eab\u4efd\u771f\u5b9e\u56de\u5e94\uff0c\u4f53\u73b0TA\u7684\u4e2a\u6027\u3002\n'
+      + '\u8981\u6c42\uff1a30-60\u5b57\u4e2d\u6587\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\u7684\u7eaf\u5bf9\u8bdd\u6587\u5b57\u3002\n'
+      + '\u4e25\u7981\uff1a\u52a8\u4f5c\u63cf\u5199\uff08\u62ec\u53f7\u5185\u5c0f\u52a8\u4f5c\uff09\u3001\u6807\u9898\u3001\u6bb5\u843d\u683c\u5f0f\u3001\u661f\u53f7\u3001\u62ec\u53f7()\uff08\uff09\uff0c\u76f4\u63a5\u8f93\u51fa\u56de\u5e94\u6b63\u6587\u3002';
     var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n' + charName2 + '\u7684\u56de\u5e94\uff1a';
     var resp2 = await lgCallAPI(prompt2, 200, sysMsg2);
     if (resp2) {
