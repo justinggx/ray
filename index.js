@@ -1900,6 +1900,18 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
+/* ── Moments generate button ── */
+#rp-gen-moments {
+  background: none; border: none; font-size: 18px; cursor: pointer;
+  padding: 2px 4px; border-radius: 8px; line-height: 1;
+  transition: transform .2s, opacity .2s;
+}
+#rp-gen-moments:hover { transform: rotate(90deg); }
+#rp-gen-moments:disabled { opacity: .4; cursor: default; transform: none; }
+#rp-gen-moments.rp-spinning { animation: rpSpin .8s linear infinite; }
+@keyframes rpSpin { to { transform: rotate(360deg); } }
+.rp-moment-likes-row { font-size: 11px; color: #999; padding: 2px 0 4px; line-height: 1.4; }
+.rp-dark .rp-moment-likes-row { color: rgba(200,190,255,.45); }
 /* ── MOMENTS send button fix ── */
 .rp-moment-input-row{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06);align-items:center}
 .rp-dark .rp-moment-input-row{border-top-color:rgba(255,255,255,.06)}
@@ -2541,7 +2553,10 @@ const HTML = `
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">朋友圈</span>
-            <button class="rp-nav-add" id="rp-moments-add" title="发朋友圈">+</button>
+            <div style="display:flex;gap:4px;align-items:center">
+              <button id="rp-gen-moments" title="AI生成朋友圈">🔄</button>
+              <button class="rp-nav-add" id="rp-moments-add" title="我要发动态">+</button>
+            </div>
           </div>
           <div id="rp-moments-list"></div>
         </div>
@@ -3192,6 +3207,8 @@ function bindUI() {
 
   // Compose moment
   $(document).on('click', '#rp-moments-add', openCompose);
+  // AI generate moments
+  $(document).on('click', '#rp-gen-moments', generateAIMoments);
   $(document).on('click', '#rp-compose-cancel, #rp-compose-modal .rp-back', closeCompose);
   $(document).on('click', '#rp-compose-post', postUserMoment);
 
@@ -4027,22 +4044,8 @@ function postUserMoment() {
   closeCompose();
   go('moments');
   saveState();
-  const ta = document.querySelector('#send_textarea');
-  if (!ta) return;
-  // Force char/NPC to reply with COMMENT — set OOC BEFORE send
-  const hasEP = typeof setExtensionPrompt === 'function' && extension_prompt_types;
-  if (hasEP) {
-    const oocM = `[朋友圈发布强制指令：{{user}}刚发布了一条朋友圈，MOMENT_ID="${momentId}"，内容：「${text}」。角色必须在本轮<PHONE>块内用<COMMENT MOMENT_ID="${momentId}" FROM="角色名" TIME="HH:MM">评论内容</COMMENT>格式回应，至少1条至多3条，不得省略。]`;
-    setExtensionPrompt('rp-moments-post-ooc', oocM, extension_prompt_types.IN_CHAT, 0, false, 0);
-  }
-  const action = `*{{user}}发布了一条朋友圈：「${text}」*`;
-  const main = ta.value.trim();
-  ta.value = main ? `${main}\n${action}` : action;
-  ta.dispatchEvent(new Event('input', { bubbles: true }));
-  document.querySelector('#send_but')?.click();
-  if (hasEP) {
-    setTimeout(() => setExtensionPrompt('rp-moments-post-ooc', ''), 300);
-  }
+  // 触发 AI 角色对用户动态的社交互动（点赞/评论）
+  setTimeout(() => momentAISocial(momentId), 800);
 }
 
 // ================================================================
@@ -4701,6 +4704,135 @@ function lgRenderThemePicker() {
 }
 
 // ================================================================
+// ================================================================
+//  MOMENTS AI ENGINE
+// ================================================================
+
+function getMomentsCtx() {
+  const ctx = getContext();
+  const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
+  const userName = ctx?.name1 || '用户';
+  // 已知 NPC：来自会话线程 + 已有动态（排除主角色）
+  const knownNPCs = new Set();
+  Object.values(STATE.threads || {}).forEach(th => { if (th.name && th.name !== charName) knownNPCs.add(th.name); });
+  (STATE.moments || []).filter(m => m.from !== 'user' && m.name !== charName).forEach(m => knownNPCs.add(m.name));
+  // 主楼层近几条对话（ctx.chat 是主剧情，不是手机短信）
+  const recentChat = (ctx?.chat || []).slice(-8).map(m => {
+    const spk = m.is_user ? userName : (m.name || charName);
+    return `${spk}: ${(m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120)}`;
+  }).join('
+') || '（暂无对话记录）';
+  return { charName, userName, npcs: [...knownNPCs].slice(0, 4), recentChat };
+}
+
+async function generateAIMoments() {
+  const btn = document.getElementById('rp-gen-moments');
+  if (btn) { btn.disabled = true; btn.classList.add('rp-spinning'); }
+  try {
+    const { charName, npcs, recentChat } = getMomentsCtx();
+    const allChars = [charName, ...npcs];
+    const prompt = `你正在模拟角色扮演故事中的社交媒体朋友圈。登场角色：${allChars.join('、')}
+近期主线剧情（主楼层最新对话）：
+${recentChat}
+
+请为上述角色各写1条朋友圈动态，共3条（不同角色）。
+【强制要求】所有内容必须使用中文。
+格式：只返回JSON数组，例：[{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"},{"from":"角色名","text":"动态内容"}]
+要求：
+- 口语自然，1-3句话，体现角色性格
+- 内容与近期剧情有关联
+- 绝对不要返回JSON以外的任何文字`;
+    const resp = await lgCallAPI(prompt, 600);
+    if (!resp) throw new Error('API无响应');
+    const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
+    if (!jsonStr) throw new Error('格式错误');
+    const posts = JSON.parse(jsonStr);
+    const now = new Date();
+    posts.slice(0, 3).forEach((post, i) => {
+      if (!post.from || !post.text) return;
+      const d = new Date(now.getTime() + i * 60000);
+      const ts = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      incomingMoment(post.from.trim(), ts, post.text.trim(), post.img || null);
+    });
+    if (STATE.currentView === 'moments') renderMoments();
+    // 生成后触发 AI 社交互动
+    setTimeout(() => momentAISocial(null), 1000);
+  } catch(e) {
+    console.warn('[Moments] generateAIMoments error:', e);
+    const container = $('#rp-moments-list');
+    container.prepend('<div style="color:#e55;padding:8px 12px;font-size:12px;text-align:center;background:rgba(255,80,80,.08);border-radius:8px;margin:8px">⚠️ 生成失败，请检查 API 设置</div>');
+    setTimeout(() => container.find('[style*="color:#e55"]').remove(), 3000);
+  } finally {
+    if (btn) { btn.disabled = false; btn.classList.remove('rp-spinning'); }
+  }
+}
+
+async function momentAISocial(targetMomentId) {
+  // 让 AI 角色对动态进行点赞/评论互动
+  const moments = STATE.moments || [];
+  if (moments.length === 0) return;
+  const { charName, npcs } = getMomentsCtx();
+  const allChars = [charName, ...npcs];
+  if (allChars.length === 0) return;
+  const targets = targetMomentId
+    ? moments.filter(m => m.id === targetMomentId)
+    : moments.slice(-6);
+  if (targets.length === 0) return;
+  const momentsSummary = targets.map(m =>
+    `ID="${m.id}" 作者="${m.name}" 内容="${m.text.slice(0, 60)}"`
+  ).join('
+');
+  const prompt = `以下是朋友圈动态：
+${momentsSummary}
+登场角色：${allChars.join('、')}
+
+模拟角色之间的社交互动，生成2-4条互动（点赞或评论）。
+【强制要求】所有评论内容必须用中文。
+格式：只返回JSON数组，例：
+[{"type":"like","from":"角色名","momentId":"完整ID"},{"type":"comment","from":"角色名","momentId":"完整ID","text":"评论内容（中文）"}]
+要求：
+- 角色不能对自己的动态点赞或评论
+- momentId 必须与上方ID完全一致
+- 只返回JSON数组，不要其他文字`;
+  const resp = await lgCallAPI(prompt, 400);
+  if (!resp) return;
+  try {
+    const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
+    if (!jsonStr) return;
+    const actions = JSON.parse(jsonStr);
+    const now = new Date();
+    const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    actions.slice(0, 6).forEach(a => {
+      if (!a.from || !a.momentId) return;
+      const m = moments.find(mo => mo.id === a.momentId);
+      if (!m || m.name === a.from) return;
+      if (a.type === 'like') {
+        if (!m.likes.includes(a.from)) m.likes.push(a.from);
+      } else if (a.type === 'comment' && a.text) {
+        incomingComment(m.id, a.from.trim(), ts, a.text.trim(), null);
+      }
+    });
+    if (STATE.currentView === 'moments') renderMoments();
+    saveState();
+  } catch(e) { console.warn('[Moments] momentAISocial error:', e); }
+}
+
+async function generateAIReply(momentId, userCommentText, fromName) {
+  const moment = STATE.moments?.find(m => m.id === momentId);
+  if (!moment) return;
+  const authorName = fromName || moment.name;
+  const prompt = `${authorName}在朋友圈发了一条动态：「${moment.text}」
+用户评论：「${userCommentText}」
+请以${authorName}的身份，用中文写一句自然的回复（20字以内）。
+【强制要求】只返回回复内容本身，不要任何前缀或引号。`;
+  const resp = await lgCallAPI(prompt, 100);
+  if (!resp) return;
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const cleaned = resp.trim().replace(/^[「"']|[」"']$/g, '');
+  incomingComment(momentId, authorName, ts, cleaned, null);
+}
+
 //  MOMENTS
 // ================================================================
 function renderMoments() {
@@ -4709,9 +4841,12 @@ function renderMoments() {
     container.append('<div class="rp-moments-empty"><span>📭</span><span>暂无动态</span></div>');
     return;
   }
+  const _ctx = getContext();
+  const _uname = _ctx?.name1 || '我';
   [...STATE.moments].reverse().forEach(moment => {
-    const likeCount = moment.likes.length;
     const liked = moment.likes.includes('user');
+    const likeNames = moment.likes.map(l => l === 'user' ? _uname : l);
+    const likeCount = likeNames.length;
     let commentsHtml = '';
     if (moment.comments && moment.comments.length > 0) {
       const items = moment.comments.map((cm, idx) => {
@@ -4740,6 +4875,7 @@ function renderMoments() {
           <button class="rp-moment-act rp-like-btn${liked ? ' rp-liked' : ''}" data-moment="${moment.id}">${liked ? '❤️' : '🤍'} ${likeCount > 0 ? likeCount : '点赞'}</button>
           <button class="rp-moment-act rp-comment-toggle" data-moment="${moment.id}">💬 评论</button>
         </div>
+        ${likeCount > 0 ? `<div class="rp-moment-likes-row">❤️ ${likeNames.slice(0,4).join('、')}${likeCount > 4 ? ` 等${likeCount}人` : ''}</div>` : ''}
         ${commentsHtml}
         <div class="rp-moment-input-row" id="rp-ci-${moment.id}" style="display:none">
           <input class="rp-moment-cinput" type="text" placeholder="发表评论…" autocomplete="off"/>
@@ -4822,28 +4958,13 @@ function sendMomentComment(momentId, text, replyToName) {
   moment.comments.push({ from: 'user', name: '我', text: text.trim(), time: ts, replyTo: replyToIdx });
   renderMoments();
   saveState();
-  const ta = document.querySelector('#send_textarea');
-  if (!ta) return;
-  const mainText = ta.value.trim();
-  const action = replyToName
-    ? `*{{user}}在${moment.name}的朋友圈下回复${replyToName}：「${text.trim()}」*`
-    : `*{{user}}在${moment.name}的朋友圈下评论：「${text.trim()}」*`;
-  ta.value = mainText ? `${mainText}\n${action}` : action;
-  ta.dispatchEvent(new Event('input', { bubbles: true }));
-
-  // Force NPC/char reply - OOC must be set BEFORE send (same as SMS pattern)
-  const hasEP = typeof setExtensionPrompt === 'function' && extension_prompt_types;
-  if (hasEP) {
-    const oocM = `[朋友圈回复指令：${moment.name}或相关角色必须在本轮<PHONE>块内使用<COMMENT MOMENT_ID="${moment.id}" FROM="角色名" TIME="HH:MM">内容</COMMENT>标签回复{{user}}的评论，至少1条至多3条，不得省略。]`;
-    setExtensionPrompt('rp-moments-ooc', oocM, extension_prompt_types.IN_CHAT, 0, false, 0);
-  }
-
-  ta.value = mainText ? `${mainText}\n${action}` : action;
-  ta.dispatchEvent(new Event('input', { bubbles: true }));
-  document.querySelector('#send_but')?.click();
-
-  if (hasEP) {
-    setTimeout(() => setExtensionPrompt('rp-moments-ooc', ''), 300);
+  // 直接调 API 生成回复，不走 ST send_textarea
+  if (moment.from !== 'user') {
+    // 评论的是 AI 角色的动态 → 该角色回复
+    setTimeout(() => generateAIReply(momentId, text.trim(), moment.from), 600);
+  } else {
+    // 评论的是用户自己的动态 → 触发 AI 社交互动
+    setTimeout(() => momentAISocial(momentId), 600);
   }
 }
 
