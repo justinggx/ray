@@ -2538,6 +2538,41 @@ function syncToCurrentChat() {
   refreshLockNotifs();
 }
 
+
+// 从 ST 服务端拉取最新 extension_settings（解决手机端缓存问题）
+async function fetchServerSettings() {
+  try {
+    // ST 1.12+ API endpoint（多版本兼容）
+    const endpoints = ['/api/settings/get', '/getsettings'];
+    let data = null;
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, { method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}' });
+        if (res.ok) { data = await res.json(); break; }
+      } catch(e2) {}
+    }
+    if (!data) return false;
+    const serverEs = data.extension_settings;
+    if (!serverEs || !serverEs[EXT_KEY]) return false;
+    // 更新本地内存里的 extension_settings
+    const es = _extSettings();
+    if (es) {
+      if (!es[EXT_KEY]) es[EXT_KEY] = {};
+      // 合并：服务端数据优先
+      Object.keys(serverEs[EXT_KEY]).forEach(function(k) {
+        es[EXT_KEY][k] = serverEs[EXT_KEY][k];
+        // 同步回 localStorage 作为本地缓存
+        try { localStorage.setItem('rp-phone-v1-' + k, JSON.stringify(serverEs[EXT_KEY][k])); } catch(e3) {}
+      });
+    }
+    console.log('[Phone] 从服务器同步完成');
+    return true;
+  } catch(e) {
+    console.warn('[Phone] fetchServerSettings 失败:', e);
+    return false;
+  }
+}
+
 /* ── HELPER: findOrCreateThread ── */
 function findOrCreateThread(nameRaw) {
   const lower = nameRaw.toLowerCase();
@@ -2744,7 +2779,8 @@ const HTML = `
             </div>
             <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
           </div>
-          <div style="padding:10px 18px 28px;flex-shrink:0">
+          <div style="padding:10px 18px 28px;flex-shrink:0;display:flex;flex-direction:column;gap:10px">
+            <button id="rp-sync-server" style="width:100%;padding:11px;background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;border:none;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer">☁️ 从服务器同步数据</button>
             <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
           </div>
         </div>
@@ -3194,6 +3230,22 @@ function bindUI() {
     if (phone.is(':visible')) { phone.hide(); return; } // 已打开 → 点球关闭
     // 防御性同步：若 CHAT_CHANGED 未触发（用户直接切换了对话），此处补偿
     syncToCurrentChat();
+    // 异步从服务端拉最新数据（解决 PC 存了数据、手机缓存旧数据的问题）
+    fetchServerSettings().then(function(ok) {
+      if (ok) {
+        var chatId = STATE.chatId;
+        var serverData = (_extSettings() || {})[EXT_KEY];
+        if (serverData && serverData[chatId]) {
+          var s = serverData[chatId];
+          STATE.threads       = s.threads || STATE.threads;
+          STATE.moments       = s.moments || STATE.moments;
+          STATE.avatars       = s.avatars || STATE.avatars;
+          cleanInvalidContacts();
+          renderThreadList();
+          if (typeof renderMoments === 'function') renderMoments();
+        }
+      }
+    });
     phone.show();
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
@@ -3294,6 +3346,30 @@ function bindUI() {
     if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
     else $('#rp-api-custom-fields-v').hide();
   });
+  $(document).on('click', '#rp-sync-server', async function() {
+    const $btn = $('#rp-sync-server');
+    $btn.text('同步中…').prop('disabled', true);
+    const ok = await fetchServerSettings();
+    if (ok) {
+      const chatId = STATE.chatId;
+      const serverData = (_extSettings() || {})[EXT_KEY];
+      if (serverData && serverData[chatId]) {
+        const s = serverData[chatId];
+        STATE.threads  = s.threads  || STATE.threads;
+        STATE.moments  = s.moments  || STATE.moments;
+        STATE.avatars  = s.avatars  || STATE.avatars;
+        CHAT_STORE[chatId] = Object.assign(CHAT_STORE[chatId] || {}, { threads: STATE.threads, moments: STATE.moments, avatars: STATE.avatars });
+        cleanInvalidContacts();
+        renderThreadList();
+        if (typeof renderMoments === 'function') renderMoments();
+      }
+      $btn.text('✅ 同步成功');
+    } else {
+      $btn.text('❌ 同步失败');
+    }
+    setTimeout(() => $btn.text('☁️ 从服务器同步数据').prop('disabled', false), 2000);
+  });
+
   $(document).on('click', '#rp-api-save-v', function() {
     const mode = $('input[name="rp-api-mode-v"]:checked').val() || 'st';
     const cfg = { mode };
