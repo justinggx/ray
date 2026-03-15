@@ -1524,7 +1524,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy .rp-moment-comment { color: #5a1530 !important; }
 #rp-phone.rp-theme-candy .rp-moment-cname { color: #c03060 !important; }
 #rp-phone.rp-theme-candy .rp-moment-reply-btn { color: rgba(180,40,80,.65) !important; }
-#rp-phone.rp-theme-candy .rp-moment-likes-row { color: rgba(160,50,80,.65) !important; }
+#rp-phone.rp-theme-candy .rp-moment-likes-row { color: rgba(160,30,65,.92) !important; }
 #rp-phone.rp-theme-candy .rp-moment-comments-wrap { background: rgba(220,80,120,.06) !important; }
 #rp-phone.rp-theme-candy .rp-moment-act { color: rgba(160,50,80,.5) !important; }
 #rp-phone.rp-theme-candy .rp-moment-bar { border-top-color: rgba(200,80,120,.15) !important; }
