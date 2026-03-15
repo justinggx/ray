@@ -2953,6 +2953,7 @@ async function init() {
         if (match) { parsePhone(match[1]); found0 = true; }
       });
       if (found0) { renderThreadList(); saveState(); }
+      hidePhoneTagsInChat();
     } catch(e) { console.warn('[Phone] initScan error', e); }
   }, 1000);
 }
@@ -3031,6 +3032,7 @@ function onChatChanged() {
         if (match) { parsePhone(match[1]); found = true; }
       });
       if (found) { renderThreadList(); saveState(); }
+      hidePhoneTagsInChat();
     } catch(e) { console.warn('[Phone] scanChatHistory error', e); }
   }, 600);
 }
@@ -4668,8 +4670,23 @@ function showLiveChat(name, avatarBg, customImg, text) {
 // ================================================================
 //  CHAT BUBBLE BEAUTIFICATION
 // ================================================================
+function hidePhoneTagsInChat() {
+  // 遍历所有消息，把 ST 渲染出的 <phone>/<sms>/<moments>/<comment> 等标签移除
+  document.querySelectorAll('.mes_text').forEach(el => {
+    // 方法1：直接移除 DOM 中的 <phone> 元素（ST 把未知标签当 HTML 解析）
+    el.querySelectorAll('phone, sms, moments, comment, notify, sync, call, voice, gmsg, hongbao').forEach(tag => tag.remove());
+    // 方法2：innerHTML 兜底，处理以纯文本存在的 <PHONE>...</PHONE>
+    if (/<phone>/i.test(el.innerHTML)) {
+      el.innerHTML = el.innerHTML.replace(/<phone>[\s\S]*?<\/phone>/gi, '').trim();
+    }
+  });
+}
+
 function beautifySMSInChat() {
   try {
+    // 每次调用先清理全部消息中的 <PHONE> 可见内容
+    hidePhoneTagsInChat();
+
     const ctx = getContext();
     if (!ctx?.name) return;
     const charName = ctx.name;
