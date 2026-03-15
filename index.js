@@ -2550,6 +2550,9 @@ function syncToCurrentChat() {
   refreshBadges();
   refreshWidget();
   refreshLockNotifs();
+  // 延迟重建：等 ctx.chat 加载完成
+  var _rebuildId = STATE.chatId;
+  setTimeout(function() { rebuildContactsFromHistory(_rebuildId); }, 500);
 }
 
 
@@ -2585,6 +2588,37 @@ async function fetchServerSettings() {
     console.warn('[Phone] fetchServerSettings 失败:', e);
     return false;
   }
+}
+
+
+// 从聊天历史重建联系人（聊天记录保存在服务端，所有设备加载同一对话时自动同步）
+function rebuildContactsFromHistory(chatId) {
+  try {
+    const ctx = getContext();
+    const currentId = ctx?.chatId || ('char_' + ctx?.characterId) || 'default';
+    if (currentId !== chatId) return; // chatId 已变，放弃
+    const msgs = ctx?.chat || [];
+    let changed = false;
+    msgs.filter(function(m) { return !m.is_user && m.mes; }).forEach(function(m) {
+      const phoneMatch = m.mes.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
+      if (!phoneMatch) return;
+      const block = phoneMatch[1];
+      // 仅提取 FROM 字段，创建联系人（不重复添加消息内容）
+      const re = /<(?:SMS|MOMENTS|COMMENT)[^>]+FROM="([^"]+)"/gi;
+      let ma;
+      while ((ma = re.exec(block)) !== null) {
+        const fromRaw = ma[1].trim();
+        const invalid = /^(sillytavern|tavern|system|assistant|ai)$/i;
+        if (invalid.test(fromRaw)) continue;
+        // 只创建线程，不重复推送消息
+        const exists = Object.values(STATE.threads).some(function(t) {
+          return t.name && t.name.toLowerCase() === fromRaw.toLowerCase();
+        });
+        if (!exists) { findOrCreateThread(fromRaw); changed = true; }
+      }
+    });
+    if (changed) { cleanInvalidContacts(); renderThreadList(); saveState(); }
+  } catch(e) { console.warn('[Phone] rebuildContacts error', e); }
 }
 
 /* ── HELPER: findOrCreateThread ── */
@@ -3211,6 +3245,7 @@ function onChatChanged() {
       cleanInvalidContacts();
       autoAddCharContact();
       hidePhoneTagsInChat();
+      rebuildContactsFromHistory(_expectedChatId);
     } catch(e) { console.warn('[Phone] onChatChanged delayed error', e); }
   }, 600);
 }
@@ -3244,22 +3279,9 @@ function bindUI() {
     if (phone.is(':visible')) { phone.hide(); return; } // 已打开 → 点球关闭
     // 防御性同步：若 CHAT_CHANGED 未触发（用户直接切换了对话），此处补偿
     syncToCurrentChat();
-    // 异步从服务端拉最新数据（解决 PC 存了数据、手机缓存旧数据的问题）
-    fetchServerSettings().then(function(ok) {
-      if (ok) {
-        var chatId = STATE.chatId;
-        var serverData = (_extSettings() || {})[EXT_KEY];
-        if (serverData && serverData[chatId]) {
-          var s = serverData[chatId];
-          STATE.threads       = s.threads || STATE.threads;
-          STATE.moments       = s.moments || STATE.moments;
-          STATE.avatars       = s.avatars || STATE.avatars;
-          cleanInvalidContacts();
-          renderThreadList();
-          if (typeof renderMoments === 'function') renderMoments();
-        }
-      }
-    });
+    // 从聊天历史重建联系人（服务端数据，PC/手机共享同一份聊天记录）
+    var _fabChatId = STATE.chatId;
+    setTimeout(function() { rebuildContactsFromHistory(_fabChatId); }, 300);
     phone.show();
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
