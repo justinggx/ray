@@ -2720,19 +2720,29 @@ async function init() {
   // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
-    if (window.innerWidth > 768) return;
-    // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
-    const fab = document.getElementById('rp-fab');
-    if (fab) {
-      fab.style.setProperty('top', (window.innerHeight - 142) + 'px', 'important');
-      fab.style.setProperty('bottom', 'auto', 'important');
-    }
-    // 强制设置 phone frame 尺寸 (CSS !important 有时被 ST 管线覆盖，JS 最终胜出)
     const frame = document.getElementById('rp-frame');
-    if (frame) {
-      frame.style.setProperty('width', '270px', 'important');
-      frame.style.setProperty('height', '500px', 'important');
-      frame.style.setProperty('border-radius', '38px', 'important');
+    if (window.innerWidth <= 768) {
+      // ── 手机端(PE) ──
+      // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
+      const fab = document.getElementById('rp-fab');
+      if (fab) {
+        fab.style.setProperty('top', (window.innerHeight - 142) + 'px', 'important');
+        fab.style.setProperty('bottom', 'auto', 'important');
+      }
+      // 强制 frame 尺寸 270×500 (手机端专用)
+      if (frame) {
+        frame.style.setProperty('width', '270px', 'important');
+        frame.style.setProperty('height', '500px', 'important');
+        frame.style.setProperty('border-radius', '38px', 'important');
+      }
+    } else {
+      // ── PC端 ──
+      // 清除任何可能残留的手机端内联样式，让 CSS 默认 286×580 生效
+      if (frame) {
+        frame.style.removeProperty('width');
+        frame.style.removeProperty('height');
+        frame.style.removeProperty('border-radius');
+      }
     }
   })();
   setTimeout(lgInitFabDrag, 100);
@@ -3932,19 +3942,27 @@ function refreshWidget() {
 // ================================================================
 function makeDraggable() {
   const phone = document.querySelector('#rp-phone');
-  if (!phone) return;
+  if (!phone || phone._rpDragPC) return;
+  phone._rpDragPC = true; // 防止热重载重复绑定
   let dragging = false, ox, oy, ex, ey;
 
   phone.addEventListener('mousedown', e => {
+    if (window.innerWidth <= 768) return; // 手机端不用鼠标拖拽
     if (e.target.closest('input,button,.rp-view')) return;
     dragging = true;
     const r = phone.getBoundingClientRect();
+    // 先把 right/bottom 定位切换成 left/top，避免双向约束冲突
+    phone.style.right = 'auto';
+    phone.style.bottom = 'auto';
+    phone.style.left = r.left + 'px';
+    phone.style.top = r.top + 'px';
     ox = r.left; oy = r.top; ex = e.clientX; ey = e.clientY;
     e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-    phone.style.cssText += `left:${ox + e.clientX - ex}px;top:${oy + e.clientY - ey}px;right:auto;bottom:auto;`;
+    phone.style.left = (ox + e.clientX - ex) + 'px';
+    phone.style.top  = (oy + e.clientY - ey) + 'px';
   });
   document.addEventListener('mouseup', () => { dragging = false; });
 }
