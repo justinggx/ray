@@ -4508,8 +4508,8 @@ function postUserMoment() {
   closeCompose();
   go('moments');
   saveState();
-  // 触发 AI 角色对用户动态的社交互动（点赞/评论）
-  setTimeout(() => momentAISocial(momentId), 800);
+  // 先强制主角评论，再让 NPC 们自由互动
+  setTimeout(() => charRespondToUserMoment(momentId), 800);
 }
 
 // ================================================================
@@ -5288,6 +5288,36 @@ async function generateAIMoments() {
   } finally {
     if (btn) { btn.disabled = false; btn.classList.remove('rp-spinning'); }
   }
+}
+
+async function charRespondToUserMoment(momentId) {
+  const moment = (STATE.moments || []).find(function(m) { return m.id === momentId; });
+  if (!moment) return;
+  const ctx = getMomentsCtx();
+  const charName = ctx.charName;
+  const charPersona = ctx.charPersona;
+  if (!charName) return;
+  // 强制主角写一条评论
+  const sysMsg = '你正在扮演 ' + charName + '。'
+    + (charPersona ? '人设：' + charPersona.slice(0, 300) + '\n' : '')
+    + '你看到了用户的朋友圈动态，必须写一条真实的评论回应。'
+    + '字数15-40字，符合角色性格，用中文，只返回评论正文，不加引号或任何前缀。';
+  const prompt = '用户发了一条朋友圈：「' + moment.text + '」\n'
+    + charName + '的评论（必须写，不允许只点赞）：';
+  const resp = await lgCallAPI(prompt, 150, sysMsg);
+  if (resp) {
+    const cleaned = resp.trim().replace(/^[\u300c"'\u300d"']+|[\u300d"'\u300c"']+ $/g, '').trim();
+    if (cleaned) {
+      const now = new Date();
+      const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+      if (!moment.likes.includes(charName)) moment.likes.push(charName);
+      incomingComment(momentId, charName, ts, cleaned, null);
+      if (STATE.currentView === 'moments') renderMoments();
+      saveState();
+    }
+  }
+  // NPC 们后续自由互动
+  setTimeout(function() { momentAISocial(momentId); }, 700);
 }
 
 async function momentAISocial(targetMomentId) {
