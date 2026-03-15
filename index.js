@@ -47,17 +47,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     z-index: 2147483647 !important;
   }
   #rp-phone {
-    left: calc(50vw - 100px) !important;  /* 100 = 200px宽度的一半，水平居中 */
-    top: calc(50vh - 190px) !important;   /* 190 = 380px高度的一半，垂直居中 */
+    left: calc(50vw - 135px) !important;  /* 135 = 270px宽度的一半，水平居中 */
+    top: calc(50vh - 250px) !important;   /* 250 = 500px高度的一半，垂直居中 */
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
     z-index: 2147483645 !important;
   }
   #rp-frame {
-    width: 200px !important;
-    height: 380px !important;
-    border-radius: 30px !important;
+    width: 270px !important;
+    height: 500px !important;
+    border-radius: 38px !important;
   }
   #rp-screen {
     border-radius: min(40px, 6vw) !important;
@@ -2730,9 +2730,9 @@ async function init() {
     // 强制设置 phone frame 尺寸 (CSS !important 有时被 ST 管线覆盖，JS 最终胜出)
     const frame = document.getElementById('rp-frame');
     if (frame) {
-      frame.style.setProperty('width', '200px', 'important');
-      frame.style.setProperty('height', '380px', 'important');
-      frame.style.setProperty('border-radius', '30px', 'important');
+      frame.style.setProperty('width', '270px', 'important');
+      frame.style.setProperty('height', '500px', 'important');
+      frame.style.setProperty('border-radius', '38px', 'important');
     }
   })();
   setTimeout(lgInitFabDrag, 100);
@@ -2867,12 +2867,12 @@ function bindUI() {
         // 先强制 frame 尺寸，再测量居中（确保 offsetWidth/Height 正确）
         const frame = document.getElementById('rp-frame');
         if (frame) {
-          frame.style.setProperty('width', '200px', 'important');
-          frame.style.setProperty('height', '380px', 'important');
-          frame.style.setProperty('border-radius', '30px', 'important');
+          frame.style.setProperty('width', '270px', 'important');
+          frame.style.setProperty('height', '500px', 'important');
+          frame.style.setProperty('border-radius', '38px', 'important');
         }
-        const ph = phone[0].offsetHeight || 380;
-        const pw = phone[0].offsetWidth || 200;
+        const ph = phone[0].offsetHeight || 500;
+        const pw = phone[0].offsetWidth || 270;
         const t = Math.max(10, (window.innerHeight - ph) / 2);
         const l = Math.max(0, (window.innerWidth - pw) / 2);
         phone[0].style.setProperty('top', t + 'px', 'important');
