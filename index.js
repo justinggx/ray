@@ -844,6 +844,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-set-key {
   color: #d4c8ff !important;
 }
+#rp-phone.rp-theme-star .rp-set-hint { color: rgba(180,165,255,.55) !important; }
 /* Dropdown select */
 #rp-phone.rp-theme-star .rp-set-select {
   background: rgba(35,20,70,.8) !important;
@@ -858,6 +859,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border: 1px solid rgba(130,90,255,.45) !important;
   color: #d4c8ff !important;
   border-radius: 12px !important;
+  font-size: 13.5px !important;
 }
 #rp-phone.rp-theme-misty .rp-avatar-upload-btn,
 #rp-phone.rp-theme-misty #rp-wall-upload,
@@ -1562,6 +1564,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   background: transparent !important;
   border-bottom-color: rgba(130,175,215,.15) !important;
 }
+#rp-phone.rp-theme-misty .rp-set-hint { color: rgba(44,90,140,.55) !important; }
 #rp-phone.rp-theme-misty .rp-set-key {
   color: #1a3050 !important;
   text-shadow: 0 0 6px rgba(255,255,255,.6) !important;
@@ -1896,17 +1899,23 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-view-settings{background:transparent}
 .rp-set-section{background:#fff;border-radius:12px;margin:10px 12px 0;padding:0 14px;overflow:hidden}
 .rp-dark .rp-set-section{background:rgba(255,255,255,.04)}
-.rp-set-section-title{font-size:11.5px;font-weight:600;color:#8a8a9a;text-transform:uppercase;letter-spacing:.04em;margin:14px 12px 4px;padding:0}
+.rp-set-section-title{font-size:12px;font-weight:600;color:#8a8a9a;text-transform:uppercase;letter-spacing:.05em;margin:16px 12px 5px;padding:0}
 .rp-dark .rp-set-section-title{color:#6a6a7a}
 .rp-set-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.06);gap:10px;min-height:44px}
 .rp-dark .rp-set-row{border-bottom-color:rgba(255,255,255,.05)}
 .rp-set-row:last-child{border-bottom:none}
-.rp-set-key{font-size:14px;color:#1a1a2e;flex:1}
+.rp-set-key{font-size:15px;color:#1a1a2e;flex:1}
 .rp-dark .rp-set-key{color:#c8cce8}
-.rp-set-select{font-size:13px;color:#3a3a5e;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:4px 8px;font-family:inherit;max-width:140px;outline:none}
+.rp-set-hint{font-size:12px;color:#8a8a9a;flex:1}
+.rp-dark .rp-set-hint{color:rgba(200,190,255,.45)}
+.rp-set-select{font-size:14px;color:#3a3a5e;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:4px 8px;font-family:inherit;max-width:150px;outline:none}
 .rp-dark .rp-set-select{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#c0c4e0}
-.rp-avatar-upload-btn{font-size:12.5px;color:#2563eb;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.18);border-radius:8px;padding:5px 10px;cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center}
+.rp-avatar-upload-btn{font-size:13.5px;color:#2563eb;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.18);border-radius:8px;padding:6px 12px;cursor:pointer;flex-shrink:0;display:inline-flex;align-items:center;gap:4px}
 .rp-dark .rp-avatar-upload-btn{color:#7090f0;background:rgba(112,144,240,.12);border-color:rgba(112,144,240,.2)}
+.rp-set-upload-btn{font-size:13.5px;font-family:inherit;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;background:rgba(0,0,0,.06);color:#333;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px}
+.rp-dark .rp-set-upload-btn{background:rgba(255,255,255,.08);color:#c8cce8}
+.rp-wall-reset-btn{background:rgba(0,0,0,.05)!important;color:#666!important}
+.rp-dark .rp-wall-reset-btn{background:rgba(255,255,255,.06)!important;color:rgba(200,190,255,.6)!important}
 .rp-set-avatar-preview{width:38px;height:38px;border-radius:19px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
 
 /* ── COMPOSE MODAL ── */
@@ -2977,7 +2986,7 @@ const HTML = `
               </div>
               <div class="rp-set-row">
                 <div id="rp-avatar-preview-swatch" class="rp-set-avatar-preview" style="background:linear-gradient(145deg,#64748b,#475569)">我</div>
-                <span class="rp-set-key" style="font-size:12px;color:#8a8a9a">点击右侧上传图片</span>
+                <span class="rp-set-hint">点击右侧上传图片</span>
                 <label class="rp-avatar-upload-btn" for="rp-avatar-file-input">📷 选择</label>
                 <input type="file" id="rp-avatar-file-input" accept="image/*" style="display:none">
               </div>
@@ -2989,7 +2998,7 @@ const HTML = `
                 <img id="rp-wall-preview" class="rp-wall-preview-img" style="display:none" alt=""/>
                 <div style="display:flex;gap:8px">
                   <button id="rp-wall-upload" class="rp-set-upload-btn" style="flex:1">📷 上传壁纸</button>
-                  <button id="rp-wall-reset"  class="rp-set-upload-btn" style="flex:1;background:rgba(0,0,0,.06);color:#555">恢复默认</button>
+                  <button id="rp-wall-reset"  class="rp-set-upload-btn rp-wall-reset-btn" style="flex:1">恢复默认</button>
                 </div>
                 <input id="rp-wall-file" type="file" accept="image/*" style="display:none"/>
               </div>
