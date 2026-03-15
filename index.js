@@ -1932,10 +1932,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-diary-date{font-size:11px;color:#888}
 .rp-diary-body{font-size:14px;line-height:1.7;color:#1a1a2e;padding:0 14px 10px;word-break:break-word}
 .rp-diary-ai-badge{font-size:10px;background:rgba(236,72,153,.12);color:#ec4899;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:middle}
-.rp-diary-reply{background:rgba(0,0,0,.04);border-top:1px solid rgba(0,0,0,.06);padding:8px 14px}
-.rp-diary-reply-name{font-size:12px;font-weight:600;color:#2563eb;margin-bottom:2px}
+.rp-diary-reply{background:rgba(200,50,100,.04);border-top:1px solid rgba(200,50,100,.08);padding:8px 14px}
+.rp-diary-reply-name{font-size:12px;font-weight:600;color:#c0306a;margin-bottom:2px}
 .rp-diary-reply-text{font-size:13px;color:#333;line-height:1.6}
-.rp-diary-compose{flex-shrink:0;padding:10px 14px 18px;border-top:1px solid rgba(0,0,0,.07);display:flex;flex-direction:column;gap:8px}
+.rp-diary-compose{flex-shrink:0;padding:10px 14px 18px;border-top:1px solid rgba(192,48,106,.1);display:flex;flex-direction:column;gap:8px}
 .rp-diary-input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.7)!important;color:#1a1a2e!important;line-height:1.6}
 .rp-diary-input::placeholder{color:rgba(60,60,80,.38)}
 .rp-diary-send-btn{align-self:flex-end;padding:8px 22px;border-radius:20px;border:none;cursor:pointer;font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f97316,#ec4899)}
@@ -1975,6 +1975,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-diary-send-btn{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
 #rp-phone.rp-theme-misty .rp-diary-empty{color:rgba(44,74,106,.4)}
 #rp-phone.rp-theme-misty #rp-gen-diary{color:#3d7eb0}
+/* Candy gen-diary explicit (candy has no theme class, CSS var handles it but be safe) */
+#rp-gen-diary{color:var(--rp-nav-btn,#c0306a)}
 #rp-phone.rp-theme-candy .rp-ico-diary svg{stroke:#c03060!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.8)) drop-shadow(0 1px 4px rgba(200,60,90,.55))!important}
 #rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="rgba(255,255,255,.12)"]{fill:rgba(192,48,96,.12)!important}
 #rp-phone.rp-theme-candy .rp-ico-diary svg circle[fill="white"]{fill:#c03060!important}
