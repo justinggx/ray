@@ -2437,15 +2437,19 @@ const CHAT_STORE = {};
 function autoAddCharContact() {
   try {
     const ctx = getContext();
+    // 必须有真实 chatId（排除 ST 初始页面 / 无对话状态）
+    if (!ctx?.chatId) return;
     const charName = ctx?.name2 || (ctx?.characters && ctx?.characterId !== undefined
       ? ctx.characters[ctx.characterId]?.name : null);
     if (!charName) return;
+    // 过滤无效名字：SillyTavern 本身、空白、纯数字
+    const invalid = /^(sillytavern|tavern|system|assistant|ai)$/i;
+    if (invalid.test(charName.trim())) return;
     // 已存在则跳过
     const exists = Object.values(STATE.threads).some(t =>
       t.name && t.name.toLowerCase() === charName.toLowerCase()
     );
     if (exists) return;
-    // 从角色卡提取头像背景色（用 avatarBg CSS 变量，与其他地方一致）
     findOrCreateThread(charName);
     renderThreadList();
     saveState();
@@ -2963,8 +2967,7 @@ async function init() {
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 
-  // 初始化后自动添加 char 联系人，并扫描历史消息
-  autoAddCharContact();
+  // 初始化后扫描历史消息（不在此处自动添加联系人，等待真实 CHAT_CHANGED 事件）
   setTimeout(function() {
     try {
       const ctx0 = getContext();
@@ -3042,13 +3045,11 @@ function onChatChanged() {
   refreshLockNotifs();
   renderPendingQueue();
 
-  // 切换后自动添加新 char 联系人
-  autoAddCharContact();
-
-  // 延迟扫描：first_mes 不触发 MESSAGE_RECEIVED，需在此手动扫描
-  // 600ms 等待 ST 将 first_mes 写入 ctx.chat
+  // 延迟扫描：等待 ctx.name2 和 ctx.chat 稳定（first_mes 也需等待）
   setTimeout(function() {
     try {
+      // 延迟后 ctx 已稳定，再添加联系人（确保拿到真实角色名）
+      autoAddCharContact();
       const ctx2 = getContext();
       const msgs = (ctx2 && ctx2.chat) ? ctx2.chat : [];
       let found = false;
