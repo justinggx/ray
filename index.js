@@ -4658,8 +4658,12 @@ async function generateAIDiary() {
     var resp = await lgCallAPI(prompt, 350, sysMsg);
     if (!resp) return;
     var ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    var diaryText = resp.trim();
+    // 从正文开头提取故事内日期（如「2023年11月15日」）
+    var storyDateMatch = diaryText.match(/^(\d{4}\u5e74\d{1,2}\u6708\d{1,2}\u65e5|\d{4}\/\d{1,2}\/\d{1,2}|\d{1,2}\u6708\d{1,2}\u65e5)/);
+    if (storyDateMatch) dateStr = storyDateMatch[1];
     STATE.diary = STATE.diary || [];
-    STATE.diary.push({ id: 'diary_' + now.getTime(), date: dateStr, time: ts, author: 'ai', text: resp.trim(), reply: null });
+    STATE.diary.push({ id: 'diary_' + now.getTime(), date: dateStr, time: ts, author: 'ai', text: diaryText, reply: null });
     saveState();
     renderDiary();
   } catch(e) { console.warn('[Diary] generateAIDiary error:', e); }
