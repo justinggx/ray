@@ -2828,7 +2828,16 @@ const HTML = `
             <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
           </div>
           <div style="padding:10px 18px 28px;flex-shrink:0;display:flex;flex-direction:column;gap:10px">
-            <button id="rp-sync-server" style="width:100%;padding:11px;background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;border:none;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer">☁️ 从服务器同步数据</button>
+            <button id="rp-export-data" style="width:100%;padding:11px;background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;border:none;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer">📤 导出到手机（生成同步码）</button>
+            <div id="rp-export-box" style="display:none;flex-direction:column;gap:6px">
+              <textarea id="rp-export-text" readonly style="width:100%;height:80px;font-size:11px;border-radius:10px;border:1px solid rgba(0,0,0,.15);padding:8px;resize:none;word-break:break-all;box-sizing:border-box"></textarea>
+              <button id="rp-export-copy" style="width:100%;padding:9px;background:#10b981;color:#fff;border:none;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer">复制同步码</button>
+            </div>
+            <button id="rp-import-toggle" style="width:100%;padding:11px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;border:none;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer">📥 从PC导入（粘贴同步码）</button>
+            <div id="rp-import-box" style="display:none;flex-direction:column;gap:6px">
+              <textarea id="rp-import-text" placeholder="粘贴同步码..." style="width:100%;height:80px;font-size:11px;border-radius:10px;border:1px solid rgba(0,0,0,.15);padding:8px;resize:none;word-break:break-all;box-sizing:border-box"></textarea>
+              <button id="rp-import-confirm" style="width:100%;padding:9px;background:#f59e0b;color:#fff;border:none;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer">导入联系人</button>
+            </div>
             <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
           </div>
         </div>
@@ -3382,28 +3391,72 @@ function bindUI() {
     if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
     else $('#rp-api-custom-fields-v').hide();
   });
-  $(document).on('click', '#rp-sync-server', async function() {
-    const $btn = $('#rp-sync-server');
-    $btn.text('同步中…').prop('disabled', true);
-    const ok = await fetchServerSettings();
-    if (ok) {
-      const chatId = STATE.chatId;
-      const serverData = (_extSettings() || {})[EXT_KEY];
-      if (serverData && serverData[chatId]) {
-        const s = serverData[chatId];
-        STATE.threads  = s.threads  || STATE.threads;
-        STATE.moments  = s.moments  || STATE.moments;
-        STATE.avatars  = s.avatars  || STATE.avatars;
-        CHAT_STORE[chatId] = Object.assign(CHAT_STORE[chatId] || {}, { threads: STATE.threads, moments: STATE.moments, avatars: STATE.avatars });
-        cleanInvalidContacts();
-        renderThreadList();
-        if (typeof renderMoments === 'function') renderMoments();
-      }
-      $btn.text('✅ 同步成功');
+  // 导出同步码
+  $(document).on('click', '#rp-export-data', function() {
+    const contacts = Object.values(STATE.threads).map(function(t) {
+      return { name: t.name, initials: t.initials, avatarBg: t.avatarBg };
+    });
+    const payload = { chatId: STATE.chatId, contacts: contacts, ts: Date.now() };
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    $('#rp-export-text').val(code);
+    $('#rp-export-box').css('display', 'flex');
+  });
+
+  $(document).on('click', '#rp-export-copy', function() {
+    const text = $('#rp-export-text').val();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function() {
+        $('#rp-export-copy').text('✅ 已复制！');
+        setTimeout(function() { $('#rp-export-copy').text('复制同步码'); }, 2000);
+      });
     } else {
-      $btn.text('❌ 同步失败');
+      $('#rp-export-text')[0].select();
+      document.execCommand('copy');
+      $('#rp-export-copy').text('✅ 已复制！');
+      setTimeout(function() { $('#rp-export-copy').text('复制同步码'); }, 2000);
     }
-    setTimeout(() => $btn.text('☁️ 从服务器同步数据').prop('disabled', false), 2000);
+  });
+
+  // 导入同步码
+  $(document).on('click', '#rp-import-toggle', function() {
+    const $box = $('#rp-import-box');
+    $box.css('display', $box.is(':visible') ? 'none' : 'flex');
+  });
+
+  $(document).on('click', '#rp-import-confirm', function() {
+    const code = $('#rp-import-text').val().trim();
+    if (!code) return;
+    try {
+      const payload = JSON.parse(decodeURIComponent(escape(atob(code))));
+      if (!payload.contacts || !Array.isArray(payload.contacts)) throw new Error('格式错误');
+      let added = 0;
+      payload.contacts.forEach(function(c) {
+        if (!c.name) return;
+        const exists = Object.values(STATE.threads).some(function(t) {
+          return t.name && t.name.toLowerCase() === c.name.toLowerCase();
+        });
+        if (!exists) {
+          const id = 'imported_' + c.name.toLowerCase().replace(/\s+/g, '_');
+          STATE.threads[id] = {
+            id: id, name: c.name,
+            initials: c.initials || c.name.slice(0,2),
+            avatarBg: c.avatarBg || 'linear-gradient(145deg,#7c3aed,#0891b2)',
+            messages: [], unread: 0
+          };
+          added++;
+        }
+      });
+      cleanInvalidContacts();
+      renderThreadList();
+      saveState();
+      $('#rp-import-text').val('');
+      $('#rp-import-box').hide();
+      $('#rp-import-confirm').text('✅ 导入了 ' + added + ' 个联系人');
+      setTimeout(function() { $('#rp-import-confirm').text('导入联系人'); }, 2500);
+    } catch(e) {
+      $('#rp-import-confirm').text('❌ 格式错误，请重试');
+      setTimeout(function() { $('#rp-import-confirm').text('导入联系人'); }, 2000);
+    }
   });
 
   $(document).on('click', '#rp-api-save-v', function() {
