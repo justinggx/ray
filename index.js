@@ -2473,6 +2473,68 @@ function cleanInvalidContacts() {
   if (changed) { renderThreadList(); saveState(); }
 }
 
+
+// 防御性同步：打开手机时确保 STATE 与当前 ST 对话一致
+// 不依赖 CHAT_CHANGED 是否触发
+function syncToCurrentChat() {
+  const ctx = getContext();
+  const newChatId = ctx?.chatId || ('char_' + ctx?.characterId) || 'default';
+  if (newChatId === STATE.chatId) return; // 已一致，跳过
+
+  console.log('[Phone] syncToCurrentChat:', STATE.chatId, '->', newChatId);
+
+  // 保存旧窗口状态
+  if (STATE.chatId) {
+    CHAT_STORE[STATE.chatId] = {
+      threads:       JSON.parse(JSON.stringify(STATE.threads)),
+      notifications: [...STATE.notifications],
+      sync:          { ...STATE.sync },
+      currentThread: STATE.currentThread,
+      moments:       JSON.parse(JSON.stringify(STATE.moments || [])),
+      avatars:       Object.assign({}, STATE.avatars || {}),
+    };
+    saveState();
+  }
+
+  // 切到新窗口
+  STATE.chatId = newChatId;
+  STATE.pendingMessages = [];
+
+  if (CHAT_STORE[newChatId]) {
+    const s = CHAT_STORE[newChatId];
+    STATE.threads       = s.threads || {};
+    STATE.notifications = s.notifications || [];
+    STATE.sync          = Object.assign({}, s.sync);
+    STATE.moments       = JSON.parse(JSON.stringify(s.moments || []));
+    STATE.avatars       = Object.assign({}, s.avatars || {});
+    STATE.currentThread = s.currentThread || null;
+  } else {
+    const persisted = loadState(newChatId);
+    if (persisted) {
+      STATE.threads       = persisted.threads || {};
+      STATE.notifications = persisted.notifications || [];
+      STATE.sync          = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
+      STATE.moments       = persisted.moments || [];
+      STATE.avatars       = persisted.avatars || {};
+    } else {
+      STATE.threads       = {};
+      STATE.notifications = [];
+      STATE.sync          = { stage: 1, progress: 0, status: '乖巧' };
+      STATE.moments       = [];
+      STATE.avatars       = {};
+    }
+    STATE.currentThread = null;
+  }
+
+  cleanInvalidContacts();
+  autoAddCharContact();
+  go('lock');
+  renderThreadList();
+  refreshBadges();
+  refreshWidget();
+  refreshLockNotifs();
+}
+
 /* ── HELPER: findOrCreateThread ── */
 function findOrCreateThread(nameRaw) {
   const lower = nameRaw.toLowerCase();
@@ -3100,6 +3162,8 @@ function bindUI() {
     e.stopPropagation();
     const phone = $('#rp-phone');
     if (phone.is(':visible')) { phone.hide(); return; } // 已打开 → 点球关闭
+    // 防御性同步：若 CHAT_CHANGED 未触发（用户直接切换了对话），此处补偿
+    syncToCurrentChat();
     phone.show();
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
