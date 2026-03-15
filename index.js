@@ -2956,13 +2956,16 @@ async function init() {
 
   const saved = loadState(STATE.chatId);
   if (saved) {
-    STATE.threads = saved.threads;
+    STATE.threads = saved.threads || {};
     STATE.notifications = saved.notifications || [];
     STATE.sync = saved.sync || { stage: 1, progress: 0, status: '乖巧' };
     STATE.moments = saved.moments || [];
+    STATE.avatars = saved.avatars || {};
     STATE.darkMode = saved.darkMode || false;
     console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
   }
+  // 立即同步清理无效联系人（不等延迟，防止用户看到 SillyTavern）
+  cleanInvalidContacts();
 
   if (STATE.darkMode) { $('#rp-phone').addClass('rp-dark'); $('.rp-dm-ico').text('☀️'); $('#rp-dm-lbl').text('日间'); }
   lgInitTheme();
@@ -2983,15 +2986,10 @@ async function init() {
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 
-  // 初始化后清理无效联系人（移除旧存档里的 SillyTavern 等）
-  var _initChatId = STATE.chatId;
+  // 延迟隐藏聊天框里的 <PHONE> 标签（DOM 渲染需要时间）
   setTimeout(function() {
-    try {
-      if (STATE.chatId !== _initChatId) return;
-      cleanInvalidContacts();
-      hidePhoneTagsInChat();
-    } catch(e) { console.warn('[Phone] initClean error', e); }
-  }, 1000);
+    try { hidePhoneTagsInChat(); } catch(e) {}
+  }, 800);
 }
 
 // ================================================================
@@ -3023,7 +3021,7 @@ function onChatChanged() {
   // 优先从内存缓存恢复，其次从 localStorage，最后初始化
   if (CHAT_STORE[newChatId]) {
     const s = CHAT_STORE[newChatId];
-    STATE.threads = s.threads;
+    STATE.threads = s.threads || {};
     STATE.notifications = s.notifications;
     STATE.sync = { ...s.sync };
     STATE.moments = JSON.parse(JSON.stringify(s.moments || []));
@@ -3048,10 +3046,8 @@ function onChatChanged() {
     }
   }
 
-  // 加载后立即清理无效联系人（SillyTavern 等）
+  // 重置 UI（加载新状态后立即同步清理无效联系人）
   cleanInvalidContacts();
-
-  // 重置 UI
   go('lock');
   renderThreadList();
   refreshBadges();
