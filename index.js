@@ -33,24 +33,25 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    ══════════════════════════════════════ */
 @media (max-width: 768px) {
   #rp-fab {
-    width: 54px !important;
-    height: 54px !important;
-    font-size: 26px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 18px !important;
     right: 14px !important;
-    top: calc(100vh - 164px) !important; /* 视口高度 - 54px高度 - 110px底部间距 */
+    top: calc(100vh - 150px) !important; /* 150 = 40px高度 + 110px底部间距 */
     bottom: auto !important;
     transform: none !important;
-    background: rgba(120,60,210,.82) !important;
-    border: 2.5px solid rgba(255,255,255,.92) !important;
-    box-shadow: 0 4px 22px rgba(100,40,200,.45), 0 2px 8px rgba(0,0,0,.3) !important;
-    backdrop-filter: none !important;
+    background: rgba(255,255,255,.95) !important;
+    border: 1px solid rgba(0,0,0,.1) !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,.18) !important;
+    backdrop-filter: blur(12px) !important;
     z-index: 2147483647 !important;
   }
   #rp-phone {
-    right: 50% !important;
-    bottom: 50% !important;
-    top: auto !important;
-    transform: translate(50%, 50%) !important;
+    left: calc(50vw - 143px) !important;  /* 143 = 286px宽度的一半，水平居中 */
+    top: calc(50vh - 290px) !important;   /* 290 = 580px高度的一半，垂直居中 */
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
     z-index: 2147483645 !important;
   }
   #rp-frame {
@@ -2719,7 +2720,7 @@ async function init() {
     if (window.innerWidth > 768) return;
     const fab = document.getElementById('rp-fab');
     if (!fab) return;
-    const t = window.innerHeight - 164; // 164 = 54(height) + 110(bottom margin)
+    const t = window.innerHeight - 150; // 150 = 40(height) + 110(bottom margin)
     fab.style.setProperty('top', t + 'px', 'important');
     fab.style.setProperty('bottom', 'auto', 'important');
   })();
@@ -2847,7 +2848,21 @@ function bindUI() {
 
   $('#rp-fab').on('click', (e) => {
     e.stopPropagation();
-    $('#rp-phone').show();
+    const phone = $('#rp-phone');
+    phone.show();
+    // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        const ph = phone[0].offsetHeight || 540;
+        const pw = phone[0].offsetWidth || 286;
+        const t = Math.max(10, (window.innerHeight - ph) / 2);
+        const l = Math.max(0, (window.innerWidth - pw) / 2);
+        phone[0].style.setProperty('top', t + 'px', 'important');
+        phone[0].style.setProperty('left', l + 'px', 'important');
+        phone[0].style.setProperty('right', 'auto', 'important');
+        phone[0].style.setProperty('bottom', 'auto', 'important');
+      }, 0);
+    }
   });
 
   // Click outside phone → close
