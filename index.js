@@ -2240,10 +2240,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 // ================================================================
 //  DEVICE TYPE DETECTION - 彻底分离 PC 和手机端逻辑
-//  window.innerWidth 在 ST 初始化时序中不可靠（可能在 viewport meta 处理前就读取）
-//  maxTouchPoints > 0 + UA 是真正可靠的物理设备判断
+//  CSS Media Query (hover:none) and (pointer:coarse):
+//    - 手机/平板 → hover:none + pointer:coarse  → IS_TOUCH_DEVICE = true ✓
+//    - 鼠标PC → hover:hover + pointer:fine      → IS_TOUCH_DEVICE = false ✓
+//    - 触屏笔记本(Surface/2-in-1) → hover:hover + pointer:fine (鼠标模式) → false ✓
+//  比 maxTouchPoints > 0 更可靠（触屏笔记本 maxTouchPoints 也 > 0，会误判）
 // ================================================================
-const IS_TOUCH_DEVICE = navigator.maxTouchPoints > 0 || /Android|iPhone|iPod|iPad/i.test(navigator.userAgent);
+const IS_TOUCH_DEVICE = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+                     || /Android|iPhone|iPod/i.test(navigator.userAgent);
 
 function injectStyles() {
   if (document.getElementById('rp-phone-css')) return;
@@ -2893,7 +2897,7 @@ function bindUI() {
     const phone = $('#rp-phone');
     phone.show();
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
-    if (window.innerWidth <= 768) {
+    if (IS_TOUCH_DEVICE) {
       setTimeout(() => {
         // 先强制 frame 尺寸，再测量居中（确保 offsetWidth/Height 正确）
         const frame = document.getElementById('rp-frame');
