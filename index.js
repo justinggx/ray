@@ -2432,6 +2432,27 @@ const STATE = {
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
 const CHAT_STORE = {};
 
+
+// 自动将当前对话的 char 加入联系人（每个对话框独立，无需开场白 <PHONE> 标签）
+function autoAddCharContact() {
+  try {
+    const ctx = getContext();
+    const charName = ctx?.name2 || (ctx?.characters && ctx?.characterId !== undefined
+      ? ctx.characters[ctx.characterId]?.name : null);
+    if (!charName) return;
+    // 已存在则跳过
+    const exists = Object.values(STATE.threads).some(t =>
+      t.name && t.name.toLowerCase() === charName.toLowerCase()
+    );
+    if (exists) return;
+    // 从角色卡提取头像背景色（用 avatarBg CSS 变量，与其他地方一致）
+    findOrCreateThread(charName);
+    renderThreadList();
+    saveState();
+    console.log('[Phone] 自动添加联系人：', charName);
+  } catch(e) { /* ignore */ }
+}
+
 /* ── HELPER: findOrCreateThread ── */
 function findOrCreateThread(nameRaw) {
   const lower = nameRaw.toLowerCase();
@@ -2942,7 +2963,8 @@ async function init() {
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
 
-  // 初始化后延迟扫描历史消息（处理 first_mes 及已有 <PHONE> 内容）
+  // 初始化后自动添加 char 联系人，并扫描历史消息
+  autoAddCharContact();
   setTimeout(function() {
     try {
       const ctx0 = getContext();
@@ -3019,6 +3041,9 @@ function onChatChanged() {
   refreshWidget();
   refreshLockNotifs();
   renderPendingQueue();
+
+  // 切换后自动添加新 char 联系人
+  autoAddCharContact();
 
   // 延迟扫描：first_mes 不触发 MESSAGE_RECEIVED，需在此手动扫描
   // 600ms 等待 ST 将 first_mes 写入 ctx.chat
