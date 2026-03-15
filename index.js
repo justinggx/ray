@@ -1522,7 +1522,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy .rp-moment-comment { color: #5a1530 !important; }
 #rp-phone.rp-theme-candy .rp-moment-cname { color: #c03060 !important; }
 #rp-phone.rp-theme-candy .rp-moment-reply-btn { color: rgba(180,40,80,.65) !important; }
-#rp-phone.rp-theme-candy .rp-moment-likes-row { color: rgba(160,30,65,.92) !important; }
+/* candy is default theme — no rp-theme-candy class ever added; base rule handles it */
 #rp-phone.rp-theme-candy .rp-moment-comments-wrap { background: rgba(220,80,120,.06) !important; }
 #rp-phone.rp-theme-candy .rp-moment-act { color: rgba(160,50,80,.5) !important; }
 #rp-phone.rp-theme-candy .rp-moment-bar { border-top-color: rgba(200,80,120,.15) !important; }
@@ -2139,7 +2139,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-gen-moments:disabled { opacity: .35 !important; cursor: default !important; transform: none !important; }
 #rp-gen-moments.rp-spinning { animation: rpSpin .7s linear infinite !important; }
 @keyframes rpSpin { to { transform: rotate(360deg); } }
-.rp-moment-likes-row { font-size: 11px; color: #999; padding: 2px 0 4px; line-height: 1.4; }
+.rp-moment-likes-row { font-size: 11px; color: rgba(160,30,65,.88); padding: 2px 0 4px; line-height: 1.4; }
 .rp-dark .rp-moment-likes-row { color: rgba(200,190,255,.45); }
 /* ── MOMENTS send button fix ── */
 .rp-moment-input-row{display:flex;gap:6px;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,.06);align-items:center}
