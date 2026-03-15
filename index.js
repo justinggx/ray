@@ -1919,6 +1919,62 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .rp-wall-reset-btn{background:rgba(255,255,255,.06)!important;color:rgba(200,190,255,.6)!important}
 .rp-set-avatar-preview{width:38px;height:38px;border-radius:19px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
 
+/* ===== DIARY VIEW ===== */
+#rp-view-diary{background:transparent;display:flex;flex-direction:column;overflow:hidden}
+.rp-diary-gen-btn{background:none;border:none;cursor:pointer;color:var(--rp-nav-btn,#2563eb);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .3s;flex-shrink:0}
+.rp-diary-gen-btn:disabled{opacity:.35;cursor:default}
+.rp-diary-gen-btn.rp-spinning{animation:rpSpin .7s linear infinite}
+.rp-diary-entry{margin-bottom:14px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.6);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.rp-diary-hd{display:flex;align-items:center;gap:8px;padding:10px 14px 6px}
+.rp-diary-av{width:32px;height:32px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.rp-diary-meta{display:flex;flex-direction:column}
+.rp-diary-author{font-size:13px;font-weight:600;color:#1a1a2e}
+.rp-diary-date{font-size:11px;color:#888}
+.rp-diary-body{font-size:14px;line-height:1.7;color:#1a1a2e;padding:0 14px 10px;word-break:break-word}
+.rp-diary-ai-badge{font-size:10px;background:rgba(236,72,153,.12);color:#ec4899;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:middle}
+.rp-diary-reply{background:rgba(0,0,0,.04);border-top:1px solid rgba(0,0,0,.06);padding:8px 14px}
+.rp-diary-reply-name{font-size:12px;font-weight:600;color:#2563eb;margin-bottom:2px}
+.rp-diary-reply-text{font-size:13px;color:#333;line-height:1.6}
+.rp-diary-compose{flex-shrink:0;padding:10px 14px 18px;border-top:1px solid rgba(0,0,0,.07);display:flex;flex-direction:column;gap:8px}
+.rp-diary-input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:10px 12px;font-size:14px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.7)!important;color:#1a1a2e!important;line-height:1.6}
+.rp-diary-input::placeholder{color:rgba(60,60,80,.38)}
+.rp-diary-send-btn{align-self:flex-end;padding:8px 22px;border-radius:20px;border:none;cursor:pointer;font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f97316,#ec4899)}
+.rp-diary-send-btn:disabled{opacity:.45;cursor:default}
+.rp-diary-empty{text-align:center;color:rgba(0,0,0,.3);padding:40px 0;font-size:14px}
+.rp-dark .rp-diary-entry{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+.rp-dark .rp-diary-author{color:#dde0f2}
+.rp-dark .rp-diary-date{color:rgba(200,190,255,.5)}
+.rp-dark .rp-diary-body{color:#d5d8f0}
+.rp-dark .rp-diary-reply{background:rgba(255,255,255,.04);border-top-color:rgba(255,255,255,.07)}
+.rp-dark .rp-diary-reply-text{color:#c8cce8}
+.rp-dark .rp-diary-compose{border-top-color:rgba(255,255,255,.07)}
+.rp-dark .rp-diary-input{background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.12);color:#e0e4ff!important}
+#rp-phone.rp-theme-star .rp-diary-entry{background:rgba(30,15,80,.55);border-color:rgba(140,110,255,.25)}
+#rp-phone.rp-theme-star .rp-diary-author{color:#d4c8ff}
+#rp-phone.rp-theme-star .rp-diary-date{color:rgba(180,165,255,.55)}
+#rp-phone.rp-theme-star .rp-diary-body{color:#c8c0f0}
+#rp-phone.rp-theme-star .rp-diary-reply{background:rgba(140,100,255,.08);border-top-color:rgba(140,110,255,.15)}
+#rp-phone.rp-theme-star .rp-diary-reply-name{color:#a78bfa}
+#rp-phone.rp-theme-star .rp-diary-reply-text{color:#c0b8e8}
+#rp-phone.rp-theme-star .rp-diary-compose{border-top-color:rgba(140,110,255,.2)}
+#rp-phone.rp-theme-star .rp-diary-input{background:rgba(28,14,72,.65)!important;border-color:rgba(140,110,255,.3);color:#e0d8ff!important}
+#rp-phone.rp-theme-star .rp-diary-input::placeholder{color:rgba(180,165,255,.45)}
+#rp-phone.rp-theme-star .rp-diary-send-btn{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+#rp-phone.rp-theme-star .rp-diary-empty{color:rgba(180,165,255,.35)}
+#rp-phone.rp-theme-star #rp-gen-diary{color:#a78bfa}
+#rp-phone.rp-theme-misty .rp-diary-entry{background:rgba(220,240,255,.45);border-color:rgba(100,170,220,.25)}
+#rp-phone.rp-theme-misty .rp-diary-author{color:#1a3050}
+#rp-phone.rp-theme-misty .rp-diary-date{color:rgba(44,74,106,.55)}
+#rp-phone.rp-theme-misty .rp-diary-body{color:#1a3050}
+#rp-phone.rp-theme-misty .rp-diary-reply{background:rgba(60,120,180,.06);border-top-color:rgba(100,170,220,.2)}
+#rp-phone.rp-theme-misty .rp-diary-reply-name{color:#2d6d9a}
+#rp-phone.rp-theme-misty .rp-diary-reply-text{color:#1e3c5a}
+#rp-phone.rp-theme-misty .rp-diary-compose{border-top-color:rgba(100,170,220,.2)}
+#rp-phone.rp-theme-misty .rp-diary-input{background:rgba(200,230,255,.35)!important;border-color:rgba(100,170,220,.3);color:#0f2035!important}
+#rp-phone.rp-theme-misty .rp-diary-input::placeholder{color:rgba(44,90,140,.4)}
+#rp-phone.rp-theme-misty .rp-diary-send-btn{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
+#rp-phone.rp-theme-misty .rp-diary-empty{color:rgba(44,74,106,.4)}
+#rp-phone.rp-theme-misty #rp-gen-diary{color:#3d7eb0}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
 /* ══════════════════════════════════════════════════════════
@@ -2577,6 +2633,7 @@ function syncToCurrentChat() {
       sync:          { ...STATE.sync },
       currentThread: STATE.currentThread,
       moments:       JSON.parse(JSON.stringify(STATE.moments || [])),
+      diary:         JSON.parse(JSON.stringify(STATE.diary || [])),
       avatars:       Object.assign({}, STATE.avatars || {}),
     };
     saveState();
@@ -2852,10 +2909,14 @@ const HTML = `
                 <div class="rp-app-ico">⚡</div>
                 <div class="rp-app-lbl">API</div>
               </div>
-              <!-- row 3: 美化 -->
+              <!-- row 3: 美化 日记 -->
               <div class="rp-app" data-app="themes">
                 <div class="rp-app-ico">🎨</div>
                 <div class="rp-app-lbl">主题</div>
+              </div>
+              <div class="rp-app" data-app="diary">
+                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#dg)"/><defs><linearGradient id="dg" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#f97316"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs><rect x="11" y="10" width="18" height="22" rx="3" fill="white" opacity=".95"/><rect x="14" y="15" width="12" height="1.8" rx=".9" fill="#f97316"/><rect x="14" y="19" width="10" height="1.8" rx=".9" fill="#f97316" opacity=".7"/><rect x="14" y="23" width="8" height="1.8" rx=".9" fill="#f97316" opacity=".5"/><circle cx="28" cy="30" r="5" fill="#ec4899"/><path d="M26 30h4M28 28v4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+                <div class="rp-app-lbl">日记</div>
               </div>
             </div>
 
@@ -2941,6 +3002,20 @@ const HTML = `
             <button id="rp-attach-btn" type="button">＋</button>
             <input id="rp-input" type="text" placeholder="iMessage（回车暂存）" autocomplete="off"/>
             <button id="rp-send" type="button">↑</button>
+          </div>
+        </div>
+
+        <!-- 日记 -->
+        <div id="rp-view-diary" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">日记</span>
+            <button id="rp-gen-diary" title="AI生成今日日记" class="rp-diary-gen-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64"/><polyline points="16 8 21 3 21 8"/><polyline points="8 16 3 21 3 16"/></svg></button>
+          </div>
+          <div id="rp-diary-list" style="flex:1;overflow-y:auto;padding:12px 14px 8px"></div>
+          <div class="rp-diary-compose">
+            <textarea id="rp-diary-input" class="rp-diary-input" placeholder="写下今天的心情…" rows="3"></textarea>
+            <button id="rp-diary-send" class="rp-diary-send-btn">发布</button>
           </div>
         </div>
 
@@ -3282,6 +3357,7 @@ function onChatChanged() {
       STATE.notifications = persisted.notifications || [];
       STATE.sync = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments = persisted.moments || [];
+  STATE.diary = persisted.diary || [];
       STATE.avatars = persisted.avatars || {};
       STATE.currentThread = null;
     } else {
@@ -3447,6 +3523,18 @@ function bindUI() {
 
   // ── API 面板事件 ──
   // ── API Settings VIEW (首页入口) ──
+  // ── Diary app ──
+  $(document).on('click', '[data-app="diary"]', function() {
+    STATE.diary = STATE.diary || [];
+    renderDiary();
+    go('diary');
+  });
+  $(document).on('click', '#rp-gen-diary', generateAIDiary);
+  $(document).on('click', '#rp-diary-send', postUserDiary);
+  $(document).on('keydown', '#rp-diary-input', function(e) {
+    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); postUserDiary(); }
+  });
+
   $(document).on('click', '[data-app="api-settings"]', function() {
     lgFillAPIView();
     go('api-settings');
@@ -4501,12 +4589,123 @@ function closeCompose() {
   $('#rp-compose-modal').hide();
 }
 
+// ================================================================
+//  DIARY
+// ================================================================
+function renderDiary() {
+  var container = $('#rp-diary-list').empty();
+  var entries = (STATE.diary || []).slice().reverse();
+  if (!entries.length) {
+    container.append('<div class="rp-diary-empty">\u6682\u65e0\u65e5\u8bb0\uff0c\u6309\u4e0a\u65b9\u6309\u9492\u751f\u6210\u6216\u81ea\u5df1\u5199\u4e00\u7bc7</div>');
+    return;
+  }
+  var _ctx = getContext();
+  var charName = _ctx && _ctx.name2 ? _ctx.name2 : 'TA';
+  var charAvatarBg = 'linear-gradient(145deg,#7c3aed,#0891b2)';
+  var charAv = STATE.avatars && STATE.avatars[charName];
+  entries.forEach(function(e) {
+    var isAI = e.author === 'ai';
+    var avHtml = isAI
+      ? (charAv ? '<div class="rp-diary-av rp-av-img" style="overflow:hidden"><img src="' + charAv + '" style="width:100%;height:100%;object-fit:cover"/></div>'
+               : '<div class="rp-diary-av" style="background:' + charAvatarBg + '">' + charName.slice(0,2) + '</div>')
+      : '<div class="rp-diary-av" style="background:linear-gradient(145deg,#64748b,#475569)">\u6211</div>';
+    var authorLabel = isAI ? charName + '<span class="rp-diary-ai-badge">AI</span>' : '\u6211';
+    var replyHtml = '';
+    if (!isAI && e.reply) {
+      replyHtml = '<div class="rp-diary-reply"><div class="rp-diary-reply-name">' + escHtml(charName) + '</div>'
+        + '<div class="rp-diary-reply-text">' + escHtml(e.reply) + '</div></div>';
+    }
+    container.append(
+      '<div class="rp-diary-entry">'
+      + '<div class="rp-diary-hd">' + avHtml
+      + '<div class="rp-diary-meta"><div class="rp-diary-author">' + authorLabel + '</div>'
+      + '<div class="rp-diary-date">' + escHtml(e.date) + ' ' + escHtml(e.time) + '</div></div></div>'
+      + '<div class="rp-diary-body">' + escHtml(e.text) + '</div>'
+      + replyHtml
+      + '</div>'
+    );
+  });
+}
+
+async function generateAIDiary() {
+  var btn = $('#rp-gen-diary');
+  btn.addClass('rp-spinning').prop('disabled', true);
+  try {
+    var _ctx = getContext();
+    if (!_ctx) return;
+    var charName = _ctx.name2 || 'TA';
+    var charPersona = '';
+    if (_ctx.characters && _ctx.characterId !== undefined) {
+      var ch = _ctx.characters[_ctx.characterId];
+      if (ch) charPersona = (ch.description || '') + ' ' + (ch.personality || '');
+    }
+    var recent = (_ctx.chat || []).slice(-12).map(function(m) {
+      return (m.is_user ? '\u7528\u6237' : charName) + '\uff1a' + (m.mes || '').slice(0, 100);
+    }).join('\n');
+    var now = new Date();
+    var dateStr = (now.getMonth()+1) + '/' + now.getDate();
+    var sysMsg = '\u4f60\u662f' + charName + '\u3002'
+      + (charPersona ? '\u4eba\u8bbe\uff1a' + charPersona.slice(0,200) + '\n' : '')
+      + '\u8bf7\u4ee5\u7b2c\u4e00\u4eba\u79f0\u5c55\u793a\u4e2a\u4eba\u89c6\u89d2\u5199\u4e00\u7bc7\u65e5\u8bb0\uff0c'
+      + '\u53cd\u6620\u4eca\u65e5\u548c\u7528\u6237\u7684\u4e92\u52a8\u611f\u53d7\uff0c150-250\u5b57\uff0c\u4e2d\u6587\u3002';
+    var prompt = '\u4eca\u65e5\u5bf9\u8bdd\uff1a\n' + recent + '\n\n' + charName + '\u7684\u4eca\u65e5\u65e5\u8bb0\uff1a';
+    var resp = await lgCallAPI(prompt, 350, sysMsg);
+    if (!resp) return;
+    var ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    STATE.diary = STATE.diary || [];
+    STATE.diary.push({ id: 'diary_' + now.getTime(), date: dateStr, time: ts, author: 'ai', text: resp.trim(), reply: null });
+    saveState();
+    renderDiary();
+  } catch(e) { console.warn('[Diary] generateAIDiary error:', e); }
+  finally { btn.removeClass('rp-spinning').prop('disabled', false); }
+}
+
+async function postUserDiary() {
+  var text = $('#rp-diary-input').val().trim();
+  if (!text) return;
+  $('#rp-diary-send').prop('disabled', true);
+  $('#rp-diary-input').val('');
+  var now = new Date();
+  var dateStr = (now.getMonth()+1) + '/' + now.getDate();
+  var ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  var entryId = 'diary_' + now.getTime();
+  STATE.diary = STATE.diary || [];
+  STATE.diary.push({ id: entryId, date: dateStr, time: ts, author: 'user', text: text, reply: null, replyTime: null });
+  saveState(); renderDiary();
+  // char 回复（只有主角，不请求 NPC）
+  try {
+    var _ctx2 = getContext();
+    var charName2 = _ctx2 && _ctx2.name2 ? _ctx2.name2 : 'TA';
+    var charPersona2 = '';
+    if (_ctx2 && _ctx2.characters && _ctx2.characterId !== undefined) {
+      var ch2 = _ctx2.characters[_ctx2.characterId];
+      if (ch2) charPersona2 = (ch2.description || '') + ' ' + (ch2.personality || '');
+    }
+    var sysMsg2 = '\u4f60\u662f' + charName2 + '\u3002'
+      + (charPersona2 ? '\u4eba\u8bbe\uff1a' + charPersona2.slice(0,200) + '\n' : '')
+      + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9\u4f60\uff0c\u7528\u6e29\u67d4\u81ea\u7136\u7684\u8bed\u6c14\u56de\u5e94\uff0c'
+      + '30-60\u5b57\uff0c\u4e2d\u6587\uff0c\u53ea\u8fd4\u56de\u56de\u5e94\u6b63\u6587\u3002';
+    var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n' + charName2 + '\u7684\u56de\u5e94\uff1a';
+    var resp2 = await lgCallAPI(prompt2, 200, sysMsg2);
+    if (resp2) {
+      var cleaned2 = resp2.trim().replace(/^[\u300c"'\u300d"']+|[\u300d"'\u300c"']+ $/g, '').trim();
+      var now2 = new Date();
+      var ts2 = String(now2.getHours()).padStart(2,'0') + ':' + String(now2.getMinutes()).padStart(2,'0');
+      var entry = (STATE.diary || []).find(function(d) { return d.id === entryId; });
+      if (entry) { entry.reply = cleaned2; entry.replyTime = ts2; }
+      saveState(); renderDiary();
+    }
+  } catch(e) { console.warn('[Diary] postUserDiary reply error:', e); }
+  finally { $('#rp-diary-send').prop('disabled', false); }
+}
+
 function postUserMoment() {
   const text = $('#rp-compose-text').val().trim();
   if (!text) return;
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const momentId = `user_${now.getTime()}`;
+  STATE.diary = STATE.diary || [];
   STATE.moments = STATE.moments || [];
   STATE.moments.push({
     id: momentId,
