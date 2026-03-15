@@ -2238,6 +2238,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 `;
 
+// ================================================================
+//  DEVICE TYPE DETECTION - 彻底分离 PC 和手机端逻辑
+//  window.innerWidth 在 ST 初始化时序中不可靠（可能在 viewport meta 处理前就读取）
+//  maxTouchPoints > 0 + UA 是真正可靠的物理设备判断
+// ================================================================
+const IS_TOUCH_DEVICE = navigator.maxTouchPoints > 0 || /Android|iPhone|iPod|iPad/i.test(navigator.userAgent);
+
 function injectStyles() {
   if (document.getElementById('rp-phone-css')) return;
   const style = document.createElement('style');
@@ -2723,13 +2730,13 @@ async function init() {
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
     const frame = document.getElementById('rp-frame');
-    // screen.width: 物理屏宽(CSS px)，不受 viewport 时序影响；window.innerWidth 可能在初始化时报错
-    if (screen.width <= 768 || window.innerWidth <= 768) {
-      // ── 手机端(PE) ──
+    if (IS_TOUCH_DEVICE) {
+      // ── 手机端(PE) ── (用物理触控判断，与 window.innerWidth 无关)
       // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
       // 手机端 FAB 位置修复（多重保险）
       // screen.width 不受 viewport 初始化时序影响，比 window.innerWidth 更可靠
       function _applyFabPos() {
+        if (!IS_TOUCH_DEVICE) return; // 只在真实触控设备上运行
         const _fab = document.getElementById('rp-fab');
         if (!_fab) return;
         const _h = Math.max(_fab.offsetHeight, 32);
@@ -2740,9 +2747,9 @@ async function init() {
         _fab.style.setProperty('display',    'flex',    'important');
         _fab.style.setProperty('visibility', 'visible', 'important');
       }
-      _applyFabPos();                          // 立即执行
-      setTimeout(_applyFabPos, 200);           // 200ms 后重试（等 ST 完成布局）
-      setTimeout(_applyFabPos, 800);           // 800ms 后再试（防止慢设备）
+      _applyFabPos();
+      setTimeout(_applyFabPos, 200);
+      setTimeout(_applyFabPos, 800);
       // 强制 frame 尺寸 270×500 (手机端专用)
       if (frame) {
         frame.style.setProperty('width', '270px', 'important');
@@ -3961,7 +3968,7 @@ function makeDraggable() {
   let dragging = false, ox, oy, ex, ey;
 
   phone.addEventListener('mousedown', e => {
-    if (window.innerWidth <= 768) return; // 手机端不用鼠标拖拽
+    if (IS_TOUCH_DEVICE) return; // 触控设备不用鼠标拖拽
     if (e.target.closest('input,button,.rp-view')) return;
     dragging = true;
     const r = phone.getBoundingClientRect();
@@ -4956,8 +4963,7 @@ function lgInitFabDrag() {
     dragging = false;
     fab.style.cursor = 'grab'; fab.style.transition = '';
     if (moved) {
-      const isMobile = window.innerWidth <= 768;
-      const posKey = isMobile ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
+      const posKey = IS_TOUCH_DEVICE ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
       localStorage.setItem(posKey, JSON.stringify({ left: fab.style.left, top: fab.style.top }));
     }
   }
@@ -4985,10 +4991,9 @@ function lgInitFabDrag() {
   // Block click after drag
   fab.addEventListener('click', e => { if (moved) { moved = false; e.stopImmediatePropagation(); } }, true);
 
-  // Restore saved position (PC/mobile use separate keys to avoid position bleed)
+  // Restore saved position (完全按设备类型分离，与 window.innerWidth 无关)
   try {
-    const isMobile = window.innerWidth <= 768;
-    const posKey = isMobile ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
+    const posKey = IS_TOUCH_DEVICE ? 'rp_fab_pos_mobile' : 'rp_fab_pos';
     const s = JSON.parse(localStorage.getItem(posKey) || 'null');
     if (s) {
       const fw = Math.max(fab.offsetWidth, 54);
