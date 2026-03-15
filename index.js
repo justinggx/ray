@@ -2657,6 +2657,7 @@ function syncToCurrentChat() {
     STATE.notifications = s.notifications || [];
     STATE.sync          = Object.assign({}, s.sync);
     STATE.moments       = JSON.parse(JSON.stringify(s.moments || []));
+    STATE.diary         = JSON.parse(JSON.stringify(s.diary   || []));
     STATE.avatars       = Object.assign({}, s.avatars || {});
     STATE.currentThread = s.currentThread || null;
   } else {
@@ -2666,12 +2667,14 @@ function syncToCurrentChat() {
       STATE.notifications = persisted.notifications || [];
       STATE.sync          = persisted.sync || { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments       = persisted.moments || [];
+      STATE.diary         = persisted.diary   || [];
       STATE.avatars       = persisted.avatars || {};
     } else {
       STATE.threads       = {};
       STATE.notifications = [];
       STATE.sync          = { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments       = [];
+      STATE.diary         = [];
       STATE.avatars       = {};
     }
     STATE.currentThread = null;
@@ -2793,6 +2796,7 @@ function saveState() {
       notifications: STATE.notifications,
       sync: STATE.sync,
       moments: STATE.moments,
+      diary: STATE.diary || [],
       darkMode: STATE.darkMode,
       avatars: STATE.avatars || {},
     };
@@ -3340,6 +3344,7 @@ function onChatChanged() {
       sync: { ...STATE.sync },
       currentThread: STATE.currentThread,
       moments: JSON.parse(JSON.stringify(STATE.moments || [])),
+      diary:   JSON.parse(JSON.stringify(STATE.diary   || [])),
       avatars: Object.assign({}, STATE.avatars || {}),
     };
     saveState();
@@ -3356,6 +3361,7 @@ function onChatChanged() {
     STATE.notifications = s.notifications;
     STATE.sync = { ...s.sync };
     STATE.moments = JSON.parse(JSON.stringify(s.moments || []));
+    STATE.diary   = JSON.parse(JSON.stringify(s.diary   || []));
     STATE.avatars = Object.assign({}, s.avatars || {});
     STATE.currentThread = s.currentThread;
   } else {
@@ -3373,6 +3379,7 @@ function onChatChanged() {
       STATE.notifications = [];
       STATE.sync = { stage: 1, progress: 0, status: '乖巧' };
       STATE.moments = [];
+      STATE.diary   = [];
       STATE.avatars = {};
       STATE.currentThread = null;
     }
