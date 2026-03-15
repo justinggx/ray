@@ -37,8 +37,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     height: 54px !important;
     font-size: 26px !important;
     right: 14px !important;
-    bottom: 110px !important;
-    top: auto !important;
+    top: calc(100vh - 164px) !important; /* 视口高度 - 54px高度 - 110px底部间距 */
+    bottom: auto !important;
     transform: none !important;
     background: rgba(120,60,210,.82) !important;
     border: 2.5px solid rgba(255,255,255,.92) !important;
@@ -2713,6 +2713,16 @@ async function init() {
 
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
+  // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
+  // 用 window.innerHeight 直接计算真实视口位置
+  (function fixMobileFabPos() {
+    if (window.innerWidth > 768) return;
+    const fab = document.getElementById('rp-fab');
+    if (!fab) return;
+    const t = window.innerHeight - 164; // 164 = 54(height) + 110(bottom margin)
+    fab.style.setProperty('top', t + 'px', 'important');
+    fab.style.setProperty('bottom', 'auto', 'important');
+  })();
   setTimeout(lgInitFabDrag, 100);
   if (!document.getElementById('rp-live-chat')) {
     $('body').append('<div id="rp-live-chat"></div>');
