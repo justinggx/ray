@@ -3435,6 +3435,11 @@ async function init() {
 
   injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
   $('body').append(HTML);
+  // Defensive: ensure FAB visible after append
+  (function() {
+    var _f = document.getElementById('rp-fab');
+    if (_f) { _f.style.display = 'flex'; _f.style.visibility = 'visible'; }
+  })();
   // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
@@ -3795,7 +3800,7 @@ function bindUI() {
       var ms = Date.now() - t0;
       $btn.removeClass('testing ok').addClass('fail').text('❌ 连接失败');
       $st.text('❌ 请求失败: ' + e.message.substring(0,50));
-    }).finally(function() {
+    }).then(function() {
       $btn.removeClass('testing');
       setTimeout(function() {
         $btn.removeClass('ok fail').text('📡 测试连通性');
