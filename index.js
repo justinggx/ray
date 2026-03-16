@@ -1980,7 +1980,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-ico-diary{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
 
 /* ══ 2048 GAME ══ */
-#rp-view-g2048{position:relative;background:transparent;display:flex;flex-direction:column;overflow:hidden}
+#rp-view-g2048{position:relative;background:transparent;display:flex;flex-direction:column;overflow:hidden;height:100%}
 #g2048-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;flex-shrink:0}
 #g2048-scores{display:flex;gap:7px}
 .g2048-sbox{background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:7px;padding:3px 10px;text-align:center;min-width:50px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
@@ -2012,9 +2012,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* 2048 fullscreen chat */
 #g2048-chat-hint{font-size:9.5px;color:rgba(240,225,205,.55);text-align:right;padding:0 16px 2px;flex-shrink:0;text-shadow:0 1px 2px rgba(0,0,0,.5)}
 #g2048-chat-fs{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:flex;flex-direction:column}
-#g2048-chat-fs-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;flex-shrink:0}
+#g2048-chat-fs-hd{display:flex;align-items:center;justify-content:space-between;padding:52px 16px 10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.12)}
 #g2048-chat-fs-title{color:#fff;font-weight:600;font-size:14px}
-#g2048-chat-fs-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:4px}
+#g2048-chat-fs-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:50%;color:#fff;font-size:16px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
 #g2048-chat-fs-body{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:4px}
 #g2048-chat-fs-body::-webkit-scrollbar{display:none}
 #g2048-chat-fs-body .game-msg{font-size:13px;line-height:1.6;padding:3px 0}
@@ -2044,6 +2044,46 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-sys{color:rgba(200,228,255,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-user{color:rgba(255,210,228,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(185,228,255,.95);text-shadow:0 0 4px rgba(0,10,40,.8)}
+
+/* ── 2048 tile colors (Candy warm) ── */
+.g2048-tile[data-v="2"]{background:#eee4da;color:#776e65}
+.g2048-tile[data-v="4"]{background:#ede0c8;color:#776e65}
+.g2048-tile[data-v="8"]{background:#f2b179;color:#f9f6f2}
+.g2048-tile[data-v="16"]{background:#f59563;color:#f9f6f2}
+.g2048-tile[data-v="32"]{background:#f67c5f;color:#f9f6f2}
+.g2048-tile[data-v="64"]{background:#f65e3b;color:#f9f6f2}
+.g2048-tile[data-v="128"]{background:#edcf72;color:#f9f6f2}
+.g2048-tile[data-v="256"]{background:#edcc61;color:#f9f6f2}
+.g2048-tile[data-v="512"]{background:#edc850;color:#f9f6f2}
+.g2048-tile[data-v="1024"]{background:#edc53f;color:#f9f6f2}
+.g2048-tile[data-v="2048"]{background:linear-gradient(135deg,#f9ca24,#f0932b);color:#fff}
+.g2048-tile[data-v="high"]{background:#3c3a32;color:#f9f6f2}
+/* ── Star theme tiles (purple) ── */
+#rp-phone.rp-theme-star .g2048-tile[data-v="2"]{background:rgba(55,15,105,.55);color:#c8b8ff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="4"]{background:rgba(70,20,135,.65);color:#d4c8ff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="8"]{background:rgba(90,28,170,.75);color:#e8e0ff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="16"]{background:rgba(110,32,195,.8);color:#f0ebff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="32"]{background:rgba(135,22,205,.85);color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="64"]{background:rgba(155,18,215,.9);color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="128"]{background:linear-gradient(135deg,rgba(80,8,150,.95),rgba(140,10,200,.95));color:#ffd8ff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="256"]{background:linear-gradient(135deg,rgba(100,5,160,.95),rgba(160,8,210,.95));color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="512"]{background:linear-gradient(135deg,rgba(120,0,170,.95),rgba(180,5,220,.95));color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="1024"]{background:linear-gradient(135deg,#4c0080,#7c00c8);color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="2048"]{background:linear-gradient(135deg,#9333ea,#c026d3);color:#fff}
+#rp-phone.rp-theme-star .g2048-tile[data-v="high"]{background:#2d0060;color:#e8d0ff}
+/* ── Misty theme tiles (blue) ── */
+#rp-phone.rp-theme-misty .g2048-tile[data-v="2"]{background:rgba(185,218,242,.52);color:#0e2540}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="4"]{background:rgba(165,208,238,.62);color:#0e2540}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="8"]{background:rgba(82,158,222,.78);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="16"]{background:rgba(58,140,212,.84);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="32"]{background:rgba(38,118,195,.88);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="64"]{background:rgba(18,95,178,.92);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="128"]{background:linear-gradient(135deg,rgba(45,125,205,.95),rgba(20,85,175,.95));color:#d8f0ff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="256"]{background:linear-gradient(135deg,rgba(30,108,192,.95),rgba(10,70,162,.95));color:#e8f5ff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="512"]{background:linear-gradient(135deg,rgba(15,90,178,.95),rgba(5,55,148,.95));color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="1024"]{background:linear-gradient(135deg,#0369a1,#0c4a6e);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="2048"]{background:linear-gradient(135deg,#0ea5e9,#06b6d4);color:#fff}
+#rp-phone.rp-theme-misty .g2048-tile[data-v="high"]{background:#073763;color:#d0eeff}
 
 /* Star theme 2048 */
 #rp-phone.rp-theme-star #g2048-board{background:rgba(20,8,60,.82)}
@@ -6055,23 +6095,17 @@ function g2048BestDir() {
   return best;
 }
 
+// ── Strip action descriptions from 2048 chat ──────────────────
+function g2048StripActions(text) {
+  if (!text) return text;
+  // Remove （action）*action* (action) patterns
+  return text.replace(/[\uff08(][^\uff09)]{1,30}[\uff09)]/g, '').replace(/\*[^*]{1,25}\*/g, '').trim();
+}
+
 // ── Render board + UI ──────────────────────────────────────────
 function g2048Render() {
   var board = document.getElementById('g2048-board');
   if (!board) return;
-  var COLORS = {
-    2:    ['#eee4da', '#776e65'],
-    4:    ['#ede0c8', '#776e65'],
-    8:    ['#f2b179', '#f9f6f2'],
-    16:   ['#f59563', '#f9f6f2'],
-    32:   ['#f67c5f', '#f9f6f2'],
-    64:   ['#f65e3b', '#f9f6f2'],
-    128:  ['#edcf72', '#f9f6f2'],
-    256:  ['#edcc61', '#f9f6f2'],
-    512:  ['#edc850', '#f9f6f2'],
-    1024: ['#edc53f', '#f9f6f2'],
-    2048: ['linear-gradient(135deg,#f9ca24,#f0932b)', '#fff'],
-  };
   board.innerHTML = '';
   LG2048.board.forEach(function(row) {
     row.forEach(function(v) {
@@ -6080,9 +6114,7 @@ function g2048Render() {
       if (v > 0) {
         var tile = document.createElement('div');
         tile.className = 'g2048-tile';
-        var col = COLORS[v] || ['#3c3a32', '#f9f6f2'];
-        tile.style.background = col[0];
-        tile.style.color = col[1];
+        tile.setAttribute('data-v', v > 2048 ? 'high' : v);
         tile.style.fontSize = v >= 1024 ? '14px' : v >= 128 ? '17px' : v >= 8 ? '20px' : '22px';
         tile.textContent = v;
         cell.appendChild(tile);
@@ -6127,7 +6159,7 @@ function g2048Init() {
     var persona = lgGetPersona();
     var p = (persona ? persona + '\n' : '') + '\u6211\u4eec\u73b0\u5728\u5f00\u59cb\u73a9\u8f6e\u6d412048\u6e38\u620f\uff0c\u7b26\u5408\u4f60\u7684\u6027\u683c\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff09\uff1a';
     lgCallAPI(p, 80).then(function(r) {
-      if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+      if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
     });
   }, 700);
 }
@@ -6158,7 +6190,7 @@ function g2048UserMove(dir) {
     var persona = lgGetPersona();
     var wp = (persona ? persona + '\n' : '') + '\u6211\u4eec\u5728 2048 \u6e38\u620f\u91cc\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff09\uff1a';
     lgCallAPI(wp, 80).then(function(r) {
-      if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+      if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
     });
     return;
   }
@@ -6204,7 +6236,7 @@ function g2048CharTurn() {
   var scoreNote = res.score > 0 ? '\uff0c\u5408\u5e76\u5f97\u5206' + res.score : '';
   var p = (persona ? persona + '\n' : '') + '\u6211\u9009\u62e9' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u7b26\u5408\u89d2\u8272\u6027\u683c\u8bf4\u4e00\u53e5\u8bdd\uff0810-18\u5b57\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u62ec\u53f7\u52a8\u4f5c\u63cf\u5199\uff0c\u4e0d\u8981OOC\uff09\uff1a';
   lgCallAPI(p, 70).then(function(r) {
-    if (r && LG2048.active) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+    if (r && LG2048.active) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
   });
   LG2048.turn = 'user';
   LG2048.processing = false;
@@ -6232,7 +6264,7 @@ function g2048Chat(text) {
   var userName = (ctx && ctx.name1) || '\u4f60';
   var p = (persona ? persona + '\n' : '') + userName + '\u5728 2048 \u6e38\u620f\u4e2d\u8bf4\uff1a\u300c' + text + '\u300d\n' + LG2048.charName + '\u7684\u56de\u5e94\uff0815-25\u5b57\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\uff09\uff1a';
   lgCallAPI(p, 100).then(function(r) {
-    if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+    if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
   });
 }
 
