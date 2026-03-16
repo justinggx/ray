@@ -3427,8 +3427,6 @@ const HTML = `
 //  INIT
 // ================================================================
 async function init() {
-  console.warn('[RP] init() called at', Date.now());
-  try {
   // Hot-reload safety: remove stale phone element & force CSS re-inject
   const stale = document.getElementById('rp-wrapper');
   if (stale) stale.remove();
@@ -3439,13 +3437,11 @@ async function init() {
   window._rpPhoneSheet = false;
 
   injectStyles();
-  console.warn('[RP] about to append HTML');
   $('body').append(HTML);
-  console.warn('[RP] HTML appended, rp-fab in DOM:', !!document.getElementById('rp-fab'));
   // Defensive: ensure FAB visible after append
   var _f = document.getElementById('rp-fab');
   if (_f) { _f.style.cssText += ';display:flex!important;visibility:visible!important;opacity:1!important'; }
-  else { console.error('[RP] FATAL: rp-fab not found after append'); }
+
   // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
@@ -3537,7 +3533,6 @@ async function init() {
       hidePhoneTagsInChat();
     } catch(e) {}
   }, 800);
-  } catch(err) { console.error('[RP] init() crash:', err.message, err.stack); }
 }
 
 // ================================================================
@@ -4261,7 +4256,7 @@ function addContact() {
     initials: initials,
     avatarBg: generateAvatarBg(),
     messages: [],
-    unread: 0,
+    unread: 0
   };
 
   $('#rp-add-modal').hide();
@@ -7019,7 +7014,6 @@ function cleanGameReply(raw, charName) {
 // ── Extract compact persona snippet from current ST character ─────────────────
 function lgGetPersona() {
   try {
-    console.log("[Ludo] lgGetPersona called");
     // Try multiple ways to get context
     const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
     
@@ -7043,7 +7037,6 @@ function lgGetPersona() {
     const src = personality || description.substring(0, 200);
     
     if (src) {
-      console.log('[Ludo] Persona loaded:', src.substring(0, 50) + '...');
       return `【角色人设】${src}。`;
     }
     return '';
