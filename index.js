@@ -2002,7 +2002,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #g2048-chat::-webkit-scrollbar{display:none}
 #g2048-input-row{display:flex;gap:6px;padding:6px 12px 10px;flex-shrink:0;border-top:1px solid rgba(0,0,0,.06)}
 #g2048-input{flex:1;border-radius:18px;border:1px solid rgba(0,0,0,.12);padding:6px 12px;font-size:13px;background:rgba(255,255,255,.88);font-family:inherit;outline:none;color:#1a1008}
-#g2048-send{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);border:none;color:#c0306a;font-weight:800;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#g2048-send{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#e05888,#c0306a);border:none;color:#fff;font-weight:800;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(160,30,80,.4)}
 #g2048-over{position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:50;flex-direction:column;align-items:center;justify-content:center;gap:12px;display:none}
 .g2048-over-emoji{font-size:52px;line-height:1}
 .g2048-over-title{font-size:20px;font-weight:800;color:#fff}
@@ -2027,6 +2027,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-sys{color:rgba(200,228,255,.92)}
 #rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-user{color:rgba(255,210,228,.92)}
 #rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-char{color:rgba(185,228,255,.95)}
+
+/* 2048 API tip blink */
+@keyframes g2048TipBlink{0%,100%{opacity:.75}50%{opacity:.22}}
+#g2048-api-tip{font-size:10px;text-align:center;padding:2px 12px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:rgba(192,48,106,.82)}
+#rp-phone.rp-theme-star #g2048-api-tip{color:rgba(200,180,255,.78)}
+#rp-phone.rp-theme-misty #g2048-api-tip{color:rgba(160,210,255,.82)}
 
 /* 2048 chat message colors */
 #g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 0;font-weight:500}
@@ -2095,7 +2101,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star #g2048-turn{color:#e8e0ff!important;background:rgba(18,6,55,.78)!important}
 #rp-phone.rp-theme-star .g2048-dir{background:rgba(80,40,160,.45);color:#c8b8ff;border:1px solid rgba(140,110,255,.2)}
 #rp-phone.rp-theme-star #g2048-input{background:rgba(30,14,72,.82)!important;border-color:rgba(140,110,255,.35);color:#e8e0ff}
-#rp-phone.rp-theme-star #g2048-send{background:rgba(255,255,255,.88)!important;color:#7c3aed!important}
+#rp-phone.rp-theme-star #g2048-send{background:linear-gradient(135deg,#7c3aed,#a855f7)!important;color:#fff!important;box-shadow:0 2px 8px rgba(100,30,200,.4)!important}
 #rp-phone.rp-theme-star #g2048-input::placeholder{color:rgba(200,185,255,.4)}
 #rp-phone.rp-theme-star #g2048-turn{color:rgba(200,185,255,.65)!important}
 #rp-phone.rp-theme-star .g2048-dir:active{background:rgba(120,60,200,.7)}
@@ -2108,7 +2114,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-turn{color:rgba(220,238,252,.95)!important;background:rgba(0,30,70,.55)!important;text-shadow:0 1px 3px rgba(0,20,60,.6)}
 #rp-phone.rp-theme-misty .g2048-dir{background:rgba(180,215,240,.55);color:#0a2035;border:1px solid rgba(100,160,210,.25)}
 #rp-phone.rp-theme-misty #g2048-input{background:rgba(235,248,255,.7)!important;border-color:rgba(100,170,220,.3);color:#0a1828}
-#rp-phone.rp-theme-misty #g2048-send{background:rgba(255,255,255,.88)!important;color:#0369a1!important}
+#rp-phone.rp-theme-misty #g2048-send{background:linear-gradient(135deg,#0ea5e9,#0369a1)!important;color:#fff!important;box-shadow:0 2px 8px rgba(0,80,160,.35)!important}
 #rp-phone.rp-theme-misty .g2048-dir:active{background:rgba(130,185,230,.8)}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
@@ -3259,6 +3265,7 @@ const HTML = `
             <button class="g2048-dir" data-dir="down">▼</button>
             <button class="g2048-dir" data-dir="right">►</button>
           </div>
+          <div id="g2048-api-tip">⚡ 请在API功能中更换国产模型，以提升回复速度。例：deepseek</div>
           <div id="g2048-chat-hint">点击展开 ↗</div>
           <div id="g2048-chat"></div>
           <div id="g2048-input-row">
@@ -6097,12 +6104,32 @@ function g2048BestDir() {
 }
 
 // ── Strip action descriptions from 2048 chat ──────────────────
+// ── Clean persona for 2048 (strip system directives) ──────────────
+function g2048GetPersona() {
+  var p = g2048GetPersona();
+  if (!p) return '';
+  // Strip lines that look like system directives (权限/模式/指令/开启 etc.)
+  p = p.split(/[\n。！]/).filter(function(line) {
+    var l = line.trim();
+    if (!l) return false;
+    // Drop lines with colon + action patterns (互动权限：, 系统指令：, etc.)
+    if (/[权限指令系统][：:]/u.test(l)) return false;
+    if (/互动[权限指令]/u.test(l)) return false;
+    if (/开启[共扮演演示]/u.test(l)) return false;
+    if (/^[A-Z][a-z]+:/.test(l)) return false; // Skip JSON-like keys
+    return true;
+  }).join('，');
+  return p.trim() ? '【角色人设】' + p.trim() + '。' : '';
+}
+
 function g2048StripActions(text) {
   if (!text) return text;
   // Remove （action）*action* (action) patterns
   text = text.replace(/[\uff08(][^\uff09)]{1,30}[\uff09)]/g, '').replace(/\*[^*]{1,25}\*/g, '');
   // Remove ellipses (…… … ...)
   text = text.replace(/…{1,4}/g, '').replace(/\.{2,}/g, '');
+  // Drop system-directive-looking responses entirely
+  if (/[权限指令系统][：:]/.test(text) || /互动[权限]/.test(text) || /开启共演/.test(text)) return '';
   // Collapse extra spaces
   text = text.replace(/\s{2,}/g, ' ').trim();
   return text;
@@ -6162,7 +6189,7 @@ function g2048Init() {
   g2048Render();
   g2048Msg('sys', '\u6e38\u620f\u5f00\u59cb\uff01\u4e00\u8d77\u5e72\u5230 2048 \u5427\uff01\ud83c\udf89');
   setTimeout(function() {
-    var persona = lgGetPersona();
+    var persona = g2048GetPersona();
     var p = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u73b0\u5728\u8fdb\u884c2048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u3002\u4ee5\u89d2\u8272\u53e3\u5428\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff09\uff1a';
     lgCallAPI(p, 80).then(function(r) {
       if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
@@ -6193,7 +6220,7 @@ function g2048UserMove(dir) {
     $('#g2048-over-title').text('\u8fbe\u62102048\uff01');
     $('#g2048-over-sub').text('\u4f60\u4eec\u5408\u529b\u5b8c\u6210\u4e86\uff01');
     $('#g2048-over').css('display', 'flex');
-    var persona = lgGetPersona();
+    var persona = g2048GetPersona();
     var wp = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u5728\u4e00\u8d772048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u4e2d\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u4ee5\u89d2\u8272\u53e3\u5428\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff09\uff1a';
     lgCallAPI(wp, 80).then(function(r) {
       if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
@@ -6238,7 +6265,7 @@ function g2048CharTurn() {
   }
   if (!g2048HasMoves()) { LG2048.processing = false; g2048GameOver(); return; }
   // Non-blocking AI comment
-  var persona = lgGetPersona();
+  var persona = g2048GetPersona();
   var scoreNote = res.score > 0 ? '\uff0c\u5408\u5e76\u5f97\u5206' + res.score : '';
   var p = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u6b63\u5728\u4e00\u8d772048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u3002\u6211\u521a\u521a\u9009\u62e9\u5411' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u4ee5\u89d2\u8272\u53e3\u5403\u8bf4\u4e00\u53e5\u5173\u4e8e\u6e38\u620f\u7684\u8bdd\uff0810-18\u5b57\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff09\uff1a';
   lgCallAPI(p, 70).then(function(r) {
@@ -6265,7 +6292,7 @@ function g2048Chat(text) {
   if (!text) return;
   g2048Msg('user', text);
   if (!LG2048.active && !LG2048.won) return;
-  var persona = lgGetPersona();
+  var persona = g2048GetPersona();
   var ctx = getContext ? getContext() : {};
   var userName = (ctx && ctx.name1) || '\u4f60';
   var p = (persona ? persona + '\n' : '') + userName + '\u5728 2048 \u6e38\u620f\u4e2d\u8bf4\uff1a\u300c' + text + '\u300d\n' + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u6b63\u5728\u73a9\u6e38\u620f\u3002' + LG2048.charName + '\u7684\u56de\u5e94\uff0815-25\u5b57\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\uff09\uff1a';
@@ -6929,7 +6956,7 @@ function cleanGameReply(raw, charName) {
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
-function lgGetPersona() {
+function g2048GetPersona() {
   try {
     console.log("[Ludo] lgGetPersona called");
     // Try multiple ways to get context
@@ -7147,7 +7174,7 @@ async function lgTriggerSquareEvent(player, pos) {
     if (hintEl) hintEl.textContent = `请耐心等待${LG.charName}的回答`;
 
     // AI 生成 char 完成任务的话（支持自定义 API）
-    const persona   = lgGetPersona();
+    const persona   = g2048GetPersona();
     const actHint   = ev.type === 'action' ? '（动作描写用*动作*格式，≤8字）' : '';
     const prompt    = `[飞行棋强制任务规则]无论角色性格如何，踩到任务格必须立刻直接完成任务，不许沉默、回避、卖关子或绕弯子。\n${persona}\n当前任务：${ev.text}${actHint}\n${LG.charName}现在立刻直接完成（不超过30字，必须包含实际说话内容，不许只有动作描写）：`;
     const rawReply = await lgCallAPI(prompt, 150);
@@ -7181,7 +7208,7 @@ function lgCharComment(event) {
   const n      = LG.lastDice;
   const cPos   = LG.charPos;
   const uPos   = LG.userPos;
-  const persona = lgGetPersona();
+  const persona = g2048GetPersona();
 
   // ── game_start：游戏开场白，单独处理 ──────────────────────────
   if (event === 'game_start') {
@@ -7234,7 +7261,7 @@ async function lgGameChat(text) {
   // quick in-character reply via OOC injection (doesn't advance story)
   const ctx    = getContext();
   const cName  = LG.charName;
-  const persona = lgGetPersona();
+  const persona = g2048GetPersona();
   // Completion-style prompt: AI fills dialogue directly after open quote
   const taskNote = LG.taskActive ? `\n[当前待完成任务：「${LG.taskActive}」——必须直接完成，不许回避]` : '';
   const prompt = `${persona}${taskNote}\n[游戏聊天]用户说："${text}"\n${cName}简短回应（动作描写≤8字）："`;
