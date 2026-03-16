@@ -48,9 +48,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     backdrop-filter: blur(12px) !important;
     z-index: 2147483647 !important;
   }
-  #rp-phone {
-    left: calc(50vw - 150px) !important;  /* 150 = 300px宽度的一半，水平居中 */
-    top: calc(50vh - 280px) !important;   /* 280 = 560px高度的一半，垂直居中 */
+  /* PC mode: phone stays at fixed right:84px — centering via JS class only */
+  #rp-phone.rp-mobile-pos {
+    left: calc(50vw - 150px) !important;
+    top: calc(50vh - 280px) !important;
     right: auto !important;
     bottom: auto !important;
     transform: none !important;
@@ -1315,6 +1316,18 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border: none !important; border-radius: 14px !important;
   box-shadow: 0 4px 16px rgba(45,109,154,.3) !important;
 }
+/* API connectivity test button */
+#rp-api-test-v{transition:all .25s}
+#rp-api-test-v.testing{opacity:.65;pointer-events:none}
+#rp-api-test-v.ok{background:rgba(34,197,94,.15)!important;border-color:rgba(34,197,94,.5)!important;color:#166534!important}
+#rp-api-test-v.fail{background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.45)!important;color:#991b1b!important}
+#rp-phone.rp-theme-star #rp-api-test-v{background:rgba(60,20,120,.3)!important;border-color:rgba(150,100,255,.5)!important;color:#c8b0ff!important}
+#rp-phone.rp-theme-star #rp-api-test-v.ok{background:rgba(22,101,52,.3)!important;color:#86efac!important}
+#rp-phone.rp-theme-star #rp-api-test-v.fail{background:rgba(127,29,29,.3)!important;color:#fca5a5!important}
+#rp-phone.rp-theme-misty #rp-api-test-v{background:rgba(220,240,255,.22)!important;border-color:rgba(80,160,220,.45)!important;color:#0a4a7a!important}
+#rp-phone.rp-theme-misty #rp-api-test-v.ok{background:rgba(220,252,231,.5)!important;color:#065f46!important}
+#rp-phone.rp-theme-misty #rp-api-test-v.fail{background:rgba(254,226,226,.4)!important;color:#7f1d1d!important}
+
 #rp-phone.rp-theme-misty #rp-fetch-models-btn {
   background: rgba(240,248,255,.38) !important;
   border: 1px solid rgba(130,175,215,.3) !important;
@@ -2030,10 +2043,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 
 /* 2048 API tip blink */
-@keyframes g2048TipBlink{0%,100%{opacity:.75}50%{opacity:.22}}
-#g2048-api-tip{font-size:10px;text-align:center;padding:2px 12px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:rgba(192,48,106,.82)}
-#rp-phone.rp-theme-star #g2048-api-tip{color:rgba(200,180,255,.78)}
-#rp-phone.rp-theme-misty #g2048-api-tip{color:rgba(160,210,255,.82)}
+@keyframes g2048TipBlink{0%,100%{opacity:1}50%{opacity:.55}}
+#g2048-api-tip{font-size:11px;text-align:center;padding:3px 14px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:#b02050;font-weight:600;text-shadow:0 1px 4px rgba(255,255,255,.7)}
+#rp-phone.rp-theme-star #g2048-api-tip{color:rgba(210,190,255,1);text-shadow:0 1px 6px rgba(0,0,30,.6)}
+#rp-phone.rp-theme-misty #g2048-api-tip{color:#0a5fa0;text-shadow:0 1px 4px rgba(255,255,255,.6)}
 
 /* 2048 chat message colors */
 #g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 0;font-weight:500}
@@ -3108,6 +3121,7 @@ const HTML = `
             <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
           </div>
           <div style="padding:10px 18px 28px;flex-shrink:0;display:flex;flex-direction:column;gap:10px">
+            <button id="rp-api-test-v" style="width:100%;padding:11px;margin-bottom:8px;background:rgba(255,255,255,.18);border:1.5px solid rgba(168,85,247,.45);color:#6d28d9;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer">📡 测试连通性</button>
             <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
           </div>
         </div>
@@ -3266,7 +3280,7 @@ const HTML = `
             <button class="g2048-dir" data-dir="down">▼</button>
             <button class="g2048-dir" data-dir="right">►</button>
           </div>
-          <div id="g2048-api-tip">⚡ 请在API功能中更换国产模型，以提升回复速度。例：deepseek</div>
+          <div id="g2048-api-tip">⚡ 请在API功能中更换国产模型，以提升回复速度。</div>
           <div id="g2048-chat-hint">点击展开 ↗</div>
           <div id="g2048-chat"></div>
           <div id="g2048-input-row">
@@ -3436,6 +3450,8 @@ async function init() {
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
     const frame = document.getElementById('rp-frame');
+    var _ph = document.getElementById('rp-phone');
+    if (_ph) { IS_TOUCH_DEVICE ? _ph.classList.add('rp-mobile-pos') : _ph.classList.remove('rp-mobile-pos'); }
     if (IS_TOUCH_DEVICE) {
       // ── 手机端(PE) ── (用物理触控判断，与 window.innerWidth 无关)
       // 修复 FAB 位置 (html transform → containing block 高度=0, bottom失效)
@@ -3755,6 +3771,34 @@ function bindUI() {
     if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
     else $('#rp-api-custom-fields-v').hide();
   });
+  $(document).on('click', '#rp-api-test-v', function() {
+    var $btn = $(this);
+    var mode = $('#rp-api-mode-v').val();
+    if (mode !== 'custom') { $btn.text('⚠️ 仅适用于接入其他API模式'); setTimeout(function(){ $btn.text('📡 测试连通性'); }, 2500); return; }
+    var url  = ($('#rp-api-url-v').val() || '').trim().replace(/\/+$/, '');
+    var key  = ($('#rp-api-key-v').val() || '').trim();
+    var model= ($('#rp-api-model-v').val() || 'gpt-3.5-turbo').trim();
+    if (!url || !key) { $btn.text('⚠️ 请先填写URL和Key'); setTimeout(function(){ $btn.text('📡 测试连通性'); }, 2500); return; }
+    $btn.addClass('testing').text('连接中…');
+    var t0 = Date.now();
+    fetch(url + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model, messages: [{ role: 'user', content: 'hi' }], max_tokens: 5 }),
+      signal: AbortSignal.timeout(8000)
+    }).then(function(r) {
+      return r.json().then(function(d) {
+        var ms = Date.now() - t0;
+        var m = (d.model || model).replace(/^.+\//, '');
+        $btn.removeClass('testing').addClass('ok').text('✅ ' + m + ' ' + ms + 'ms');
+        setTimeout(function(){ $btn.removeClass('ok').text('📡 测试连通性'); }, 8000);
+      });
+    }).catch(function(e) {
+      $btn.removeClass('testing').addClass('fail').text('❌ ' + (e.message || '连接失败').substring(0, 20));
+      setTimeout(function(){ $btn.removeClass('fail').text('📡 测试连通性'); }, 8000);
+    });
+  });
+
   $(document).on('click', '#rp-api-save-v', function() {
     const mode = $('input[name="rp-api-mode-v"]:checked').val() || 'st';
     const cfg = { mode };
@@ -6116,20 +6160,27 @@ function g2048BestDir() {
 // ── Strip action descriptions from 2048 chat ──────────────────
 // ── Clean persona for 2048 (strip system directives) ──────────────
 function g2048GetPersona() {
-  var p = lgGetPersona();
-  if (!p) return '';
-  // Strip lines that look like system directives (权限/模式/指令/开启 etc.)
-  p = p.split(/[\n。！]/).filter(function(line) {
-    var l = line.trim();
-    if (!l) return false;
-    // Drop lines with colon + action patterns (互动权限：, 系统指令：, etc.)
-    if (/[权限指令系统][：:]/u.test(l)) return false;
-    if (/互动[权限指令]/u.test(l)) return false;
-    if (/开启[共扮演演示]/u.test(l)) return false;
-    if (/^[A-Z][a-z]+:/.test(l)) return false; // Skip JSON-like keys
-    return true;
-  }).join('，');
-  return p.trim() ? '【角色人设】' + p.trim() + '。' : '';
+  try {
+    var ctx = (typeof getContext === 'function') ? getContext() : {};
+    if (!ctx) ctx = {};
+    var char = (ctx.characters && ctx.characterId !== undefined) ? ctx.characters[ctx.characterId] : null;
+    if (!char && typeof this_chid !== 'undefined' && window.characters) char = window.characters[this_chid];
+    if (!char) return '';
+    // 优先 personality，其次 description 前 300 字
+    var src = (char.personality || '').trim() || (char.description || '').substring(0, 300).trim();
+    if (!src) return '';
+    // 只过滤系统指令行，保留角色性格描述
+    var filtered = src.split(/[\n。！]/).filter(function(line) {
+      var l = line.trim();
+      if (!l) return false;
+      if (/[权限指令系统][：:]/.test(l)) return false;
+      if (/互动[权限指令]/.test(l)) return false;
+      if (/开启[共扮演示]/.test(l)) return false;
+      if (/^[A-Z][a-z]+:/.test(l)) return false;
+      return true;
+    }).slice(0, 6).join('，');
+    return filtered.trim() ? '【请严格扮演以下角色】' + filtered.trim() + '。' : '';
+  } catch(e) { return ''; }
 }
 
 function g2048StripActions(text) {
