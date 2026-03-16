@@ -3413,6 +3413,7 @@ const HTML = `
 //  INIT
 // ================================================================
 async function init() {
+  console.warn('[RP] init() called at', Date.now());
   try {
   // Hot-reload safety: remove stale phone element & force CSS re-inject
   const stale = document.getElementById('rp-wrapper');
@@ -3424,7 +3425,9 @@ async function init() {
   window._rpPhoneSheet = false;
 
   injectStyles();
+  console.warn('[RP] about to append HTML');
   $('body').append(HTML);
+  console.warn('[RP] HTML appended, rp-fab in DOM:', !!document.getElementById('rp-fab'));
   // Defensive: ensure FAB visible after append
   var _f = document.getElementById('rp-fab');
   if (_f) { _f.style.cssText += ';display:flex!important;visibility:visible!important;opacity:1!important'; }
