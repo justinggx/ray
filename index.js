@@ -1989,8 +1989,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #g2048-turn{font-size:11.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.38);padding:2px 10px;border-radius:12px;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 #g2048-newbtn{background:none;border:none;color:var(--rp-nav-btn,#c0306a);font-size:13px;font-weight:600;cursor:pointer;padding:4px 6px}
 #g2048-board-wrap{display:flex;justify-content:center;padding:4px 0 2px;flex-shrink:0}
-#g2048-board{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:5px;padding:6px;background:rgba(187,173,160,.72);border-radius:9px;width:214px;height:214px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
-.g2048-cell{background:rgba(205,193,180,.55);border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;min-width:0;min-height:0}
+#g2048-board{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:5px;padding:6px;background:rgba(195,95,128,.52);border-radius:9px;width:214px;height:214px;box-shadow:0 3px 12px rgba(160,40,80,.2)}
+.g2048-cell{background:rgba(235,165,185,.42);border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;min-width:0;min-height:0}
 @keyframes g2048Pop{0%{transform:scale(.72)}55%{transform:scale(1.12)}100%{transform:scale(1)}}
 @keyframes g2048Merge{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
 .g2048-tile{width:100%;height:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;animation:g2048Pop .14s ease-out}
@@ -2046,18 +2046,19 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(185,228,255,.95);text-shadow:0 0 4px rgba(0,10,40,.8)}
 
 /* ── 2048 tile colors (Candy warm) ── */
-.g2048-tile[data-v="2"]{background:#eee4da;color:#776e65}
-.g2048-tile[data-v="4"]{background:#ede0c8;color:#776e65}
-.g2048-tile[data-v="8"]{background:#f2b179;color:#f9f6f2}
-.g2048-tile[data-v="16"]{background:#f59563;color:#f9f6f2}
-.g2048-tile[data-v="32"]{background:#f67c5f;color:#f9f6f2}
-.g2048-tile[data-v="64"]{background:#f65e3b;color:#f9f6f2}
-.g2048-tile[data-v="128"]{background:#edcf72;color:#f9f6f2}
-.g2048-tile[data-v="256"]{background:#edcc61;color:#f9f6f2}
-.g2048-tile[data-v="512"]{background:#edc850;color:#f9f6f2}
-.g2048-tile[data-v="1024"]{background:#edc53f;color:#f9f6f2}
-.g2048-tile[data-v="2048"]{background:linear-gradient(135deg,#f9ca24,#f0932b);color:#fff}
-.g2048-tile[data-v="high"]{background:#3c3a32;color:#f9f6f2}
+/* Candy: pink-rose palette */
+.g2048-tile[data-v="2"]{background:#f9dce5;color:#9a3555}
+.g2048-tile[data-v="4"]{background:#f5c6d5;color:#8a2a4a}
+.g2048-tile[data-v="8"]{background:#f0a0b8;color:#fff}
+.g2048-tile[data-v="16"]{background:#e87aa0;color:#fff}
+.g2048-tile[data-v="32"]{background:#e05888;color:#fff}
+.g2048-tile[data-v="64"]{background:#d83070;color:#fff}
+.g2048-tile[data-v="128"]{background:#c82068;color:#ffd6e8}
+.g2048-tile[data-v="256"]{background:linear-gradient(135deg,#e03878,#c02060);color:#fff}
+.g2048-tile[data-v="512"]{background:linear-gradient(135deg,#d02870,#a81858);color:#fff}
+.g2048-tile[data-v="1024"]{background:linear-gradient(135deg,#c01868,#900048);color:#fff}
+.g2048-tile[data-v="2048"]{background:linear-gradient(135deg,#ff6699,#e0205a,#c01050);color:#fff}
+.g2048-tile[data-v="high"]{background:#7a0035;color:#ffd6e8}
 /* ── Star theme tiles (purple) ── */
 #rp-phone.rp-theme-star .g2048-tile[data-v="2"]{background:rgba(55,15,105,.55);color:#c8b8ff}
 #rp-phone.rp-theme-star .g2048-tile[data-v="4"]{background:rgba(70,20,135,.65);color:#d4c8ff}
