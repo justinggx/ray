@@ -1279,11 +1279,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* Nav title */
 #rp-phone.rp-theme-misty .rp-nav-title {
-  color: #1a2e44 !important;
-  text-shadow: 0 0 10px rgba(255,255,255,.75) !important;
+  color: rgba(235,248,255,.95) !important;
+  text-shadow: 0 1px 4px rgba(0,20,70,.65), 0 0 10px rgba(0,10,50,.4) !important;
 }
 #rp-phone.rp-theme-misty .rp-back,
-#rp-phone.rp-theme-misty .rp-nav-add { color: #3d7eb0 !important; }
+#rp-phone.rp-theme-misty .rp-nav-add { color: rgba(235,248,255,.92) !important; text-shadow: 0 1px 3px rgba(0,20,70,.6) !important; }
 /* Game controls */
 #rp-phone.rp-theme-misty #rp-view-game .rp-nav-bar {
   background: transparent !important;
@@ -1959,19 +1959,19 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-diary-send-btn{background:linear-gradient(135deg,#7c3aed,#a855f7)}
 #rp-phone.rp-theme-star .rp-diary-empty{color:rgba(180,165,255,.35)}
 #rp-phone.rp-theme-star #rp-gen-diary{color:#a78bfa}
-#rp-phone.rp-theme-misty .rp-diary-entry{background:rgba(220,240,255,.45);border-color:rgba(100,170,220,.25)}
-#rp-phone.rp-theme-misty .rp-diary-author{color:#1a3050}
-#rp-phone.rp-theme-misty .rp-diary-date{color:rgba(44,74,106,.55)}
-#rp-phone.rp-theme-misty .rp-diary-body{color:#1a3050}
-#rp-phone.rp-theme-misty .rp-diary-reply{background:rgba(60,120,180,.06);border-top-color:rgba(100,170,220,.2)}
-#rp-phone.rp-theme-misty .rp-diary-reply-name{color:#2d6d9a}
-#rp-phone.rp-theme-misty .rp-diary-reply-text{color:#1e3c5a}
+#rp-phone.rp-theme-misty .rp-diary-entry{background:rgba(235,248,255,.76);border-color:rgba(100,170,220,.35);backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2)}
+#rp-phone.rp-theme-misty .rp-diary-author{color:#0a1828;font-weight:700}
+#rp-phone.rp-theme-misty .rp-diary-date{color:rgba(40,80,130,.8)}
+#rp-phone.rp-theme-misty .rp-diary-body{color:#0d1e30;line-height:1.75}
+#rp-phone.rp-theme-misty .rp-diary-reply{background:rgba(60,120,180,.12);border-top-color:rgba(100,170,220,.28)}
+#rp-phone.rp-theme-misty .rp-diary-reply-name{color:#1a5a8a;font-weight:700}
+#rp-phone.rp-theme-misty .rp-diary-reply-text{color:#0d1e30}
 #rp-phone.rp-theme-misty .rp-diary-compose{border-top-color:rgba(100,170,220,.2)}
-#rp-phone.rp-theme-misty .rp-diary-input{background:rgba(200,230,255,.35)!important;border-color:rgba(100,170,220,.3);color:#0f2035!important}
+#rp-phone.rp-theme-misty .rp-diary-input{background:rgba(235,248,255,.72)!important;border-color:rgba(100,170,220,.4);color:#0a1828!important}
 #rp-phone.rp-theme-misty .rp-diary-input::placeholder{color:rgba(44,90,140,.4)}
 #rp-phone.rp-theme-misty .rp-diary-send-btn{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
 #rp-phone.rp-theme-misty .rp-diary-empty{color:rgba(44,74,106,.4)}
-#rp-phone.rp-theme-misty #rp-gen-diary{color:#3d7eb0}
+#rp-phone.rp-theme-misty #rp-gen-diary{color:rgba(235,248,255,.92)!important;filter:drop-shadow(0 1px 3px rgba(0,20,70,.5))!important}
 /* Candy gen-diary explicit (candy has no theme class, CSS var handles it but be safe) */
 #rp-gen-diary{color:var(--rp-nav-btn,#c0306a)}
 /* Diary icon — BASE = Candy (no theme class on #rp-phone for candy) */
@@ -4660,6 +4660,7 @@ async function generateAIDiary() {
       + (charPersona ? '\u4eba\u8bbe\uff1a' + charPersona.slice(0,600) + '\n\n' : '')
       + '\u8bf7\u4ee5\u7b2c\u4e00\u4eba\u79f0\u5199\u4eca\u5929\u7684\u4e2a\u4eba\u65e5\u8bb0\uff0c\u53cd\u6620\u4eca\u65e5\u4e0e\u7528\u6237\u7684\u4e92\u52a8\u611f\u53d7\uff0c150-250\u5b57\u4e2d\u6587\u3002\n'
       + '\u53ea\u9700\u5199\u65e5\u671f\u548c\u65e5\u8bb0\u6b63\u6587\u5185\u5bb9\u3002\n'
+      + '\u6ce8\u610f\u4eba\u79f0\uff1a\u6839\u636e\u5bf9\u8bdd\u5185\u5bb9\u5224\u65ad\u7528\u6237\u89d2\u8272\u7684\u6027\u522b\uff0c\u4f7f\u7528\u6b63\u786e\u7684\u4eba\u79f0\u4ee3\u8bcd\uff08\u4ed6/\u5979/\u5b83\uff09\uff0c\u4e0d\u8981\u9ed8\u8ba4\u7528\u300c\u4ed6\u300d\u3002\n'
       + '\u4e25\u7981\uff1a\u4e0d\u5f97\u5305\u542b\u72b6\u6001\u680f\uff08\u4f53\u529b/\u7cbe\u795e/\u597d\u611f\u5ea6\u7b49\u6570\u503c\uff09\u3001\u4e16\u754c\u4e66\u7ec4\u4ef6\u3001\u7cfb\u7edf\u63d0\u793a\u683c\u5f0f\u3001Markdown\u683c\u5f0f\u3001HTML\u6807\u7b7e\u3001\u5c5e\u6027\u8868\u683c\uff0c\u76f4\u63a5\u5199\u7eaf\u6587\u5b57\u65e5\u8bb0\u5185\u5bb9\u3002';
     var prompt = '\u4eca\u65e5\u5bf9\u8bdd\uff1a\n' + recent + '\n\n' + charName + '\u7684\u4eca\u65e5\u65e5\u8bb0\uff1a';
     var resp = await lgCallAPI(prompt, 350, sysMsg);
