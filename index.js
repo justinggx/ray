@@ -1998,7 +1998,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .g2048-drow{display:none}
 .g2048-dir{width:34px;height:24px;border-radius:7px;border:none;background:rgba(187,173,160,.5);color:#776e65;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .g2048-dir:active{background:rgba(187,173,160,.85)}
-#g2048-chat{flex:1;overflow-y:auto;padding:5px 8px;display:flex;flex-direction:column;gap:2px;min-height:50px;margin:0 8px;background:rgba(0,0,0,.18);border-radius:8px;backdrop-filter:blur(4px)}
+#g2048-chat{flex:1 1 0;min-height:0;overflow-y:auto;padding:5px 8px;display:flex;flex-direction:column;gap:2px;margin:0 8px;background:rgba(0,0,0,.28);border-radius:8px;backdrop-filter:blur(5px);cursor:pointer}
 #g2048-chat::-webkit-scrollbar{display:none}
 #g2048-input-row{display:flex;gap:6px;padding:6px 12px 10px;flex-shrink:0;border-top:1px solid rgba(0,0,0,.06)}
 #g2048-input{flex:1;border-radius:18px;border:1px solid rgba(0,0,0,.12);padding:6px 12px;font-size:13px;background:rgba(255,255,255,.88);font-family:inherit;outline:none;color:#1a1008}
@@ -2009,12 +2009,42 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .g2048-over-sub{font-size:13px;color:rgba(255,255,255,.8);text-align:center;padding:0 20px}
 .g2048-over-btn{padding:9px 18px;border-radius:20px;border:none;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;font-weight:700;font-size:13px;cursor:pointer}
 
+/* 2048 fullscreen chat */
+#g2048-chat-hint{font-size:9.5px;color:rgba(240,225,205,.55);text-align:right;padding:0 16px 2px;flex-shrink:0;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+#g2048-chat-fs{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:flex;flex-direction:column}
+#g2048-chat-fs-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;flex-shrink:0}
+#g2048-chat-fs-title{color:#fff;font-weight:600;font-size:14px}
+#g2048-chat-fs-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:4px}
+#g2048-chat-fs-body{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:4px}
+#g2048-chat-fs-body::-webkit-scrollbar{display:none}
+#g2048-chat-fs-body .game-msg{font-size:13px;line-height:1.6;padding:3px 0}
+#g2048-chat-fs-body .game-msg-sys{color:rgba(240,230,215,.88)}
+#g2048-chat-fs-body .game-msg-user{color:#ffd6e8;font-weight:600}
+#g2048-chat-fs-body .game-msg-char{color:#fce8ff;font-weight:600}
+#rp-phone.rp-theme-star #g2048-chat-fs-body .game-msg-sys{color:rgba(210,200,255,.88)}
+#rp-phone.rp-theme-star #g2048-chat-fs-body .game-msg-user{color:#f0c0ff}
+#rp-phone.rp-theme-star #g2048-chat-fs-body .game-msg-char{color:#c8b8ff}
+#rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-sys{color:rgba(200,228,255,.92)}
+#rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-user{color:rgba(255,210,228,.92)}
+#rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-char{color:rgba(185,228,255,.95)}
+
 /* 2048 chat message colors */
 #g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 0;font-weight:500}
-#g2048-chat .game-msg-sys{color:rgba(240,230,215,.88);text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
-#g2048-chat .game-msg-user{color:#ffcce0;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
-#g2048-chat .game-msg-char{color:#e0d4ff;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
-/* star/misty chat inherit base white stroke style */
+/* Candy default: warm white on dark overlay */
+#g2048-chat .game-msg-sys{color:rgba(255,240,225,.90);text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
+#g2048-chat .game-msg-user{color:#ffd6e8;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
+#g2048-chat .game-msg-char{color:#fce8ff;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
+/* Star: purple-tinted */
+#rp-phone.rp-theme-star #g2048-chat{background:rgba(8,2,30,.52)!important}
+#rp-phone.rp-theme-star #g2048-chat .game-msg-sys{color:rgba(210,200,255,.88)}
+#rp-phone.rp-theme-star #g2048-chat .game-msg-user{color:#f0c0ff}
+#rp-phone.rp-theme-star #g2048-chat .game-msg-char{color:#c8b8ff}
+/* Misty: blue-tinted overlay + blue-white text */
+#rp-phone.rp-theme-misty #g2048-chat{background:rgba(0,15,40,.42)!important}
+#rp-phone.rp-theme-misty #g2048-chat .game-msg-sys{color:rgba(200,228,255,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
+#rp-phone.rp-theme-misty #g2048-chat .game-msg-user{color:rgba(255,210,228,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
+#rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(185,228,255,.95);text-shadow:0 0 4px rgba(0,10,40,.8)}
+
 /* Star theme 2048 */
 #rp-phone.rp-theme-star #g2048-board{background:rgba(20,8,60,.82)}
 #rp-phone.rp-theme-star .g2048-cell{background:rgba(60,25,120,.45)}
@@ -3188,10 +3218,19 @@ const HTML = `
             <button class="g2048-dir" data-dir="down">▼</button>
             <button class="g2048-dir" data-dir="right">►</button>
           </div>
+          <div id="g2048-chat-hint">点击展开 ↗</div>
           <div id="g2048-chat"></div>
           <div id="g2048-input-row">
             <input id="g2048-input" type="text" placeholder="游戏中聊天…" autocomplete="off"/>
             <button id="g2048-send" type="button">↑</button>
+          </div>
+          <!-- 2048 fullscreen chat -->
+          <div id="g2048-chat-fs" style="display:none">
+            <div id="g2048-chat-fs-hd">
+              <span id="g2048-chat-fs-title">💬 聊天记录</span>
+              <button id="g2048-chat-fs-close">✕</button>
+            </div>
+            <div id="g2048-chat-fs-body"></div>
           </div>
           <div id="g2048-over">
             <div class="g2048-over-emoji" id="g2048-over-emoji">🎉</div>
@@ -3810,6 +3849,19 @@ function bindUI() {
     $('#g2048-over').hide();
     LG2048.active = false;
     go('home');
+  });
+  $(document).on('click', '#g2048-chat', function() {
+    var body = document.getElementById('g2048-chat-fs-body');
+    if (!body) return;
+    body.innerHTML = document.getElementById('g2048-chat').innerHTML;
+    body.scrollTop = body.scrollHeight;
+    $('#g2048-chat-fs').css('display','flex');
+  });
+  $(document).on('click', '#g2048-chat-hint', function() {
+    $('#g2048-chat').trigger('click');
+  });
+  $(document).on('click', '#g2048-chat-fs-close', function() {
+    $('#g2048-chat-fs').hide();
   });
   $(document).on('click', '.g2048-dir', function() {
     if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') return;
@@ -6073,7 +6125,7 @@ function g2048Init() {
   g2048Msg('sys', '\u6e38\u620f\u5f00\u59cb\uff01\u4e00\u8d77\u5e72\u5230 2048 \u5427\uff01\ud83c\udf89');
   setTimeout(function() {
     var persona = lgGetPersona();
-    var p = (persona ? persona + '\n' : '') + '\u6211\u4eec\u73b0\u5728\u5f00\u59cb\u73a9\u8f6e\u6d412048\u6e38\u620f\uff0c\u7b26\u5408\u4f60\u7684\u6027\u683c\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff09\uff1a';
+    var p = (persona ? persona + '\n' : '') + '\u6211\u4eec\u73b0\u5728\u5f00\u59cb\u73a9\u8f6e\u6d412048\u6e38\u620f\uff0c\u7b26\u5408\u4f60\u7684\u6027\u683c\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff09\uff1a';
     lgCallAPI(p, 80).then(function(r) {
       if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
     });
@@ -6104,7 +6156,7 @@ function g2048UserMove(dir) {
     $('#g2048-over-sub').text('\u4f60\u4eec\u5408\u529b\u5b8c\u6210\u4e86\uff01');
     $('#g2048-over').css('display', 'flex');
     var persona = lgGetPersona();
-    var wp = (persona ? persona + '\n' : '') + '\u6211\u4eec\u5728 2048 \u6e38\u620f\u91cc\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff09\uff1a';
+    var wp = (persona ? persona + '\n' : '') + '\u6211\u4eec\u5728 2048 \u6e38\u620f\u91cc\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff09\uff1a';
     lgCallAPI(wp, 80).then(function(r) {
       if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
     });
@@ -6150,7 +6202,7 @@ function g2048CharTurn() {
   // Non-blocking AI comment
   var persona = lgGetPersona();
   var scoreNote = res.score > 0 ? '\uff0c\u5408\u5e76\u5f97\u5206' + res.score : '';
-  var p = (persona ? persona + '\n' : '') + '\u6211\u9009\u62e9' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u7b26\u5408\u89d2\u8272\u6027\u683c\u81ea\u7136\u8bf4\u4e00\u53e5\uff0810-18\u5b57\uff0c\u4e0d\u8981OOC\uff09\uff1a';
+  var p = (persona ? persona + '\n' : '') + '\u6211\u9009\u62e9' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u7b26\u5408\u89d2\u8272\u6027\u683c\u8bf4\u4e00\u53e5\u8bdd\uff0810-18\u5b57\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u62ec\u53f7\u52a8\u4f5c\u63cf\u5199\uff0c\u4e0d\u8981OOC\uff09\uff1a';
   lgCallAPI(p, 70).then(function(r) {
     if (r && LG2048.active) g2048Msg('char', cleanGameReply(r, LG2048.charName));
   });
@@ -6178,7 +6230,7 @@ function g2048Chat(text) {
   var persona = lgGetPersona();
   var ctx = getContext ? getContext() : {};
   var userName = (ctx && ctx.name1) || '\u4f60';
-  var p = (persona ? persona + '\n' : '') + userName + '\u5728 2048 \u6e38\u620f\u4e2d\u8bf4\uff1a\u300c' + text + '\u300d\n' + LG2048.charName + '\u7684\u56de\u5e94\uff0815-25\u5b57\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\uff09\uff1a';
+  var p = (persona ? persona + '\n' : '') + userName + '\u5728 2048 \u6e38\u620f\u4e2d\u8bf4\uff1a\u300c' + text + '\u300d\n' + LG2048.charName + '\u7684\u56de\u5e94\uff0815-25\u5b57\uff0c\u7eaf\u5bf9\u8bdd\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\uff09\uff1a';
   lgCallAPI(p, 100).then(function(r) {
     if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
   });
