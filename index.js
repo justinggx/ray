@@ -6116,7 +6116,7 @@ function g2048BestDir() {
 // ── Strip action descriptions from 2048 chat ──────────────────
 // ── Clean persona for 2048 (strip system directives) ──────────────
 function g2048GetPersona() {
-  var p = g2048GetPersona();
+  var p = lgGetPersona();
   if (!p) return '';
   // Strip lines that look like system directives (权限/模式/指令/开启 etc.)
   p = p.split(/[\n。！]/).filter(function(line) {
@@ -6966,7 +6966,7 @@ function cleanGameReply(raw, charName) {
 }
 
 // ── Extract compact persona snippet from current ST character ─────────────────
-function g2048GetPersona() {
+function lgGetPersona() {
   try {
     console.log("[Ludo] lgGetPersona called");
     // Try multiple ways to get context
