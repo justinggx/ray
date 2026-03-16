@@ -3939,6 +3939,7 @@ function bindUI() {
     LG2048.active = true;
     LG2048.processing = false;
     LG2048.turn = 'user';
+    LG2048.commentCount = 0;
     g2048Render();
     g2048Msg('sys', '继续挑战！目标：4096！');
   });
@@ -6182,6 +6183,8 @@ function g2048StripActions(text) {
   if (!text) return text;
   // Remove （action）*action* (action) patterns
   text = text.replace(/[\uff08(][^\uff09)]{1,30}[\uff09)]/g, '').replace(/\*[^*]{1,25}\*/g, '');
+  // Strip surrounding quotes
+  text = text.replace(/^[\u201c\u201d\u2018\u2019\u300c\u300d"'\uff02]+/, '').replace(/[\u201c\u201d\u2018\u2019\u300c\u300d"'\uff02]+$/, '');
   // Remove ellipses (…… … ...)
   text = text.replace(/…{1,4}/g, '').replace(/\.{2,}/g, '');
   // Drop system-directive-looking responses entirely
@@ -6323,10 +6326,13 @@ function g2048CharTurn() {
   // Non-blocking AI comment
   var persona = g2048GetPersona();
   var scoreNote = res.score > 0 ? '\uff0c\u5408\u5e76\u5f97\u5206' + res.score : '';
-  var p = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u6b63\u5728\u4e00\u8d772048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u3002\u6211\u521a\u521a\u9009\u62e9\u5411' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u4ee5\u89d2\u8272\u53e3\u5403\u8bf4\u4e00\u53e5\u5173\u4e8e\u6e38\u620f\u7684\u8bdd\uff0810-18\u5b57\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff09\uff1a';
-  lgCallAPI(p, 70).then(function(r) {
-    if (r && LG2048.active) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
-  });
+  var p = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u6b63\u5728\u4e00\u8d772048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u3002\u6211\u521a\u521a\u9009\u62e9\u5411' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u5f53\u524d\u6700\u9ad8\u683c' + Math.max.apply(null, LG2048.board.reduce(function(a,r){return a.concat(r);},[])) + '\u3002\u8bf4\u4e00\u53e5\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u5e26\u5f15\u53f7\uff09\uff1a';
+  LG2048.commentCount = (LG2048.commentCount || 0) + 1;
+  if (LG2048.commentCount % 2 === 0) {
+    lgCallAPI(p, 70).then(function(r) {
+      if (r && LG2048.active) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
+    });
+  }
   LG2048.turn = 'user';
   LG2048.processing = false;
   g2048Render();
