@@ -2923,7 +2923,7 @@ const HTML = `
                 <div class="rp-app-lbl">主题</div>
               </div>
               <div class="rp-app" data-app="diary">
-                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="5" width="20" height="30" rx="4" stroke-width="2.2"/><line x1="11" y1="12" x2="8" y2="12" stroke-width="2"/><line x1="11" y1="20" x2="8" y2="20" stroke-width="2"/><line x1="11" y1="28" x2="8" y2="28" stroke-width="2"/><line x1="16" y1="14" x2="27" y2="14" stroke-width="1.8"/><line x1="16" y1="20" x2="27" y2="20" stroke-width="1.8" opacity=".7"/><line x1="16" y1="26" x2="23" y2="26" stroke-width="1.8" opacity=".5"/></svg></div>
+                <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="4" width="20" height="32" rx="3.5" stroke-width="2"/><circle cx="10" cy="12" r="2.5" stroke-width="1.6"/><circle cx="10" cy="20" r="2.5" stroke-width="1.6"/><circle cx="10" cy="28" r="2.5" stroke-width="1.6"/><line x1="15" y1="14" x2="27" y2="14" stroke-width="1.7"/><line x1="15" y1="20" x2="27" y2="20" stroke-width="1.7" opacity=".7"/><line x1="15" y1="26" x2="24" y2="26" stroke-width="1.7" opacity=".5"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
             </div>
