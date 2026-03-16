@@ -2925,6 +2925,10 @@ const HTML = `
                 <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="4" width="20" height="32" rx="3.5" stroke-width="2"/><circle cx="10" cy="12" r="2.5" stroke-width="1.6"/><circle cx="10" cy="20" r="2.5" stroke-width="1.6"/><circle cx="10" cy="28" r="2.5" stroke-width="1.6"/><line x1="15" y1="14" x2="27" y2="14" stroke-width="1.7"/><line x1="15" y1="20" x2="27" y2="20" stroke-width="1.7" opacity=".7"/><line x1="15" y1="26" x2="24" y2="26" stroke-width="1.7" opacity=".5"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
+              <div class="rp-app" data-app="g2048">
+                <div class="rp-app-ico"></div>
+                <div class="rp-app-lbl">2048</div>
+              </div>
             </div>
 
 
@@ -3097,6 +3101,44 @@ const HTML = `
                 <input id="rp-wall-file" type="file" accept="image/*" style="display:none"/>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- 2048 游戏 -->
+        <div id="rp-view-g2048" class="rp-view" style="display:none">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">🎮 2048</span>
+            <button id="g2048-newbtn">新局</button>
+          </div>
+          <div id="g2048-header">
+            <div id="g2048-scores">
+              <div class="g2048-sbox"><div class="g2048-slbl">分数</div><div id="g2048-score">0</div></div>
+              <div class="g2048-sbox"><div class="g2048-slbl">最高</div><div id="g2048-best">0</div></div>
+            </div>
+            <div id="g2048-turn">你的回合</div>
+          </div>
+          <div id="g2048-board-wrap">
+            <div id="g2048-board"></div>
+          </div>
+          <div id="g2048-dpad">
+            <div class="g2048-drow"><button class="g2048-dir" data-dir="up">▲</button></div>
+            <div class="g2048-drow">
+              <button class="g2048-dir" data-dir="left">◄</button>
+              <button class="g2048-dir" data-dir="down">▼</button>
+              <button class="g2048-dir" data-dir="right">►</button>
+            </div>
+          </div>
+          <div id="g2048-chat"></div>
+          <div id="g2048-input-row">
+            <input id="g2048-input" type="text" placeholder="游戏中聊天…" autocomplete="off"/>
+            <button id="g2048-send" type="button">↑</button>
+          </div>
+          <div id="g2048-over">
+            <div class="g2048-over-emoji" id="g2048-over-emoji">🎉</div>
+            <div class="g2048-over-title" id="g2048-over-title">达成2048！</div>
+            <div class="g2048-over-sub" id="g2048-over-sub">你们合力完成！</div>
+            <button class="g2048-over-btn" id="g2048-restart">再来一局</button>
           </div>
         </div>
 
@@ -3685,6 +3727,31 @@ function bindUI() {
     }
   });
 
+  // ── 2048 event handlers ──────────────────────────────────────
+  $(document).on('click', '[data-app="g2048"]', function() {
+    go('g2048');
+  });
+  $(document).on('click', '#g2048-newbtn,#g2048-restart', function() {
+    $('#g2048-over').hide();
+    g2048Init();
+  });
+  $(document).on('click', '.g2048-dir', function() {
+    if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') return;
+    g2048UserMove($(this).data('dir'));
+  });
+  $(document).on('click', '#g2048-send', function() {
+    var t = $('#g2048-input').val().trim();
+    if (t) { g2048Chat(t); $('#g2048-input').val(''); }
+  });
+  $(document).on('keydown', '#g2048-input', function(e) {
+    if (e.key === 'Enter') { var t = $(this).val().trim(); if (t) { g2048Chat(t); $(this).val(''); } }
+  });
+  $(document).on('keydown', function(e) {
+    if (!LG2048.active || !$('#rp-view-g2048').is(':visible')) return;
+    if (LG2048.turn !== 'user' || LG2048.processing) return;
+    var m = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down' };
+    var d = m[e.key]; if (d) { e.preventDefault(); g2048UserMove(d); }
+  });
   $(document).on('click', '#game-restart-btn', function() {
     lgInit();
   });
@@ -4007,6 +4074,7 @@ function renderThreadList() {
 function go(view) {
   if (view === 'darkmode') { toggleDarkMode(); return; }
   if (view === 'ludo') { try { if (!LG.active) lgInit(); else lgRender(); } catch(e) { console.warn('[Ludo]', e); } view = 'game'; }
+  if (view === 'g2048') { try { if (!LG2048.active) g2048Init(); } catch(e) { console.warn('[2048]', e); } }
   if (view === 'api-settings') { lgFillAPIView(); }
   if (view === 'themes') { lgRenderThemePicker(); }
   $('.rp-view').hide();
@@ -5396,7 +5464,7 @@ const RP_THEME_ICONS = {
   },
   misty: {
     messages: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
-    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>', "g2048": '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(222,240,253,.91)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="2"/><rect x="13" y="2" width="9" height="9" rx="2"/><rect x="2" y="13" width="9" height="9" rx="2"/><rect x="13" y="13" width="9" height="9" rx="2"/></svg>'
   }
 };
 
@@ -5758,6 +5826,309 @@ function sendMomentComment(momentId, text, replyToName) {
 }
 
 // ================================================================
+// ================================================================
+//  2048 GAME — 互动版（user/char 轮流）
+// ================================================================
+
+const LG2048 = {
+  board: [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],
+  score: 0,
+  best: parseInt(localStorage.getItem('g2048_best') || '0'),
+  turn: 'user',    // 'user' | 'char'
+  active: false,
+  processing: false,
+  won: false,
+  charName: '\u5bf9\u65b9',
+};
+
+// ── Slide one row leftward ──────────────────────────────────────
+function g2048SlideRow(row) {
+  var r = row.filter(function(x) { return x !== 0; });
+  var score = 0;
+  for (var i = 0; i < r.length - 1; i++) {
+    if (r[i] === r[i + 1]) {
+      r[i] *= 2;
+      score += r[i];
+      r.splice(i + 1, 1);
+    }
+  }
+  while (r.length < 4) r.push(0);
+  return { row: r, score: score };
+}
+
+// ── Matrix helpers ─────────────────────────────────────────────
+function g2048Transpose(b) {
+  return b[0].map(function(_, c) { return b.map(function(r) { return r[c]; }); });
+}
+function g2048RevRows(b) {
+  return b.map(function(r) { return r.slice().reverse(); });
+}
+
+// ── Apply a direction to a board copy ─────────────────────────
+function g2048Apply(b, dir) {
+  var board = b.map(function(r) { return r.slice(); });
+  if (dir === 'right')      board = g2048RevRows(board);
+  else if (dir === 'up')    board = g2048Transpose(board);
+  else if (dir === 'down')  { board = g2048Transpose(board); board = g2048RevRows(board); }
+
+  var totalScore = 0, changed = false;
+  board = board.map(function(row) {
+    var res = g2048SlideRow(row);
+    totalScore += res.score;
+    if (res.row.some(function(v, i) { return v !== row[i]; })) changed = true;
+    return res.row;
+  });
+
+  if (dir === 'right')      board = g2048RevRows(board);
+  else if (dir === 'up')    board = g2048Transpose(board);
+  else if (dir === 'down')  { board = g2048RevRows(board); board = g2048Transpose(board); }
+
+  return { board: board, score: totalScore, changed: changed };
+}
+
+// ── Add a random tile (90% → 2, 10% → 4) ─────────────────────
+function g2048AddTile() {
+  var empty = [];
+  LG2048.board.forEach(function(row, r) {
+    row.forEach(function(v, co) { if (v === 0) empty.push([r, co]); });
+  });
+  if (!empty.length) return;
+  var pos = empty[Math.floor(Math.random() * empty.length)];
+  LG2048.board[pos[0]][pos[1]] = Math.random() < 0.9 ? 2 : 4;
+}
+
+// ── Check if any move is still possible ───────────────────────
+function g2048HasMoves() {
+  return ['left','right','up','down'].some(function(d) { return g2048Apply(LG2048.board, d).changed; });
+}
+
+// ── Char's greedy best direction ──────────────────────────────
+function g2048BestDir() {
+  var dirs = ['left','right','up','down'];
+  var best = null, bestVal = -1;
+  dirs.forEach(function(dir) {
+    var res = g2048Apply(LG2048.board, dir);
+    if (!res.changed) return;
+    var flat = res.board.reduce(function(a, r) { return a.concat(r); }, []);
+    var empty = flat.filter(function(x) { return x === 0; }).length;
+    var maxTile = Math.max.apply(null, flat);
+    // Corner bonus: max tile in any corner
+    var corners = [res.board[3][3], res.board[3][0], res.board[0][0], res.board[0][3]];
+    var cornerBonus = corners.indexOf(maxTile) >= 0 ? 40 : 0;
+    var val = res.score * 2 + empty * 10 + cornerBonus;
+    if (val > bestVal) { bestVal = val; best = dir; }
+  });
+  // Fallback: any valid dir
+  if (!best) best = dirs.find(function(d) { return g2048Apply(LG2048.board, d).changed; }) || null;
+  return best;
+}
+
+// ── Render board + UI ──────────────────────────────────────────
+function g2048Render() {
+  var board = document.getElementById('g2048-board');
+  if (!board) return;
+  var COLORS = {
+    2:    ['#eee4da', '#776e65'],
+    4:    ['#ede0c8', '#776e65'],
+    8:    ['#f2b179', '#f9f6f2'],
+    16:   ['#f59563', '#f9f6f2'],
+    32:   ['#f67c5f', '#f9f6f2'],
+    64:   ['#f65e3b', '#f9f6f2'],
+    128:  ['#edcf72', '#f9f6f2'],
+    256:  ['#edcc61', '#f9f6f2'],
+    512:  ['#edc850', '#f9f6f2'],
+    1024: ['#edc53f', '#f9f6f2'],
+    2048: ['linear-gradient(135deg,#f9ca24,#f0932b)', '#fff'],
+  };
+  board.innerHTML = '';
+  LG2048.board.forEach(function(row) {
+    row.forEach(function(v) {
+      var cell = document.createElement('div');
+      cell.className = 'g2048-cell';
+      if (v > 0) {
+        var tile = document.createElement('div');
+        tile.className = 'g2048-tile';
+        var col = COLORS[v] || ['#3c3a32', '#f9f6f2'];
+        tile.style.background = col[0];
+        tile.style.color = col[1];
+        tile.style.fontSize = v >= 1024 ? '14px' : v >= 128 ? '17px' : v >= 8 ? '20px' : '22px';
+        tile.textContent = v;
+        cell.appendChild(tile);
+      }
+      board.appendChild(cell);
+    });
+  });
+  $('#g2048-score').text(LG2048.score);
+  $('#g2048-best').text(LG2048.best);
+  var turn = LG2048.processing
+    ? LG2048.charName + '\u601d\u8003\u4e2d\u2026'
+    : LG2048.turn === 'user' ? '\u4f60\u7684\u56de\u5408' : LG2048.charName + '\u7684\u56de\u5408\u2026';
+  $('#g2048-turn').text(turn);
+}
+
+// ── Chat message ──────────────────────────────────────────────
+function g2048Msg(type, text) {
+  var cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
+  var pre = type === 'char' ? LG2048.charName + ': ' : '';
+  $('#g2048-chat').append('<div class="game-msg ' + cls + '">' + pre + text + '</div>');
+  var el = document.getElementById('g2048-chat');
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+// ── Init new game ─────────────────────────────────────────────
+function g2048Init() {
+  var ctx = getContext ? getContext() : {};
+  LG2048.charName = (ctx && (ctx.name2 || ctx.name)) || '\u5bf9\u65b9';
+  LG2048.board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  LG2048.score = 0;
+  LG2048.best = parseInt(localStorage.getItem('g2048_best') || '0');
+  LG2048.turn = 'user';
+  LG2048.active = true;
+  LG2048.processing = false;
+  LG2048.won = false;
+  g2048AddTile(); g2048AddTile();
+  $('#g2048-over').hide();
+  $('#g2048-chat').empty();
+  g2048Render();
+  g2048Msg('sys', '\u6e38\u620f\u5f00\u59cb\uff01\u4e00\u8d77\u5e72\u5230 2048 \u5427\uff01\ud83c\udf89');
+  setTimeout(function() {
+    var persona = lgGetPersona();
+    var p = (persona ? persona + '\n' : '') + '\u6211\u4eec\u73b0\u5728\u5f00\u59cb\u73a9\u8f6e\u6d412048\u6e38\u620f\uff0c\u7b26\u5408\u4f60\u7684\u6027\u683c\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff09\uff1a';
+    lgCallAPI(p, 80).then(function(r) {
+      if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+    });
+  }, 700);
+}
+
+// ── User move ─────────────────────────────────────────────────
+function g2048UserMove(dir) {
+  if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') return;
+  var res = g2048Apply(LG2048.board, dir);
+  if (!res.changed) return;
+  LG2048.board = res.board;
+  LG2048.score += res.score;
+  if (LG2048.score > LG2048.best) {
+    LG2048.best = LG2048.score;
+    localStorage.setItem('g2048_best', LG2048.best);
+  }
+  g2048AddTile();
+  g2048Render();
+  // Check 2048 win after user move
+  var flat = LG2048.board.reduce(function(a, r) { return a.concat(r); }, []);
+  if (!LG2048.won && flat.indexOf(2048) >= 0) {
+    LG2048.won = true;
+    g2048Msg('sys', '\ud83c\udf89 \u8fbe\u62102048\uff01\u4f60\u4eec\u8d62\u4e86\uff01');
+    var persona = lgGetPersona();
+    var wp = (persona ? persona + '\n' : '') + '\u6211\u4eec\u5728 2048 \u6e38\u620f\u91cc\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff09\uff1a';
+    lgCallAPI(wp, 80).then(function(r) {
+      if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+      $('#g2048-over-emoji').text('\ud83c\udf89');
+      $('#g2048-over-title').text('\u8fbe\u62102048\uff01');
+      $('#g2048-over-sub').text('\u4f60\u4eec\u5408\u529b\u5b8c\u6210\u4e86\uff01');
+      $('#g2048-over').css('display', 'flex');
+      LG2048.active = false;
+    });
+    return;
+  }
+  if (!g2048HasMoves()) { g2048GameOver(); return; }
+  // Hand off to char
+  LG2048.processing = true;
+  LG2048.turn = 'char';
+  g2048Render();
+  setTimeout(g2048CharTurn, 750 + Math.random() * 450);
+}
+
+// ── Char turn ─────────────────────────────────────────────────
+function g2048CharTurn() {
+  if (!LG2048.active) return;
+  var dir = g2048BestDir();
+  if (!dir) { g2048GameOver(); return; }
+  var dirCN = { left: '\u5411\u5de6', right: '\u5411\u53f3', up: '\u5411\u4e0a', down: '\u5411\u4e0b' }[dir];
+  var res = g2048Apply(LG2048.board, dir);
+  LG2048.board = res.board;
+  LG2048.score += res.score;
+  if (LG2048.score > LG2048.best) {
+    LG2048.best = LG2048.score;
+    localStorage.setItem('g2048_best', LG2048.best);
+  }
+  g2048AddTile();
+  g2048Render();
+  // Check 2048 after char move
+  var flat2 = LG2048.board.reduce(function(a, r) { return a.concat(r); }, []);
+  if (!LG2048.won && flat2.indexOf(2048) >= 0) {
+    LG2048.won = true;
+    g2048Msg('sys', '\ud83c\udf89 ' + LG2048.charName + '\u4e00\u6b65\u8fbe\u62102048\uff01\u5927\u5bb6\u8d62\u4e86\uff01');
+    $('#g2048-over-emoji').text('\ud83c\udf89');
+    $('#g2048-over-title').text('\u8fbe\u62102048\uff01');
+    $('#g2048-over-sub').text('\u5927\u5bb6\u4e00\u8d77\u5b8c\u6210\u4e86\uff01');
+    $('#g2048-over').css('display', 'flex');
+    LG2048.active = false;
+    LG2048.processing = false;
+    return;
+  }
+  if (!g2048HasMoves()) { LG2048.processing = false; g2048GameOver(); return; }
+  // Non-blocking AI comment
+  var persona = lgGetPersona();
+  var scoreNote = res.score > 0 ? '\uff0c\u5408\u5e76\u5f97\u5206' + res.score : '';
+  var p = (persona ? persona + '\n' : '') + '\u6211\u9009\u62e9' + dirCN + '\u6ed1\u52a8' + scoreNote + '\u3002\u7b26\u5408\u89d2\u8272\u6027\u683c\u81ea\u7136\u8bf4\u4e00\u53e5\uff0810-18\u5b57\uff0c\u4e0d\u8981OOC\uff09\uff1a';
+  lgCallAPI(p, 70).then(function(r) {
+    if (r && LG2048.active) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+  });
+  LG2048.turn = 'user';
+  LG2048.processing = false;
+  g2048Render();
+}
+
+// ── Game over ─────────────────────────────────────────────────
+function g2048GameOver() {
+  LG2048.active = false;
+  LG2048.processing = false;
+  g2048Msg('sys', '\u6ca1\u6709\u53ef\u79fb\u52a8\u7684\u683c\u5b50\u4e86\uff01\u6700\u7ec8\u5f97\u5206\uff1a' + LG2048.score);
+  $('#g2048-over-emoji').text('\ud83d\ude05');
+  $('#g2048-over-title').text('\u6e38\u620f\u7ed3\u675f');
+  $('#g2048-over-sub').text('\u6700\u7ec8\u5f97\u5206\uff1a' + LG2048.score + '\uff0c\u4e0b\u6b21\u52a0\u6cb9\uff01');
+  $('#g2048-over').css('display', 'flex');
+}
+
+// ── In-game chat ──────────────────────────────────────────────
+function g2048Chat(text) {
+  if (!text) return;
+  g2048Msg('user', text);
+  if (!LG2048.active && !LG2048.won) return;
+  var persona = lgGetPersona();
+  var ctx = getContext ? getContext() : {};
+  var userName = (ctx && ctx.name1) || '\u4f60';
+  var p = (persona ? persona + '\n' : '') + userName + '\u5728 2048 \u6e38\u620f\u4e2d\u8bf4\uff1a\u300c' + text + '\u300d\n' + LG2048.charName + '\u7684\u56de\u5e94\uff0815-25\u5b57\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\uff09\uff1a';
+  lgCallAPI(p, 100).then(function(r) {
+    if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
+  });
+}
+
+// ── Touch swipe ───────────────────────────────────────────────
+(function() {
+  var _ts = null;
+  document.addEventListener('touchstart', function(e) {
+    var wrap = document.getElementById('g2048-board-wrap');
+    if (!wrap || !wrap.contains(e.target)) return;
+    if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') return;
+    var t = e.touches[0];
+    _ts = { x: t.clientX, y: t.clientY };
+  }, { passive: true });
+  document.addEventListener('touchend', function(e) {
+    if (!_ts) return;
+    var wrap = document.getElementById('g2048-board-wrap');
+    if (!wrap) { _ts = null; return; }
+    if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') { _ts = null; return; }
+    var t = e.changedTouches[0];
+    var dx = t.clientX - _ts.x;
+    var dy = t.clientY - _ts.y;
+    _ts = null;
+    if (Math.abs(dx) < 28 && Math.abs(dy) < 28) return;
+    var dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    g2048UserMove(dir);
+  }, { passive: true });
+})();
+
 //  LUDO GAME
 // ================================================================
 
