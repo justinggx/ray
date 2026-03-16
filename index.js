@@ -733,17 +733,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  filter: drop-shadow(0 1px 4px rgba(0,20,60,.6)) drop-shadow(0 0 6px rgba(0,10,40,.35)) !important;
+  filter: drop-shadow(0 1px 3px rgba(0,20,60,.45)) drop-shadow(0 0 5px rgba(0,10,40,.25)) !important;
 }
 #rp-phone.rp-theme-misty .rp-app-ico:active {
   transform: scale(.9) !important;
   box-shadow: 0 3px 12px rgba(100,145,195,.25), inset 0 1px 0 rgba(255,255,255,.5) !important;
 }
 #rp-phone.rp-theme-misty .rp-app-lbl {
-  color: rgba(240,250,255,.95) !important;
+  color: rgba(195,225,248,.82) !important;
   font-size: 10px !important;
-  font-weight: 600 !important;
-  text-shadow: 0 1px 3px rgba(0,20,70,.75), 0 0 8px rgba(0,10,50,.5) !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 3px rgba(0,20,60,.55), 0 0 6px rgba(0,10,40,.35) !important;
 }
 /* Misty widget: white-blue glass */
 #rp-phone.rp-theme-misty #rp-widget {
@@ -753,10 +753,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-radius: 22px !important;
 }
 #rp-phone.rp-theme-misty #rp-home-clock {
-  color: rgba(235,248,255,.95) !important;
+  color: rgba(195,225,248,.88) !important;
   font-weight: 100 !important;
   letter-spacing: -2px !important;
-  text-shadow: 0 1px 8px rgba(0,20,70,.5), 0 2px 20px rgba(0,10,40,.3) !important;
+  text-shadow: 0 1px 6px rgba(0,20,60,.4), 0 2px 16px rgba(0,10,40,.22) !important;
 }
 /* Misty nav bars: transparent */
 #rp-phone.rp-theme-misty .rp-nav-bar {
@@ -1237,11 +1237,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* Clock: white for contrast on blue wallpaper */
 #rp-phone.rp-theme-misty #rp-home-clock {
-  color: rgba(235,248,255,.95) !important;
+  color: rgba(195,225,248,.88) !important;
   font-weight: 100 !important;
   font-size: 58px !important;
   letter-spacing: -3px !important;
-  text-shadow: 0 1px 8px rgba(0,20,70,.55), 0 2px 20px rgba(0,10,40,.3) !important;
+  text-shadow: 0 1px 6px rgba(0,20,60,.4), 0 2px 16px rgba(0,10,40,.22) !important;
 }
 /* Status bar */
 #rp-phone.rp-theme-misty #rp-sbar {
@@ -1277,11 +1277,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* Nav title */
 #rp-phone.rp-theme-misty .rp-nav-title {
-  color: rgba(235,248,255,.95) !important;
-  text-shadow: 0 1px 4px rgba(0,20,70,.65), 0 0 10px rgba(0,10,50,.4) !important;
+  color: rgba(195,225,248,.88) !important;
+  text-shadow: 0 1px 3px rgba(0,20,60,.5), 0 0 8px rgba(0,10,40,.3) !important;
 }
 #rp-phone.rp-theme-misty .rp-back,
-#rp-phone.rp-theme-misty .rp-nav-add { color: rgba(235,248,255,.92) !important; text-shadow: 0 1px 3px rgba(0,20,70,.6) !important; }
+#rp-phone.rp-theme-misty .rp-nav-add { color: rgba(195,225,248,.85) !important; text-shadow: 0 1px 3px rgba(0,20,60,.45) !important; }
 /* Game controls */
 #rp-phone.rp-theme-misty #rp-view-game .rp-nav-bar {
   background: transparent !important;
@@ -1725,7 +1725,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-ln-bd:rgba(140,175,210,.2);
   --rp-ln-text:rgba(30,58,84,.85);
   --rp-home-wall:linear-gradient(rgba(200,225,245,.06),rgba(180,215,240,.08)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
-  --rp-clock-color:rgba(235,248,255,.95);
+  --rp-clock-color:rgba(195,225,248,.88);
   --rp-app-lbl:rgba(26,46,68,.85);
   --rp-app-lbl-sh:0 1px 3px rgba(255,255,255,.9);
   --rp-indicator:rgba(44,74,106,.22);
@@ -1969,7 +1969,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-diary-input::placeholder{color:rgba(44,90,140,.4)}
 #rp-phone.rp-theme-misty .rp-diary-send-btn{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
 #rp-phone.rp-theme-misty .rp-diary-empty{color:rgba(44,74,106,.4)}
-#rp-phone.rp-theme-misty #rp-gen-diary{color:rgba(235,248,255,.92)!important;filter:drop-shadow(0 1px 3px rgba(0,20,70,.5))!important}
+#rp-phone.rp-theme-misty #rp-gen-diary{color:rgba(195,225,248,.85)!important;filter:drop-shadow(0 1px 3px rgba(0,20,60,.4))!important}
 /* Candy gen-diary explicit (candy has no theme class, CSS var handles it but be safe) */
 #rp-gen-diary{color:var(--rp-nav-btn,#c0306a)}
 /* Diary icon — BASE = Candy (no theme class on #rp-phone for candy) */
@@ -1977,7 +1977,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* Diary icon — Star override */
 #rp-phone.rp-theme-star .rp-ico-diary{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
 /* Diary icon — Misty override */
-#rp-phone.rp-theme-misty .rp-ico-diary{color:#eef5ff!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.55)) drop-shadow(0 0 5px rgba(0,10,50,.35))!important}
+#rp-phone.rp-theme-misty .rp-ico-diary{color:rgba(200,228,250,.85)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.45)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
 /* ══════════════════════════════════════════════════════════
@@ -5395,8 +5395,8 @@ const RP_THEME_ICONS = {
     ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="8" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="8" cy="12" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="12" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="8" cy="16" r="1.2" fill="#e8e0ff" stroke="none"/><circle cx="16" cy="16" r="1.2" fill="#e8e0ff" stroke="none"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#e8e0ff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="9" cy="10" r="1.6" fill="#e8e0ff" stroke="none"/><circle cx="15" cy="10" r="1.6" fill="rgba(232,224,255,.8)" stroke="none"/><circle cx="9" cy="15" r="1.6" fill="rgba(232,224,255,.7)" stroke="none"/><circle cx="15" cy="15" r="1.6" fill="rgba(232,224,255,.6)" stroke="none"/></svg>'
   },
   misty: {
-    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
-    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="#eef5ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
+    messages: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>', moments: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s-8-5-8-12a8 8 0 0 1 16 0c0 7-8 12-8 12z"/><path d="M12 14s-3-2-3-5a3 3 0 0 1 6 0c0 3-3 5-3 5z" fill="rgba(61,126,176,.15)"/></svg>', settings: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>',
+    ludo: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>', 'api-settings': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>', themes: '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,228,250,.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L3 14.67V21h6.33L20.84 9.39a5.5 5.5 0 0 0 0-7.78z"/><line x1="15.5" y1="5.5" x2="18.5" y2="8.5"/></svg>'
   }
 };
 
