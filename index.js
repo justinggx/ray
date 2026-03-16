@@ -1983,10 +1983,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-view-g2048{position:relative;background:transparent;display:flex;flex-direction:column;overflow:hidden}
 #g2048-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;flex-shrink:0}
 #g2048-scores{display:flex;gap:7px}
-.g2048-sbox{background:rgba(187,173,160,.35);border-radius:7px;padding:3px 10px;text-align:center;min-width:50px}
-.g2048-slbl{font-size:9.5px;font-weight:600;color:rgba(119,110,101,.75);text-transform:uppercase;letter-spacing:.04em}
-#g2048-score,#g2048-best{font-size:15px;font-weight:700;color:#776e65}
-#g2048-turn{font-size:11.5px;font-weight:500;color:rgba(100,90,80,.72)}
+.g2048-sbox{background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:7px;padding:3px 10px;text-align:center;min-width:50px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.g2048-slbl{font-size:9.5px;font-weight:700;color:rgba(60,40,30,.65);text-transform:uppercase;letter-spacing:.04em}
+#g2048-score,#g2048-best{font-size:15px;font-weight:800;color:#4a3728}
+#g2048-turn{font-size:11.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.38);padding:2px 10px;border-radius:12px;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 #g2048-newbtn{background:none;border:none;color:var(--rp-nav-btn,#c0306a);font-size:13px;font-weight:600;cursor:pointer;padding:4px 6px}
 #g2048-board-wrap{display:flex;justify-content:center;padding:4px 0 2px;flex-shrink:0}
 #g2048-board{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:5px;padding:6px;background:rgba(187,173,160,.72);border-radius:9px;width:214px;height:214px;box-shadow:0 3px 12px rgba(0,0,0,.15)}
@@ -1998,52 +1998,46 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .g2048-drow{display:none}
 .g2048-dir{width:34px;height:24px;border-radius:7px;border:none;background:rgba(187,173,160,.5);color:#776e65;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .g2048-dir:active{background:rgba(187,173,160,.85)}
-#g2048-chat{flex:1;overflow-y:auto;padding:5px 12px;display:flex;flex-direction:column;gap:2px;min-height:50px}
+#g2048-chat{flex:1;overflow-y:auto;padding:5px 8px;display:flex;flex-direction:column;gap:2px;min-height:50px;margin:0 8px;background:rgba(0,0,0,.18);border-radius:8px;backdrop-filter:blur(4px)}
 #g2048-chat::-webkit-scrollbar{display:none}
 #g2048-input-row{display:flex;gap:6px;padding:6px 12px 10px;flex-shrink:0;border-top:1px solid rgba(0,0,0,.06)}
-#g2048-input{flex:1;border-radius:18px;border:1px solid rgba(0,0,0,.1);padding:6px 12px;font-size:13px;background:rgba(255,255,255,.75);font-family:inherit;outline:none}
-#g2048-send{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ec4899);border:none;color:#fff;font-weight:700;cursor:pointer;font-size:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+#g2048-input{flex:1;border-radius:18px;border:1px solid rgba(0,0,0,.12);padding:6px 12px;font-size:13px;background:rgba(255,255,255,.88);font-family:inherit;outline:none;color:#1a1008}
+#g2048-send{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);border:none;color:#c0306a;font-weight:800;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 #g2048-over{position:absolute;inset:0;background:rgba(0,0,0,.62);z-index:50;flex-direction:column;align-items:center;justify-content:center;gap:12px;display:none}
 .g2048-over-emoji{font-size:52px;line-height:1}
 .g2048-over-title{font-size:20px;font-weight:800;color:#fff}
 .g2048-over-sub{font-size:13px;color:rgba(255,255,255,.8);text-align:center;padding:0 20px}
-.g2048-over-btn{padding:10px 28px;border-radius:20px;border:none;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px}
+.g2048-over-btn{padding:9px 18px;border-radius:20px;border:none;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;font-weight:700;font-size:13px;cursor:pointer}
 
 /* 2048 chat message colors */
-#g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 4px;border-radius:3px}
-#g2048-chat .game-msg-sys{color:rgba(80,60,50,.72)}
-#g2048-chat .game-msg-user{color:#c0306a;font-weight:500}
-#g2048-chat .game-msg-char{color:#7c3aed;font-weight:500}
-#rp-phone.rp-theme-star #g2048-chat .game-msg-sys{color:rgba(200,185,255,.65)}
-#rp-phone.rp-theme-star #g2048-chat .game-msg-user{color:#f0abfc}
-#rp-phone.rp-theme-star #g2048-chat .game-msg-char{color:#c4b5fd}
-#rp-phone.rp-theme-misty #g2048-chat .game-msg-sys{color:rgba(220,238,252,.9);text-shadow:0 1px 3px rgba(0,20,60,.5)}
-#rp-phone.rp-theme-misty #g2048-chat .game-msg-user{color:rgba(255,200,220,.95);text-shadow:0 1px 3px rgba(0,20,60,.5)}
-#rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(180,235,255,.95);text-shadow:0 1px 3px rgba(0,20,60,.5)}
+#g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 0;font-weight:500}
+#g2048-chat .game-msg-sys{color:rgba(240,230,215,.88);text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
+#g2048-chat .game-msg-user{color:#ffcce0;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
+#g2048-chat .game-msg-char{color:#e0d4ff;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.5)}
+/* star/misty chat inherit base white stroke style */
 /* Star theme 2048 */
 #rp-phone.rp-theme-star #g2048-board{background:rgba(20,8,60,.82)}
 #rp-phone.rp-theme-star .g2048-cell{background:rgba(60,25,120,.45)}
-#rp-phone.rp-theme-star .g2048-sbox{background:rgba(60,25,120,.4)}
-#rp-phone.rp-theme-star #g2048-score,#rp-phone.rp-theme-star #g2048-best{color:#d4c8ff}
-#rp-phone.rp-theme-star #g2048-turn{color:rgba(200,185,255,.65)}
-#rp-phone.rp-theme-star .g2048-slbl{color:rgba(200,185,255,.55)}
+#rp-phone.rp-theme-star .g2048-sbox{background:rgba(25,10,65,.88)!important;border-color:rgba(140,110,255,.3)}
+#rp-phone.rp-theme-star .g2048-slbl{color:rgba(180,165,255,.72)}
+#rp-phone.rp-theme-star #g2048-score,#rp-phone.rp-theme-star #g2048-best{color:#ddd4ff!important;font-weight:800}
+#rp-phone.rp-theme-star #g2048-turn{color:#e8e0ff!important;background:rgba(18,6,55,.78)!important}
 #rp-phone.rp-theme-star .g2048-dir{background:rgba(80,40,160,.45);color:#c8b8ff;border:1px solid rgba(140,110,255,.2)}
-#rp-phone.rp-theme-star #g2048-input{background:rgba(30,14,72,.65)!important;border-color:rgba(140,110,255,.3);color:#e0d8ff}
-#rp-phone.rp-theme-star #g2048-send{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+#rp-phone.rp-theme-star #g2048-input{background:rgba(30,14,72,.82)!important;border-color:rgba(140,110,255,.35);color:#e8e0ff}
+#rp-phone.rp-theme-star #g2048-send{background:rgba(255,255,255,.88)!important;color:#7c3aed!important}
 #rp-phone.rp-theme-star #g2048-input::placeholder{color:rgba(200,185,255,.4)}
 #rp-phone.rp-theme-star #g2048-turn{color:rgba(200,185,255,.65)!important}
 #rp-phone.rp-theme-star .g2048-dir:active{background:rgba(120,60,200,.7)}
 /* Misty theme 2048 */
 #rp-phone.rp-theme-misty #g2048-board{background:rgba(80,130,180,.58)}
 #rp-phone.rp-theme-misty .g2048-cell{background:rgba(160,200,230,.38)}
-#rp-phone.rp-theme-misty .g2048-sbox{background:rgba(180,215,240,.45)}
-#rp-phone.rp-theme-misty #g2048-score,#rp-phone.rp-theme-misty #g2048-best{color:#0a1828}
-#rp-phone.rp-theme-misty #g2048-turn{color:rgba(220,238,252,.9)!important;text-shadow:0 1px 3px rgba(0,20,60,.5)}
-#rp-phone.rp-theme-misty .g2048-slbl{color:rgba(10,40,80,.75)}
+#rp-phone.rp-theme-misty .g2048-sbox{background:rgba(225,242,255,.88)!important;border-color:rgba(100,170,220,.25)}
+#rp-phone.rp-theme-misty .g2048-slbl{color:rgba(10,40,80,.65)}
 #rp-phone.rp-theme-misty #g2048-score,#rp-phone.rp-theme-misty #g2048-best{color:#0a1828!important;font-weight:800}
+#rp-phone.rp-theme-misty #g2048-turn{color:rgba(220,238,252,.95)!important;background:rgba(0,30,70,.55)!important;text-shadow:0 1px 3px rgba(0,20,60,.6)}
 #rp-phone.rp-theme-misty .g2048-dir{background:rgba(180,215,240,.55);color:#0a2035;border:1px solid rgba(100,160,210,.25)}
 #rp-phone.rp-theme-misty #g2048-input{background:rgba(235,248,255,.7)!important;border-color:rgba(100,170,220,.3);color:#0a1828}
-#rp-phone.rp-theme-misty #g2048-send{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
+#rp-phone.rp-theme-misty #g2048-send{background:rgba(255,255,255,.88)!important;color:#0369a1!important}
 #rp-phone.rp-theme-misty .g2048-dir:active{background:rgba(130,185,230,.8)}
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
@@ -3202,8 +3196,12 @@ const HTML = `
           <div id="g2048-over">
             <div class="g2048-over-emoji" id="g2048-over-emoji">🎉</div>
             <div class="g2048-over-title" id="g2048-over-title">达成2048！</div>
-            <div class="g2048-over-sub" id="g2048-over-sub">你们合力完成！</div>
-            <button class="g2048-over-btn" id="g2048-restart">再来一局</button>
+            <div class="g2048-over-sub" id="g2048-over-sub">你们合力完成了！</div>
+            <div id="g2048-over-btns" style="display:flex;gap:10px;margin-top:6px">
+              <button class="g2048-over-btn" id="g2048-continue" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5)">继续挑战</button>
+              <button class="g2048-over-btn" id="g2048-restart">再来一局</button>
+              <button class="g2048-over-btn" id="g2048-quit" style="background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.25)">退出</button>
+            </div>
           </div>
         </div>
 
@@ -3799,6 +3797,19 @@ function bindUI() {
   $(document).on('click', '#g2048-newbtn,#g2048-restart', function() {
     $('#g2048-over').hide();
     g2048Init();
+  });
+  $(document).on('click', '#g2048-continue', function() {
+    $('#g2048-over').hide();
+    LG2048.active = true;
+    LG2048.processing = false;
+    LG2048.turn = 'user';
+    g2048Render();
+    g2048Msg('sys', '继续挑战！目标：4096！');
+  });
+  $(document).on('click', '#g2048-quit', function() {
+    $('#g2048-over').hide();
+    LG2048.active = false;
+    go('home');
   });
   $(document).on('click', '.g2048-dir', function() {
     if (!LG2048.active || LG2048.processing || LG2048.turn !== 'user') return;
