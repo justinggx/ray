@@ -2016,14 +2016,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .g2048-dir{background:rgba(80,40,160,.45);color:#c8b8ff}
 #rp-phone.rp-theme-star #g2048-input{background:rgba(30,14,72,.65)!important;border-color:rgba(140,110,255,.3);color:#e0d8ff}
 #rp-phone.rp-theme-star #g2048-send{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+#rp-phone.rp-theme-star #g2048-input::placeholder{color:rgba(200,185,255,.4)}
+#rp-phone.rp-theme-star #g2048-turn{color:rgba(200,185,255,.65)!important}
 #rp-phone.rp-theme-star .g2048-dir:active{background:rgba(120,60,200,.7)}
 /* Misty theme 2048 */
 #rp-phone.rp-theme-misty #g2048-board{background:rgba(80,130,180,.58)}
 #rp-phone.rp-theme-misty .g2048-cell{background:rgba(160,200,230,.38)}
 #rp-phone.rp-theme-misty .g2048-sbox{background:rgba(180,215,240,.45)}
 #rp-phone.rp-theme-misty #g2048-score,#rp-phone.rp-theme-misty #g2048-best{color:#0a1828}
-#rp-phone.rp-theme-misty #g2048-turn{color:rgba(10,30,50,.65)}
-#rp-phone.rp-theme-misty .g2048-slbl{color:rgba(10,30,60,.55)}
+#rp-phone.rp-theme-misty #g2048-turn{color:rgba(220,238,252,.9)!important;text-shadow:0 1px 3px rgba(0,20,60,.5)}
+#rp-phone.rp-theme-misty .g2048-slbl{color:rgba(10,40,80,.75)}
+#rp-phone.rp-theme-misty #g2048-score,#rp-phone.rp-theme-misty #g2048-best{color:#0a1828!important;font-weight:800}
 #rp-phone.rp-theme-misty .g2048-dir{background:rgba(180,215,240,.55);color:#0a2035}
 #rp-phone.rp-theme-misty #g2048-input{background:rgba(235,248,255,.7)!important;border-color:rgba(100,170,220,.3);color:#0a1828}
 #rp-phone.rp-theme-misty #g2048-send{background:linear-gradient(135deg,#0ea5e9,#38bdf8)}
@@ -6067,16 +6070,16 @@ function g2048UserMove(dir) {
   var flat = LG2048.board.reduce(function(a, r) { return a.concat(r); }, []);
   if (!LG2048.won && flat.indexOf(2048) >= 0) {
     LG2048.won = true;
+    LG2048.active = false;
     g2048Msg('sys', '\ud83c\udf89 \u8fbe\u62102048\uff01\u4f60\u4eec\u8d62\u4e86\uff01');
+    $('#g2048-over-emoji').text('\ud83c\udf89');
+    $('#g2048-over-title').text('\u8fbe\u62102048\uff01');
+    $('#g2048-over-sub').text('\u4f60\u4eec\u5408\u529b\u5b8c\u6210\u4e86\uff01');
+    $('#g2048-over').css('display', 'flex');
     var persona = lgGetPersona();
     var wp = (persona ? persona + '\n' : '') + '\u6211\u4eec\u5728 2048 \u6e38\u620f\u91cc\u5408\u529b\u8fbe\u6210\u4e862048\uff01\u8bf4\u4e00\u53e5\u5e86\u795d\uff0820\u5b57\u5185\uff09\uff1a';
     lgCallAPI(wp, 80).then(function(r) {
       if (r) g2048Msg('char', cleanGameReply(r, LG2048.charName));
-      $('#g2048-over-emoji').text('\ud83c\udf89');
-      $('#g2048-over-title').text('\u8fbe\u62102048\uff01');
-      $('#g2048-over-sub').text('\u4f60\u4eec\u5408\u529b\u5b8c\u6210\u4e86\uff01');
-      $('#g2048-over').css('display', 'flex');
-      LG2048.active = false;
     });
     return;
   }
