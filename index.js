@@ -2028,6 +2028,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-user{color:rgba(255,210,228,.92)}
 #rp-phone.rp-theme-misty #g2048-chat-fs-body .game-msg-char{color:rgba(185,228,255,.95)}
 
+/* API test button */
+#rp-phone.rp-theme-misty #rp-api-settings-v #rp-api-test-v{background:rgba(220,240,255,.22)!important;border-color:rgba(80,160,220,.4)!important;color:#0a5080!important}
+#rp-phone.rp-theme-star #rp-api-settings-v #rp-api-test-v{background:rgba(80,40,160,.25)!important;border-color:rgba(140,100,255,.45)!important;color:#c8b0ff!important}
+#rp-api-test-v.testing{opacity:.7;pointer-events:none}
+#rp-api-test-v.ok{background:rgba(34,197,94,.15)!important;border-color:rgba(34,197,94,.5)!important;color:#166534!important}
+#rp-api-test-v.fail{background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.4)!important;color:#991b1b!important}
+#rp-phone.rp-theme-star #rp-api-test-v.ok{color:#86efac!important}
+#rp-phone.rp-theme-star #rp-api-test-v.fail{color:#fca5a5!important}
+#rp-phone.rp-theme-misty #rp-api-test-v.ok{color:#065f46!important}
+#rp-phone.rp-theme-misty #rp-api-test-v.fail{color:#7f1d1d!important}
+
 /* 2048 API tip blink */
 @keyframes g2048TipBlink{0%,100%{opacity:.75}50%{opacity:.22}}
 #g2048-api-tip{font-size:10px;text-align:center;padding:2px 12px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:rgba(192,48,106,.82)}
@@ -3107,6 +3118,7 @@ const HTML = `
             <div id="rp-api-status-v" style="font-size:11px;color:#a855f7;min-height:18px;margin-top:8px"></div>
           </div>
           <div style="padding:10px 18px 28px;flex-shrink:0;display:flex;flex-direction:column;gap:10px">
+            <button id="rp-api-test-v" style="width:100%;padding:11px;background:rgba(255,255,255,.18);border:1.5px solid rgba(168,85,247,.35);color:#7c3aed;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer">📡 测试连通性</button>
             <button id="rp-api-save-v" style="width:100%;padding:13px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:18px;font-size:14px;font-weight:700;cursor:pointer">保存设置</button>
           </div>
         </div>
@@ -3745,6 +3757,52 @@ function bindUI() {
     if ($(this).val() === 'custom') $('#rp-api-custom-fields-v').css('display','flex');
     else $('#rp-api-custom-fields-v').hide();
   });
+  $(document).on('click', '#rp-api-test-v', function() {
+    var $btn = $('#rp-api-test-v');
+    var $st  = $('#rp-api-status-v');
+    var mode = $('input[name="rp-api-mode-v"]:checked').val() || 'st';
+    if (mode !== 'custom') {
+      $st.text('⚠️ 仅在接入其他API模式下可测试');
+      return;
+    }
+    var url   = $('#rp-api-url-v').val().trim();
+    var key   = $('#rp-api-key-v').val().trim();
+    var model = $('#rp-api-model-v').val().trim() || 'deepseek-chat';
+    if (!url || !key) {
+      $st.text('⚠️ 请先填写API地址和Key'); return;
+    }
+    $btn.addClass('testing').text('测试中…');
+    $st.text('正在连接，请稍候…');
+    var t0 = Date.now();
+    fetch((url.replace(/\/+$/, '')) + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: model, messages: [{ role:'user', content:'回复一个单字OK' }], max_tokens: 5, temperature: 0 })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      var ms = Date.now() - t0;
+      var txt = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (txt) {
+        $btn.removeClass('testing fail').addClass('ok').text('✅ 连通成功');
+        $st.text('✅ 响应成功，延迟 ' + ms + 'ms，模型：' + (data.model || model));
+      } else if (data.error) {
+        $btn.removeClass('testing ok').addClass('fail').text('❌ 连接失败');
+        $st.text('❌ ' + (data.error.message || JSON.stringify(data.error)).substring(0,50));
+      } else {
+        $btn.removeClass('testing ok').addClass('fail').text('⚠️ 响应异常');
+        $st.text('⚠️ 返回格式异常: ' + JSON.stringify(data).substring(0,60));
+      }
+    }).catch(function(e) {
+      var ms = Date.now() - t0;
+      $btn.removeClass('testing ok').addClass('fail').text('❌ 连接失败');
+      $st.text('❌ 请求失败: ' + e.message.substring(0,50));
+    }).finally(function() {
+      $btn.removeClass('testing');
+      setTimeout(function() {
+        $btn.removeClass('ok fail').text('📡 测试连通性');
+      }, 8000);
+    });
+  });
+
   $(document).on('click', '#rp-api-save-v', function() {
     const mode = $('input[name="rp-api-mode-v"]:checked').val() || 'st';
     const cfg = { mode };
