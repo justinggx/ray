@@ -1235,15 +1235,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
    🌿 MISTY THEME — Complete inner-page polish
    ════════════════════════════════════════════════════ */
 
-/* Clock: deep navy with white contrast glow */
+/* Clock: white for contrast on blue wallpaper */
 #rp-phone.rp-theme-misty #rp-home-clock {
-  color: #1a3050 !important;
+  color: rgba(235,248,255,.95) !important;
   font-weight: 100 !important;
   font-size: 58px !important;
   letter-spacing: -3px !important;
-  text-shadow:
-    0 0 24px rgba(255,255,255,.9),
-    0 0 8px rgba(255,255,255,.6) !important;
+  text-shadow: 0 1px 8px rgba(0,20,70,.55), 0 2px 20px rgba(0,10,40,.3) !important;
 }
 /* Status bar */
 #rp-phone.rp-theme-misty #rp-sbar {
@@ -1727,7 +1725,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-ln-bd:rgba(140,175,210,.2);
   --rp-ln-text:rgba(30,58,84,.85);
   --rp-home-wall:linear-gradient(rgba(200,225,245,.06),rgba(180,215,240,.08)),url('https://i.postimg.cc/wjTgWzdY/lan-se-xiu-qiu-yu-bi-lan-da-hai-de-lang-man-xie-hou-bi-zhi-1-guang-yu-Wallpaper-lai-zi-xiao-hong-shu-wang-ye-ban.jpg') center/cover no-repeat;
-  --rp-clock-color:#1a2e44;
+  --rp-clock-color:rgba(235,248,255,.95);
   --rp-app-lbl:rgba(26,46,68,.85);
   --rp-app-lbl-sh:0 1px 3px rgba(255,255,255,.9);
   --rp-indicator:rgba(44,74,106,.22);
@@ -1737,7 +1735,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-wd-fill:linear-gradient(90deg,#5b8fb9,#8ab4d4);
   --rp-nav-bg:rgba(240,248,255,.7);
   --rp-nav-bd:rgba(140,175,210,.25);
-  --rp-nav-title:#1a2e44;
+  --rp-nav-title:rgba(235,248,255,.95);
   --rp-nav-btn:#3d6e9a;
   --rp-msg-bg:transparent;
   --rp-bubbles-bg:transparent;
