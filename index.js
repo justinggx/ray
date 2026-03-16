@@ -2044,9 +2044,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* 2048 API tip blink */
 @keyframes g2048TipBlink{0%,100%{opacity:1}50%{opacity:.55}}
-#g2048-api-tip{font-size:11px;text-align:center;padding:3px 14px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:#b02050;font-weight:600;text-shadow:0 1px 4px rgba(255,255,255,.7)}
-#rp-phone.rp-theme-star #g2048-api-tip{color:rgba(210,190,255,1);text-shadow:0 1px 6px rgba(0,0,30,.6)}
-#rp-phone.rp-theme-misty #g2048-api-tip{color:#0a5fa0;text-shadow:0 1px 4px rgba(255,255,255,.6)}
+#g2048-api-tip{font-size:11px;text-align:center;padding:3px 14px 0;flex-shrink:0;animation:g2048TipBlink 2.4s ease-in-out infinite;color:#8a0030;font-weight:700;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 0 6px rgba(255,255,255,.9)}
+#rp-phone.rp-theme-star #g2048-api-tip{color:#e8d8ff;text-shadow:-1px -1px 0 rgba(20,0,60,.9),1px -1px 0 rgba(20,0,60,.9),-1px 1px 0 rgba(20,0,60,.9),1px 1px 0 rgba(20,0,60,.9),0 0 8px rgba(100,50,200,.6)}
+#rp-phone.rp-theme-misty #g2048-api-tip{color:#002a5c;text-shadow:-1px -1px 0 rgba(255,255,255,.95),1px -1px 0 rgba(255,255,255,.95),-1px 1px 0 rgba(255,255,255,.95),1px 1px 0 rgba(255,255,255,.95),0 0 6px rgba(255,255,255,.8)}
 
 /* 2048 chat message colors */
 #g2048-chat .game-msg{font-size:12px;line-height:1.55;padding:2px 0;font-weight:500}
