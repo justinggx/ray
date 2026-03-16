@@ -3768,8 +3768,8 @@ function bindUI() {
   });
   $(document).on('click', '#rp-api-test-v', function() {
     var $btn = $(this);
-    var mode = $('#rp-api-mode-v').val();
-    if (mode !== 'custom') { $btn.text('⚠️ 仅适用于接入其他API模式'); setTimeout(function(){ $btn.text('📡 测试连通性'); }, 2500); return; }
+    var mode = $('input[name="rp-api-mode-v"]:checked').val();
+    if (mode !== 'custom') { $btn.text('⚠️ 请先选择「接入其他 API」'); setTimeout(function(){ $btn.text('📡 测试连通性'); }, 2500); return; }
     var url  = ($('#rp-api-url-v').val() || '').trim().replace(/\/+$/, '');
     var key  = ($('#rp-api-key-v').val() || '').trim();
     var model= ($('#rp-api-model-v').val() || 'gpt-3.5-turbo').trim();
