@@ -3424,22 +3424,22 @@ const HTML = `
 //  INIT
 // ================================================================
 async function init() {
+  try {
   // Hot-reload safety: remove stale phone element & force CSS re-inject
   const stale = document.getElementById('rp-wrapper');
   if (stale) stale.remove();
   const staleFab = document.getElementById('rp-fab');
   if (staleFab) staleFab.remove();
   const staleCSS = document.getElementById('rp-phone-css');
-  if (staleCSS) staleCSS.remove(); // 每次重载都重新注入最新CSS
+  if (staleCSS) staleCSS.remove();
   window._rpPhoneSheet = false;
 
-  injectStyles(); // FIX: inject CSS via JS, bypass ST extension CSS pipeline
+  injectStyles();
   $('body').append(HTML);
   // Defensive: ensure FAB visible after append
-  (function() {
-    var _f = document.getElementById('rp-fab');
-    if (_f) { _f.style.display = 'flex'; _f.style.visibility = 'visible'; }
-  })();
+  var _f = document.getElementById('rp-fab');
+  if (_f) { _f.style.cssText += ';display:flex!important;visibility:visible!important;opacity:1!important'; }
+  else { console.error('[RP] FATAL: rp-fab not found after append'); }
   // 修复：SillyTavern 给 <html> 加了 transform，导致 position:fixed 的包含块变成高度=0的html元素
   // 用 window.innerHeight 直接计算真实视口位置
   (function fixMobileLayout() {
@@ -3529,6 +3529,7 @@ async function init() {
       hidePhoneTagsInChat();
     } catch(e) {}
   }, 800);
+  } catch(err) { console.error('[RP] init() crash:', err.message, err.stack); }
 }
 
 // ================================================================
