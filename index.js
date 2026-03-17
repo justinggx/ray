@@ -2611,21 +2611,22 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── GAMES FOLDER (iOS style) ── */
 .rp-folder-ico {
   width: 52px; height: 52px; border-radius: 16px;
-  background: transparent;
+  background: rgba(255,255,255,0.22);
+  border: 1px solid rgba(255,255,255,0.30);
   display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-  gap: 4px; padding: 6px;
+  gap: 3px; padding: 7px;
   box-sizing: border-box; overflow: hidden;
   transition: transform .14s ease, filter .14s ease;
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.30));
 }
 .rp-folder-ico:active { transform: scale(.88); }
 .rp-fi-item {
-  border-radius: 6px;
+  border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; line-height: 1;
-  background: rgba(255,255,255,0.50);
+  font-size: 14px; line-height: 1;
+  background: transparent;
 }
-.rp-fi-empty { background: rgba(255,255,255,0.18) !important; }
+.rp-fi-empty { opacity: 0; }
 #rp-folder-modal {
   position: absolute; inset: 0; z-index: 800;
   background: rgba(0,0,0,0.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
@@ -2657,12 +2658,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* ── Candy theme folder ── */
 #rp-phone.rp-theme-candy .rp-folder-ico {
-  filter: drop-shadow(0 1px 4px rgba(200,60,90,.55)) drop-shadow(0 0 6px rgba(255,255,255,.6)) !important;
+  background: rgba(255,200,220,0.45) !important;
+  border-color: rgba(255,180,200,0.50) !important;
+  filter: drop-shadow(0 1px 5px rgba(200,60,90,.45)) drop-shadow(0 0 8px rgba(255,255,255,.5)) !important;
 }
-#rp-phone.rp-theme-candy .rp-fi-item {
-  background: rgba(255,210,225,0.65);
-}
-#rp-phone.rp-theme-candy .rp-fi-empty { background: rgba(255,200,220,0.22) !important; }
+#rp-phone.rp-theme-candy .rp-fi-item { background: transparent !important; }
+#rp-phone.rp-theme-candy .rp-fi-empty { opacity: 0 !important; }
 #rp-phone.rp-theme-candy #rp-folder-modal {
   background: rgba(180,60,90,0.28);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -2690,12 +2691,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* ── Star theme folder ── */
 #rp-phone.rp-theme-star .rp-folder-ico {
-  filter: drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5)) !important;
+  background: rgba(30,10,80,0.70) !important;
+  border-color: rgba(160,110,255,0.50) !important;
+  filter: drop-shadow(0 0 8px rgba(160,100,255,.65)) drop-shadow(0 1px 3px rgba(0,0,0,.6)) !important;
 }
-#rp-phone.rp-theme-star .rp-fi-item {
-  background: rgba(130,85,255,0.32);
-}
-#rp-phone.rp-theme-star .rp-fi-empty { background: rgba(80,40,160,0.18) !important; }
+#rp-phone.rp-theme-star .rp-fi-item { background: transparent !important; filter: drop-shadow(0 0 3px rgba(200,170,255,.6)); }
+#rp-phone.rp-theme-star .rp-fi-empty { opacity: 0 !important; }
 #rp-phone.rp-theme-star #rp-folder-modal {
   background: rgba(4,2,18,0.72);
 }
@@ -2722,12 +2723,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* ── Misty theme folder ── */
 #rp-phone.rp-theme-misty .rp-folder-ico {
-  filter: drop-shadow(0 1px 3px rgba(0,20,60,.45)) drop-shadow(0 0 5px rgba(0,10,40,.25)) !important;
+  background: rgba(190,215,240,0.50) !important;
+  border-color: rgba(255,255,255,0.55) !important;
+  filter: drop-shadow(0 1px 4px rgba(0,30,80,.35)) drop-shadow(0 0 6px rgba(180,210,240,.4)) !important;
 }
-#rp-phone.rp-theme-misty .rp-fi-item {
-  background: rgba(210,230,248,0.65);
-}
-#rp-phone.rp-theme-misty .rp-fi-empty { background: rgba(190,215,238,0.28) !important; }
+#rp-phone.rp-theme-misty .rp-fi-item { background: transparent !important; }
+#rp-phone.rp-theme-misty .rp-fi-empty { opacity: 0 !important; }
 #rp-phone.rp-theme-misty #rp-folder-modal {
   background: rgba(160,195,220,0.38);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
