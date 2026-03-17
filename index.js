@@ -5727,9 +5727,9 @@ function applyWallpaper() {
   document.querySelectorAll('.rp-home-bg, .rp-lock-bg').forEach(el => {
     if (wp) {
       // wallpaper image + semi-transparent white overlay for readability
-      el.style.backgroundImage = `linear-gradient(rgba(255,255,255,.18),rgba(255,255,255,.18)), url(${wp})`;
-      el.style.backgroundSize   = 'auto, cover';
-      el.style.backgroundPosition = 'auto, center';
+      el.style.backgroundImage = `url(${wp})`;
+      el.style.backgroundSize   = 'cover';
+      el.style.backgroundPosition = 'center';
     } else {
       el.style.backgroundImage  = '';
       el.style.backgroundSize   = '';
@@ -6340,13 +6340,6 @@ function g2048Init() {
   $('#g2048-chat').empty();
   g2048Render();
   g2048Msg('sys', '\u6e38\u620f\u5f00\u59cb\uff01\u4e00\u8d77\u5e72\u5230 2048 \u5427\uff01\ud83c\udf89');
-  setTimeout(function() {
-    var persona = g2048GetPersona();
-    var p = (persona ? persona + '\n' : '') + '\u3010\u6e38\u620f\u573a\u666f\u3011\u6211\u4eec\u73b0\u5728\u8fdb\u884c2048\u6570\u5b57\u62fc\u76d8\u6e38\u620f\u3002\u4ee5\u89d2\u8272\u53e3\u5428\u8bf4\u4e00\u53e5\u5f00\u573a\u767d\uff0820\u5b57\u5185\uff0c\u7eaf\u5bf9\u8bdd\uff0c\u4e0d\u8981\u52a8\u4f5c\u63cf\u5199\uff0c\u8bf4\u8bdd\u6d41\u7545\u7981\u6b62\u7701\u7565\u53f7\uff09\uff1a';
-    lgCallAPI(p, 80).then(function(r) {
-      if (r) g2048Msg('char', g2048StripActions(cleanGameReply(r, LG2048.charName)));
-    });
-  }, 700);
 }
 
 // ── User move ─────────────────────────────────────────────────
