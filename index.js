@@ -2611,55 +2611,145 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── GAMES FOLDER (iOS style) ── */
 .rp-folder-ico {
   width: 52px; height: 52px; border-radius: 16px;
-  background: rgba(255,255,255,0.28);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-  gap: 3px; padding: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  gap: 4px; padding: 7px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.30);
   box-sizing: border-box; overflow: hidden;
+  transition: transform .15s, box-shadow .15s;
 }
+.rp-folder-ico:active { transform: scale(.90); }
 .rp-fi-item {
-  border-radius: 5px;
+  border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; line-height: 1;
-  background: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.50);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
 }
-.rp-fi-empty { background: rgba(255,255,255,0.15) !important; }
+.rp-fi-empty { background: rgba(255,255,255,0.12) !important; box-shadow: none !important; }
 #rp-folder-modal {
   position: absolute; inset: 0; z-index: 800;
-  background: rgba(0,0,0,0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  background: rgba(0,0,0,0.50); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
 }
 .rp-folder-title-lbl {
-  color: #fff; font-size: 14px; font-weight: 600;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.45); text-align: center; letter-spacing: .5px;
+  color: rgba(255,255,255,0.92); font-size: 14px; font-weight: 600;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.55); text-align: center; letter-spacing: .8px;
 }
 .rp-folder-popup {
-  background: rgba(255,255,255,0.20); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.30); border-radius: 22px; padding: 18px 20px;
-  display: flex; flex-direction: row; gap: 20px; align-items: flex-start;
+  background: rgba(255,255,255,0.18); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.28); border-radius: 26px; padding: 22px 26px;
+  display: flex; flex-direction: row; gap: 24px; align-items: flex-start;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .rp-folder-item {
-  display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer;
-  transition: transform .12s;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+  transition: transform .15s cubic-bezier(.34,1.56,.64,1);
 }
-.rp-folder-item:active { transform: scale(.88); }
+.rp-folder-item:active { transform: scale(.84); }
 .rp-folder-item-ico {
-  width: 56px; height: 56px; border-radius: 15px;
-  display: flex; align-items: center; justify-content: center; font-size: 28px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+  width: 60px; height: 60px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 .rp-folder-item-lbl {
-  font-size: 11px; color: #fff; font-weight: 500;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5); white-space: nowrap;
+  font-size: 11px; color: rgba(255,255,255,0.90); font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.55); white-space: nowrap; letter-spacing: .3px;
 }
-/* Star theme folder */
-#rp-phone.rp-theme-star .rp-folder-ico { background: rgba(40,20,90,0.55); border: 1px solid rgba(140,100,255,0.35); }
-#rp-phone.rp-theme-star .rp-fi-item { background: rgba(120,80,255,0.3); }
-#rp-phone.rp-theme-star #rp-folder-modal { background: rgba(6,3,20,0.65); }
-#rp-phone.rp-theme-star .rp-folder-popup { background: rgba(20,10,55,0.75); border-color: rgba(140,100,255,0.3); }
-/* Misty theme folder */
-#rp-phone.rp-theme-misty .rp-folder-ico { background: rgba(200,225,245,0.38); }
-#rp-phone.rp-theme-misty .rp-fi-item { background: rgba(200,225,245,0.5); }
+/* ── Default (light) theme folder ── */
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-ico {
+  background: rgba(180,180,200,0.30);
+  border-color: rgba(255,255,255,0.38);
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-fi-item {
+  background: rgba(255,255,255,0.55);
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) #rp-folder-modal {
+  background: rgba(20,20,40,0.52);
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-popup {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.32);
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-item-ico[style*="ff6b8a"] {
+  box-shadow: 0 4px 16px rgba(192,41,74,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-item-ico[style*="f5a623"] {
+  box-shadow: 0 4px 16px rgba(240,140,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+/* ── Star theme folder ── */
+#rp-phone.rp-theme-star .rp-folder-ico {
+  background: rgba(20,8,58,0.70);
+  border-color: rgba(160,110,255,0.45);
+  box-shadow: 0 2px 14px rgba(120,60,255,0.30), inset 0 1px 0 rgba(180,140,255,0.25);
+}
+#rp-phone.rp-theme-star .rp-fi-item {
+  background: rgba(130,85,255,0.32);
+  box-shadow: inset 0 1px 0 rgba(200,170,255,0.25);
+}
+#rp-phone.rp-theme-star .rp-fi-empty { background: rgba(80,40,160,0.18) !important; }
+#rp-phone.rp-theme-star #rp-folder-modal {
+  background: rgba(4,2,18,0.72);
+}
+#rp-phone.rp-theme-star .rp-folder-popup {
+  background: rgba(15,7,48,0.82);
+  border-color: rgba(150,100,255,0.35);
+  box-shadow: 0 8px 32px rgba(80,40,200,0.35), inset 0 1px 0 rgba(170,130,255,0.20);
+}
+#rp-phone.rp-theme-star .rp-folder-title-lbl {
+  color: rgba(220,200,255,0.95);
+  text-shadow: 0 0 12px rgba(160,100,255,0.6), 0 1px 4px rgba(0,0,0,0.6);
+}
+#rp-phone.rp-theme-star .rp-folder-item-lbl {
+  color: rgba(200,175,255,0.90);
+  text-shadow: 0 0 8px rgba(140,90,255,0.5), 0 1px 3px rgba(0,0,0,0.5);
+}
+#rp-phone.rp-theme-star .rp-folder-item-ico[style*="ff6b8a"] {
+  background: linear-gradient(145deg,#c060ff,#7020d0) !important;
+  box-shadow: 0 4px 18px rgba(140,60,255,0.55), inset 0 1px 0 rgba(220,180,255,0.3) !important;
+}
+#rp-phone.rp-theme-star .rp-folder-item-ico[style*="f5a623"] {
+  background: linear-gradient(145deg,#8040ff,#4010c0) !important;
+  box-shadow: 0 4px 18px rgba(100,40,220,0.55), inset 0 1px 0 rgba(180,150,255,0.3) !important;
+}
+/* ── Misty theme folder ── */
+#rp-phone.rp-theme-misty .rp-folder-ico {
+  background: rgba(195,220,240,0.42);
+  border-color: rgba(255,255,255,0.50);
+  box-shadow: 0 2px 12px rgba(120,170,210,0.22), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+#rp-phone.rp-theme-misty .rp-fi-item {
+  background: rgba(210,230,248,0.65);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70);
+}
+#rp-phone.rp-theme-misty .rp-fi-empty { background: rgba(190,215,238,0.28) !important; box-shadow: none !important; }
+#rp-phone.rp-theme-misty #rp-folder-modal {
+  background: rgba(160,195,220,0.38);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+#rp-phone.rp-theme-misty .rp-folder-popup {
+  background: rgba(230,242,252,0.55);
+  border-color: rgba(255,255,255,0.60);
+  box-shadow: 0 8px 32px rgba(100,155,200,0.20), inset 0 1px 0 rgba(255,255,255,0.65);
+}
+#rp-phone.rp-theme-misty .rp-folder-title-lbl {
+  color: rgba(60,90,120,0.90);
+  text-shadow: 0 1px 4px rgba(255,255,255,0.55);
+}
+#rp-phone.rp-theme-misty .rp-folder-item-lbl {
+  color: rgba(50,80,110,0.88);
+  text-shadow: 0 1px 3px rgba(255,255,255,0.50);
+}
+#rp-phone.rp-theme-misty .rp-folder-item-ico[style*="ff6b8a"] {
+  background: linear-gradient(145deg,#e8a0b8,#c06080) !important;
+  box-shadow: 0 4px 16px rgba(180,80,110,0.30), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+}
+#rp-phone.rp-theme-misty .rp-folder-item-ico[style*="f5a623"] {
+  background: linear-gradient(145deg,#a8d8b0,#5aa870) !important;
+  box-shadow: 0 4px 16px rgba(80,160,100,0.30), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+}
 
 @keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
 #rp-api-blink{animation:rpApiBlink 1.6s ease-in-out infinite}
@@ -3815,7 +3905,10 @@ function bindUI() {
     $('#rp-folder-modal').show();
   });
   $(document).on('click', '#rp-folder-modal', function(e) {
-    if (e.target === this) $(this).hide();
+    if (e.target === this) {
+      $(this).hide();
+      go('home');
+    }
   });
   $(document).on('click', '[data-folder-app]', function(e) {
     e.stopPropagation();
