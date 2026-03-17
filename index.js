@@ -277,6 +277,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-radius:40px; overflow:hidden;
   position:relative;
   font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* Dynamic Island */
@@ -1804,9 +1806,9 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-moment-bd:rgba(140,175,210,.15);
 }
 /* misty home-bg grain texture */
-#rp-phone.rp-theme-misty .rp-home-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
+#rp-phone.rp-theme-misty .rp-home-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.0;background-image:none}
 /* misty lock same grain */
-#rp-phone.rp-theme-misty .rp-lock-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.25;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px}
+#rp-phone.rp-theme-misty .rp-lock-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.0;background-image:none}
 /* star particles – only visible in star theme (via home-bg pseudo-element) */
 #rp-phone.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
 #rp-view-themes{background:transparent !important;display:flex;flex-direction:column}
@@ -2053,7 +2055,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* Candy default: warm white on dark overlay */
 #g2048-chat .game-msg-sys{color:rgba(255,240,225,.90);text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
 #g2048-chat .game-msg-user{color:#ffd6e8;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
-#g2048-chat .game-msg-char{color:#fce8ff;font-weight:600;text-shadow:0 0 4px rgba(0,0,0,.8),0 1px 3px rgba(0,0,0,.6)}
+#g2048-chat .game-msg-char{color:#fce8ff;font-weight:600}
 /* Star: purple-tinted */
 #rp-phone.rp-theme-star #g2048-chat{background:rgba(8,2,30,.52)!important}
 #rp-phone.rp-theme-star #g2048-chat .game-msg-sys{color:rgba(210,200,255,.88)}
@@ -2063,7 +2065,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #g2048-chat{background:rgba(0,15,40,.42)!important}
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-sys{color:rgba(200,228,255,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
 #rp-phone.rp-theme-misty #g2048-chat .game-msg-user{color:rgba(255,210,228,.92);text-shadow:0 0 4px rgba(0,10,40,.8)}
-#rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(185,228,255,.95);text-shadow:0 0 4px rgba(0,10,40,.8)}
+#rp-phone.rp-theme-misty #g2048-chat .game-msg-char{color:rgba(185,228,255,.95)}
 
 /* ── 2048 tile colors (Candy warm) ── */
 /* Candy: pink-rose palette */
@@ -2606,6 +2608,59 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .game-win-btn:hover{opacity:.88!important}
 @keyframes rp-dice-roll{0%{transform:rotate(0deg) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(1)}75%{transform:rotate(270deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
 .ludo-rolling{animation:rp-dice-roll .4s ease-in-out 3}
+/* ── GAMES FOLDER (iOS style) ── */
+.rp-folder-ico {
+  width: 52px; height: 52px; border-radius: 16px;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: 3px; padding: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  box-sizing: border-box; overflow: hidden;
+}
+.rp-fi-item {
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; line-height: 1;
+  background: rgba(255,255,255,0.45);
+}
+.rp-fi-empty { background: rgba(255,255,255,0.15) !important; }
+#rp-folder-modal {
+  position: absolute; inset: 0; z-index: 800;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+}
+.rp-folder-title-lbl {
+  color: #fff; font-size: 14px; font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.45); text-align: center; letter-spacing: .5px;
+}
+.rp-folder-popup {
+  background: rgba(255,255,255,0.20); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.30); border-radius: 22px; padding: 18px 20px;
+  display: flex; flex-direction: row; gap: 20px; align-items: flex-start;
+}
+.rp-folder-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer;
+  transition: transform .12s;
+}
+.rp-folder-item:active { transform: scale(.88); }
+.rp-folder-item-ico {
+  width: 56px; height: 56px; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center; font-size: 28px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+}
+.rp-folder-item-lbl {
+  font-size: 11px; color: #fff; font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5); white-space: nowrap;
+}
+/* Star theme folder */
+#rp-phone.rp-theme-star .rp-folder-ico { background: rgba(40,20,90,0.55); border: 1px solid rgba(140,100,255,0.35); }
+#rp-phone.rp-theme-star .rp-fi-item { background: rgba(120,80,255,0.3); }
+#rp-phone.rp-theme-star #rp-folder-modal { background: rgba(6,3,20,0.65); }
+#rp-phone.rp-theme-star .rp-folder-popup { background: rgba(20,10,55,0.75); border-color: rgba(140,100,255,0.3); }
+/* Misty theme folder */
+#rp-phone.rp-theme-misty .rp-folder-ico { background: rgba(200,225,245,0.38); }
+#rp-phone.rp-theme-misty .rp-fi-item { background: rgba(200,225,245,0.5); }
+
 @keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
 #rp-api-blink{animation:rpApiBlink 1.6s ease-in-out infinite}
 /* API settings */
@@ -3060,9 +3115,14 @@ const HTML = `
                 <div class="rp-app-ico">⚙️</div>
                 <div class="rp-app-lbl">设置</div>
               </div>
-              <div class="rp-app" data-app="ludo">
-                <div class="rp-app-ico">🎲</div>
-                <div class="rp-app-lbl">飞行棋</div>
+              <div class="rp-app" id="rp-folder-games-btn" data-app="folder-games">
+                <div class="rp-folder-ico">
+                  <div class="rp-fi-item">🎲</div>
+                  <div class="rp-fi-item">🔢</div>
+                  <div class="rp-fi-item rp-fi-empty"></div>
+                  <div class="rp-fi-item rp-fi-empty"></div>
+                </div>
+                <div class="rp-app-lbl">游戏</div>
               </div>
               <div class="rp-app" data-app="api-settings">
                 <div class="rp-app-ico">⚡</div>
@@ -3077,10 +3137,7 @@ const HTML = `
                 <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="4" width="20" height="32" rx="3.5" stroke-width="2"/><circle cx="10" cy="12" r="2.5" stroke-width="1.6"/><circle cx="10" cy="20" r="2.5" stroke-width="1.6"/><circle cx="10" cy="28" r="2.5" stroke-width="1.6"/><line x1="15" y1="14" x2="27" y2="14" stroke-width="1.7"/><line x1="15" y1="20" x2="27" y2="20" stroke-width="1.7" opacity=".7"/><line x1="15" y1="26" x2="24" y2="26" stroke-width="1.7" opacity=".5"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
-              <div class="rp-app" data-app="g2048">
-                <div class="rp-app-ico"></div>
-                <div class="rp-app-lbl">2048</div>
-              </div>
+
             </div>
 
 
@@ -3404,6 +3461,21 @@ const HTML = `
 
         <div id="rp-home-ind" style="display:none"></div>
 
+
+        <!-- 游戏文件夹弹窗 -->
+        <div id="rp-folder-modal" style="display:none">
+          <div class="rp-folder-title-lbl">游戏</div>
+          <div class="rp-folder-popup">
+            <div class="rp-folder-item" data-folder-app="ludo">
+              <div class="rp-folder-item-ico" style="background:linear-gradient(145deg,#ff6b8a,#c0294a)">🎲</div>
+              <div class="rp-folder-item-lbl">飞行棋</div>
+            </div>
+            <div class="rp-folder-item" data-folder-app="g2048">
+              <div class="rp-folder-item-ico" style="background:linear-gradient(145deg,#f5a623,#e08000)">🔢</div>
+              <div class="rp-folder-item-lbl">2048</div>
+            </div>
+          </div>
+        </div>
         <!-- 添加好友弹窗（位于 #rp-screen 内部） -->
         <div id="rp-add-modal" style="display:none">
           <div id="rp-add-form">
@@ -3736,6 +3808,27 @@ function bindUI() {
     if (e.target === this) $(this).hide();
   });
 
+
+  // ── Games Folder ─────────────────────────────────────────────
+  $(document).on('click', '[data-app="folder-games"]', function(e) {
+    e.stopPropagation();
+    $('#rp-folder-modal').show();
+  });
+  $(document).on('click', '#rp-folder-modal', function(e) {
+    if (e.target === this) $(this).hide();
+  });
+  $(document).on('click', '[data-folder-app]', function(e) {
+    e.stopPropagation();
+    const app = $(this).data('folder-app');
+    $('#rp-folder-modal').hide();
+    if (app === 'ludo') {
+      go('game');
+      try { if (!LG || !LG.active) lgInit(); else lgRender(); } catch(ex) { console.warn('[Folder]', ex); }
+    } else if (app === 'g2048') {
+      go('g2048');
+      try { if (!LG2048 || !LG2048.active) g2048Init(); } catch(ex) { console.warn('[Folder]', ex); }
+    }
+  });
   // ── Ludo game ────────────────────────────────────────────────
   $(document).on('click', '[data-app="ludo"]', function(e) {
     e.stopPropagation();
