@@ -2611,27 +2611,24 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── GAMES FOLDER (iOS style) ── */
 .rp-folder-ico {
   width: 52px; height: 52px; border-radius: 16px;
-  background: rgba(255,255,255,0.22);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: transparent;
   display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-  gap: 4px; padding: 7px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.30);
+  gap: 4px; padding: 6px;
   box-sizing: border-box; overflow: hidden;
-  transition: transform .15s, box-shadow .15s;
+  transition: transform .14s ease, filter .14s ease;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
 }
-.rp-folder-ico:active { transform: scale(.90); }
+.rp-folder-ico:active { transform: scale(.88); }
 .rp-fi-item {
   border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; line-height: 1;
   background: rgba(255,255,255,0.50);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
 }
-.rp-fi-empty { background: rgba(255,255,255,0.12) !important; box-shadow: none !important; }
+.rp-fi-empty { background: rgba(255,255,255,0.18) !important; }
 #rp-folder-modal {
   position: absolute; inset: 0; z-index: 800;
-  background: rgba(0,0,0,0.50); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
 }
 .rp-folder-title-lbl {
@@ -2652,42 +2649,51 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-folder-item-ico {
   width: 60px; height: 60px; border-radius: 16px;
   display: flex; align-items: center; justify-content: center; font-size: 30px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 .rp-folder-item-lbl {
   font-size: 11px; color: rgba(255,255,255,0.90); font-weight: 500;
   text-shadow: 0 1px 4px rgba(0,0,0,0.55); white-space: nowrap; letter-spacing: .3px;
 }
-/* ── Default (light) theme folder ── */
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-ico {
-  background: rgba(180,180,200,0.30);
-  border-color: rgba(255,255,255,0.38);
+/* ── Candy theme folder ── */
+#rp-phone.rp-theme-candy .rp-folder-ico {
+  filter: drop-shadow(0 1px 4px rgba(200,60,90,.55)) drop-shadow(0 0 6px rgba(255,255,255,.6)) !important;
 }
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-fi-item {
-  background: rgba(255,255,255,0.55);
+#rp-phone.rp-theme-candy .rp-fi-item {
+  background: rgba(255,210,225,0.65);
 }
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) #rp-folder-modal {
-  background: rgba(20,20,40,0.52);
+#rp-phone.rp-theme-candy .rp-fi-empty { background: rgba(255,200,220,0.22) !important; }
+#rp-phone.rp-theme-candy #rp-folder-modal {
+  background: rgba(180,60,90,0.28);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
 }
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-popup {
-  background: rgba(255,255,255,0.22);
-  border-color: rgba(255,255,255,0.32);
+#rp-phone.rp-theme-candy .rp-folder-popup {
+  background: rgba(255,228,238,0.55);
+  border-color: rgba(220,130,165,0.35);
+  box-shadow: 0 8px 32px rgba(200,100,140,0.20), inset 0 1px 0 rgba(255,255,255,0.65);
 }
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-item-ico[style*="ff6b8a"] {
-  box-shadow: 0 4px 16px rgba(192,41,74,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+#rp-phone.rp-theme-candy .rp-folder-title-lbl {
+  color: rgba(120,20,50,0.92);
+  text-shadow: 0 1px 4px rgba(255,255,255,0.55);
 }
-#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-folder-item-ico[style*="f5a623"] {
-  box-shadow: 0 4px 16px rgba(240,140,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+#rp-phone.rp-theme-candy .rp-folder-item-lbl {
+  color: rgba(100,20,45,0.88);
+  text-shadow: 0 1px 3px rgba(255,255,255,0.50);
+}
+#rp-phone.rp-theme-candy .rp-folder-item-ico[style*="ff6b8a"] {
+  background: linear-gradient(145deg,#f9a8c0,#e05080) !important;
+  box-shadow: 0 4px 16px rgba(200,60,100,0.40), inset 0 1px 0 rgba(255,255,255,0.45) !important;
+}
+#rp-phone.rp-theme-candy .rp-folder-item-ico[style*="f5a623"] {
+  background: linear-gradient(145deg,#f8c0d0,#e07090) !important;
+  box-shadow: 0 4px 16px rgba(200,80,120,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
 /* ── Star theme folder ── */
 #rp-phone.rp-theme-star .rp-folder-ico {
-  background: rgba(20,8,58,0.70);
-  border-color: rgba(160,110,255,0.45);
-  box-shadow: 0 2px 14px rgba(120,60,255,0.30), inset 0 1px 0 rgba(180,140,255,0.25);
+  filter: drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5)) !important;
 }
 #rp-phone.rp-theme-star .rp-fi-item {
   background: rgba(130,85,255,0.32);
-  box-shadow: inset 0 1px 0 rgba(200,170,255,0.25);
 }
 #rp-phone.rp-theme-star .rp-fi-empty { background: rgba(80,40,160,0.18) !important; }
 #rp-phone.rp-theme-star #rp-folder-modal {
@@ -2716,15 +2722,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 /* ── Misty theme folder ── */
 #rp-phone.rp-theme-misty .rp-folder-ico {
-  background: rgba(195,220,240,0.42);
-  border-color: rgba(255,255,255,0.50);
-  box-shadow: 0 2px 12px rgba(120,170,210,0.22), inset 0 1px 0 rgba(255,255,255,0.55);
+  filter: drop-shadow(0 1px 3px rgba(0,20,60,.45)) drop-shadow(0 0 5px rgba(0,10,40,.25)) !important;
 }
 #rp-phone.rp-theme-misty .rp-fi-item {
   background: rgba(210,230,248,0.65);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.70);
 }
-#rp-phone.rp-theme-misty .rp-fi-empty { background: rgba(190,215,238,0.28) !important; box-shadow: none !important; }
+#rp-phone.rp-theme-misty .rp-fi-empty { background: rgba(190,215,238,0.28) !important; }
 #rp-phone.rp-theme-misty #rp-folder-modal {
   background: rgba(160,195,220,0.38);
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
@@ -2743,12 +2746,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 1px 3px rgba(255,255,255,0.50);
 }
 #rp-phone.rp-theme-misty .rp-folder-item-ico[style*="ff6b8a"] {
-  background: linear-gradient(145deg,#e8a0b8,#c06080) !important;
-  box-shadow: 0 4px 16px rgba(180,80,110,0.30), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+  background: linear-gradient(145deg,#a8d0f0,#5090c8) !important;
+  box-shadow: 0 4px 16px rgba(60,120,190,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
 #rp-phone.rp-theme-misty .rp-folder-item-ico[style*="f5a623"] {
-  background: linear-gradient(145deg,#a8d8b0,#5aa870) !important;
-  box-shadow: 0 4px 16px rgba(80,160,100,0.30), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+  background: linear-gradient(145deg,#b8e0c8,#60a878) !important;
+  box-shadow: 0 4px 16px rgba(70,150,110,0.30), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
 
 @keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -5052,7 +5055,7 @@ function makeDraggable() {
 
   phone.addEventListener('mousedown', e => {
     if (IS_TOUCH_DEVICE) return; // 触控设备不用鼠标拖拽
-    if (e.target.closest('input,button,.rp-view')) return;
+    if (e.target.closest('input,textarea,select,button,a,[contenteditable]')) return;
     dragging = true;
     const r = phone.getBoundingClientRect();
     // 先把 right/bottom 定位切换成 left/top，避免双向约束冲突
