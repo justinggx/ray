@@ -5027,14 +5027,8 @@ function onAIMessage() {
       // 标签存在但未解析出任何消息：继续走兜底，避免“正文污染且手机无消息”
     }
 
-    // 兜底：如果刚触发过发短信，但本轮没产出 PHONE 标签，则从正文提取一条干净回复
+    // 关闭正文兜底入手机：避免把正文第一句（如日期碎片）误写入手机消息
     if (STATE._pendingPhoneReply && Date.now() - STATE._pendingPhoneReply.sentAt < 120000) {
-      const clean = cleanPhoneFallbackReply(raw, STATE._pendingPhoneReply.fromName);
-      if (clean) {
-        const now = new Date();
-        const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        incomingMsg(STATE._pendingPhoneReply.threadId, clean, ts);
-      }
       STATE._pendingPhoneReply = null;
     }
   } catch (e) {
