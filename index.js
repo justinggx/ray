@@ -2747,13 +2747,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 1px 4px rgba(255,255,255,0.55);
 }
 #rp-phone.rp-theme-misty .rp-folder-item-lbl {
-  color: #ecf8ff;
-  text-shadow: 0 1px 2px rgba(20,60,90,.32);
+  color: #2a4e70;
+  text-shadow: 0 1px 2px rgba(255,255,255,.42);
 }
 #rp-phone.rp-theme-misty .rp-folder-game-ludo,
 #rp-phone.rp-theme-misty .rp-folder-game-2048 {
-  color:#ecf8ff !important;
-  filter:drop-shadow(0 1px 3px rgba(20,60,90,.3)) drop-shadow(0 0 4px rgba(255,255,255,.25)) !important;
+  color:#2f587d !important;
+  filter:drop-shadow(0 1px 2px rgba(255,255,255,.38)) drop-shadow(0 0 3px rgba(20,60,90,.15)) !important;
 }
 
 @keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
