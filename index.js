@@ -5013,10 +5013,11 @@ function cleanPhoneFallbackReply(raw, fromName) {
 function getTagAttrs(attrText) {
   const attrs = {};
   if (!attrText) return attrs;
-  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+  // 兼容三种写法：KEY="v" / KEY='v' / KEY=v(无引号)
+  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g;
   let am;
   while ((am = attrRe.exec(attrText)) !== null) {
-    attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? '').trim();
+    attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? am[4] ?? '').trim();
   }
   return attrs;
 }
@@ -5028,18 +5029,30 @@ function parsePhone(block) {
   // 更鲁棒：支持属性顺序变化、单引号/双引号
   const smsTagRe = /<SMS\b([^>]*)>([\s\S]*?)<\/SMS>/gi;
   while ((m = smsTagRe.exec(block)) !== null) {
-    const attrs   = getTagAttrs(m[1]);
-    const fromRaw = (attrs.FROM || '').trim();
-    const time    = (attrs.TIME || '').trim();
-    const text    = (m[2] || '').trim();
-    if (!fromRaw || !text) continue;
+    const attrs    = getTagAttrs(m[1]);
+    const text     = (m[2] || '').trim();
+    const fromRaw0 = (attrs.FROM || '').trim();
+    const time     = (attrs.TIME || '').trim();
+    if (!text) continue;
 
-    // 尝试匹配已有线程，找不到则自动创建新联系人
-    let threadId = matchThread(fromRaw);
-    if (!threadId) {
-      const newTh = findOrCreateThread(fromRaw);
-      threadId = newTh.id;
+    // FROM 缺失时兜底：优先 pending 里的联系人，再退化到当前线程
+    let threadId = null;
+    let fromRaw = fromRaw0;
+    if (fromRaw) {
+      threadId = matchThread(fromRaw);
+      if (!threadId) {
+        const newTh = findOrCreateThread(fromRaw);
+        threadId = newTh.id;
+      }
+    } else if (STATE._pendingPhoneReply?.threadId && STATE.threads?.[STATE._pendingPhoneReply.threadId]) {
+      threadId = STATE._pendingPhoneReply.threadId;
+      fromRaw = STATE.threads[threadId]?.name || '';
+    } else if (STATE.currentThread && STATE.threads?.[STATE.currentThread]) {
+      threadId = STATE.currentThread;
+      fromRaw = STATE.threads[threadId]?.name || '';
     }
+
+    if (!threadId) continue;
     const fallbackTime = `${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`;
     incomingMsg(threadId, text, time || fallbackTime);
     parsedCount++;
