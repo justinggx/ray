@@ -6314,6 +6314,10 @@ function lgRenderThemePicker() {
 //  MOMENTS AI ENGINE
 // ================================================================
 
+function normNameKey(s) {
+  return String(s || '').toLowerCase().replace(/[\s·•・\-_]+/g, '');
+}
+
 function getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
@@ -6340,20 +6344,55 @@ function getMomentsCtx() {
       charPersona = parts.filter(Boolean).join('\n');
     }
   } catch(e) { /* ignore */ }
-  return { charName, userName, npcs: [...knownNPCs].slice(0, 4), recentChat, charPersona };
+
+  // 提取 NPC 人设（优先使用 ST 中已加载角色卡，兼容世界书支撑的人物）
+  const npcPersonaMap = {};
+  try {
+    const chars = Array.isArray(ctx?.characters)
+      ? ctx.characters
+      : (ctx?.characters && typeof ctx.characters === 'object' ? Object.values(ctx.characters) : []);
+    chars.forEach(ch => {
+      const name = (ch?.name || '').trim();
+      if (!name || name === charName) return;
+      const parts = [];
+      if (ch.description) parts.push(ch.description.replace(/\s+/g, ' ').trim().slice(0, 280));
+      if (ch.personality) parts.push('性格：' + ch.personality.replace(/\s+/g, ' ').trim().slice(0, 140));
+      if (ch.scenario)    parts.push('背景：' + ch.scenario.replace(/\s+/g, ' ').trim().slice(0, 180));
+      const persona = parts.filter(Boolean).join('\n');
+      if (persona) npcPersonaMap[normNameKey(name)] = persona;
+    });
+  } catch(e) { /* ignore */ }
+
+  return {
+    charName,
+    userName,
+    npcs: [...knownNPCs].slice(0, 4),
+    recentChat,
+    charPersona,
+    npcPersonaMap,
+  };
 }
 
 async function generateAIMoments() {
   const btn = document.getElementById('rp-gen-moments');
   if (btn) { btn.disabled = true; btn.classList.add('rp-spinning'); }
   try {
-    const { charName, npcs, recentChat, charPersona } = getMomentsCtx();
+    const { charName, npcs, recentChat, charPersona, npcPersonaMap } = getMomentsCtx();
     const allChars = [charName, ...npcs];
     const charList = allChars.join('、');
+    const npcPersonaText = npcs
+      .map(n => {
+        const p = npcPersonaMap?.[normNameKey(n)] || '';
+        return p ? ('- ' + n + '：' + p.replace(/\n/g, '；')) : '';
+      })
+      .filter(Boolean)
+      .join('\n');
+
     // system message：人设 + 规则
     const sysMsg = '你是一个角色扮演故事中的社交媒体模拟器。\n\n'
       + '【主角 ' + charName + ' 的人设】\n' + (charPersona || '（未获取到人设，请根据对话推断）') + '\n\n'
-      + (npcs.length > 0 ? '【故事中的其他角色】' + npcs.join('、') + '（根据近期剧情推断其语气风格）\n\n' : '')
+      + (npcs.length > 0 ? '【故事中的其他角色】' + npcs.join('、') + '（根据近期剧情推断其语气风格）\n' : '')
+      + (npcPersonaText ? ('【NPC人设卡（优先遵守）】\n' + npcPersonaText + '\n\n') : '\n')
       + '【生成规则】\n'
       + '1. 每个角色的语气、措辞必须严格符合其在故事中的性格和人设\n'
       + '2. ' + charName + ' 必须用其人设中描述的语气说话，不得混用其他角色的口吻\n'
@@ -6421,7 +6460,7 @@ async function charRespondToUserMoment(momentId) {
 async function momentAISocial(targetMomentId) {
   const moments = STATE.moments || [];
   if (moments.length === 0) return;
-  const { charName, npcs, charPersona } = getMomentsCtx();
+  const { charName, npcs, charPersona, npcPersonaMap } = getMomentsCtx();
   const allChars = [charName, ...npcs];
   if (allChars.length === 0) return;
   const targets = targetMomentId
@@ -6432,7 +6471,14 @@ async function momentAISocial(targetMomentId) {
     'ID="' + m.id + '" 作者="' + m.name + '" 内容="' + m.text.slice(0, 60) + '"'
   ).join('\n');
   const charList2 = allChars.join('、');
-  const sysMsg2 = '你是角色扮演社交媒体互动模拟器。\n主角 ' + charName + ' 人设：' + (charPersona ? charPersona.slice(0, 200) : '（根据动态推断）') + '\n其他角色：' + (npcs.join('、') || '无') + '\n规则：互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。';
+  const npcPersonaText2 = npcs
+    .map(n => {
+      const p = npcPersonaMap?.[normNameKey(n)] || '';
+      return p ? ('- ' + n + '：' + p.replace(/\n/g, '；')) : '';
+    })
+    .filter(Boolean)
+    .join('\n');
+  const sysMsg2 = '你是角色扮演社交媒体互动模拟器。\n主角 ' + charName + ' 人设：' + (charPersona ? charPersona.slice(0, 200) : '（根据动态推断）') + '\n其他角色：' + (npcs.join('、') || '无') + (npcPersonaText2 ? ('\nNPC人设卡（优先）：\n' + npcPersonaText2) : '') + '\n规则：互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。';
   const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n为角色（' + charList2 + '）生成2-4条社交互动（like/comment）。\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，momentId必须与上方完全一致。';
   const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
@@ -6461,12 +6507,13 @@ async function generateAIReply(momentId, userCommentText, fromName) {
   const moment = STATE.moments?.find(m => m.id === momentId);
   if (!moment) return;
   const authorName = fromName || moment.name;
-  const { charName, charPersona } = getMomentsCtx();
+  const { charName, charPersona, npcPersonaMap } = getMomentsCtx();
   let sysMsg3 = '';
   if (authorName === charName && charPersona) {
     sysMsg3 = '你正在扮演 ' + charName + '，人设如下：\n' + charPersona.slice(0, 300) + '\n\n回复时必须严格符合该人设的语气和性格，用中文回复，不超过20字，只返回回复内容本身。';
   } else {
-    sysMsg3 = '你正在扮演 ' + authorName + '，根据其在故事中的言行推断语气，用中文回复，不超过20字，只返回回复内容本身。';
+    const npcPersona = npcPersonaMap?.[normNameKey(authorName)] || '';
+    sysMsg3 = '你正在扮演 ' + authorName + '，' + (npcPersona ? ('其人设如下：\n' + npcPersona.slice(0, 300) + '\n') : '根据其在故事中的言行推断语气，') + '用中文回复，不超过20字，只返回回复内容本身。';
   }
   const prompt3 = authorName + '的朋友圈：「' + moment.text + '」\n用户评论：「' + userCommentText + '」\n' + authorName + '回复：';
   const resp = await lgCallAPI(prompt3, 100, sysMsg3);
