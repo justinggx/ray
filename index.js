@@ -1994,6 +1994,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* Diary icon — Misty override */
 #rp-phone.rp-theme-misty .rp-ico-diary{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
 
+/* Games icon — align style with other linear icons */
+.rp-ico-games{color:#c03060!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5))!important}
+#rp-phone.rp-theme-star .rp-ico-games{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
+#rp-phone.rp-theme-misty .rp-ico-games{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
+
 /* ══ 2048 GAME ══ */
 #rp-view-g2048{position:relative;background:transparent;display:flex;flex-direction:column;overflow:hidden;height:100%}
 #g2048-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;flex-shrink:0}
@@ -3210,11 +3215,14 @@ const HTML = `
                 <div class="rp-app-lbl">设置</div>
               </div>
               <div class="rp-app" id="rp-folder-games-btn" data-app="folder-games">
-                <div class="rp-folder-ico">
-                  <div class="rp-fi-item">🎲</div>
-                  <div class="rp-fi-item">🔢</div>
-                  <div class="rp-fi-item rp-fi-empty"></div>
-                  <div class="rp-fi-item rp-fi-empty"></div>
+                <div class="rp-app-ico rp-ico-games">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="6" y="14" width="28" height="16" rx="8" stroke-width="2"></rect>
+                    <line x1="14" y1="22" x2="20" y2="22" stroke-width="2"></line>
+                    <line x1="17" y1="19" x2="17" y2="25" stroke-width="2"></line>
+                    <circle cx="26" cy="20" r="1.8" fill="currentColor" stroke="none"></circle>
+                    <circle cx="29.8" cy="23.8" r="1.8" fill="currentColor" stroke="none"></circle>
+                  </svg>
                 </div>
                 <div class="rp-app-lbl">游戏</div>
               </div>
