@@ -4875,8 +4875,8 @@ function sendSMS() {
       .map(id => STATE.threads[id]?.name || id)
       .filter(Boolean);
     const memberDesc = memberNames.length ? `群成员包括：${memberNames.join('、')}。` : '';
-    // 格式协议已在世界书[手机UI输出协议]中定义，OOC只传动态变量
-    oocText = `[手机群聊提示：{{user}}在群聊「${groupName}」发了消息，当前时间${ts}。请按世界书手机UI协议，输出GMSG格式，GROUP字段必须为"${groupName}"，至少一条，不得沉默。]`;
+    // 强约束：手机内容仅允许在 <PHONE> 块中输出，禁止正文污染
+    oocText = `[手机群聊提示：{{user}}在群聊「${groupName}」发了消息，当前时间${ts}。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<GMSG FROM="角色名" GROUP="${groupName}" TIME="${ts}">内容</GMSG>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
   } else {
     let isMainChar;
     if (mainCharName) {
@@ -4888,13 +4888,11 @@ function sendSMS() {
 
     if (isMainChar) {
       // 对话对象是主角：根据场景决定口头还是短信回复
-      // 格式协议已在世界书中定义，OOC只传动态变量
-      oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。若不在同场景，按世界书手机UI协议输出SMS格式回复。]`;
+      oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。按世界书手机UI协议输出，且必须满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
     } else {
       // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
       const charName = mainCharName || '主角';
-      // 格式协议已在世界书中定义，只保留NPC身份隔离指令
-      oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请以旁白身份代写"${th.name}"的回复，按世界书手机UI协议输出SMS格式。]`;
+      oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
     }
   }
 
@@ -4920,6 +4918,13 @@ function sendSMS() {
   ta.dispatchEvent(new Event('input', { bubbles: true }));
   document.querySelector('#send_but')?.click();
 
+  // 记录一次“等待手机回复”的状态：若模型未输出 <PHONE>，后续走兜底解析
+  STATE._pendingPhoneReply = {
+    threadId: STATE.currentThread,
+    fromName: th.name,
+    sentAt: Date.now(),
+  };
+
   // 发送后清除隐藏提示
   if (hasExtPrompt) {
     setTimeout(() => setExtensionPrompt('rp-phone-ooc', ''), 300);
@@ -4938,15 +4943,66 @@ function onAIMessage() {
     const last = [...chat].reverse().find(m => !m.is_user);
     if (!last?.mes) return;
 
-    const raw   = last.mes;
-    const match = raw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
-    if (!match) return;
+    const raw = last.mes;
+    const phoneMatch = raw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
+    // 兼容：有些模型会漏掉 <PHONE> 包裹，但仍输出 <SMS>/<GMSG>
+    const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(raw);
 
-    parsePhone(match[1]);
-    beautifySMSInChat();
+    if (phoneMatch) {
+      parsePhone(phoneMatch[1]);
+      STATE._pendingPhoneReply = null;
+      beautifySMSInChat();
+      return;
+    }
+
+    if (hasBarePhoneTags) {
+      parsePhone(raw);
+      STATE._pendingPhoneReply = null;
+      beautifySMSInChat();
+      return;
+    }
+
+    // 兜底：如果刚触发过发短信，但本轮没产出 PHONE 标签，则从正文提取一条干净回复
+    if (STATE._pendingPhoneReply && Date.now() - STATE._pendingPhoneReply.sentAt < 120000) {
+      const clean = cleanPhoneFallbackReply(raw, STATE._pendingPhoneReply.fromName);
+      if (clean) {
+        const now = new Date();
+        const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        incomingMsg(STATE._pendingPhoneReply.threadId, clean, ts);
+      }
+      STATE._pendingPhoneReply = null;
+    }
   } catch (e) {
     console.warn('[Raymond Phone]', e);
   }
+}
+
+function cleanPhoneFallbackReply(raw, fromName) {
+  if (!raw) return '';
+  let text = String(raw);
+  // 去掉 PHONE 标签块与思维链
+  text = text.replace(/<PHONE>[\s\S]*?<\/PHONE>/gi, ' ');
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, ' ');
+  // 去掉结构化标签
+  text = text.replace(/<[^>]{1,80}>/g, ' ');
+  // 常见“奇怪总结段”关键词行
+  const badLine = /(剧情摘要|故事走向|联系测试|未解决|规则|状态|Stage|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|关系进度|条目|清单)/i;
+  const lines = text
+    .split(/\n+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .filter(s => !badLine.test(s))
+    .filter(s => !/^[\-•*\d\s.:：]+$/.test(s));
+
+  // 优先取引号里的短句
+  const joined = lines.join(' ');
+  const q = joined.match(/[“\"「]([^”\"」\n]{2,80})[”\"」]/);
+  if (q && q[1]) return q[1].trim().slice(0, 80);
+
+  // 否则取第一条像对话的句子
+  const first = lines.find(s => s.length >= 2 && s.length <= 80);
+  if (!first) return '';
+  return first.replace(/^\s*[^\u4e00-\u9fa5A-Za-z0-9]+/, '').slice(0, 80).trim();
 }
 
 function parsePhone(block) {
