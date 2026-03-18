@@ -5001,6 +5001,7 @@ function onAIMessage() {
       const parsedCount = parsePhone(phoneMatch[1]);
       if (parsedCount > 0) {
         STATE._pendingPhoneReply = null;
+        rewritePhoneEchoInChat(phoneMatch[1], STATE._lastAiFingerprint);
         beautifySMSInChat();
         return;
       }
@@ -5021,6 +5022,7 @@ function onAIMessage() {
       const parsedCount = parsePhone(normalizedRaw);
       if (parsedCount > 0) {
         STATE._pendingPhoneReply = null;
+        rewritePhoneEchoInChat(normalizedRaw, STATE._lastAiFingerprint);
         beautifySMSInChat();
         return;
       }
@@ -5083,6 +5085,62 @@ function sanitizeSmsText(text) {
   if (dateHead.test(t)) return '';
 
   return t;
+}
+
+function escapeRegExp(s) {
+  return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractSmsSummaries(block) {
+  const out = [];
+  if (!block) return out;
+  const smsTagRe = /<SMS\b([^>]*)>([\s\S]*?)<\/SMS>/gi;
+  let m;
+  while ((m = smsTagRe.exec(block)) !== null) {
+    const attrs = getTagAttrs(m[1]);
+    const from  = (attrs.FROM || '').trim();
+    const text  = sanitizeSmsText(m[2] || '');
+    if (!text) continue;
+    out.push({ from, text });
+  }
+  return out;
+}
+
+function rewritePhoneEchoInChat(block, fp) {
+  try {
+    const smsList = extractSmsSummaries(block);
+    if (!smsList.length) return;
+
+    const allMsgs = document.querySelectorAll('.mes:not([is_user="true"])');
+    if (!allMsgs.length) return;
+    const lastMsg = allMsgs[allMsgs.length - 1];
+    const textEl  = lastMsg?.querySelector('.mes_text');
+    if (!textEl) return;
+
+    if (fp && textEl.dataset.rpPhoneRewriteFp === fp) return;
+
+    let html = textEl.innerHTML || '';
+    html = html
+      .replace(/<phone>[\s\S]*?<\/phone>/gi, '')
+      .replace(/&lt;phone&gt;[\s\S]*?&lt;\/phone&gt;/gi, '');
+
+    // 去掉正文尾部泄露的短信原文（仅精准匹配行）
+    smsList.forEach(s => {
+      const t = escapeRegExp(s.text.trim());
+      if (!t) return;
+      const lineRe = new RegExp(`(?:<br\\s*\\/?>(?:\\s|&nbsp;)*|\\n|^)${t}(?=(?:\\s|&nbsp;)*(?:<br\\s*\\/?>|\\n|$))`, 'gi');
+      html = html.replace(lineRe, '');
+    });
+
+    html = html.trim();
+    const fallbackFrom = getContext()?.name || '角色';
+    const summary = smsList.map(s => `${s.from || fallbackFrom}：${s.text}`).join('<br>');
+    textEl.innerHTML = html ? `${html}<br>${summary}` : summary;
+
+    if (fp) textEl.dataset.rpPhoneRewriteFp = fp;
+  } catch(e) {
+    console.warn('[Raymond Phone] rewritePhoneEchoInChat:', e);
+  }
 }
 
 function getTagAttrs(attrText) {
