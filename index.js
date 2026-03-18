@@ -5035,18 +5035,26 @@ function parsePhone(block) {
     const time     = (attrs.TIME || '').trim();
     if (!text) continue;
 
-    // FROM 缺失时兜底：优先 pending 里的联系人，再退化到当前线程
+    // 线程路由策略：
+    // 1) 若存在 pending（刚由本端发起短信），优先落到 pending 线程，避免 FROM 轻微不一致导致新建错线程
+    // 2) 否则按 FROM 匹配/创建
+    // 3) FROM 缺失时退化到当前线程
     let threadId = null;
     let fromRaw = fromRaw0;
-    if (fromRaw) {
+
+    const pendingThreadId = STATE._pendingPhoneReply?.threadId;
+    const hasPendingThread = !!(pendingThreadId && STATE.threads?.[pendingThreadId]);
+    const pendingFresh = !!(STATE._pendingPhoneReply && (Date.now() - (STATE._pendingPhoneReply.sentAt || 0) < 180000));
+
+    if (hasPendingThread && pendingFresh) {
+      threadId = pendingThreadId;
+      if (!fromRaw) fromRaw = STATE.threads[threadId]?.name || '';
+    } else if (fromRaw) {
       threadId = matchThread(fromRaw);
       if (!threadId) {
         const newTh = findOrCreateThread(fromRaw);
         threadId = newTh.id;
       }
-    } else if (STATE._pendingPhoneReply?.threadId && STATE.threads?.[STATE._pendingPhoneReply.threadId]) {
-      threadId = STATE._pendingPhoneReply.threadId;
-      fromRaw = STATE.threads[threadId]?.name || '';
     } else if (STATE.currentThread && STATE.threads?.[STATE.currentThread]) {
       threadId = STATE.currentThread;
       fromRaw = STATE.threads[threadId]?.name || '';
