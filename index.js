@@ -2653,18 +2653,17 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 .rp-folder-item:active { transform: scale(.84); }
 .rp-folder-item-ico {
-  width: 60px; height: 60px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center; font-size: 30px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent !important;
+  box-shadow: none !important;
 }
-.rp-folder-item-ico svg { width: 32px; height: 32px; }
+.rp-folder-item-ico svg { width: 34px; height: 34px; }
 .rp-folder-game-ludo,
-.rp-folder-game-2048 { color: #fff; }
-.rp-folder-game-ludo { background: linear-gradient(145deg,#ff6b8a,#c0294a); }
-.rp-folder-game-2048 { background: linear-gradient(145deg,#f5a623,#e08000); }
+.rp-folder-game-2048 { color: #c03060; }
 .rp-folder-item-lbl {
-  font-size: 11px; color: rgba(255,255,255,0.90); font-weight: 500;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.55); white-space: nowrap; letter-spacing: .3px;
+  font-size: 10px; color: var(--rp-app-lbl); font-weight: 500;
+  text-shadow: var(--rp-app-lbl-sh); white-space: nowrap; letter-spacing: .2px;
 }
 /* ── Candy theme folder ── */
 #rp-phone.rp-theme-candy .rp-folder-ico {
@@ -2691,13 +2690,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(100,20,45,0.88);
   text-shadow: 0 1px 3px rgba(255,255,255,0.50);
 }
-#rp-phone.rp-theme-candy .rp-folder-game-ludo {
-  background: linear-gradient(145deg,#f9a8c0,#e05080) !important;
-  box-shadow: 0 4px 16px rgba(200,60,100,0.40), inset 0 1px 0 rgba(255,255,255,0.45) !important;
-}
+#rp-phone.rp-theme-candy .rp-folder-game-ludo,
 #rp-phone.rp-theme-candy .rp-folder-game-2048 {
-  background: linear-gradient(145deg,#f8c0d0,#e07090) !important;
-  box-shadow: 0 4px 16px rgba(200,80,120,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
+  color:#c03060 !important;
+  filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5)) !important;
 }
 /* ── Star theme folder ── */
 #rp-phone.rp-theme-star .rp-folder-ico {
@@ -2723,13 +2719,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(200,175,255,0.90);
   text-shadow: 0 0 8px rgba(140,90,255,0.5), 0 1px 3px rgba(0,0,0,0.5);
 }
-#rp-phone.rp-theme-star .rp-folder-game-ludo {
-  background: linear-gradient(145deg,#c060ff,#7020d0) !important;
-  box-shadow: 0 4px 18px rgba(140,60,255,0.55), inset 0 1px 0 rgba(220,180,255,0.3) !important;
-}
+#rp-phone.rp-theme-star .rp-folder-game-ludo,
 #rp-phone.rp-theme-star .rp-folder-game-2048 {
-  background: linear-gradient(145deg,#8040ff,#4010c0) !important;
-  box-shadow: 0 4px 18px rgba(100,40,220,0.55), inset 0 1px 0 rgba(180,150,255,0.3) !important;
+  color:#ffffff !important;
+  filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5)) !important;
 }
 /* ── Misty theme folder ── */
 #rp-phone.rp-theme-misty .rp-folder-ico {
@@ -2756,13 +2749,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(50,80,110,0.88);
   text-shadow: 0 1px 3px rgba(255,255,255,0.50);
 }
-#rp-phone.rp-theme-misty .rp-folder-game-ludo {
-  background: linear-gradient(145deg,#a8d0f0,#5090c8) !important;
-  box-shadow: 0 4px 16px rgba(60,120,190,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
-}
+#rp-phone.rp-theme-misty .rp-folder-game-ludo,
 #rp-phone.rp-theme-misty .rp-folder-game-2048 {
-  background: linear-gradient(145deg,#b8e0c8,#60a878) !important;
-  box-shadow: 0 4px 16px rgba(70,150,110,0.30), inset 0 1px 0 rgba(255,255,255,0.45) !important;
+  color:rgba(222,240,253,.91) !important;
+  filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28)) !important;
 }
 
 @keyframes rpApiBlink{0%,100%{opacity:1}50%{opacity:.3}}
