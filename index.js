@@ -4949,17 +4949,22 @@ function onAIMessage() {
     const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(raw);
 
     if (phoneMatch) {
-      parsePhone(phoneMatch[1]);
-      STATE._pendingPhoneReply = null;
-      beautifySMSInChat();
-      return;
+      const parsedCount = parsePhone(phoneMatch[1]);
+      if (parsedCount > 0) {
+        STATE._pendingPhoneReply = null;
+        beautifySMSInChat();
+        return;
+      }
     }
 
     if (hasBarePhoneTags) {
-      parsePhone(raw);
-      STATE._pendingPhoneReply = null;
-      beautifySMSInChat();
-      return;
+      const parsedCount = parsePhone(raw);
+      if (parsedCount > 0) {
+        STATE._pendingPhoneReply = null;
+        beautifySMSInChat();
+        return;
+      }
+      // 标签存在但未解析出任何消息：继续走兜底，避免“正文污染且手机无消息”
     }
 
     // 兜底：如果刚触发过发短信，但本轮没产出 PHONE 标签，则从正文提取一条干净回复
@@ -5005,35 +5010,57 @@ function cleanPhoneFallbackReply(raw, fromName) {
   return first.replace(/^\s*[^\u4e00-\u9fa5A-Za-z0-9]+/, '').slice(0, 80).trim();
 }
 
+function getTagAttrs(attrText) {
+  const attrs = {};
+  if (!attrText) return attrs;
+  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+  let am;
+  while ((am = attrRe.exec(attrText)) !== null) {
+    attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? '').trim();
+  }
+  return attrs;
+}
+
 function parsePhone(block) {
-  const smsRe = /<SMS\s+FROM="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/SMS>/gi;
+  let parsedCount = 0;
   let m;
-  while ((m = smsRe.exec(block)) !== null) {
-    const fromRaw  = m[1].trim();
-    const time     = m[2];
-    const text     = m[3].trim();
+
+  // 更鲁棒：支持属性顺序变化、单引号/双引号
+  const smsTagRe = /<SMS\b([^>]*)>([\s\S]*?)<\/SMS>/gi;
+  while ((m = smsTagRe.exec(block)) !== null) {
+    const attrs   = getTagAttrs(m[1]);
+    const fromRaw = (attrs.FROM || '').trim();
+    const time    = (attrs.TIME || '').trim();
+    const text    = (m[2] || '').trim();
+    if (!fromRaw || !text) continue;
+
     // 尝试匹配已有线程，找不到则自动创建新联系人
     let threadId = matchThread(fromRaw);
     if (!threadId) {
       const newTh = findOrCreateThread(fromRaw);
       threadId = newTh.id;
     }
-    incomingMsg(threadId, text, time);
+    const fallbackTime = `${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`;
+    incomingMsg(threadId, text, time || fallbackTime);
+    parsedCount++;
   }
 
   const notifRe = /<NOTIFY\s+TYPE="([^"]+)"\s+TEXT="([^"]+)"\/>/gi;
   while ((m = notifRe.exec(block)) !== null) {
     addLockNotif(m[1], m[2]);
+    parsedCount++;
   }
 
   const momentsRe = /<MOMENTS\s+FROM="([^"]+)"\s+TIME="([^"]+)"(?:\s+IMG="([^"]*)")?\s*>([\s\S]*?)<\/MOMENTS>/gi;
   while ((m = momentsRe.exec(block)) !== null) {
     incomingMoment(m[1].trim(), m[2].trim(), m[4].trim(), m[3] ? m[3].trim() : null);
+    parsedCount++;
   }
 
   const commentRe = /<COMMENT\s+MOMENT_ID="([^"]+)"\s+FROM="([^"]+)"\s+TIME="([^"]+)"(?:\s+REPLY_TO="([^"]*)")?\s*>([\s\S]*?)<\/COMMENT>/gi;
   while ((m = commentRe.exec(block)) !== null) {
     incomingComment(m[1].trim(), m[2].trim(), m[3].trim(), m[5].trim(), m[4] ? m[4].trim() : null);
+    parsedCount++;
   }
 
   const sync = block.match(/<SYNC\s+STAGE="(\d+)"\s+PROGRESS="(\d+)"\s+STATUS="([^"]+)"\/>/i);
@@ -5041,28 +5068,36 @@ function parsePhone(block) {
     STATE.sync = { stage: +sync[1], progress: +sync[2], status: sync[3] };
     refreshWidget();
     saveState(); // FIX2: 持久化关系进度
+    parsedCount++;
   }
 
   // ── CALL ──
   const callRe = /<CALL\s+FROM="([^"]+)"\s+TIME="([^"]+)"\s*\/?>/gi;
   while ((m = callRe.exec(block)) !== null) {
     incomingCall(m[1].trim(), m[2].trim());
+    parsedCount++;
   }
   // ── HONGBAO ──
   const hongbaoRe = /<HONGBAO\s+FROM="([^"]+)"\s+AMOUNT="([^"]+)"(?:\s+NOTE="([^"]*)")?\s*\/?>/gi;
   while ((m = hongbaoRe.exec(block)) !== null) {
     incomingHongbao(m[1].trim(), m[2].trim(), m[3] ? m[3].trim() : '恭喜发财');
+    parsedCount++;
   }
   // ── VOICE ──
   const voiceRe = /<VOICE\s+FROM="([^"]+)"\s+TIME="([^"]+)"\s+DURATION="([^"]+)">([\s\S]*?)<\/VOICE>/gi;
   while ((m = voiceRe.exec(block)) !== null) {
     incomingVoice(m[1].trim(), m[2].trim(), m[3].trim(), m[4].trim());
+    parsedCount++;
   }
   // ── GROUP MSG ──
   const gmsgRe = /<GMSG\s+FROM="([^"]+)"\s+GROUP="([^"]+)"\s+TIME="([^"]+)">([\s\S]*?)<\/GMSG>/gi;
   while ((m = gmsgRe.exec(block)) !== null) {
     incomingGroupMsg(m[1].trim(), m[2].trim(), m[3].trim(), m[4].trim());
-  }}
+    parsedCount++;
+  }
+
+  return parsedCount;
+}
 
 // ================================================================
 //  MATCH THREAD
