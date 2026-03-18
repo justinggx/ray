@@ -781,6 +781,49 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow: 0 3px 12px rgba(100,145,195,.2) !important;
 }
 
+/* Pending queue readability (all themes) */
+#rp-phone.rp-theme-candy #rp-pending-queue {
+  background: rgba(255, 240, 246, .62) !important;
+  border-top-color: rgba(214, 92, 136, .28) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#rp-phone.rp-theme-candy .rp-pending-item {
+  color: #8f1f4a !important;
+  background: rgba(255, 255, 255, .48) !important;
+}
+#rp-phone.rp-theme-candy .rp-pending-hint {
+  color: rgba(122, 28, 66, .78) !important;
+}
+
+#rp-phone.rp-theme-star #rp-pending-queue {
+  background: rgba(18, 10, 48, .72) !important;
+  border-top-color: rgba(148, 110, 255, .35) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#rp-phone.rp-theme-star .rp-pending-item {
+  color: #e4d8ff !important;
+  background: rgba(126, 84, 255, .28) !important;
+}
+#rp-phone.rp-theme-star .rp-pending-hint {
+  color: rgba(224, 208, 255, .72) !important;
+}
+
+#rp-phone.rp-theme-misty #rp-pending-queue {
+  background: rgba(228, 241, 252, .72) !important;
+  border-top-color: rgba(96, 146, 186, .32) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+#rp-phone.rp-theme-misty .rp-pending-item {
+  color: #1f4a6a !important;
+  background: rgba(255, 255, 255, .58) !important;
+}
+#rp-phone.rp-theme-misty .rp-pending-hint {
+  color: rgba(35, 77, 110, .78) !important;
+}
+
 /* ── SHARED: icon grid spacing & app grid for icon-only style ── */
 #rp-phone #rp-app-grid { gap: 16px !important; }
 /* ══════════════════════════════════════════════════════ */
