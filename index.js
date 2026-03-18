@@ -4876,7 +4876,7 @@ function sendSMS() {
       .filter(Boolean);
     const memberDesc = memberNames.length ? `群成员包括：${memberNames.join('、')}。` : '';
     // 强约束：手机内容仅允许在 <PHONE> 块中输出，禁止正文污染
-    oocText = `[手机群聊提示：{{user}}在群聊「${groupName}」发了消息，当前时间${ts}。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<GMSG FROM="角色名" GROUP="${groupName}" TIME="${ts}">内容</GMSG>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
+    oocText = `[手机群聊提示：{{user}}在群聊「${groupName}」发了消息，当前时间${ts}。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<GMSG FROM="角色名" GROUP="${groupName}" TIME="${ts}">内容</GMSG>。]`;
   } else {
     let isMainChar;
     if (mainCharName) {
@@ -4888,11 +4888,11 @@ function sendSMS() {
 
     if (isMainChar) {
       // 对话对象是主角：根据场景决定口头还是短信回复
-      oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。按世界书手机UI协议输出，且必须满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
+      oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。按世界书手机UI协议输出，且必须满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>。]`;
     } else {
       // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
       const charName = mainCharName || '主角';
-      oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>；正文不得出现“摘要/规则/状态/联系测试/条目列表”等说明文字。]`;
+      oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>。]`;
     }
   }
 
