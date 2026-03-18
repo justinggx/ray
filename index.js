@@ -4934,6 +4934,20 @@ function sendSMS() {
 // ================================================================
 //  AI MESSAGE PARSER
 // ================================================================
+function normalizePhoneMarkup(raw) {
+  let s = String(raw || '');
+  // HTML 实体反转义（有些渲染链会把标签转成实体）
+  s = s
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&nbsp;/gi, ' ');
+  // 全角尖括号兼容
+  s = s.replace(/＜/g, '<').replace(/＞/g, '>');
+  return s;
+}
+
 function onAIMessage() {
   try {
     const ctx  = getContext();
@@ -4944,9 +4958,10 @@ function onAIMessage() {
     if (!last?.mes) return;
 
     const raw = last.mes;
-    const phoneMatch = raw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
+    const normalizedRaw = normalizePhoneMarkup(raw);
+    const phoneMatch = normalizedRaw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
     // 兼容：有些模型会漏掉 <PHONE> 包裹，但仍输出 <SMS>/<GMSG>
-    const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(raw);
+    const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(normalizedRaw);
 
     if (phoneMatch) {
       const parsedCount = parsePhone(phoneMatch[1]);
@@ -4955,10 +4970,21 @@ function onAIMessage() {
         beautifySMSInChat();
         return;
       }
+      // 极端兜底：PHONE 存在但结构不规范时，强行抽取第一条 SMS 文本落到 pending 线程
+      const looseSms = phoneMatch[1].match(/<SMS\b[^>]*>([\s\S]*?)(?:<\/SMS>|$)/i);
+      const looseText = (looseSms?.[1] || '').replace(/<[^>]+>/g, ' ').trim();
+      if (looseText && STATE._pendingPhoneReply?.threadId && STATE.threads?.[STATE._pendingPhoneReply.threadId]) {
+        const now = new Date();
+        const ts  = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        incomingMsg(STATE._pendingPhoneReply.threadId, looseText.slice(0, 200), ts);
+        STATE._pendingPhoneReply = null;
+        beautifySMSInChat();
+        return;
+      }
     }
 
     if (hasBarePhoneTags) {
-      const parsedCount = parsePhone(raw);
+      const parsedCount = parsePhone(normalizedRaw);
       if (parsedCount > 0) {
         STATE._pendingPhoneReply = null;
         beautifySMSInChat();
@@ -5013,11 +5039,11 @@ function cleanPhoneFallbackReply(raw, fromName) {
 function getTagAttrs(attrText) {
   const attrs = {};
   if (!attrText) return attrs;
-  // 兼容三种写法：KEY="v" / KEY='v' / KEY=v(无引号)
-  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g;
+  // 兼容：KEY="v" / KEY='v' / KEY=“v” / KEY=‘v’ / KEY=v(无引号)
+  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|“([^”]*)”|‘([^’]*)’|([^\s>]+))/g;
   let am;
   while ((am = attrRe.exec(attrText)) !== null) {
-    attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? am[4] ?? '').trim();
+    attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? am[4] ?? am[5] ?? am[6] ?? '').trim();
   }
   return attrs;
 }
