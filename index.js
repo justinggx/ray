@@ -5124,15 +5124,23 @@ function rewritePhoneEchoInChat(block, fp) {
       .replace(/<phone>[\s\S]*?<\/phone>/gi, '')
       .replace(/&lt;phone&gt;[\s\S]*?&lt;\/phone&gt;/gi, '');
 
-    // 去掉正文尾部泄露的短信原文（仅精准匹配行）
+    // 去掉正文中泄露的短信原文（先按整行删，再全局兜底删）
     smsList.forEach(s => {
       const t = escapeRegExp(s.text.trim());
       if (!t) return;
-      const lineRe = new RegExp(`(?:<br\\s*\\/?>(?:\\s|&nbsp;)*|\\n|^)${t}(?=(?:\\s|&nbsp;)*(?:<br\\s*\\/?>|\\n|$))`, 'gi');
+      const lineRe = new RegExp(`(?:<br\\s*\\/?>(?:\\s|&nbsp;|\\u3000)*|\\n|^)${t}(?=(?:\\s|&nbsp;|\\u3000)*(?:<br\\s*\\/?>|\\n|$))`, 'gi');
       html = html.replace(lineRe, '');
+      // 兜底：有些主题会把文本包在 span/样式里，行边界匹配会失效
+      const anyRe = new RegExp(t, 'gi');
+      html = html.replace(anyRe, '');
     });
 
-    html = html.trim();
+    // 清理多余换行
+    html = html
+      .replace(/(?:<br\s*\/?>\s*){2,}/gi, '<br>')
+      .replace(/^\s*(?:<br\s*\/?>\s*)+/i, '')
+      .replace(/(?:<br\s*\/?>\s*)+$/i, '')
+      .trim();
     const fallbackFrom = getContext()?.name || '角色';
     const summary = smsList.map(s => `${s.from || fallbackFrom}：${s.text}`).join('<br>');
     textEl.innerHTML = html ? `${html}<br>${summary}` : summary;
