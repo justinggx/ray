@@ -783,17 +783,19 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 /* Pending queue readability (all themes) */
 #rp-phone.rp-theme-candy #rp-pending-queue {
-  background: rgba(255, 240, 246, .62) !important;
-  border-top-color: rgba(214, 92, 136, .28) !important;
+  background: rgba(255, 234, 244, .82) !important;
+  border-top-color: rgba(188, 68, 118, .42) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 #rp-phone.rp-theme-candy .rp-pending-item {
-  color: #8f1f4a !important;
-  background: rgba(255, 255, 255, .48) !important;
+  color: #7a163f !important;
+  background: rgba(255, 255, 255, .74) !important;
+  font-weight: 600 !important;
 }
 #rp-phone.rp-theme-candy .rp-pending-hint {
-  color: rgba(122, 28, 66, .78) !important;
+  color: rgba(108, 18, 56, .92) !important;
+  font-weight: 600 !important;
 }
 
 #rp-phone.rp-theme-star #rp-pending-queue {
