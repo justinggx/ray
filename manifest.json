@@ -1,8 +1,8 @@
 {
   "display_name": "Ray Mobile Shell",
   "author": "justinggx",
-  "version": "3.8.8",
+  "version": "3.8.9",
   "loading_order": 1,
   "requires": [],
-  "js": "index.js?v=217"
+  "js": "index.js?v=218"
 }
