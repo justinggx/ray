@@ -6318,6 +6318,28 @@ function normNameKey(s) {
   return String(s || '').toLowerCase().replace(/[\s·•・\-_]+/g, '');
 }
 
+function resolveNpcPersonaByName(name, npcPersonaMap) {
+  if (!name || !npcPersonaMap) return '';
+  const k = normNameKey(name);
+  if (npcPersonaMap[k]) return npcPersonaMap[k];
+
+  // 轻量模糊：前缀匹配（julian -> julianhartwell）
+  const keys = Object.keys(npcPersonaMap || {});
+  for (const kk of keys) {
+    if (kk.startsWith(k) || k.startsWith(kk)) return npcPersonaMap[kk];
+  }
+
+  // 词首匹配（支持 "Julian Hartwell" vs "julian"）
+  const first = String(name || '').trim().toLowerCase().split(/\s+/)[0] || '';
+  if (first) {
+    for (const kk of keys) {
+      if (kk.startsWith(first)) return npcPersonaMap[kk];
+    }
+  }
+
+  return '';
+}
+
 function getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
@@ -6382,7 +6404,7 @@ async function generateAIMoments() {
     const charList = allChars.join('、');
     const npcPersonaText = npcs
       .map(n => {
-        const p = npcPersonaMap?.[normNameKey(n)] || '';
+        const p = resolveNpcPersonaByName(n, npcPersonaMap) || '';
         return p ? ('- ' + n + '：' + p.replace(/\n/g, '；')) : '';
       })
       .filter(Boolean)
@@ -6512,7 +6534,7 @@ async function generateAIReply(momentId, userCommentText, fromName) {
   if (authorName === charName && charPersona) {
     sysMsg3 = '你正在扮演 ' + charName + '，人设如下：\n' + charPersona.slice(0, 300) + '\n\n回复时必须严格符合该人设的语气和性格，用中文回复，不超过20字，只返回回复内容本身。';
   } else {
-    const npcPersona = npcPersonaMap?.[normNameKey(authorName)] || '';
+    const npcPersona = resolveNpcPersonaByName(authorName, npcPersonaMap) || '';
     sysMsg3 = '你正在扮演 ' + authorName + '，' + (npcPersona ? ('其人设如下：\n' + npcPersona.slice(0, 300) + '\n') : '根据其在故事中的言行推断语气，') + '用中文回复，不超过20字，只返回回复内容本身。';
   }
   const prompt3 = authorName + '的朋友圈：「' + moment.text + '」\n用户评论：「' + userCommentText + '」\n' + authorName + '回复：';
