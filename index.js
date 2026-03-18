@@ -5062,24 +5062,34 @@ function parsePhone(block) {
     if (!text) continue;
 
     // 线程路由策略：
-    // 1) 若存在 pending（刚由本端发起短信），优先落到 pending 线程，避免 FROM 轻微不一致导致新建错线程
-    // 2) 否则按 FROM 匹配/创建
-    // 3) FROM 缺失时退化到当前线程
+    // 1) 若存在 pending（刚由本端发起短信），优先落到 pending 线程
+    // 2) 按 FROM 精确/模糊匹配已有线程
+    // 3) FROM 匹配不到时，先试当前打开的线程 (currentThread)，不立即新建孤立线程
+    // 4) FROM 为空时退化到 currentThread
+    // 5) 以上都失败才新建
     let threadId = null;
     let fromRaw = fromRaw0;
 
     const pendingThreadId = STATE._pendingPhoneReply?.threadId;
     const hasPendingThread = !!(pendingThreadId && STATE.threads?.[pendingThreadId]);
-    const pendingFresh = !!(STATE._pendingPhoneReply && (Date.now() - (STATE._pendingPhoneReply.sentAt || 0) < 180000));
+    const pendingFresh = !!(STATE._pendingPhoneReply && (Date.now() - (STATE._pendingPhoneReply.sentAt || 0) < 300000));
 
     if (hasPendingThread && pendingFresh) {
+      // 优先 pending：用户刚通过手机发了短信，回复一定属于这个线程
       threadId = pendingThreadId;
       if (!fromRaw) fromRaw = STATE.threads[threadId]?.name || '';
     } else if (fromRaw) {
       threadId = matchThread(fromRaw);
       if (!threadId) {
-        const newTh = findOrCreateThread(fromRaw);
-        threadId = newTh.id;
+        // FROM 名字匹配失败（如角色有中英文别名）→ 先用当前打开的线程，而不是新建孤岛
+        const curTh = STATE.currentThread && STATE.threads?.[STATE.currentThread];
+        if (curTh) {
+          threadId = STATE.currentThread;
+        } else {
+          // 真的找不到，才新建
+          const newTh = findOrCreateThread(fromRaw);
+          threadId = newTh.id;
+        }
       }
     } else if (STATE.currentThread && STATE.threads?.[STATE.currentThread]) {
       threadId = STATE.currentThread;
