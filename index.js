@@ -4989,6 +4989,10 @@ function onAIMessage() {
     // 记录指纹，供轮询/事件双通道去重
     STATE._lastAiFingerprint = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
     const normalizedRaw = normalizePhoneMarkup(raw);
+
+    // 流式生成中间态保护：标签未闭合时先不解析，避免把半截内容写进手机
+    if (/<PHONE\b/i.test(normalizedRaw) && !/<\/PHONE>/i.test(normalizedRaw)) return;
+    if (/<SMS\b/i.test(normalizedRaw) && !/<\/SMS>/i.test(normalizedRaw)) return;
     const phoneMatch = normalizedRaw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
     // 兼容：有些模型会漏掉 <PHONE> 包裹，但仍输出 <SMS>/<GMSG>
     const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(normalizedRaw);
@@ -5066,6 +5070,27 @@ function cleanPhoneFallbackReply(raw, fromName) {
   return first.replace(/^\s*[^\u4e00-\u9fa5A-Za-z0-9]+/, '').slice(0, 80).trim();
 }
 
+function sanitizeSmsText(text) {
+  let t = String(text || '').trim();
+  if (!t) return '';
+
+  const lines = t.split(/\n+/).map(s => s.trim()).filter(Boolean);
+  if (!lines.length) return '';
+
+  // 去掉前置“日期碎片行”（如 2023/11/06 17: 或 2023-11-06 17:21）
+  const dateHead = /^\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}(?::\d{0,2})?\s*$/;
+  if (lines.length > 1 && dateHead.test(lines[0])) {
+    lines.shift();
+  }
+
+  t = lines.join('\n').trim();
+
+  // 整条就是日期碎片则丢弃
+  if (dateHead.test(t)) return '';
+
+  return t;
+}
+
 function getTagAttrs(attrText) {
   const attrs = {};
   if (!attrText) return attrs;
@@ -5086,7 +5111,7 @@ function parsePhone(block) {
   const smsTagRe = /<SMS\b([^>]*)>([\s\S]*?)<\/SMS>/gi;
   while ((m = smsTagRe.exec(block)) !== null) {
     const attrs    = getTagAttrs(m[1]);
-    const text     = (m[2] || '').trim();
+    const text     = sanitizeSmsText(m[2] || '');
     const fromRaw0 = (attrs.FROM || '').trim();
     const time     = (attrs.TIME || '').trim();
     if (!text) continue;
@@ -5961,8 +5986,10 @@ function confirmCreateGroup() {
 // ================================================================
 const LC_TTL = 6000;
 const LC_MAX = 3;
+const RP_DISABLE_LIVE_OVERLAY = true; // 用户反馈顶部彩色长条干扰，默认关闭
 
 function showLiveChat(name, avatarBg, customImg, text) {
+  if (RP_DISABLE_LIVE_OVERLAY) return;
   const lc = $('#rp-live-chat');
   if (!lc.length) return;
   const id = `lc_${Date.now()}`;
@@ -5995,6 +6022,10 @@ function hidePhoneTagsInChat() {
     // 方法2：innerHTML 兜底，处理以纯文本存在的 <PHONE>...</PHONE>
     if (/<phone>/i.test(el.innerHTML)) {
       el.innerHTML = el.innerHTML.replace(/<phone>[\s\S]*?<\/phone>/gi, '').trim();
+    }
+    // 方法3：处理被转义成 &lt;PHONE&gt;...&lt;/PHONE&gt; 的文本
+    if (/&lt;phone&gt;/i.test(el.innerHTML)) {
+      el.innerHTML = el.innerHTML.replace(/&lt;phone&gt;[\s\S]*?&lt;\/phone&gt;/gi, '').trim();
     }
   });
 }
