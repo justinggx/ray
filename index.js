@@ -2932,6 +2932,7 @@ const STATE = {
   wallpaper: null,
   darkMode: false,
   avatars: {},
+  _lastAiFingerprint: null,
 };
 
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
@@ -3760,9 +3761,36 @@ async function init() {
   refreshWidget();
   refreshLockNotifs();
 
-  if (eventSource && event_types) eventSource.on(event_types.MESSAGE_RECEIVED, onAIMessage);
+  // 监听 AI 消息：不同 ST 版本事件名可能不同，做多事件兜底
+  if (eventSource && event_types) {
+    const aiEvtKeys = ['MESSAGE_RECEIVED', 'GENERATION_ENDED', 'MESSAGE_SWIPED'];
+    aiEvtKeys.forEach(k => {
+      const ev = event_types[k];
+      if (ev) {
+        try { eventSource.on(ev, onAIMessage); } catch(e) {}
+      }
+    });
+  }
   // FIX2: 监听聊天窗口切换
   if (eventSource && event_types) eventSource.on(event_types.CHAT_CHANGED, onChatChanged);
+
+  // 终极兜底：事件没触发时，轮询最后一条 AI 消息指纹
+  try {
+    if (window.__rpPhonePoller) clearInterval(window.__rpPhonePoller);
+    window.__rpPhonePoller = setInterval(() => {
+      try {
+        const ctx = getContext();
+        const chat = ctx?.chat;
+        if (!chat?.length) return;
+        const last = [...chat].reverse().find(m => !m.is_user);
+        if (!last?.mes) return;
+        const fp = `${ctx?.chatId || ''}|${last.mes.length}|${last.mes.slice(0, 24)}|${last.mes.slice(-24)}`;
+        if (fp === STATE._lastAiFingerprint) return;
+        STATE._lastAiFingerprint = fp;
+        onAIMessage();
+      } catch(e) {}
+    }, 1200);
+  } catch(e) {}
 
   go('lock'); // Explicitly reset to lock screen on every init/reload
   console.log('[Raymond Phone] ✅ loaded');
@@ -4958,6 +4986,8 @@ function onAIMessage() {
     if (!last?.mes) return;
 
     const raw = last.mes;
+    // 记录指纹，供轮询/事件双通道去重
+    STATE._lastAiFingerprint = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
     const normalizedRaw = normalizePhoneMarkup(raw);
     const phoneMatch = normalizedRaw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
     // 兼容：有些模型会漏掉 <PHONE> 包裹，但仍输出 <SMS>/<GMSG>
