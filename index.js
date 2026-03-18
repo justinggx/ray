@@ -2929,6 +2929,7 @@ const STATE = {
   chatId: null,
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
+  xhsFeed: [],
   wallpaper: null,
   darkMode: false,
   avatars: {},
@@ -3294,6 +3295,10 @@ const HTML = `
                 <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="4" width="20" height="32" rx="3.5" stroke-width="2"/><circle cx="10" cy="12" r="2.5" stroke-width="1.6"/><circle cx="10" cy="20" r="2.5" stroke-width="1.6"/><circle cx="10" cy="28" r="2.5" stroke-width="1.6"/><line x1="15" y1="14" x2="27" y2="14" stroke-width="1.7"/><line x1="15" y1="20" x2="27" y2="20" stroke-width="1.7" opacity=".7"/><line x1="15" y1="26" x2="24" y2="26" stroke-width="1.7" opacity=".5"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
+              <div class="rp-app" data-app="xhs" title="吃瓜热榜">
+                <div class="rp-app-ico">📰</div>
+                <div class="rp-app-lbl">热榜</div>
+              </div>
 
             </div>
 
@@ -3408,6 +3413,16 @@ const HTML = `
             </div>
           </div>
           <div id="rp-moments-list"></div>
+        </div>
+
+        <!-- 热榜（类小红书） -->
+        <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column;background:var(--rp-moments-bg)">
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">热榜</span>
+            <button id="rp-xhs-refresh" title="刷新热榜" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer">↻</button>
+          </div>
+          <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:10px 12px 14px"></div>
         </div>
 
         <!-- 发朋友圈 -->
@@ -4052,6 +4067,10 @@ function bindUI() {
     if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); postUserDiary(); }
   });
 
+  $(document).on('click', '#rp-xhs-refresh', function() {
+    renderXHSFeed(true);
+  });
+
   $(document).on('click', '[data-app="api-settings"]', function() {
     lgFillAPIView();
     go('api-settings');
@@ -4611,6 +4630,9 @@ function go(view) {
   }
   if (view === 'moments') {
     renderMoments();
+  }
+  if (view === 'xhs') {
+    renderXHSFeed(false);
   }
 }
 
@@ -6503,6 +6525,77 @@ function renderMoments() {
           <input class="rp-moment-cinput" type="text" placeholder="发表评论…" autocomplete="off"/>
           <button class="rp-moment-csend" data-moment="${moment.id}">发送</button>
         </div>
+      </div>
+    `);
+  });
+}
+
+function buildXHSFeedItems() {
+  const ctx = getContext() || {};
+  const charName = ctx?.name2 || ctx?.name || '角色';
+  const userName = ctx?.name1 || '我';
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const t = `${hh}:${mm}`;
+
+  const official = [
+    { from: '市民热线', tag: '官媒', text: `【晚间路况】${userName}常走线路车流恢复正常，建议错峰出行。` },
+    { from: '城事发布', tag: '官媒', text: `【通报】关于“${charName}与${userName}同框”相关讨论，提醒理性吃瓜，勿造谣传谣。` },
+    { from: '交通观察', tag: '官媒', text: `【提醒】近期夜间代驾需求走高，相关安全话题持续升温。` },
+    { from: '都市频道', tag: '官媒', text: `【街访】路人称“更关注事件后续处理，不站队先看证据”。` },
+    { from: '法治在线', tag: '官媒', text: `【普法】网络传播未核实隐私信息，可能触及侵权风险。` }
+  ];
+
+  const crowd = [
+    { from: '吃瓜路人A', tag: '路人', text: `我就想知道后续，别又烂尾。` },
+    { from: '地铁口热心群众', tag: '路人', text: `看评论区一半在嗑CP，一半在讨论规则，太真实了。` },
+    { from: '夜宵摊观察员', tag: '路人', text: `感觉这事关键不是八卦，是双方后续怎么表态。` },
+    { from: '匿名网友', tag: '路人', text: `路过，坐等实锤，先不站队。` }
+  ];
+
+  const pick = (arr, n) => {
+    const c = [...arr];
+    const out = [];
+    while (c.length && out.length < n) {
+      out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
+    }
+    return out;
+  };
+
+  const items = [...pick(official, 4), ...pick(crowd, 2)].map((x, i) => ({
+    id: `xhs_${Date.now()}_${i}`,
+    from: x.from,
+    tag: x.tag,
+    time: t,
+    text: x.text,
+  }));
+
+  return items;
+}
+
+function renderXHSFeed(forceRefresh) {
+  const box = $('#rp-xhs-list');
+  if (!box.length) return;
+  if (!STATE.xhsFeed || forceRefresh) {
+    STATE.xhsFeed = buildXHSFeedItems();
+  }
+
+  box.empty();
+  const list = STATE.xhsFeed || [];
+  if (!list.length) {
+    box.append('<div class="rp-moments-empty"><span>📰</span><span>暂无热榜</span></div>');
+    return;
+  }
+
+  list.forEach(p => {
+    box.append(`
+      <div style="background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.06);border-radius:14px;padding:11px 12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:12px;font-weight:700;color:#27364a">${escHtml(p.from)}</div>
+          <div style="font-size:11px;color:#7f8da3">${escHtml(p.tag)} · ${escHtml(p.time)}</div>
+        </div>
+        <div style="font-size:13px;line-height:1.6;color:#1c2734">${escHtml(p.text)}</div>
       </div>
     `);
   });
