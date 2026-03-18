@@ -2657,6 +2657,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   display: flex; align-items: center; justify-content: center; font-size: 30px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
 }
+.rp-folder-item-ico svg { width: 32px; height: 32px; }
+.rp-folder-game-ludo,
+.rp-folder-game-2048 { color: #fff; }
+.rp-folder-game-ludo { background: linear-gradient(145deg,#ff6b8a,#c0294a); }
+.rp-folder-game-2048 { background: linear-gradient(145deg,#f5a623,#e08000); }
 .rp-folder-item-lbl {
   font-size: 11px; color: rgba(255,255,255,0.90); font-weight: 500;
   text-shadow: 0 1px 4px rgba(0,0,0,0.55); white-space: nowrap; letter-spacing: .3px;
@@ -2686,11 +2691,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(100,20,45,0.88);
   text-shadow: 0 1px 3px rgba(255,255,255,0.50);
 }
-#rp-phone.rp-theme-candy .rp-folder-item-ico[style*="ff6b8a"] {
+#rp-phone.rp-theme-candy .rp-folder-game-ludo {
   background: linear-gradient(145deg,#f9a8c0,#e05080) !important;
   box-shadow: 0 4px 16px rgba(200,60,100,0.40), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
-#rp-phone.rp-theme-candy .rp-folder-item-ico[style*="f5a623"] {
+#rp-phone.rp-theme-candy .rp-folder-game-2048 {
   background: linear-gradient(145deg,#f8c0d0,#e07090) !important;
   box-shadow: 0 4px 16px rgba(200,80,120,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
@@ -2718,11 +2723,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(200,175,255,0.90);
   text-shadow: 0 0 8px rgba(140,90,255,0.5), 0 1px 3px rgba(0,0,0,0.5);
 }
-#rp-phone.rp-theme-star .rp-folder-item-ico[style*="ff6b8a"] {
+#rp-phone.rp-theme-star .rp-folder-game-ludo {
   background: linear-gradient(145deg,#c060ff,#7020d0) !important;
   box-shadow: 0 4px 18px rgba(140,60,255,0.55), inset 0 1px 0 rgba(220,180,255,0.3) !important;
 }
-#rp-phone.rp-theme-star .rp-folder-item-ico[style*="f5a623"] {
+#rp-phone.rp-theme-star .rp-folder-game-2048 {
   background: linear-gradient(145deg,#8040ff,#4010c0) !important;
   box-shadow: 0 4px 18px rgba(100,40,220,0.55), inset 0 1px 0 rgba(180,150,255,0.3) !important;
 }
@@ -2751,11 +2756,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(50,80,110,0.88);
   text-shadow: 0 1px 3px rgba(255,255,255,0.50);
 }
-#rp-phone.rp-theme-misty .rp-folder-item-ico[style*="ff6b8a"] {
+#rp-phone.rp-theme-misty .rp-folder-game-ludo {
   background: linear-gradient(145deg,#a8d0f0,#5090c8) !important;
   box-shadow: 0 4px 16px rgba(60,120,190,0.35), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
-#rp-phone.rp-theme-misty .rp-folder-item-ico[style*="f5a623"] {
+#rp-phone.rp-theme-misty .rp-folder-game-2048 {
   background: linear-gradient(145deg,#b8e0c8,#60a878) !important;
   box-shadow: 0 4px 16px rgba(70,150,110,0.30), inset 0 1px 0 rgba(255,255,255,0.45) !important;
 }
@@ -3569,11 +3574,25 @@ const HTML = `
           <div class="rp-folder-title-lbl">游戏</div>
           <div class="rp-folder-popup">
             <div class="rp-folder-item" data-folder-app="ludo">
-              <div class="rp-folder-item-ico" style="background:linear-gradient(145deg,#ff6b8a,#c0294a)">🎲</div>
+              <div class="rp-folder-item-ico rp-folder-game-ludo">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="8" y="8" width="24" height="24" rx="5" stroke-width="2"></rect>
+                  <circle cx="15" cy="15" r="1.8" fill="currentColor" stroke="none"></circle>
+                  <circle cx="25" cy="15" r="1.8" fill="currentColor" stroke="none"></circle>
+                  <circle cx="15" cy="25" r="1.8" fill="currentColor" stroke="none"></circle>
+                  <circle cx="25" cy="25" r="1.8" fill="currentColor" stroke="none"></circle>
+                </svg>
+              </div>
               <div class="rp-folder-item-lbl">飞行棋</div>
             </div>
             <div class="rp-folder-item" data-folder-app="g2048">
-              <div class="rp-folder-item-ico" style="background:linear-gradient(145deg,#f5a623,#e08000)">🔢</div>
+              <div class="rp-folder-item-ico rp-folder-game-2048">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="8" y="8" width="24" height="24" rx="5" stroke-width="2"></rect>
+                  <line x1="20" y1="12" x2="20" y2="28" stroke-width="1.7"></line>
+                  <line x1="12" y1="20" x2="28" y2="20" stroke-width="1.7"></line>
+                </svg>
+              </div>
               <div class="rp-folder-item-lbl">2048</div>
             </div>
           </div>
