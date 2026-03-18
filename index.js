@@ -2643,27 +2643,28 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 .rp-folder-popup {
   background: rgba(255,255,255,0.18); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255,255,255,0.28); border-radius: 26px; padding: 22px 26px;
-  display: flex; flex-direction: row; gap: 24px; align-items: flex-start;
+  border: 1px solid rgba(255,255,255,0.28); border-radius: 26px; padding: 22px 28px;
+  display: flex; flex-direction: row; gap: 30px; align-items: flex-start;
   box-shadow: 0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.35);
 }
 .rp-folder-item {
-  display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer;
+  min-width: 74px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer;
   transition: transform .15s cubic-bezier(.34,1.56,.64,1);
 }
 .rp-folder-item:active { transform: scale(.84); }
 .rp-folder-item-ico {
-  width: 44px; height: 44px; border-radius: 10px;
+  width: 52px; height: 52px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   background: transparent !important;
   box-shadow: none !important;
 }
-.rp-folder-item-ico svg { width: 34px; height: 34px; }
+.rp-folder-item-ico svg { width: 28px; height: 28px; }
 .rp-folder-game-ludo,
 .rp-folder-game-2048 { color: #c03060; }
 .rp-folder-item-lbl {
-  font-size: 10px; color: var(--rp-app-lbl); font-weight: 500;
-  text-shadow: var(--rp-app-lbl-sh); white-space: nowrap; letter-spacing: .2px;
+  font-size: 12px; color: var(--rp-app-lbl); font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,.18); white-space: nowrap; letter-spacing: .15px;
 }
 /* ── Candy theme folder ── */
 #rp-phone.rp-theme-candy .rp-folder-ico {
@@ -2687,8 +2688,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 1px 4px rgba(255,255,255,0.55);
 }
 #rp-phone.rp-theme-candy .rp-folder-item-lbl {
-  color: rgba(100,20,45,0.88);
-  text-shadow: 0 1px 3px rgba(255,255,255,0.50);
+  color: #b21f52;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.55);
 }
 #rp-phone.rp-theme-candy .rp-folder-game-ludo,
 #rp-phone.rp-theme-candy .rp-folder-game-2048 {
@@ -2716,8 +2717,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 0 12px rgba(160,100,255,0.6), 0 1px 4px rgba(0,0,0,0.6);
 }
 #rp-phone.rp-theme-star .rp-folder-item-lbl {
-  color: rgba(200,175,255,0.90);
-  text-shadow: 0 0 8px rgba(140,90,255,0.5), 0 1px 3px rgba(0,0,0,0.5);
+  color: #f3ecff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 #rp-phone.rp-theme-star .rp-folder-game-ludo,
 #rp-phone.rp-theme-star .rp-folder-game-2048 {
@@ -2746,8 +2747,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   text-shadow: 0 1px 4px rgba(255,255,255,0.55);
 }
 #rp-phone.rp-theme-misty .rp-folder-item-lbl {
-  color: rgba(50,80,110,0.88);
-  text-shadow: 0 1px 3px rgba(255,255,255,0.50);
+  color: #173a57;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.58);
 }
 #rp-phone.rp-theme-misty .rp-folder-game-ludo,
 #rp-phone.rp-theme-misty .rp-folder-game-2048 {
@@ -3567,10 +3568,10 @@ const HTML = `
               <div class="rp-folder-item-ico rp-folder-game-ludo">
                 <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="8" y="8" width="24" height="24" rx="5" stroke-width="2"></rect>
-                  <circle cx="15" cy="15" r="1.8" fill="currentColor" stroke="none"></circle>
-                  <circle cx="25" cy="15" r="1.8" fill="currentColor" stroke="none"></circle>
-                  <circle cx="15" cy="25" r="1.8" fill="currentColor" stroke="none"></circle>
-                  <circle cx="25" cy="25" r="1.8" fill="currentColor" stroke="none"></circle>
+                  <circle cx="15" cy="15" r="2.1" fill="currentColor" stroke="none"></circle>
+                  <circle cx="25" cy="15" r="2.1" fill="currentColor" stroke="none"></circle>
+                  <circle cx="15" cy="25" r="2.1" fill="currentColor" stroke="none"></circle>
+                  <circle cx="25" cy="25" r="2.1" fill="currentColor" stroke="none"></circle>
                 </svg>
               </div>
               <div class="rp-folder-item-lbl">飞行棋</div>
