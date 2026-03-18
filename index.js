@@ -678,6 +678,19 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow: 0 3px 12px rgba(200,100,140,.2) !important;
 }
 
+/* Candy outgoing bubble polish (only candy/default) */
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-sent,
+#rp-phone.rp-theme-candy .rp-sent {
+  background: linear-gradient(135deg,#ff7fb1 0%, #f06292 48%, #e34a86 100%) !important;
+  border: 1px solid rgba(255,255,255,.42) !important;
+  box-shadow: 0 4px 12px rgba(198,64,116,.34), inset 0 1px 0 rgba(255,255,255,.36) !important;
+  color:#fff !important;
+}
+#rp-phone:not(.rp-theme-star):not(.rp-theme-misty) .rp-out .rp-bts,
+#rp-phone.rp-theme-candy .rp-out .rp-bts {
+  color: rgba(126, 34, 78, .58) !important;
+}
+
 /* ══ ✨ STAR: DARK TECH CHIPS — sharp rectangles, neon glow ══ */
 #rp-phone.rp-theme-star .rp-app-ico {
   background: transparent !important;
