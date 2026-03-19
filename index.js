@@ -2424,6 +2424,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-compose-post-btn:active { opacity:.75 !important; }
 /* ── XHS 标签按钮 ── */
 .rp-xhs-tag-btn{background:#fff0f2;color:#ff2442;border:1px solid #ffc0ca;border-radius:16px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+/* XHS 视图允许内部 flex 滚动 */
+#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{display:flex!important;flex-direction:column!important;overflow:hidden!important}
 .rp-xhs-tag-btn:hover{background:#ffe0e6}
 .rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important}
 /* ── MOMENT IMAGE ── */
@@ -3424,12 +3426,12 @@ const HTML = `
 
         <!-- 小红书 -->
         <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column;background:#fff1f2">
-          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
-            <button class="rp-back" data-to="home" style="color:#ff2442">‹</button>
-            <span class="rp-nav-title" style="color:#ff2442;font-weight:800">小红书</span>
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="home">‹</button>
+            <span class="rp-nav-title">小红书</span>
             <div style="display:flex;gap:4px;align-items:center">
-              <button id="rp-xhs-compose" title="发笔记" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">✏️</button>
-              <button id="rp-xhs-refresh" title="刷新" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">↻</button>
+              <button id="rp-xhs-compose" title="发笔记" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:var(--rp-nav-btn,#c0306a)">✏️</button>
+              <button id="rp-xhs-refresh" title="刷新" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:var(--rp-nav-btn,#c0306a)">↻</button>
             </div>
           </div>
           <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:6px 10px 14px"></div>
@@ -3437,24 +3439,24 @@ const HTML = `
 
         <!-- 小红书详情页 -->
         <div id="rp-view-xhs-detail" class="rp-view" style="display:none;flex-direction:column;background:#fff">
-          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
-            <button class="rp-back" data-to="xhs" style="color:#ff2442">‹</button>
-            <span class="rp-nav-title" style="color:#ff2442;font-weight:700">帖子详情</span>
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="xhs">‹</button>
+            <span class="rp-nav-title">帖子详情</span>
             <span></span>
           </div>
           <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
-          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid #ffe4e8;display:flex;align-items:center;padding:6px 10px;gap:8px">
+          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.07);display:flex;align-items:center;padding:6px 10px;gap:8px">
             <input id="rp-xhs-detail-input" type="text" placeholder="发表评论…" autocomplete="off" style="flex:1;border:1px solid #ffc0ca;border-radius:20px;padding:6px 12px;font-size:12px;outline:none"/>
-            <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer">发送</button>
+            <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">发送</button>
           </div>
         </div>
 
         <!-- 小红书发帖 -->
         <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column;background:#fff">
-          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
-            <button class="rp-back" data-to="xhs" style="color:#ff2442">取消</button>
-            <span class="rp-nav-title" style="color:#ff2442;font-weight:700">发笔记</span>
-            <button id="rp-xhs-post-btn" style="background:#ff2442;color:#fff;border:none;border-radius:16px;padding:4px 14px;font-size:12px;cursor:pointer;font-weight:600">发布</button>
+          <div class="rp-nav-bar">
+            <button class="rp-back" data-to="xhs">取消</button>
+            <span class="rp-nav-title">发笔记</span>
+            <button id="rp-xhs-post-btn" class="rp-compose-post-btn">发布</button>
           </div>
           <div style="padding:16px 14px;flex:1;overflow-y:auto">
             <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid #ffe4e8;padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box"/>
@@ -7036,64 +7038,131 @@ function renderMoments() {
 // ================================================================
 
 // 固定帖子模板（路人视角，围绕 charName/userName 议论）
+// 预置评论库（多性格，带 charName/charLast 占位符）
+function _xhsPresetComments(charName, charLast, rndInt, ts) {
+  const pool = [
+    // 吃瓜追更
+    [
+      { user:'吃瓜不嫌事大🍿', text:`楼主快说！！${charLast}那边什么情况？！` },
+      { user:'坐等后续小分队🎪', text:'有没有懂的来分析一下这里面的逻辑' },
+      { user:'我TM不困了😱', text:'啊啊啊刚看到这个帖子睡意全无' },
+    ],
+    // 看戏
+    [
+      { user:'搬好小板凳🪑', text:'🍿不说话，静静看戏' },
+      { user:'路过买瓜的🏃', text:'收到收到，密切关注中' },
+      { user:'在线等更新📱', text:'感觉这事没那么简单，楼主继续说' },
+    ],
+    // 担心关心
+    [
+      { user:'温柔的路人甲🌸', text:'楼主你自己还好吗？听起来挺复杂的' },
+      { user:'善良姐姐在线💕', text:'不管怎样先保护好自己，有需要可以说' },
+      { user:'真诚关心不吃瓜🌻', text:'感觉涉及的人压力都挺大的，希望平安' },
+    ],
+    // 阴阳怪气
+    [
+      { user:'懂的都懂不懂的算了🙃', text:`哦，${charLast}家的事，那确实挺……特别的` },
+      { user:'微笑点头.jpg😊', text:'这种关系嘛，各人有各人的缘分呢' },
+      { user:'表情管理失控ing😶', text:'好的好的，所以就这样了是吧，OK' },
+    ],
+    // 无脑力挺
+    [
+      { user:'无脑支持队长🙋', text:'不管发生什么我都支持！！！冲！！' },
+      { user:'你没错你最好🫶', text:'楼主加油，有什么事我们都在' },
+      { user:'正义感爆棚的我💪', text:'感觉这件事有人受委屈了，愤愤不平中' },
+    ],
+    // 猜测爆瓜
+    [
+      { user:'嗅觉灵敏的我👃', text:`等等……你说的不会是那个${charLast}家的吧？！` },
+      { user:'拼图完成了😲', text:`${charName}？！我想到一个人，不会就是他吧` },
+      { user:'侦探上线🔍', text:`根据现有信息……姓${charLast}，圈内人……我有一个大胆的猜测` },
+    ],
+    // 质疑/理性
+    [
+      { user:'理性发言代表🧠', text:'这事其实两边都有责任吧，不能只看一面' },
+      { user:'不明觉厉路人乙🤔', text:'不了解背景不好评价，但感觉很复杂' },
+      { user:'冷静旁观中😑', text:'信息太少了，不能瞎下结论' },
+    ],
+    // 代入感强
+    [
+      { user:'感同身受の我😭', text:'我也有过类似经历，真的太懂这种感觉了' },
+      { user:'边看边哭的路人🥲', text:'不知道为什么看着看着有点想哭' },
+      { user:'共鸣感爆棚💔', text:'这帖子戳到我了，有些关系真的很难说清' },
+    ],
+  ];
+  // 每个帖子从各性格各选1-2条，凑满10条
+  const result = [];
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < shuffled.length && result.length < 10; i++) {
+    const group = shuffled[i];
+    const pick = group[Math.floor(Math.random() * group.length)];
+    result.push({ from: 'stranger_preset', user: pick.user, text: pick.text, time: ts(), replyTo: null });
+    // 偶尔从同组再抢一条
+    if (result.length < 10 && Math.random() < 0.3) {
+      const pick2 = group.filter(x => x.user !== pick.user)[0];
+      if (pick2) result.push({ from: 'stranger_preset', user: pick2.user, text: pick2.text, time: ts(), replyTo: null });
+    }
+  }
+  return result.slice(0, 10);
+}
+
 function buildXHSFeedItems() {
   const ctx = getContext() || {};
   const charName = ctx?.name2 || ctx?.name || 'Sinclair';
-  const charLast = charName.split(/\s+/).pop() || charName; // 取姓
+  const charLast = charName.split(/\s+/).pop() || charName;
   const now = new Date();
   const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
   const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
   const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
 
-  // 路人网友库（八卦体）
   const strangerPosts = [
     {
       user: '城市八卦速递🏙️', tag: '八卦',
       title: `吃到瓜了吗？听说${charLast}家那位最近好像出事了`,
       body: `不是我要说，那天在咖啡馆亲耳听到旁边桌在讨论，说的就是${charName}，具体内容不好多说，但感觉挺复杂的……评论区有没有知情人士？`,
-      likes: rndInt(320, 5800), comments: []
+      likes: rndInt(320, 5800),
     },
     {
       user: '深夜情感观察室✨', tag: '情感',
       title: '有没有人觉得这种关系很微妙',
       body: `年龄差这么大的两个人，一个是圈子里有头有脸的，一个还是学生，真的很难说清楚其中的权力关系。各位怎么看？`,
-      likes: rndInt(890, 12000), comments: []
+      likes: rndInt(890, 12000),
     },
     {
       user: '路过不路过🌿', tag: '随想',
       title: '不说名字，你们猜猜我说的是谁',
       body: `某位圈内人，姓${charLast}，最近的动向引发了不少讨论。我就说这么多，懂的都懂。`,
-      likes: rndInt(150, 3200), comments: []
+      likes: rndInt(150, 3200),
     },
     {
       user: '吃瓜第一线😎', tag: '八卦',
       title: `【速报】关于${charName}的最新动态`,
       body: `消息刚出，细节还在核实中。反正我的信息来源一直很准，大家先留意一下。有新进展我再更新。`,
-      likes: rndInt(1200, 28000), comments: []
+      likes: rndInt(1200, 28000),
     },
     {
       user: '社会观察者碎碎念💭', tag: '碎碎念',
       title: '有钱有地位的人，规则真的不一样吗',
       body: `最近看到一个案例，就是关于${charLast}家的，不想评价对错，就是觉得普通人换个立场估计早就被指指点点了。唉。`,
-      likes: rndInt(200, 4100), comments: []
+      likes: rndInt(200, 4100),
     },
     {
       user: '午夜感慨ing🌙', tag: '随想',
       title: '这种事为什么总是说不清楚',
       body: `说是养父女关系，但那种相处方式……我不懂，也不敢评价，就是觉得外人很难理解。`,
-      likes: rndInt(450, 8700), comments: []
+      likes: rndInt(450, 8700),
     },
     {
       user: '八卦小报记者📰', tag: '八卦',
       title: `有没有人整理过${charName}的完整资料`,
       body: `搜了一下信息很少，感觉这个人刻意低调。但圈子里的人好像都知道他，神秘感拉满。求懂的人科普一下。`,
-      likes: rndInt(670, 9300), comments: []
+      likes: rndInt(670, 9300),
     },
     {
       user: '真实故事搬运工🎵', tag: '日常',
       title: '我朋友跟我说了一件事，感觉挺震撼的',
       body: `她认识的人里有个跟${charLast}家有交集的，说了一些事，我听完沉默了很久。有些关系真的太复杂，外人根本看不透。`,
-      likes: rndInt(88, 1900), comments: []
+      likes: rndInt(88, 1900),
     },
   ];
 
@@ -7109,9 +7178,9 @@ function buildXHSFeedItems() {
     title: p.title,
     body: p.body,
     tag: p.tag,
-    likes: rndInt(0,1) === 0 ? p.likes : p.likes + rndInt(0, 50), // 轻微随机
+    likes: p.likes,
     likedByUser: false,
-    comments: p.comments || [],
+    comments: _xhsPresetComments(charName, charLast, rndInt, ts),
     time: ts(),
     date: todayStr,
   }));
@@ -7238,7 +7307,7 @@ function renderXHSDetail(post) {
 function postUserXHS() {
   const title = $('#rp-xhs-post-title').val().trim();
   const body = $('#rp-xhs-post-body').val().trim();
-  const tag = $('#rp-xhs-tag-btn-selected').length ? $('#rp-xhs-tag-btn-selected').data('tag') : (STATE.xhsSelectedTag || '日常');
+  const tag = STATE.xhsSelectedTag || '日常';
   if (!body) { alert('请输入内容'); return; }
   const ctx = getContext() || {};
   const userName = ctx?.name1 || '我';
@@ -7260,6 +7329,13 @@ function postUserXHS() {
   };
   STATE.xhsFeed = STATE.xhsFeed || [];
   STATE.xhsFeed.unshift(post);
+  // 立即预置3条评论（让详情页不空），再异步AI追加
+  const ctx2 = getContext() || {};
+  const charName2 = ctx2?.name2 || ctx2?.name || 'Sinclair';
+  const charLast2 = charName2.split(/\s+/).pop() || charName2;
+  const rndInt2 = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const ts2 = () => { const h=rndInt2(8,23),m=rndInt2(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
+  post.comments = _xhsPresetComments(charName2, charLast2, rndInt2, ts2).slice(0, 4);
   saveState();
   // 清空表单
   $('#rp-xhs-post-title').val('');
@@ -7268,7 +7344,7 @@ function postUserXHS() {
   STATE.xhsSelectedTag = '日常';
   go('xhs');
   renderXHSFeed(false);
-  // 延迟触发陌生网友评论
+  // 延迟触发AI追加评论（API可用时）
   setTimeout(() => generateXHSStrangerComments(post.id), 2000);
 }
 
@@ -7301,7 +7377,16 @@ async function generateXHSStrangerComments(postId) {
 
   const prompt = `用户帖子标题：${post.title}\n用户帖子内容：${post.body}`;
   const resp = await lgCallAPI(prompt, 400, sysMsg);
-  if (!resp) return;
+  if (!resp) {
+    // API 失败 fallback：用预置评论池补满
+    const rndInt3 = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+    const ts3 = () => { const h=rndInt3(8,23),m=rndInt3(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
+    const extra = _xhsPresetComments(charName, charLast, rndInt3, ts3);
+    extra.forEach(c => { if (!post.comments.find(x=>x.user===c.user)) post.comments.push(c); });
+    saveState();
+    if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) renderXHSDetail(post);
+    return;
+  }
 
   let items = [];
   try {
