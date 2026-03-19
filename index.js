@@ -3206,7 +3206,7 @@ function loadState(chatId) {
 //  HTML
 // ================================================================
 const HTML = `
-<div id="rp-fab" title="打开手机"><img src="https://i.postimg.cc/5NQnLXk7/ke-ai-shou-ji-tu-biao-she-ji.png" style="width:100%;height:100%;object-fit:contain;display:block;" draggable="false" /></div>
+<div id="rp-fab" title="打开手机"><img src="https://i.postimg.cc/x8Nsnh8L/ke-ai-shou-ji-tu-biao-she-ji.png" style="width:100%;height:100%;object-fit:contain;display:block;" draggable="false" /></div>
 <div id="rp-wrapper">
 
   <div id="rp-phone" style="display:none">
