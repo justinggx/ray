@@ -6349,14 +6349,26 @@ function resolveNpcPersonaByName(name, npcPersonaMap) {
   return '';
 }
 
-// getMomentsCtx 结果缓存（5秒TTL，避免异步函数被高频调用）
+// getMomentsCtx 结果缓存（30s TTL + Promise锁，防止并发重复加载）
 let _getMomentsCtxCache = null;
 let _getMomentsCtxCacheTime = 0;
+let _getMomentsCtxPromise = null;
 async function getMomentsCtx() {
   const now = Date.now();
   if (_getMomentsCtxCache && (now - _getMomentsCtxCacheTime) < 30000) {
     return _getMomentsCtxCache;
   }
+  // 已有进行中的加载，等待它完成而不是重复发起
+  if (_getMomentsCtxPromise) return _getMomentsCtxPromise;
+  _getMomentsCtxPromise = _doGetMomentsCtx();
+  try {
+    const result = await _getMomentsCtxPromise;
+    return result;
+  } finally {
+    _getMomentsCtxPromise = null;
+  }
+}
+async function _doGetMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
@@ -6487,7 +6499,7 @@ async function getMomentsCtx() {
 
       // 额外：解析 friends_circle 块（格式：name: X\n disposition: Y）作为兜底
       // 即使个人词条未触发，friends_circle 汇总词条通常是常驻的
-      const fcMatch = allWIText.match(/friends_circle\s*:[\s\S]*?(?=<\/|\n\s*\n\s*\n|$)/i);
+      const fcMatch = allWIText.match(/friends_circle\s*:[\s\S]*?(?=<character_|<\/|\Z)/i) || allWIText.match(/friends_circle\s*:[\s\S]{0,2000}/i);
       if (fcMatch) {
         const fcText = fcMatch[0];
         const fcEntries = fcText.split(/(?=\n\s{1,4}\w+_\w+:)/);
@@ -6558,6 +6570,7 @@ async function getMomentsCtx() {
   };
   _getMomentsCtxCache = result;
   _getMomentsCtxCacheTime = Date.now();
+  console.log('[getMomentsCtx] cache updated');
   return result;
 }
 
