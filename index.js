@@ -6350,11 +6350,27 @@ function getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
+
+  // 从所有 chatId 的 threads 里收集 NPC（不再只看当前对话的 threads）
   const knownNPCs = new Set();
-  Object.values(STATE.threads || {}).forEach(th => { if (th.name && th.name !== charName) knownNPCs.add(th.name); });
+  const allThreadSources = [STATE.threads];
+  // 加上 CHAT_STORE 里其他对话的 threads
+  try {
+    if (typeof CHAT_STORE === 'object') {
+      Object.values(CHAT_STORE).forEach(s => {
+        if (s && s.threads) allThreadSources.push(s.threads);
+      });
+    }
+  } catch(e) {}
+  allThreadSources.forEach(threads => {
+    Object.values(threads || {}).forEach(th => {
+      if (th.name && th.name !== charName) knownNPCs.add(th.name);
+    });
+  });
   (STATE.moments || []).filter(m => m.from !== 'user' && m.name !== charName).forEach(m => knownNPCs.add(m.name));
-  // 主楼层近15条对话（更多上下文以捕捉NPC语气）
-  const recentChat = (ctx?.chat || []).slice(-15).map(m => {
+
+  // 近25条对话（加多以捕捉更多 NPC 语气样本）
+  const recentChat = (ctx?.chat || []).slice(-25).map(m => {
     const spk = m.is_user ? userName : (m.name || charName);
     return spk + ': ' + ((m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 150));
   }).join('\n') || '（暂无对话记录）';
@@ -6433,21 +6449,23 @@ async function generateAIMoments() {
       .filter(Boolean)
       .join('\n');
 
-    // system message：人设 + 规则
+    // system message：人设 + 规则（每个角色分别说明，避免人设串台）
+    const npcRules = selectedNPCs.map(n => {
+      const p = resolveNpcPersonaByName(n, npcPersonaMap) || '';
+      return p ? ('- ' + n + ' 的人设：' + p.replace(/\n/g, '；').slice(0, 200) + '\n  禁止让 ' + n + ' 做任何与其身份地位不符的事') : ('- ' + n + '：根据剧情推断');
+    }).join('\n');
     const sysMsg = '你是一个角色扮演故事中的社交媒体模拟器。\n\n'
-      + '【主角 ' + charName + ' 的人设】\n' + (charPersona || '（未获取到人设，请根据对话推断）') + '\n\n'
-      + (npcPersonaText ? ('【NPC人设卡（最高优先级，严格遵守每个NPC的性格和语气风格）】\n' + npcPersonaText + '\n\n') : '')
-      + (npcs.length > 0 && !npcPersonaText ? '【故事中的其他角色】' + npcs.join('、') + '\n\n' : '')
+      + '【主角 ' + charName + ' 的人设】\n' + (charPersona || '（根据对话推断）') + '\n\n'
+      + (npcRules ? ('【NPC人设约束（铁律，不得违反）】\n' + npcRules + '\n\n') : '')
       + '【生成规则】\n'
-      + '1. 每个角色发的朋友圈必须和近期剧情直接相关，不能发与剧情无关的内容\n'
-      + '2. 每个角色的语气、措辞必须100%符合其人设，NPC尤其不能用主角的口吻\n'
-      + '3. 内容要像真实社交媒体发帖：口语化、有情绪、不解释太多\n'
-      + '4. 所有内容必须使用中文\n'
-      + '5. 只返回 JSON 数组，不要任何其他文字';
-    const prompt = '近期主线剧情（主楼层最新对话）：\n' + recentChat
-      + '\n\n请为以下角色各写1条与剧情相关的朋友圈动态，共 ' + allChars.length + ' 条，每人1条：'
+      + '1. 每条朋友圈必须与近期剧情直接相关\n'
+      + '2. 每个角色的身份、财富、性格必须贯穿到朋友圈内容里\n'
+      + '3. 绝对不能让角色做出与其人设矛盾的事（如富豪不会值夜班、冷漠者不会甜言蜜语）\n'
+      + '4. 口语化，1-2句，中文，只返回JSON';
+    const prompt = '近期剧情（主楼层最新对话）：\n' + recentChat
+      + '\n\n请为以下角色各写1条朋友圈（每人1条，不重复，与剧情相关）：'
       + charList
-      + '\n格式：[{"from":"角色名","text":"动态内容（1-2句，口语化，与剧情直接相关）"},...]';
+      + '\n格式：[{"from":"角色名","text":"内容"},...]';
     const resp = await lgCallAPI(prompt, 600, sysMsg);
     if (!resp) throw new Error('API无响应');
     const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
