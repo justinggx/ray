@@ -3987,13 +3987,9 @@ function bindUI() {
     // 从聊天历史重建联系人（服务端数据，PC/手机共享同一份聊天记录）
     var _fabChatId = STATE.chatId;
     setTimeout(function() { rebuildContactsFromHistory(_fabChatId); }, 300);
+    // 重置到 lock 屏（无论上次停在哪个页面）
+    go('lock');
     phone.show();
-    // 若上次关闭时停留在临时页（compose/detail），重置到合理的上级
-    if (['xhs-compose','xhs-detail'].includes(STATE.currentView)) {
-      go('xhs');
-    } else if (STATE.currentView === 'home' || !STATE.currentView || STATE.currentView === 'lock') {
-      go('home');
-    }
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
       setTimeout(() => {
