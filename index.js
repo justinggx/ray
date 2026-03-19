@@ -7261,15 +7261,21 @@ function renderXHSFeed(forceRefresh) {
   const box = $('#rp-xhs-list');
   if (!box.length) return;
 
-  const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
   const hasStranger = (STATE.xhsFeed || []).some(p => p.from !== 'user');
 
-  // 首次加载或强制刷新 → 重新调 API 生成3条新帖子
-  if (!hasStranger || forceRefresh) {
+  if (!hasStranger) {
+    // 首次加载：清空后显示 loading，调 API
     box.empty();
-    userPosts.forEach(p => box.append(renderXHSCard(p)));
     box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载最新动态…</div>');
-    buildXHSFeedWithAI();
+    buildXHSFeedWithAI(false);
+    return;
+  }
+
+  if (forceRefresh) {
+    // 刷新：保留现有帖子，顶部插入 loading，后台生成追加
+    if ($('#rp-xhs-loading').length) return; // 防止重复触发
+    box.prepend('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:16px;font-size:13px">✨ 正在加载更多…</div>');
+    buildXHSFeedWithAI(true);
     return;
   }
 
@@ -7321,13 +7327,14 @@ async function xhsCallAPI(prompt, sysMsg) {
   return null;
 }
 
-async function buildXHSFeedWithAI() {
+async function buildXHSFeedWithAI(appendMode) {
   const now = new Date();
   const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
   const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
   const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
 
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
+  const existingStranger = (STATE.xhsFeed || []).filter(p => p.from !== 'user');
 
   // 读角色信息
   let charName = '', userName = '', charPersona = '', recentChat = '';
@@ -7341,6 +7348,18 @@ async function buildXHSFeedWithAI() {
     userName = ctx0?.name1 || '用户';
   }
   const charLast = charName.split(/\s+/).pop() || charName || 'TA';
+
+  // 合并新帖子到列表（追加模式：新帖插到陌生人帖子最前面，超10条删最旧的）
+  function mergeNewPosts(newPosts) {
+    const MAX_STRANGER = 10;
+    let merged = [...newPosts, ...existingStranger]; // 新的在前
+    if (merged.length > MAX_STRANGER) merged = merged.slice(0, MAX_STRANGER); // 删最旧
+    STATE.xhsFeed = [...userPosts, ...merged];
+    saveState();
+    _renderXHSList();
+    // 滚到顶部
+    setTimeout(() => { const box = $('#rp-xhs-list'); if (box.length) box.scrollTop(0); }, 50);
+  }
 
   // 随机选3个话题方向，保证每次刷新内容不重复
   const topicPool = [
@@ -7390,9 +7409,7 @@ async function buildXHSFeedWithAI() {
             likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
           };
         });
-        STATE.xhsFeed = [...userPosts, ...aiPosts];
-        saveState();
-        _renderXHSList();
+        mergeNewPosts(aiPosts);
         return;
       }
     }
@@ -7400,9 +7417,7 @@ async function buildXHSFeedWithAI() {
 
   // AI 失败 → fallback 本地模板（取3条）
   const fbPosts = buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona);
-  STATE.xhsFeed = [...userPosts, ...fbPosts.slice(0, 3)];
-  saveState();
-  _renderXHSList();
+  mergeNewPosts(fbPosts.slice(0, 3));
 }
 
 
