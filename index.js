@@ -7204,7 +7204,7 @@ function renderXHSCard(p) {
           <div style="font-size:12px;font-weight:600;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.user)}</div>
           <div style="font-size:10px;color:#bbb">${p.time || ''}</div>
         </div>
-        <div style="font-size:10px;background:#fff0f2;color:#ff2442;padding:2px 8px;border-radius:10px;flex-shrink:0;font-weight:600">#${escHtml(p.tag)}</div>
+        <div style="font-size:10px;background:#fff0f2;color:#ff2442;padding:2px 8px;border-radius:10px;flex-shrink:0;font-weight:600">${escHtml(p.tag)}</div>
       </div>
       <div style="font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.5;margin-bottom:4px">${escHtml(p.title)}</div>
       <div style="font-size:12px;color:#666;line-height:1.6;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${escHtml(p.body)}</div>
@@ -7448,7 +7448,7 @@ function renderXHSDetail(post) {
       <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
       <div>
         <div style="font-size:13px;font-weight:700;color:#333">${escHtml(post.user)}</div>
-        <div style="font-size:10px;color:#bbb">${post.date||''} ${post.time||''} · #${escHtml(post.tag)}</div>
+        <div style="font-size:10px;color:#bbb">${post.date||''} ${post.time||''} · ${escHtml(post.tag)}</div>
       </div>
     </div>
     <div style="font-size:15px;font-weight:800;color:#1a1a1a;line-height:1.5;margin-bottom:10px">${escHtml(post.title)}</div>
