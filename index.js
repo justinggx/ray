@@ -2428,7 +2428,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* XHS 视图：flex布局通过JS显示时设置，CSS不强制display */
 #rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important}
 .rp-xhs-tag-btn:hover{background:#ffe0e6}
-.rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important}
+.rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important;outline:2px solid #ff2442 !important}
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
@@ -3446,7 +3446,7 @@ const HTML = `
             <span></span>
           </div>
           <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
-          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.07);display:flex;align-items:center;padding:6px 10px;gap:8px">
+          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.07);display:flex;align-items:center;padding:6px 10px 16px;gap:8px;overflow:visible;min-width:0">
             <input id="rp-xhs-detail-input" type="text" placeholder="发表评论…" autocomplete="off" style="flex:1;border:1px solid #ffc0ca;border-radius:20px;padding:6px 12px;font-size:12px;outline:none"/>
             <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">发送</button>
           </div>
@@ -4753,6 +4753,8 @@ function go(view) {
     // xhsCurrentPost 已在 openXHSDetail 中设置，这里只确保输入框重置
     STATE.xhsReplyToCidx = null;
     $('#rp-xhs-detail-input').val('').attr('placeholder','发表评论…');
+    // Bug1 fix: 每次打开帖子详情都回到顶部
+    setTimeout(function(){ var el = document.getElementById('rp-xhs-detail-body'); if(el) el.scrollTop = 0; }, 0);
   }
   if (view === 'xhs-compose') {
     // 默认选中第一个标签
@@ -7395,7 +7397,28 @@ async function generateXHSStrangerComments(postId) {
   const prompt = `用户帖子标题：${post.title}\n用户帖子内容：${post.body}`;
   const resp = await lgCallAPI(prompt, 400, sysMsg);
   if (!resp) {
-    // API 失败：保留已有评论，不补 fallback 池
+    // API 失败：用 fallback 池补充评论，确保帖子不空
+    if (!post.comments || post.comments.length === 0) {
+      const now0 = new Date();
+      const base0 = now0.getTime();
+      const fbPool = [
+        { user: '路过的吃瓜群众🍿', text: '姐妹说的太对了，我也有同感！' },
+        { user: '深夜分析师✨', text: '这个话题最近超多人讨论，感同身受啊' },
+        { user: '真诚路人乙💭', text: '楼主说的有点意思，继续分享哦～' },
+        { user: '城市观察员🏙️', text: '哈哈哈这也太真实了，笑死我了😂' },
+        { user: '在线围观中🎪', text: '第一次见有人这么说，楼主思路清奇！' },
+      ];
+      fbPool.forEach(function(item, i) {
+        var t0 = new Date(base0 + (i+1)*15000);
+        var fts = String(t0.getHours()).padStart(2,'0') + ':' + String(t0.getMinutes()).padStart(2,'0');
+        post.comments = post.comments || [];
+        post.comments.push({ from: 'stranger_fb'+i, user: item.user, text: item.text, time: fts, replyTo: null });
+      });
+      saveState();
+      if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
+        renderXHSDetail(post);
+      }
+    }
     return;
   }
 
