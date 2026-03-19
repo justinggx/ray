@@ -3447,8 +3447,8 @@ const HTML = `
           </div>
           <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
           <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.07);display:flex;align-items:center;padding:6px 10px 16px;gap:8px;overflow:visible;min-width:0">
-            <input id="rp-xhs-detail-input" type="text" placeholder="发表评论…" autocomplete="off" style="flex:1;border:1px solid #ffc0ca;border-radius:20px;padding:6px 12px;font-size:12px;outline:none"/>
-            <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0">发送</button>
+            <textarea id="rp-xhs-detail-input" placeholder="发表评论…" autocomplete="off" rows="1" style="flex:1;border:1px solid #ffc0ca;border-radius:14px;padding:6px 12px;font-size:12px;outline:none;resize:none;overflow:hidden;line-height:1.5;max-height:72px;font-family:inherit;box-sizing:border-box;min-width:0"></textarea>
+            <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap;display:inline-flex !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important">发送</button>
           </div>
         </div>
 
@@ -4165,11 +4165,20 @@ function bindUI() {
     sendXHSComment(STATE.xhsCurrentPost, text, STATE.xhsReplyToCidx ?? null);
   });
   $(document).on('keydown', '#rp-xhs-detail-input', function(e) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       const text = $(this).val().trim();
       if (!text || !STATE.xhsCurrentPost) return;
       sendXHSComment(STATE.xhsCurrentPost, text, STATE.xhsReplyToCidx ?? null);
     }
+    // auto-resize textarea
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 72) + 'px';
+  });
+  // auto-resize on input too
+  $(document).on('input', '#rp-xhs-detail-input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 72) + 'px';
   });
 
   // 小红书 - 点击评论中的"回复"
@@ -7117,9 +7126,15 @@ function _renderXHSList(box) {
     box.append('<div style="text-align:center;color:#ff2442;padding:40px;font-size:13px">暂无内容</div>');
     return;
   }
+  // Bug5 fix: 顺序 = 旧陌生人帖(老→新) → 用户帖(老→新) → 新陌生人帖(新→老置顶)
+  // STATE.xhsFeed 结构：[...userPosts, ...strangerPosts(新在前)]
   const userPosts = list.filter(p => p.from === 'user');
-  const otherPosts = list.filter(p => p.from !== 'user');
-  [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
+  const strangerPosts = list.filter(p => p.from !== 'user'); // 新的在 index 0
+  // 渲染顺序：旧stranger(末尾先) → user → 新stranger(头部先)
+  const oldStranger = strangerPosts.slice(1);  // 除最新一批外的旧帖
+  const newStranger = strangerPosts.slice(0, Math.min(3, strangerPosts.length)); // 最新一批
+  // 显示：旧帖(反转使旧的在上) → 用户帖 → 新帖
+  [...[...oldStranger].reverse(), ...userPosts, ...newStranger].forEach(p => box.append(renderXHSCard(p)));
 }
 
 // XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
@@ -7340,7 +7355,7 @@ function postUserXHS() {
     title: title || body.slice(0,20) + (body.length>20?'…':''),
     body,
     tag,
-    likes: 0,
+    likes: Math.floor(Math.random() * 90000) + 10000,
     likedByUser: false,
     comments: [],
     time: ts,
@@ -7460,10 +7475,8 @@ async function sendXHSComment(postId, text, replyToCidx) {
   $('#rp-xhs-detail-input').val('').attr('placeholder','发表评论…');
   saveState();
   renderXHSDetail(post);
-  // 触发一个陌生网友接话（概率70%）
-  if (Math.random() < 0.7) {
-    setTimeout(() => generateXHSReplyToComment(postId, text.trim(), userName), 1200);
-  }
+  // 触发一个陌生网友接话（必触发，让互动感更真实）
+  setTimeout(() => generateXHSReplyToComment(postId, text.trim(), userName), 1200);
 }
 
 // 陌生网友回复用户评论
