@@ -7431,16 +7431,6 @@ function buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPers
   }));
 }
 
-// 旧的同步 buildXHSFeedItems 保留作为内部兼容（不再直接调用）
-function buildXHSFeedItems() {
-  const ctx = getContext() || {};
-  const now = new Date();
-  const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
-  const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
-  const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
-  return buildXHSFeedFallback(todayStr, rndInt, ts);
-}
-
 // 打开详情页
 function openXHSDetail(postId) {
   const post = (STATE.xhsFeed || []).find(p => p.id === postId);
