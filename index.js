@@ -7412,28 +7412,7 @@ async function generateXHSStrangerComments(postId) {
   const prompt = `用户帖子标题：${post.title}\n用户帖子内容：${post.body}`;
   const resp = await lgCallAPI(prompt, 400, sysMsg);
   if (!resp) {
-    // API 失败：用 fallback 池补充评论，确保帖子不空
-    if (!post.comments || post.comments.length === 0) {
-      const now0 = new Date();
-      const base0 = now0.getTime();
-      const fbPool = [
-        { user: '路过的吃瓜群众🍿', text: '姐妹说的太对了，我也有同感！' },
-        { user: '深夜分析师✨', text: '这个话题最近超多人讨论，感同身受啊' },
-        { user: '真诚路人乙💭', text: '楼主说的有点意思，继续分享哦～' },
-        { user: '城市观察员🏙️', text: '哈哈哈这也太真实了，笑死我了😂' },
-        { user: '在线围观中🎪', text: '第一次见有人这么说，楼主思路清奇！' },
-      ];
-      fbPool.forEach(function(item, i) {
-        var t0 = new Date(base0 + (i+1)*15000);
-        var fts = String(t0.getHours()).padStart(2,'0') + ':' + String(t0.getMinutes()).padStart(2,'0');
-        post.comments = post.comments || [];
-        post.comments.push({ from: 'stranger_fb'+i, user: item.user, text: item.text, time: fts, replyTo: null });
-      });
-      saveState();
-      if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
-        renderXHSDetail(post);
-      }
-    }
+    // API 失败：静默处理，不用假评论充数
     return;
   }
 
@@ -7492,19 +7471,23 @@ async function generateXHSReplyToComment(postId, userComment, userName) {
 
   const sysMsg = `你是一个小红书陌生网友，性格类型：${style}。
 帖子背景：涉及用户与 ${charName}（姓${charLast}）的相关话题。
-用口语化中文回复用户的评论，10-20字，符合小红书风格，只返回评论内容本身。`;
-  const prompt = `帖子：${post.title}\n近期评论：\n${recentComments}\n用户${userName}说：「${userComment}」\n你的回复：`;
-  const resp = await lgCallAPI(prompt, 80, sysMsg);
+生成一个口语化中文回复，10-20字，符合小红书风格。
+同时生成一个带emoji的网友昵称（不要用固定模板，要有创意）。
+只返回JSON：{"user":"昵称emoji","text":"回复内容"}`;
+  const prompt = `帖子：${post.title}\n近期评论：\n${recentComments}\n用户${userName}说：「${userComment}」`;
+  const resp = await lgCallAPI(prompt, 100, sysMsg);
   if (!resp) return;
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  // 生成一个随机昵称
-  const nickPool = ['路过看热闹的🍿','城市观察员🏙️','深夜分析师✨','吃瓜群众甲😎','沉默的旁观者🌿','真诚路人乙💭','在线围观中🎪','好奇的小透明🌸'];
-  const nick = nickPool[Math.floor(Math.random()*nickPool.length)];
+  let nick = '路人甲🍿', replyText = resp.trim().replace(/^[「"']|[」"']$/g,'');
+  try {
+    const m = resp.match(/\{[\s\S]*\}/);
+    if (m) { const obj = JSON.parse(m[0]); nick = obj.user || nick; replyText = obj.text || replyText; }
+  } catch(e) {}
   // 找到用户刚才那条评论的 index，作为 replyTo
   const _revIdx = [...post.comments].reverse().findIndex(c => c.from === 'user');
   const userCidx = _revIdx >= 0 ? post.comments.length - 1 - _revIdx : null;
-  post.comments.push({ from: 'stranger_reply', user: nick, text: resp.trim().replace(/^[「"']|[」"']$/g,''), time: ts, replyTo: userCidx !== null && userCidx < post.comments.length ? userCidx : null });
+  post.comments.push({ from: 'stranger_reply', user: nick, text: replyText, time: ts, replyTo: userCidx !== null && userCidx < post.comments.length ? userCidx : null });
   saveState();
   if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
     renderXHSDetail(post);
