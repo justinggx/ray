@@ -3142,6 +3142,27 @@ function findOrCreateThread(nameRaw) {
 // ================================================================
 //  PERSISTENCE (localStorage)
 // ================================================================
+const RP_THREADS_KEY = 'rp-phone-threads-global'; // 联系人全局共享（不隔离对话）
+
+function saveThreadsGlobal() {
+  try {
+    const threads = JSON.parse(JSON.stringify(STATE.threads));
+    for (const th of Object.values(threads)) {
+      if (th.messages) th.messages = th.messages.map(m =>
+        (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
+      );
+    }
+    localStorage.setItem(RP_THREADS_KEY, JSON.stringify(threads));
+  } catch(e) {}
+}
+
+function loadThreadsGlobal() {
+  try {
+    const raw = localStorage.getItem(RP_THREADS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
 function saveState() {
   if (!STATE.chatId) return;
   try {
@@ -3163,7 +3184,9 @@ function saveState() {
     };
     // 1. localStorage（快速读写，本地缓存）
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
-    // 2. extension_settings（存服务端，PC/手机同步）
+    // 2. 联系人单独全局保存（跨对话共享）
+    saveThreadsGlobal();
+    // 3. extension_settings（存服务端，PC/手机同步）
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
@@ -3177,24 +3200,28 @@ function loadState(chatId) {
   try {
     // 优先读 extension_settings（服务端，PC/手机共享）
     const es = _extSettings();
+    let base = null;
     if (es && es[EXT_KEY] && es[EXT_KEY][chatId]) {
-      // 同步回 localStorage 作为快速缓存
       try { localStorage.setItem(`rp-phone-v1-${chatId}`, JSON.stringify(es[EXT_KEY][chatId])); } catch(e) {}
-      return es[EXT_KEY][chatId];
-    }
-    // 回退到 localStorage（兼容旧数据）
-    const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // 旧数据迁移：写入 extension_settings
-      if (es) {
-        if (!es[EXT_KEY]) es[EXT_KEY] = {};
-        es[EXT_KEY][chatId] = parsed;
-        _saveSettings();
+      base = es[EXT_KEY][chatId];
+    } else {
+      const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
+      if (raw) {
+        base = JSON.parse(raw);
+        if (es) {
+          if (!es[EXT_KEY]) es[EXT_KEY] = {};
+          es[EXT_KEY][chatId] = base;
+          _saveSettings();
+        }
       }
-      return parsed;
     }
-    return null;
+    if (!base) return null;
+    // 合并全局联系人：global threads 覆盖 per-chatId threads（以确保跨对话联系人可见）
+    const globalThreads = loadThreadsGlobal();
+    if (globalThreads && Object.keys(globalThreads).length > 0) {
+      base.threads = Object.assign({}, base.threads || {}, globalThreads);
+    }
+    return base;
   } catch(e) { return null; }
 }
 
@@ -6351,26 +6378,15 @@ function getMomentsCtx() {
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
 
-  // 从所有 chatId 的 threads 里收集 NPC（不再只看当前对话的 threads）
+  // 只用当前 chatId 的 threads（不跨片场），避免串入其他角色卡的 NPC
   const knownNPCs = new Set();
-  const allThreadSources = [STATE.threads];
-  // 加上 CHAT_STORE 里其他对话的 threads
-  try {
-    if (typeof CHAT_STORE === 'object') {
-      Object.values(CHAT_STORE).forEach(s => {
-        if (s && s.threads) allThreadSources.push(s.threads);
-      });
-    }
-  } catch(e) {}
-  allThreadSources.forEach(threads => {
-    Object.values(threads || {}).forEach(th => {
-      if (th.name && th.name !== charName) knownNPCs.add(th.name);
-    });
+  Object.values(STATE.threads || {}).forEach(th => {
+    if (th.name && th.name !== charName) knownNPCs.add(th.name);
   });
   (STATE.moments || []).filter(m => m.from !== 'user' && m.name !== charName).forEach(m => knownNPCs.add(m.name));
 
-  // 近25条对话（加多以捕捉更多 NPC 语气样本）
-  const recentChat = (ctx?.chat || []).slice(-25).map(m => {
+  // 近30条对话（足够捕捉 NPC 语气）
+  const recentChat = (ctx?.chat || []).slice(-30).map(m => {
     const spk = m.is_user ? userName : (m.name || charName);
     return spk + ': ' + ((m.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 150));
   }).join('\n') || '（暂无对话记录）';
