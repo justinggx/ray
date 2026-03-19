@@ -6394,35 +6394,81 @@ function getMomentsCtx() {
     });
   } catch(e) { /* ignore */ }
 
-  // 2. 从世界书注入文本里解析 <character_xxx> 块（适用于世界书 NPC，如 Edward/Julian/Marcus 等）
+  // 2. 世界书全量扫描（深度/蓝灯/绿灯/所有词条）
+  //    数据源优先级：window.world_info 原始对象 → ctx 注入文本 → extension_prompts
   try {
-    const wiSources = [
-      ctx?.worldInfoBefore, ctx?.worldInfoAfter,
-      ctx?.world_info, ctx?.lorebook,
-    ].filter(Boolean).join('\n');
-    if (wiSources) {
-      // 匹配 <character_xxx>...</character_xxx> 或 <character_friend_xxx>...</character_friend_xxx>
-      const blockRe = /<character(?:_\w+)?>\s*([\s\S]*?)<\/character(?:_\w+)?>/gi;
+    const wiTexts = [];
+
+    // 2a. window.world_info 原始对象（所有词条，无论是否触发）
+    if (window.world_info && typeof window.world_info === 'object') {
+      const books = Object.values(window.world_info);
+      books.forEach(book => {
+        const entries = Array.isArray(book) ? book
+          : (book && typeof book === 'object' ? Object.values(book) : []);
+        entries.forEach(entry => {
+          const content = entry?.content || entry?.text || '';
+          if (content) wiTexts.push(content);
+        });
+      });
+    }
+
+    // 2b. ST 另一个可能的全局：world_info 直接是 entries 对象
+    if (window.worldInfoData && typeof window.worldInfoData === 'object') {
+      Object.values(window.worldInfoData).forEach(entry => {
+        const content = entry?.content || entry?.text || '';
+        if (content) wiTexts.push(content);
+      });
+    }
+
+    // 2c. getContext 注入文本（已触发词条）
+    [ctx?.worldInfoBefore, ctx?.worldInfoAfter, ctx?.world_info, ctx?.lorebook]
+      .filter(Boolean).forEach(s => wiTexts.push(s));
+
+    // 2d. extension_prompts（深度注入的 prompt 文本）
+    try {
+      const ep = window.extension_prompts || {};
+      Object.values(ep).forEach(p => { if (p?.value) wiTexts.push(p.value); });
+    } catch(e) {}
+
+    const allWIText = wiTexts.join('\n');
+    if (allWIText) {
+      // 解析 <character_xxx>...</character_xxx> 块
+      const blockRe = /<character(?:[_\-][^>]*)?>([\s\S]*?)<\/character(?:[_\-][^>]*)?>/gi;
       let bm;
-      while ((bm = blockRe.exec(wiSources)) !== null) {
+      while ((bm = blockRe.exec(allWIText)) !== null) {
         const block = bm[1];
-        // 提取 name 字段
-        const nameMatch = block.match(/name\s*[:：]\s*(.+)/i);
+        const nameMatch = block.match(/^\s*name\s*[:：]\s*(.+)/mi);
         if (!nameMatch) continue;
         const wName = nameMatch[1].trim().replace(/[<>]/g, '');
         if (!wName || normNameKey(wName) === normNameKey(charName)) continue;
-        // 提取 personality_profile / traits / background 等关键字段（限制长度）
-        const traitMatch = block.match(/traits\s*:([\s\S]*?)(?:relational_intelligence|background|work_life|role_in_group|emotional_depth|$)/i);
-        const bgMatch = block.match(/background_and_life\s*:([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
-        const toneMatch = block.match(/tone\s*[:：]\s*(.+)/i);
+        const traitMatch = block.match(/traits\s*:([\s\S]*?)(?:relational_intelligence|background|work_life|role_in_group|emotional_depth|narrative_notes|$)/i);
+        const bgMatch    = block.match(/background_and_life\s*:([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
+        const toneMatch  = block.match(/tone\s*[:：]\s*(.+)/i);
+        const workMatch  = block.match(/work_life\s*[:：]\s*([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
         const parts = [];
-        if (traitMatch) parts.push('性格特征：' + traitMatch[1].replace(/-\s*/g, '').replace(/\s+/g, ' ').trim().slice(0, 200));
+        if (traitMatch) parts.push('性格：' + traitMatch[1].replace(/-\s*/g, '').replace(/\s+/g, ' ').trim().slice(0, 250));
         if (bgMatch)    parts.push('背景：' + bgMatch[1].replace(/\s+/g, ' ').trim().slice(0, 200));
-        if (toneMatch)  parts.push('写作基调：' + toneMatch[1].trim().slice(0, 100));
+        if (workMatch)  parts.push('职业：' + workMatch[1].replace(/\s+/g, ' ').trim().slice(0, 150));
+        if (toneMatch)  parts.push('基调：' + toneMatch[1].trim().slice(0, 100));
         if (parts.length > 0) {
           npcPersonaMap[normNameKey(wName)] = parts.join('\n');
         }
       }
+
+      // 兼容：一个词条里塞多个 NPC（按空行/特殊分隔符分段，每段尝试找名字）
+      const segments = allWIText.split(/\n{2,}/);
+      segments.forEach(seg => {
+        const nm = seg.match(/^\s*name\s*[:：]\s*(.+)/mi) || seg.match(/^\s*#{1,3}\s*(.+)/m);
+        if (!nm) return;
+        const segName = nm[1].trim().replace(/[<>#*]/g, '').split(/[（(,，\s]/)[0].trim();
+        if (!segName || segName.length < 2 || normNameKey(segName) === normNameKey(charName)) return;
+        const k = normNameKey(segName);
+        if (npcPersonaMap[k]) return; // 已有精确条目，不覆盖
+        const bodyLines = seg.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+        if (bodyLines.length > 20) {
+          npcPersonaMap[k] = bodyLines.slice(0, 350);
+        }
+      });
     }
   } catch(e) { /* ignore */ }
 
