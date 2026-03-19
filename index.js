@@ -7245,20 +7245,189 @@ function renderXHSCard(p) {
 function renderXHSFeed(forceRefresh) {
   const box = $('#rp-xhs-list');
   if (!box.length) return;
-  if (!STATE.xhsFeed || STATE.xhsFeed.length === 0 || forceRefresh) {
-    STATE.xhsFeed = buildXHSFeedItems();
-    saveState();
+
+  // 用户发的帖子始终保留
+  const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
+
+  if (!STATE.xhsFeed || STATE.xhsFeed.filter(p=>p.from!=='user').length === 0 || forceRefresh) {
+    // 先显示 loading 占位
+    box.empty();
+    userPosts.forEach(p => box.append(renderXHSCard(p)));
+    box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载最新动态…</div>');
+    // 异步 AI 生成
+    buildXHSFeedWithAI(forceRefresh);
+    return;
   }
+
+  _renderXHSList(box);
+}
+
+function _renderXHSList(box) {
+  box = box || $('#rp-xhs-list');
   box.empty();
   const list = STATE.xhsFeed || [];
   if (!list.length) {
     box.append('<div style="text-align:center;color:#ff2442;padding:40px;font-size:13px">暂无内容</div>');
     return;
   }
-  // 用户帖子置顶
   const userPosts = list.filter(p => p.from === 'user');
   const otherPosts = list.filter(p => p.from !== 'user');
   [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
+}
+
+async function buildXHSFeedWithAI(forceRefresh) {
+  const ctx = getContext() || {};
+  const now = new Date();
+  const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
+  const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
+
+  // 保留用户帖子
+  const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
+
+  try {
+    const { charName, userName, charPersona, recentChat } = await getMomentsCtx();
+    const charLast = (charName||'').split(/\s+/).pop() || charName || 'TA';
+
+    // 构建 prompt：让 AI 理解角色关系，生成对应八卦
+    const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
+
+要求：
+- 帖子作者是不认识当事人的陌生路人、圈子边缘人、目击者
+- 帖子内容围绕 charName 和 userName 的关系展开，要有具体细节（目击细节、听到的传闻、分析观点）
+- 不能当谜语人，要有实质内容
+- 语气口语化，符合小红书风格
+- 帖子之间要有多样性：目击帖/分析帖/爆料帖/情感帖等类型都要有
+- 每条帖子附带10条评论，评论性格各异：补料/对号入座/阴阳/共情/分析/猜测点名等
+- 评论要针对帖子具体内容回应，不能只是"楼主快说"
+
+严格按以下 JSON 格式返回，不要其他内容：
+[
+  {
+    "user": "昵称（带emoji）",
+    "tag": "标签（八卦/情感/随想/碎碎念之一）",
+    "title": "帖子标题",
+    "body": "帖子正文（60-120字）",
+    "likes": 数字,
+    "comments": [
+      {"user": "评论昵称（带emoji）", "text": "评论内容（15-30字）"},
+      ...共10条
+    ]
+  },
+  ...共6条
+]`;
+
+    const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
+    const prompt = `角色信息：\n${charInfo}\n\n用户名：${userName}\n\n近期对话摘要（了解两人关系）：\n${(recentChat||'').slice(0,300)}\n\n请生成6条关于他们关系的小红书八卦帖子：`;
+
+    const resp = await lgCallAPI(prompt, 2000, sysMsg);
+
+    if (resp) {
+      let items = [];
+      try {
+        const match = resp.match(/\[[\s\S]*\]/);
+        if (match) items = JSON.parse(match[0]);
+      } catch(e) { console.warn('[XHS] JSON parse failed', e); }
+
+      if (Array.isArray(items) && items.length > 0) {
+        const charLast2 = (charName||'').split(/\s+/).pop() || charName || 'TA';
+        const aiPosts = items.map((p, i) => ({
+          id: `xhs_ai_${Date.now()}_${i}`,
+          from: 'stranger',
+          user: p.user || `路人${i+1}🌿`,
+          title: p.title || '无标题',
+          body: p.body || '',
+          tag: p.tag || '八卦',
+          likes: typeof p.likes === 'number' ? p.likes : rndInt(500, 20000),
+          likedByUser: false,
+          comments: Array.isArray(p.comments) ? p.comments.map(c => ({
+            from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
+          })) : _xhsPresetComments(charName, charLast2, rndInt, ts, {type:'general'}),
+          time: ts(),
+          date: todayStr,
+        }));
+        STATE.xhsFeed = [...userPosts, ...aiPosts];
+        saveState();
+        _renderXHSList();
+        return;
+      }
+    }
+  } catch(e) { console.warn('[XHS] AI feed build failed', e); }
+
+  // Fallback：通用模板（不写死任何关系细节）
+  STATE.xhsFeed = [...userPosts, ...buildXHSFeedFallback(todayStr, rndInt, ts)];
+  saveState();
+  _renderXHSList();
+}
+
+// Fallback 通用模板（不假设任何角色关系）
+function buildXHSFeedFallback(todayStr, rndInt, ts) {
+  const ctx = getContext() || {};
+  const charName = ctx?.name2 || ctx?.name || 'TA';
+  const charLast = (charName).split(/\s+/).pop() || charName;
+
+  const posts = [
+    {
+      user: '圈子边缘人路过👀', tag: '八卦',
+      title: `关于${charName}，我知道一些事`,
+      body: `不好说太细，但那天我亲眼看到的，和外面说的完全不一样。评论区有没有了解这个人的？想核实一下我看到的是不是真的。`,
+      likes: rndInt(1200, 8000),
+    },
+    {
+      user: '深夜观察日记✍️', tag: '情感',
+      title: `${charLast}先生和那个人，他们的关系真的有点说不清`,
+      body: `朋友圈里偶尔刷到他们，每次那个状态和互动方式都让我看了很久。不是坏意，就是觉得这两个人之间有一种很特别的张力，外人很难理解。`,
+      likes: rndInt(800, 5000),
+    },
+    {
+      user: '吃瓜不评价😶', tag: '八卦',
+      title: `有人整理过关于${charName}的信息吗？`,
+      body: `搜了一下相关内容，发现讨论挺多的但都是碎片信息。有没有比较完整了解情况的人，在评论区说说？我想知道外面的说法有没有夸大。`,
+      likes: rndInt(3000, 15000),
+    },
+    {
+      user: '社会观察员碎碎念💭', tag: '碎碎念',
+      title: '有些关系，圈外人看到的永远只是冰山一角',
+      body: `最近一直在关注${charLast}相关的动态，感觉每次有新消息，大家的反应差异很大——有人觉得正常，有人觉得不对劲。我自己也没法判断，就是隐约觉得有些事情没那么简单。`,
+      likes: rndInt(500, 4000),
+    },
+    {
+      user: '知情人士（部分）🤫', tag: '八卦',
+      title: `和${charName}有交集的人，我来说两句`,
+      body: `不是什么大瓜，就是认识认识的人，跟他/她们圈子有点重叠。那个气场和外面描述的确实不太一样，怎么说……比想象中复杂，具体的说多了不好，大家懂的懂。`,
+      likes: rndInt(4000, 25000),
+    },
+    {
+      user: '普通人真情实感🥲', tag: '随想',
+      title: '有时候看别人的故事，会莫名觉得心里不是滋味',
+      body: `看到关于${charLast}的讨论，不知道为什么有点堵。也许是因为这种故事太容易让人代入——不知道当事人自己怎么看，但从外面看，总觉得里面有一个人是承担了很多的。`,
+      likes: rndInt(600, 3500),
+    },
+  ];
+
+  return posts.map((p, i) => ({
+    id: `xhs_fb_${Date.now()}_${i}`,
+    from: 'stranger',
+    user: p.user,
+    title: p.title,
+    body: p.body,
+    tag: p.tag,
+    likes: p.likes,
+    likedByUser: false,
+    comments: _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'}),
+    time: ts(),
+    date: todayStr,
+  }));
+}
+
+// 旧的同步 buildXHSFeedItems 保留作为内部兼容（不再直接调用）
+function buildXHSFeedItems() {
+  const ctx = getContext() || {};
+  const now = new Date();
+  const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
+  const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
+  return buildXHSFeedFallback(todayStr, rndInt, ts);
 }
 
 // 打开详情页
