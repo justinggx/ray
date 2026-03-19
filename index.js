@@ -6570,9 +6570,12 @@ async function charRespondToUserMoment(momentId) {
   const charPersona = ctx.charPersona;
   if (!charName) return;
   // 强制主角写一条评论
-  const sysMsg = '你正在扮演 ' + charName + '。'
-    + (charPersona ? '人设：' + charPersona.slice(0, 300) + '\n' : '')
-    + '你看到了用户的朋友圈动态，必须写一条真实的评论回应。'
+  const { recentChat: _rc } = getMomentsCtx();
+  const sysMsg = '你正在扮演 ' + charName + '。\n'
+    + (charPersona ? '你的人设：' + charPersona.slice(0, 300) + '\n' : '')
+    + '【重要】你和"' + (getContext()?.name1 || '用户') + '"是亲密关系（朋友/家人/恋人等），不是陌生人或旁观者。'
+    + '请以你们真实的关系视角来评论，体现出你了解对方、关心对方。\n'
+    + '近期对话参考（帮助判断关系和语境）：\n' + (_rc ? _rc.slice(-300) : '无') + '\n'
     + '字数15-40字，符合角色性格，用中文，只返回评论正文，不加引号或任何前缀。';
   const prompt = '用户发了一条朋友圈：「' + moment.text + '」\n'
     + charName + '的评论（必须写，不允许只点赞）：';
@@ -6685,7 +6688,9 @@ async function friendsInteractOnMoment(momentId) {
 
   // 所有好友（主角 + NPC），排除动态作者本人
   const authorName = moment.name;
-  const allFriends = [charName, ...npcs].filter(n => n && n !== authorName);
+  // user发的动态：char已由charRespondToUserMoment处理，这里只让NPC互动，避免char重复评论
+  const isUserMoment = moment.from === 'user';
+  const allFriends = (isUserMoment ? npcs : [charName, ...npcs]).filter(n => n && n !== authorName);
   if (allFriends.length === 0) return;
 
   const now = new Date();
