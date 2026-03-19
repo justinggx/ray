@@ -6325,19 +6325,23 @@ function normNameKey(s) {
 function resolveNpcPersonaByName(name, npcPersonaMap) {
   if (!name || !npcPersonaMap) return '';
   const k = normNameKey(name);
+  // 精确匹配优先
   if (npcPersonaMap[k]) return npcPersonaMap[k];
 
-  // 轻量模糊：前缀匹配（julian -> julianhartwell）
+  // 前缀模糊匹配：必须双方都>=4字符，且较短的一方是较长的一方的前缀
+  // 防止短名字（如"ma"）意外匹配到完全不相关的角色
   const keys = Object.keys(npcPersonaMap || {});
   for (const kk of keys) {
+    const minLen = Math.min(k.length, kk.length);
+    if (minLen < 4) continue; // 太短不做模糊匹配
     if (kk.startsWith(k) || k.startsWith(kk)) return npcPersonaMap[kk];
   }
 
   // 词首匹配（支持 "Julian Hartwell" vs "julian"）
   const first = String(name || '').trim().toLowerCase().split(/\s+/)[0] || '';
-  if (first) {
+  if (first && first.length >= 4) {
     for (const kk of keys) {
-      if (kk.startsWith(first)) return npcPersonaMap[kk];
+      if (kk.startsWith(first) && kk.length >= first.length) return npcPersonaMap[kk];
     }
   }
 
@@ -6533,7 +6537,9 @@ async function generateAIMoments() {
       + '1. 每条朋友圈必须与近期剧情直接相关\n'
       + '2. 每个角色的身份、财富、性格必须贯穿到朋友圈内容里\n'
       + '3. 绝对不能让角色做出与其人设矛盾的事（如富豪不会值夜班、冷漠者不会甜言蜜语）\n'
-      + '4. 口语化，1-2句，中文，只返回JSON';
+      + '4. 口语化，1-2句，中文，只返回JSON\n'
+      + '5. 【严格禁止串台】每个角色只能基于自己的人设发帖，找不到人设时写日常生活，不得借用其他角色的身份或职业\n'
+      + '6. ' + charName + ' 是主角，如果帖子涉及其家人/朋友/身边的事，必须以第一人称当事人视角发帖';
     const prompt = '近期剧情（主楼层最新对话）：\n' + recentChat
       + '\n\n请为以下角色各写1条朋友圈（每人1条，不重复，与剧情相关）：'
       + charList
@@ -6653,8 +6659,9 @@ async function momentAISocial(targetMomentId) {
     + (recentChatSnippet ? ('近期剧情背景（帮助理解动态语境）：\n' + recentChatSnippet + '\n') : '')
     + '规则：\n'
     + '1. 互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。\n'
-    + '2. 【自我认知规则】结合近期剧情背景和人设，语义判断动态内容是否与 ' + charName + ' 直接相关（如：提到其家人、正在发生在他身上的事、他参与的事件等）。'
-    + '如果是，' + charName + ' 必须以当事人第一人称视角回应（"我的女儿""我刚才也在""我知道"等），绝不能以旁观者身份评论自己身边发生的事。';
+    + '2. 【自我认知规则】你是 ' + charName + '，不是旁观者。结合近期剧情和人设全文（含英文名、别名、称谓如"先生""老师"等），'
+    + '语义判断这条动态是否讲述了与你直接相关的事情（你的家人、你参与的事、发生在你身上的事）。'
+    + '如果是，你必须以第一人称当事人身份回应，用"我的""我们""刚刚我也在场"等表达，绝不能用"这位先生""他"来指代自己。';
   const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n只为以下角色生成2-4条社交互动（like/comment），禁止使用列表外的名字：' + charList2 + '\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，from字段必须严格使用上方列表中的名字，momentId必须与上方完全一致。';
   const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
