@@ -6801,6 +6801,14 @@ async function friendsInteractOnMoment(momentId) {
   if (STATE.currentView === 'moments') renderMoments();
   saveState();
 
+  // ── 评论：user的动态由 charRespondToUserMoment 负责，这里只做点赞 ──
+  // NPC发的动态才由这里生成评论，避免 Julian 等重复评论
+  if (isUserMoment) {
+    if (STATE.currentView === 'moments') renderMoments();
+    saveState();
+    return;
+  }
+
   // ── 评论：随机抽最多3人（从还没评论过的好友里抽） ──
   const alreadyCommented = new Set((moment.comments || []).map(c => c.name));
   const eligible = allFriends.filter(n => !alreadyCommented.has(n));
