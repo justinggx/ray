@@ -2061,6 +2061,12 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-ico-games{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
 #rp-phone.rp-theme-misty .rp-ico-games{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
 
+/* XHS icon - keep consistent with other line icons across themes */
+.rp-ico-xhs{color:#c03060!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5))!important}
+.rp-ico-xhs svg{width:100%;height:100%;display:block}
+#rp-phone.rp-theme-star .rp-ico-xhs{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
+#rp-phone.rp-theme-misty .rp-ico-xhs{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
+
 /* ══ 2048 GAME ══ */
 #rp-view-g2048{position:relative;background:transparent;display:flex;flex-direction:column;overflow:hidden;height:100%}
 #g2048-header{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;flex-shrink:0}
@@ -3304,8 +3310,13 @@ const HTML = `
                 <div class="rp-app-lbl">日记</div>
               </div>
               <div class="rp-app" data-app="xhs" title="小红书">
-                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff2442,#ff6b6b)">
-                  <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="transparent"/><text x="8" y="28" font-size="22" font-weight="900" fill="white" font-family="serif">小</text></svg>
+                <div class="rp-app-ico rp-ico-xhs">
+                  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="8" y="6.5" width="24" height="27" rx="6" stroke-width="2"></rect>
+                    <path d="M14 15.5L19.6 11.5L18.7 17.2L24.8 12.2" stroke-width="2.2"></path>
+                    <path d="M14.5 24.5H25.5" stroke-width="1.9" opacity=".9"></path>
+                    <path d="M17.5 28.5H22.5" stroke-width="1.9" opacity=".65"></path>
+                  </svg>
                 </div>
                 <div class="rp-app-lbl">小红书</div>
               </div>
