@@ -6408,7 +6408,7 @@ function getMomentsCtx() {
   return {
     charName,
     userName,
-    npcs: [...knownNPCs].slice(0, 4),
+    npcs: [...knownNPCs].slice(0, 8),
     recentChat,
     charPersona,
     npcPersonaMap,
@@ -6420,9 +6420,12 @@ async function generateAIMoments() {
   if (btn) { btn.disabled = true; btn.classList.add('rp-spinning'); }
   try {
     const { charName, npcs, recentChat, charPersona, npcPersonaMap } = getMomentsCtx();
-    const allChars = [charName, ...npcs];
+    // 每次随机挑选：char 固定 + 从 NPC 里随机取2个，保证每次刷新都不同
+    const shuffledNPCs = [...npcs].sort(() => Math.random() - 0.5);
+    const selectedNPCs = shuffledNPCs.slice(0, 2);
+    const allChars = [charName, ...selectedNPCs];
     const charList = allChars.join('、');
-    const npcPersonaText = npcs
+    const npcPersonaText = selectedNPCs
       .map(n => {
         const p = resolveNpcPersonaByName(n, npcPersonaMap) || '';
         return p ? ('- ' + n + '：' + p.replace(/\n/g, '；')) : '';
@@ -6451,7 +6454,7 @@ async function generateAIMoments() {
     if (!jsonStr) throw new Error('格式错误');
     const posts = JSON.parse(jsonStr);
     const now = new Date();
-    posts.slice(0, 3).forEach((post, i) => {
+    posts.forEach((post, i) => {
       if (!post.from || !post.text) return;
       const d = new Date(now.getTime() + i * 60000);
       const ts = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
@@ -6495,21 +6498,28 @@ async function charRespondToUserMoment(momentId) {
       saveState();
     }
   }
-  // NPC 们强制回复（按联系人数量：1好友=1条，2好友=2条，3+好友=char+任选2 NPC）
+  // NPC 们强制回复（逐个单独请求，避免雷同；按人数：1好友=1条，2=2条，3+取2条NPC）
   setTimeout(async function() {
-    const { npcs } = getMomentsCtx();
+    const { npcs, npcPersonaMap } = getMomentsCtx();
     const alreadyCommented = new Set((moment.comments || []).map(c => c.name));
     const pendingNPCs = npcs.filter(n => !alreadyCommented.has(n));
     const maxNPC = Math.min(pendingNPCs.length, Math.max(0, 3 - (alreadyCommented.has(charName) ? 1 : 0)));
+    // 随机打乱，避免永远是前两个 NPC
+    const shuffled = pendingNPCs.sort(() => Math.random() - 0.5);
     for (let i = 0; i < maxNPC; i++) {
-      const npc = pendingNPCs[i];
-      const { npcPersonaMap } = getMomentsCtx();
+      const npc = shuffled[i];
       const npcPersona = resolveNpcPersonaByName(npc, npcPersonaMap) || '';
-      const sysNpc = '你正在扮演 ' + npc + '，' + (npcPersona ? '人设：' + npcPersona.slice(0, 200) + '\n' : '根据故事推断语气，') + '用中文写1句评论，15-30字，只返回评论内容。';
-      const resp = await lgCallAPI('朋友圈：「' + moment.text + '」\n' + npc + '的评论：', 80, sysNpc);
+      // 每个 NPC 独立请求，人设+角色名写进 prompt，强制差异化
+      const sysNpc = '你正在扮演角色"' + npc + '"。'
+        + (npcPersona ? '\n人设：' + npcPersona.slice(0, 250) + '\n' : '\n')
+        + '你在朋友圈看到了这条动态，用符合你性格的语气写一条评论。'
+        + '字数10-25字，口语化，不要和其他角色的评论重复，只返回评论正文。';
+      const promptNpc = '朋友圈内容：「' + moment.text + '」\n'
+        + '你的用户名是"' + npc + '"，你的评论（必须和其他人不同）：';
+      const resp = await lgCallAPI(promptNpc, 80, sysNpc);
       if (resp) {
-        const cleaned = resp.trim().replace(/^[「"']|[」"']$/g, '');
-        if (cleaned) {
+        const cleaned = resp.trim().replace(/^[「"'\s]+|[」"'\s]+$/g, '');
+        if (cleaned && cleaned.length > 2) {
           const now2 = new Date();
           const ts2 = String(now2.getHours()).padStart(2,'0') + ':' + String(now2.getMinutes()).padStart(2,'0');
           incomingComment(momentId, npc, ts2, cleaned, null);
@@ -6517,7 +6527,7 @@ async function charRespondToUserMoment(momentId) {
           saveState();
         }
       }
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 600));
     }
   }, 1200);
 }
