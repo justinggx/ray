@@ -3142,31 +3142,9 @@ function findOrCreateThread(nameRaw) {
 // ================================================================
 //  PERSISTENCE (localStorage)
 // ================================================================
-const RP_THREADS_KEY = 'rp-phone-threads-global'; // 联系人全局共享（不隔离对话）
-
-function saveThreadsGlobal() {
-  try {
-    const threads = JSON.parse(JSON.stringify(STATE.threads));
-    for (const th of Object.values(threads)) {
-      if (th.messages) th.messages = th.messages.map(m =>
-        (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
-      );
-    }
-    localStorage.setItem(RP_THREADS_KEY, JSON.stringify(threads));
-  } catch(e) {}
-}
-
-function loadThreadsGlobal() {
-  try {
-    const raw = localStorage.getItem(RP_THREADS_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch(e) { return null; }
-}
-
 function saveState() {
   if (!STATE.chatId) return;
   try {
-    // Deep-copy and strip base64 image src to avoid localStorage QuotaExceededError
     const threads = JSON.parse(JSON.stringify(STATE.threads));
     for (const th of Object.values(threads)) {
       if (th.messages) th.messages = th.messages.map(m =>
@@ -3182,11 +3160,7 @@ function saveState() {
       darkMode: STATE.darkMode,
       avatars: STATE.avatars || {},
     };
-    // 1. localStorage（快速读写，本地缓存）
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
-    // 2. 联系人单独全局保存（跨对话共享）
-    saveThreadsGlobal();
-    // 3. extension_settings（存服务端，PC/手机同步）
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
@@ -3198,30 +3172,22 @@ function saveState() {
 
 function loadState(chatId) {
   try {
-    // 优先读 extension_settings（服务端，PC/手机共享）
     const es = _extSettings();
-    let base = null;
     if (es && es[EXT_KEY] && es[EXT_KEY][chatId]) {
       try { localStorage.setItem(`rp-phone-v1-${chatId}`, JSON.stringify(es[EXT_KEY][chatId])); } catch(e) {}
-      base = es[EXT_KEY][chatId];
-    } else {
-      const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
-      if (raw) {
-        base = JSON.parse(raw);
-        if (es) {
-          if (!es[EXT_KEY]) es[EXT_KEY] = {};
-          es[EXT_KEY][chatId] = base;
-          _saveSettings();
-        }
+      return es[EXT_KEY][chatId];
+    }
+    const raw = localStorage.getItem(`rp-phone-v1-${chatId}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (es) {
+        if (!es[EXT_KEY]) es[EXT_KEY] = {};
+        es[EXT_KEY][chatId] = parsed;
+        _saveSettings();
       }
+      return parsed;
     }
-    if (!base) return null;
-    // 合并全局联系人：global threads 覆盖 per-chatId threads（以确保跨对话联系人可见）
-    const globalThreads = loadThreadsGlobal();
-    if (globalThreads && Object.keys(globalThreads).length > 0) {
-      base.threads = Object.assign({}, base.threads || {}, globalThreads);
-    }
-    return base;
+    return null;
   } catch(e) { return null; }
 }
 
@@ -3726,6 +3692,9 @@ async function init() {
   const staleCSS = document.getElementById('rp-phone-css');
   if (staleCSS) staleCSS.remove();
   window._rpPhoneSheet = false;
+
+  // 清除之前错误版本引入的全局联系人脏数据
+  try { localStorage.removeItem('rp-phone-threads-global'); } catch(e) {}
 
   injectStyles();
   $('body').append(HTML);
@@ -6453,8 +6422,13 @@ async function generateAIMoments() {
   try {
     const { charName, npcs, recentChat, charPersona, npcPersonaMap } = getMomentsCtx();
     // 每次随机挑选：char 固定 + 从 NPC 里随机取2个，保证每次刷新都不同
-    const shuffledNPCs = [...npcs].sort(() => Math.random() - 0.5);
-    const selectedNPCs = shuffledNPCs.slice(0, 2);
+    // Fisher-Yates 洗牌，保证真随机；每次最多取3个 NPC（限制 token 消耗）
+    const npcPool = [...npcs];
+    for (let i = npcPool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [npcPool[i], npcPool[j]] = [npcPool[j], npcPool[i]];
+    }
+    const selectedNPCs = npcPool.slice(0, Math.min(3, npcPool.length));
     const allChars = [charName, ...selectedNPCs];
     const charList = allChars.join('、');
     const npcPersonaText = selectedNPCs
