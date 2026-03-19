@@ -6376,6 +6376,8 @@ function getMomentsCtx() {
 
   // 提取 NPC 人设（优先使用 ST 中已加载角色卡，兼容世界书支撑的人物）
   const npcPersonaMap = {};
+
+  // 1. 从角色卡提取（适用于有角色卡的 NPC）
   try {
     const chars = Array.isArray(ctx?.characters)
       ? ctx.characters
@@ -6392,7 +6394,39 @@ function getMomentsCtx() {
     });
   } catch(e) { /* ignore */ }
 
-  // 兜底：从 chat 历史里提取 NPC 发言样本（用于没有角色卡的世界书 NPC）
+  // 2. 从世界书注入文本里解析 <character_xxx> 块（适用于世界书 NPC，如 Edward/Julian/Marcus 等）
+  try {
+    const wiSources = [
+      ctx?.worldInfoBefore, ctx?.worldInfoAfter,
+      ctx?.world_info, ctx?.lorebook,
+    ].filter(Boolean).join('\n');
+    if (wiSources) {
+      // 匹配 <character_xxx>...</character_xxx> 或 <character_friend_xxx>...</character_friend_xxx>
+      const blockRe = /<character(?:_\w+)?>\s*([\s\S]*?)<\/character(?:_\w+)?>/gi;
+      let bm;
+      while ((bm = blockRe.exec(wiSources)) !== null) {
+        const block = bm[1];
+        // 提取 name 字段
+        const nameMatch = block.match(/name\s*[:：]\s*(.+)/i);
+        if (!nameMatch) continue;
+        const wName = nameMatch[1].trim().replace(/[<>]/g, '');
+        if (!wName || normNameKey(wName) === normNameKey(charName)) continue;
+        // 提取 personality_profile / traits / background 等关键字段（限制长度）
+        const traitMatch = block.match(/traits\s*:([\s\S]*?)(?:relational_intelligence|background|work_life|role_in_group|emotional_depth|$)/i);
+        const bgMatch = block.match(/background_and_life\s*:([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
+        const toneMatch = block.match(/tone\s*[:：]\s*(.+)/i);
+        const parts = [];
+        if (traitMatch) parts.push('性格特征：' + traitMatch[1].replace(/-\s*/g, '').replace(/\s+/g, ' ').trim().slice(0, 200));
+        if (bgMatch)    parts.push('背景：' + bgMatch[1].replace(/\s+/g, ' ').trim().slice(0, 200));
+        if (toneMatch)  parts.push('写作基调：' + toneMatch[1].trim().slice(0, 100));
+        if (parts.length > 0) {
+          npcPersonaMap[normNameKey(wName)] = parts.join('\n');
+        }
+      }
+    }
+  } catch(e) { /* ignore */ }
+
+  // 3. 兜底：从 chat 历史里提取 NPC 发言样本
   try {
     const chatHistory = ctx?.chat || [];
     chatHistory.slice(-40).forEach(msg => {
@@ -6400,7 +6434,7 @@ function getMomentsCtx() {
       const spk = (msg.name || '').trim();
       if (!spk || spk === charName) return;
       const k = normNameKey(spk);
-      if (npcPersonaMap[k]) return; // 已有角色卡，不覆盖
+      if (npcPersonaMap[k]) return; // 已有，不覆盖
       const sample = (msg.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
       if (sample) npcPersonaMap[k] = '（根据发言推断）语气样本：' + sample;
     });
