@@ -3143,7 +3143,6 @@ function findOrCreateThread(nameRaw) {
 //  PERSISTENCE (localStorage)
 // ================================================================
 function saveState() {
-  _getMomentsCtxCache = null; // 状态变化时清缓存
   if (!STATE.chatId) return;
   try {
     const threads = JSON.parse(JSON.stringify(STATE.threads));
@@ -3172,6 +3171,7 @@ function saveState() {
 }
 
 function loadState(chatId) {
+  _getMomentsCtxCache = null; // 切换聊天时清缓存
   try {
     const es = _extSettings();
     if (es && es[EXT_KEY] && es[EXT_KEY][chatId]) {
@@ -6354,7 +6354,7 @@ let _getMomentsCtxCache = null;
 let _getMomentsCtxCacheTime = 0;
 async function getMomentsCtx() {
   const now = Date.now();
-  if (_getMomentsCtxCache && (now - _getMomentsCtxCacheTime) < 5000) {
+  if (_getMomentsCtxCache && (now - _getMomentsCtxCacheTime) < 30000) {
     return _getMomentsCtxCache;
   }
   const ctx = getContext();
