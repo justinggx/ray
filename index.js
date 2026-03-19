@@ -3143,6 +3143,7 @@ function findOrCreateThread(nameRaw) {
 //  PERSISTENCE (localStorage)
 // ================================================================
 function saveState() {
+  _getMomentsCtxCache = null; // 状态变化时清缓存
   if (!STATE.chatId) return;
   try {
     const threads = JSON.parse(JSON.stringify(STATE.threads));
@@ -6348,7 +6349,14 @@ function resolveNpcPersonaByName(name, npcPersonaMap) {
   return '';
 }
 
+// getMomentsCtx 结果缓存（5秒TTL，避免异步函数被高频调用）
+let _getMomentsCtxCache = null;
+let _getMomentsCtxCacheTime = 0;
 async function getMomentsCtx() {
+  const now = Date.now();
+  if (_getMomentsCtxCache && (now - _getMomentsCtxCacheTime) < 5000) {
+    return _getMomentsCtxCache;
+  }
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
@@ -6521,14 +6529,36 @@ async function getMomentsCtx() {
     });
   } catch(e) { /* ignore */ }
 
-  return {
+  // 只保留 knownNPCs 里有的人物人设，过滤掉其他角色卡的数据
+  const filteredPersonaMap = {};
+  [...knownNPCs].forEach(npcName => {
+    const k = normNameKey(npcName);
+    if (npcPersonaMap[k]) {
+      filteredPersonaMap[k] = npcPersonaMap[k];
+    } else {
+      // 模糊匹配：npcName 的 normKey 是否是某个 persona key 的前缀
+      const keys = Object.keys(npcPersonaMap);
+      for (const pk of keys) {
+        if (pk.length >= 4 && k.length >= 4 && (pk.startsWith(k) || k.startsWith(pk))) {
+          filteredPersonaMap[k] = npcPersonaMap[pk];
+          break;
+        }
+      }
+    }
+  });
+  console.log('[getMomentsCtx] filteredPersonaMap keys:', Object.keys(filteredPersonaMap));
+
+  const result = {
     charName,
     userName,
     npcs: [...knownNPCs].slice(0, 8),
     recentChat,
     charPersona,
-    npcPersonaMap,
+    npcPersonaMap: filteredPersonaMap,
   };
+  _getMomentsCtxCache = result;
+  _getMomentsCtxCacheTime = Date.now();
+  return result;
 }
 
 async function generateAIMoments() {
