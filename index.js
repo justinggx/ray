@@ -5604,6 +5604,8 @@ function postUserMoment() {
   saveState();
   // 先强制主角评论，再让 NPC 们自由互动
   setTimeout(() => charRespondToUserMoment(momentId), 800);
+  // 好友自动点赞+评论（user的动态）
+  setTimeout(() => friendsInteractOnMoment(momentId), 2500);
 }
 
 // ================================================================
@@ -6671,6 +6673,79 @@ async function momentAISocial(targetMomentId) {
   } catch(e) { console.warn('[Moments] momentAISocial error:', e); }
 }
 
+// ================================================================
+// FRIENDS INTERACT ON MOMENT
+// 好友列表里的人自动给动态点赞（随机）+ 最多3人评论（随机）
+// ================================================================
+async function friendsInteractOnMoment(momentId) {
+  const moment = (STATE.moments || []).find(m => m.id === momentId);
+  if (!moment) return;
+
+  const { charName, npcs, npcPersonaMap } = getMomentsCtx();
+
+  // 所有好友（主角 + NPC），排除动态作者本人
+  const authorName = moment.name;
+  const allFriends = [charName, ...npcs].filter(n => n && n !== authorName);
+  if (allFriends.length === 0) return;
+
+  const now = new Date();
+  const ts = () => {
+    const d = new Date();
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  };
+
+  // ── 点赞：每个好友随机70%概率点赞 ──
+  allFriends.forEach(name => {
+    if (Math.random() < 0.7 && !moment.likes.includes(name)) {
+      moment.likes.push(name);
+    }
+  });
+  if (STATE.currentView === 'moments') renderMoments();
+  saveState();
+
+  // ── 评论：随机抽最多3人（从还没评论过的好友里抽） ──
+  const alreadyCommented = new Set((moment.comments || []).map(c => c.name));
+  const eligible = allFriends.filter(n => !alreadyCommented.has(n));
+  const shuffled = eligible.sort(() => Math.random() - 0.5);
+  const commentors = shuffled.slice(0, 3);
+  if (commentors.length === 0) return;
+
+  // 构建 prompt 一次性生成所有评论（省 token）
+  const npcPersonaText = commentors.map(n => {
+    const p = npcPersonaMap?.[normNameKey(n)] || '';
+    return p ? ('- ' + n + '：' + p.replace(/\n/g, '；').slice(0, 150)) : ('- ' + n);
+  }).join('\n');
+
+  const sysMsg = '你是角色扮演社交媒体互动模拟器。\n规则：每个角色评论风格符合其人设；所有评论用中文；不超过20字；不加引号。';
+  const prompt = '朋友圈动态作者：' + authorName + '\n内容：「' + moment.text.slice(0, 80) + '」\n\n'
+    + '以下角色各写一条评论（语气符合各自性格，互相不重复）：\n' + npcPersonaText
+    + '\n\n只返回JSON数组，格式：[{"from":"角色名","text":"评论内容"}, ...]';
+
+  try {
+    const resp = await lgCallAPI(prompt, 300, sysMsg);
+    if (!resp) return;
+    const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
+    if (!jsonStr) return;
+    const items = JSON.parse(jsonStr);
+    const allowedSet = new Set(allFriends.map(n => normNameKey(n)));
+    items.forEach(item => {
+      if (!item.from || !item.text) return;
+      const k = normNameKey(item.from);
+      const isAllowed = allowedSet.has(k) || [...allowedSet].some(a => a.startsWith(k) || k.startsWith(a));
+      if (!isAllowed) return;
+      const cleaned = item.text.trim().replace(/^[「"'\s]+|[」"'\s]+$/g, '');
+      if (cleaned && cleaned.length > 1) {
+        incomingComment(momentId, item.from.trim(), ts(), cleaned, null);
+      }
+    });
+    if (STATE.currentView === 'moments') renderMoments();
+    saveState();
+  } catch(e) {
+    console.warn('[Moments] friendsInteractOnMoment error:', e);
+  }
+}
+
+
 async function generateAIReply(momentId, userCommentText, fromName) {
   const moment = STATE.moments?.find(m => m.id === momentId);
   if (!moment) return;
@@ -6858,6 +6933,8 @@ function incomingMoment(fromRaw, time, text, img) {
   if (STATE.currentView === 'moments') renderMoments();
   showBanner((th ? th.name : fromRaw), '发了朋友圈：' + text.slice(0,25) + (text.length>25?'…':''), time);
   saveState();
+  // 好友自动点赞+评论
+  setTimeout(() => friendsInteractOnMoment(momentId), 1500);
 }
 
 function incomingComment(momentId, fromRaw, time, text, replyTo) {
