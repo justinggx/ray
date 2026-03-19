@@ -7051,112 +7051,6 @@ function renderMoments() {
 // 评论库：每条帖子配套的具体化评论，接收帖子上下文生成
 // 通用预设评论池（不写死任何卡专属剧情，仅用 charName/charLast 占位）
 // AI 生成失败时作为兜底，按 type 分组保证不同帖子评论不同
-function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
-  const type = (postCtx && postCtx.type) || 'general';
-
-  const pools = {
-    // 目击/爆料类帖子
-    witness: [
-      { user:'亲历者发言🫢', text:`我也见过！当时周围人都注意到了，那个气场不一般` },
-      { user:'在场的人👀', text:`对对对，那次我也在，旁边有人认出来了，小声在讨论` },
-      { user:'拼图完成🔍', text:`${charLast}和那个人？结合之前的传闻……我大概知道你说的什么了` },
-      { user:'理性分析🧠', text:'公开场合那种互动方式，正常关系不会这样的' },
-      { user:'吃瓜但不敢说😶', text:'我认识知情人，这事真的不好乱说，只能说很复杂' },
-      { user:'阴阳路人🙃', text:`哦是嘛，${charLast}啊，各种可能都有呢，懂的都懂` },
-      { user:'支持楼主🫶', text:'楼主发出来！这种事就应该让大家知道知道' },
-      { user:'补充情报📎', text:`${charName}在圈子里一直有点争议，这不是第一次了` },
-      { user:'担心当事人💙', text:'希望弱势的那方是清醒的，这种关系权力差很大' },
-      { user:'侦探上线🕵️', text:'把这几个信息放一起……细思极恐' },
-      { user:'懂行人分析📐', text:`说说我了解到的：${charLast}在他那个圈子里属于主导型人格，对亲密关系有极强的掌控感。你们看到的那种氛围，不是偶然——是他一贯处事方式投射到这段关系里的结果。旁观者觉得奇怪很正常，当局者往往觉得是"被珍视"。` },
-      { user:'见过太多这种事😮💨', text:`在这种圈子边缘混了几年，${charLast}这类情况真的不少见。有钱有地位的人以某种"帮助"为名建立联系，然后逐渐形成让对方难以脱离的关系结构。外人觉得不正常，当事人却觉得理所当然。` },
-      { user:'局外人观察🌧️', text:`某种程度上能理解为什么对方会被吸引——那种被全力保护、被认真对待的感觉，对缺乏安全感的人来说很难抗拒。但这不是公平的相遇，权力起点不对等。` },
-    ],
-    // 关系/情感讨论类
-    relationship: [
-      { user:'法律视角⚖️', text:'这种关系在法律和感情上的边界本来就很模糊' },
-      { user:'心理学路人🧬', text:'这种年龄差+权力差的组合，本来就是高风险结构' },
-      { user:'有点内部消息🤫', text:`听说${charLast}之前也有过类似传闻，这不是孤例` },
-      { user:'两边都了解👀', text:'那个人我认识，ta自己好像也很难说清楚自己的感受' },
-      { user:'阴阳一下😌', text:`嗯嗯，${charLast}的事，我们这种人确实理解不了，太深奥了` },
-      { user:'站弱势那边🙋', text:'不管怎样，这种关系里弱势的那方永远更难，希望ta好' },
-      { user:'瓜料来了🍉', text:`${charName}在业内口碑一直有争议，这件事圈子里早有人在传` },
-      { user:'理性但心疼😔', text:'看起来亲密，但权力差那么大……很难不让人多想' },
-      { user:'经历过类似的😮💨', text:'这种关系真的很消耗人，希望当事人能想清楚' },
-      { user:'说不上来🥲', text:'看完这帖心里很不是滋味，说不上来什么感觉' },
-      { user:'做过功课的人📚', text:`我查过${charLast}的背景——他在圈子里是非常"克制"的那种人设，公开场合几乎不流露私人情感。所以他和那个人之间那种隐约的亲密感反而更说明问题：这不是他不懂分寸，是他选择了这样。` },
-      { user:'关系动力学爱好者🧩', text:`有个细节很重要：从公开信息看，那个人在进入这段关系之后的社交圈基本都在${charLast}可控范围内。这不一定是刻意隔离，但结果一样——ta的情感参照系基本就是他。这种情况下谈"自愿"，本身就值得打问号。` },
-      { user:'冷静但难受🌧️', text:`说一个矛盾的感受：那种被全力守护、被认真对待的感觉，对早年缺乏安全感的人来说真的很难抗拒。但这不是公平的相遇——这是从最脆弱的时候开始建立的影响力。` },
-    ],
-    // 社会观察/议论类
-    social: [
-      { user:'有钱真的不一样😮', text:`${charLast}这种量级的，出了事也不会有什么后果` },
-      { user:'普通人代表😤', text:'就是因为有钱有地位，这种事才能一直这么模糊着' },
-      { user:'见过更离谱的😑', text:'这算什么，圈子里比这炸的多了，只是没曝出来' },
-      { user:'无力感发言😶🌫️', text:'看多了就麻了，有权有钱的人规则确实不一样' },
-      { user:'媒体视角📰', text:'这种事如果当事人不自己发声，外人说再多也没用' },
-      { user:'还是有正义的🌟', text:'希望有人记录下来，有些事不能就这么过去了' },
-      { user:'冷静看这件事🔎', text:`${charName}这个名字在某些圈子里一直有点微妙` },
-      { user:'当事人身边人👤', text:'我认识和他们有交集的人，那个氛围……真的很不一样' },
-      { user:'算了😮💨', text:'说多了又怕被找上门，就说这种事真的太微妙了' },
-      { user:'社会结构问题🏗️', text:'这不是一个人的问题，是整个权力结构的问题' },
-      { user:'在这个圈里的人🏢', text:`${charLast}能一直没有大舆论危机，靠的不只是低调——是对信息流向有很强的掌控意识。圈子里有些事大家心知肚明但不说，不是觉得正常，是说出来代价太大，而且最终也不会有结果。` },
-      { user:'研究权力结构的人🔩', text:`这类关系能持续存在，很大程度上是因为社会对"自愿"的定义太简单了。"没有反抗"不等于"自愿"，"说喜欢他"不等于"关系健康"。在${charLast}这种资源量级面前，"自愿"背后的条件结构不是普通人能想象的。` },
-      { user:'观察了很久才发言📝', text:`评论区总有人说"用道德绑架别人的感情"。但我想反问：如果权力完全对等，双方在完全自由的状态下相遇，那这段关系为什么要那么刻意维持某种名分？那个名分对他们来说意味着什么？这不是道德问题，是结构问题。` },
-    ],
-    // 信息/分析类
-    info: [
-      { user:'来科普🙋', text:`${charName}，${charLast}，在某个圈子里有地位，这是公开信息` },
-      { user:'补充背景📖', text:'他们的关系当时在小范围有人知道，但从没公开说过细节' },
-      { user:'认识他的人🤐', text:`${charLast}这个人接触过，说话有分寸，但某些行为让人看不透` },
-      { user:'信息拼接中🗂️', text:'把最近几条相关帖子放一起看，能拼出比较清晰的轮廓' },
-      { user:'知道一点点👀', text:'他在某个小圈子里其实不算低调，只是大众不知道' },
-      { user:'查过资料📊', text:`${charName}的公开信息很少，这种程度的刻意低调本身就不寻常` },
-      { user:'业内人士🚶', text:'他在某些场合会出现，但那个相处方式……关系不一般' },
-      { user:'好奇宝宝❓', text:`${charLast}和那个人，具体是什么关系啊？求科普` },
-      { user:'阴阳鉴定师😇', text:`嗯这很正常，${charLast}的事嘛，各种可能都有的` },
-      { user:'真心希望没事🕊️', text:'不管背后是什么，希望弱势那方是被善待的' },
-      { user:'情报整理完毕🗃️', text:`整理一下已知：${charLast}，在圈子里有一定地位，和那个人的关系一直低调处理，公开社媒几乎没有记录。有意思的是相关内容被主动清理过——不是自然消失，是被清理的。说明他清楚这件事在外人眼里是什么性质。` },
-      { user:'逻辑通了才发言💡', text:`很多人在纠结"他们到底有没有越界"，但这个问题问偏了。真正值得问的是：弱势那方有没有真实的退出自由？ta的物质、情感、社会关系，有多少是独立存在的？如果基本都依赖他，那不管有没有越界，这个结构本身就不健康。` },
-    ],
-    // 通用
-    general: [
-      { user:'知情人士路过👀', text:`${charLast}的事，圈子里不是第一次有人提了，只是之前没这么公开` },
-      { user:'补充一下📌', text:'他们确实在某个场合一起出现过，那次很多人注意到了' },
-      { user:'吃瓜正式入场🍿', text:`等等！${charLast}和谁？！楼主快补充细节` },
-      { user:'理性分析🧐', text:'光从外部判断说明不了什么，但那个相处方式确实让人多想' },
-      { user:'阴阳到位🙃', text:`哦是这样啊，${charLast}果然很……有意思呢` },
-      { user:'直接说立场🙋', text:'这件事里权力不对等是显而易见的，希望弱势的那方没有受委屈' },
-      { user:'有相关经历😔', text:'这种关系太容易模糊边界了，当事人自己可能都说不清楚' },
-      { user:'补刀🔪', text:`说是什么关系，但那种保护欲和占有感……和普通关系差太多了` },
-      { user:'中立观察者🔭', text:'两边我都不了解，但这件事本身的模式让人不舒服' },
-      { user:'最后说一句💬', text:'不管结果怎样，希望所有人都能被好好对待' },
-      { user:'看了很多才来评论📖', text:`说实话我关注${charLast}相关内容挺久了。这段关系不是"坏人和受害者"那么简单，但也不能因为复杂就变成"没问题"。感情是真实的，关系结构是有问题的，这两件事不互斥。` },
-      { user:'懂感情也懂权力🌐', text:`有个关键问题大家都在绕着走：在这段关系建立的时候，一方是掌握资源和主动权的人，另一方处于相对弱势和依赖的位置。这个起点上的不对等，是后来所有"复杂"的根源。不是说一定有恶意，而是这个结构本身就不给弱势方留谈判空间。` },
-      { user:'最后一个理性声音💬', text:`我见过很多辩护的评论，说当事人自愿、说感情是真的、说外人不该评判。这些都有一定道理，但都回避了最核心的问题：当你几乎所有的依托都来自同一个人，当你失去他就意味着失去一切，你说"不"的能力有多少？` },
-    ],
-  };
-
-  const comments = pools[type] || pools.general;
-  const shuffled = [...comments].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 10).map(c => ({
-    from: 'stranger_preset', user: c.user, text: c.text, time: ts(), replyTo: null
-  }));
-}
-
-
-function buildXHSFeedItems() {
-  // 本地同步版，仅供内部兼容调用；实际生成走 buildXHSFeedWithAI
-  const ctx = getContext() || {};
-  const charName = ctx?.name2 || ctx?.name || 'TA';
-  const charLast = charName.split(/\s+/).pop() || charName;
-  const now = new Date();
-  const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
-  const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
-  const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
-  return buildXHSFeedFallback(todayStr, rndInt, ts, charName, '', '');
-}
-
-
 // 渲染单条帖子卡片（单列）
 function renderXHSCard(p) {
   const likeK = p.likes >= 10000 ? (p.likes/10000).toFixed(1)+'w' : p.likes >= 1000 ? (p.likes/1000).toFixed(1)+'k' : p.likes;
@@ -7334,12 +7228,6 @@ async function buildXHSFeedWithAI(appendMode) {
           const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
             from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
           })) : [];
-          // 不足10条时用预置补齐，每个帖子用不同 type 避免重复
-          if (aiComments.length < 10) {
-            const fillTypes = ['witness', 'relationship', 'social', 'info', 'general'];
-            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type: fillTypes[i % fillTypes.length]});
-            preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
-          }
           return {
             id: `xhs_ai_${Date.now()}_${i}`, from: 'stranger',
             user: p.user||`路人${i+1}🌿`, title: p.title||'', body: p.body||'',
@@ -7353,73 +7241,16 @@ async function buildXHSFeedWithAI(appendMode) {
     }
   } catch(e) { console.warn('[XHS] AI feed build failed', e); }
 
-  // AI 失败 → fallback 本地模板（取3条）
-  const fbPosts = buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona);
-  mergeNewPosts(fbPosts.slice(0, 3));
+  // AI 失败 → 显示错误提示，让用户刷新重试（不用 fallback 池避免重复）
+  $('#rp-xhs-loading').remove();
+  const box = $('#rp-xhs-list');
+  if (box.length && !box.find('.rp-xhs-card').length) {
+    box.append('<div style="text-align:center;color:#aaa;padding:40px 20px;font-size:13px">加载失败，点右上角 ↻ 重试</div>');
+  }
 }
 
 
 // Fallback 通用模板（不假设任何角色关系）
-function buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona) {
-  const ctx = getContext() || {};
-  charName = charName || ctx?.name2 || ctx?.name || 'TA';
-  userName = userName || ctx?.name1 || '用户';
-  const charLast = (charName).split(/\s+/).pop() || charName;
-
-  const posts = [
-    {
-      user: '圈子边缘人路过👀', tag: '八卦',
-      title: `关于${charName}，我知道一些事`,
-      body: `不好说太细，但那天我亲眼看到的，和外面说的完全不一样。评论区有没有了解这个人的？想核实一下我看到的是不是真的。`,
-      likes: rndInt(1200, 8000),
-    },
-    {
-      user: '深夜观察日记✍️', tag: '情感',
-      title: `${charLast}先生和那个人，他们的关系真的有点说不清`,
-      body: `朋友圈里偶尔刷到他们，每次那个状态和互动方式都让我看了很久。不是坏意，就是觉得这两个人之间有一种很特别的张力，外人很难理解。`,
-      likes: rndInt(800, 5000),
-    },
-    {
-      user: '吃瓜不评价😶', tag: '八卦',
-      title: `有人整理过关于${charName}的信息吗？`,
-      body: `搜了一下相关内容，发现讨论挺多的但都是碎片信息。有没有比较完整了解情况的人，在评论区说说？我想知道外面的说法有没有夸大。`,
-      likes: rndInt(3000, 15000),
-    },
-    {
-      user: '社会观察员碎碎念💭', tag: '碎碎念',
-      title: '有些关系，圈外人看到的永远只是冰山一角',
-      body: `最近一直在关注${charLast}相关的动态，感觉每次有新消息，大家的反应差异很大——有人觉得正常，有人觉得不对劲。我自己也没法判断，就是隐约觉得有些事情没那么简单。`,
-      likes: rndInt(500, 4000),
-    },
-    {
-      user: '知情人士（部分）🤫', tag: '八卦',
-      title: `和${charName}有交集的人，我来说两句`,
-      body: `不是什么大瓜，就是认识认识的人，跟他/她们圈子有点重叠。那个气场和外面描述的确实不太一样，怎么说……比想象中复杂，具体的说多了不好，大家懂的懂。`,
-      likes: rndInt(4000, 25000),
-    },
-    {
-      user: '普通人真情实感🥲', tag: '随想',
-      title: '有时候看别人的故事，会莫名觉得心里不是滋味',
-      body: `看到关于${charLast}的讨论，不知道为什么有点堵。也许是因为这种故事太容易让人代入——不知道当事人自己怎么看，但从外面看，总觉得里面有一个人是承担了很多的。`,
-      likes: rndInt(600, 3500),
-    },
-  ];
-
-  return posts.map((p, i) => ({
-    id: `xhs_fb_${Date.now()}_${i}`,
-    from: 'stranger',
-    user: p.user,
-    title: p.title,
-    body: p.body,
-    tag: p.tag,
-    likes: p.likes,
-    likedByUser: false,
-    comments: _xhsPresetComments(charName, charLast, rndInt, ts, {type: ['witness','relationship','social','info','general','witness'][i] || 'general'}),
-    time: ts(),
-    date: todayStr,
-  }));
-}
-
 // 打开详情页
 function openXHSDetail(postId) {
   const post = (STATE.xhsFeed || []).find(p => p.id === postId);
@@ -7519,7 +7350,7 @@ function postUserXHS() {
   const charLast2 = charName2.split(/\s+/).pop() || charName2;
   const rndInt2 = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
   const ts2 = () => { const h=rndInt2(8,23),m=rndInt2(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
-  post.comments = _xhsPresetComments(charName2, charLast2, rndInt2, ts2).slice(0, 4);
+  post.comments = []; // 评论由 AI 异步生成
   saveState();
   // 清空表单
   $('#rp-xhs-post-title').val('');
@@ -7562,13 +7393,7 @@ async function generateXHSStrangerComments(postId) {
   const prompt = `用户帖子标题：${post.title}\n用户帖子内容：${post.body}`;
   const resp = await lgCallAPI(prompt, 400, sysMsg);
   if (!resp) {
-    // API 失败 fallback：用预置评论池补满
-    const rndInt3 = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
-    const ts3 = () => { const h=rndInt3(8,23),m=rndInt3(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
-    const extra = _xhsPresetComments(charName, charLast, rndInt3, ts3);
-    extra.forEach(c => { if (!post.comments.find(x=>x.user===c.user)) post.comments.push(c); });
-    saveState();
-    if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) renderXHSDetail(post);
+    // API 失败：保留已有评论，不补 fallback 池
     return;
   }
 
