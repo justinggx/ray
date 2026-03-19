@@ -6489,8 +6489,31 @@ async function charRespondToUserMoment(momentId) {
       saveState();
     }
   }
-  // NPC 们后续自由互动
-  setTimeout(function() { momentAISocial(momentId); }, 700);
+  // NPC 们强制回复（按联系人数量：1好友=1条，2好友=2条，3+好友=char+任选2 NPC）
+  setTimeout(async function() {
+    const { npcs } = getMomentsCtx();
+    const alreadyCommented = new Set((moment.comments || []).map(c => c.name));
+    const pendingNPCs = npcs.filter(n => !alreadyCommented.has(n));
+    const maxNPC = Math.min(pendingNPCs.length, Math.max(0, 3 - (alreadyCommented.has(charName) ? 1 : 0)));
+    for (let i = 0; i < maxNPC; i++) {
+      const npc = pendingNPCs[i];
+      const { npcPersonaMap } = getMomentsCtx();
+      const npcPersona = resolveNpcPersonaByName(npc, npcPersonaMap) || '';
+      const sysNpc = '你正在扮演 ' + npc + '，' + (npcPersona ? '人设：' + npcPersona.slice(0, 200) + '\n' : '根据故事推断语气，') + '用中文写1句评论，15-30字，只返回评论内容。';
+      const resp = await lgCallAPI('朋友圈：「' + moment.text + '」\n' + npc + '的评论：', 80, sysNpc);
+      if (resp) {
+        const cleaned = resp.trim().replace(/^[「"']|[」"']$/g, '');
+        if (cleaned) {
+          const now2 = new Date();
+          const ts2 = String(now2.getHours()).padStart(2,'0') + ':' + String(now2.getMinutes()).padStart(2,'0');
+          incomingComment(momentId, npc, ts2, cleaned, null);
+          if (STATE.currentView === 'moments') renderMoments();
+          saveState();
+        }
+      }
+      await new Promise(r => setTimeout(r, 400));
+    }
+  }, 1200);
 }
 
 async function momentAISocial(targetMomentId) {
@@ -6764,8 +6787,8 @@ function sendMomentComment(momentId, text, replyToName) {
   saveState();
   // 直接调 API 生成回复，不走 ST send_textarea
   if (moment.from !== 'user') {
-    // 评论的是 AI 角色的动态 → 该角色回复
-    setTimeout(() => generateAIReply(momentId, text.trim(), moment.from), 600);
+    // 评论的是 AI 角色的动态 → 该角色回复（用 moment.name 而不是 moment.from）
+    setTimeout(() => generateAIReply(momentId, text.trim(), moment.name), 600);
   } else {
     // 评论的是用户自己的动态 → 触发 AI 社交互动
     setTimeout(() => momentAISocial(momentId), 600);
