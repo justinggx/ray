@@ -2581,7 +2581,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
 /* FIX #4: wallpaper layer */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
-.rp-view{z-index:1;position:relative}
+.rp-view{z-index:1}
 
 /* ══ LUDO GAME - Candy Garden 糖果花园 ══ */
 #rp-view-game{background:transparent;display:flex;flex-direction:column}
@@ -3442,8 +3442,8 @@ const HTML = `
             <span class="rp-nav-title" style="color:#ff2442;font-weight:700">帖子详情</span>
             <span></span>
           </div>
-          <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 70px"></div>
-          <div id="rp-xhs-detail-input-bar" style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ffe4e8;display:flex;align-items:center;padding:6px 10px;gap:8px">
+          <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
+          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid #ffe4e8;display:flex;align-items:center;padding:6px 10px;gap:8px">
             <input id="rp-xhs-detail-input" type="text" placeholder="发表评论…" autocomplete="off" style="flex:1;border:1px solid #ffc0ca;border-radius:20px;padding:6px 12px;font-size:12px;outline:none"/>
             <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer">发送</button>
           </div>
