@@ -2532,11 +2532,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-xhs-post-body{background:var(--rp-xhs-card)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:22px!important;padding:14px 14px 18px!important;min-height:180px!important;line-height:1.8!important;box-shadow:0 6px 18px rgba(0,0,0,.04)!important}
 #rp-xhs-post-title::placeholder,#rp-xhs-post-body::placeholder{color:var(--rp-xhs-text-faint)!important}
 #rp-xhs-post-title:focus,#rp-xhs-post-body:focus{border-color:var(--rp-xhs-border-strong)!important;box-shadow:0 0 0 3px var(--rp-xhs-chip),0 8px 18px rgba(0,0,0,.04)!important;outline:none!important}
-#rp-xhs-tag-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:10px!important}
+#rp-xhs-tag-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-top:8px!important}
 #rp-xhs-detail-send,#rp-xhs-post-btn{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2))!important;color:#fff!important;border:none!important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important}
-#rp-xhs-post-btn{border-radius:15px!important;padding:9px 18px!important;min-width:68px!important;font-weight:800!important;letter-spacing:.02em!important}
+#rp-xhs-post-btn{border-radius:10px!important;padding:4px 12px!important;min-width:0!important;font-weight:600!important;font-size:12px!important;letter-spacing:0!important}
 #rp-xhs-detail-send{border-radius:15px!important;padding:9px 16px!important;min-width:62px!important;font-weight:700!important}
-.rp-xhs-tag-btn{background:linear-gradient(180deg,var(--rp-xhs-card),var(--rp-xhs-panel))!important;color:var(--rp-xhs-accent)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:12px!important;padding:0 8px!important;height:40px!important;min-height:40px!important;font-size:12.5px!important;line-height:1.2!important;font-weight:700!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.rp-xhs-tag-btn{background:linear-gradient(180deg,var(--rp-xhs-card),var(--rp-xhs-panel))!important;color:var(--rp-xhs-accent)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:12px!important;padding:0 8px!important;height:28px!important;min-height:28px!important;font-size:11px!important;line-height:1.2!important;font-weight:600!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .rp-xhs-tag-btn:hover{background:var(--rp-xhs-soft)!important;border-color:var(--rp-xhs-border-strong)!important;transform:translateY(-1px)!important}
 .rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important;outline:none !important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important;transform:translateY(-1px)!important}
 #rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important;animation:rpXhsLoadingFloat 1.8s ease-in-out infinite}
@@ -7254,15 +7254,15 @@ function _renderXHSList(box) {
   const userPosts = list.filter(p => p.from === 'user');
   const strangerPosts = list.filter(p => p.from !== 'user'); // 新的在 index 0
   // 渲染顺序：旧stranger(末尾先) → user → 新stranger(头部先)
-  const oldStranger = strangerPosts.slice(1);  // 除最新一批外的旧帖
-  const newStranger = strangerPosts.slice(0, Math.min(3, strangerPosts.length)); // 最新一批
+  const oldStranger = strangerPosts.slice(3);  // 除最新3条外的旧帖
+  const newStranger = strangerPosts.slice(0, 3); // 最新3条
   // 显示：旧帖(反转使旧的在上) → 用户帖 → 新帖
   [...[...oldStranger].reverse(), ...userPosts, ...newStranger].forEach(p => box.append(renderXHSCard(p)));
 }
 
 // XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
 async function xhsCallAPI(prompt, sysMsg) {
-  return await lgCallAPI(prompt, 4096, sysMsg);
+  return await lgCallAPI(prompt, 1500, sysMsg);
 }
 
 async function buildXHSFeedWithAI(appendMode) {
@@ -7330,8 +7330,8 @@ async function buildXHSFeedWithAI(appendMode) {
 共3条，不要有其他文字。
 重要：所有字段值内部不能出现双引号，如需引用请用「」或【】代替。`;
 
-    const charInfo = charPersona ? charPersona.slice(0, 300) : `角色名：${charName}`;
-    const prompt = `角色信息：${charInfo}\n用户名：${userName}\n近期对话片段：${(recentChat||'').slice(0,300)}\n\n本次3条帖子话题方向：\n${chosenTopics.map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\n生成JSON：`;
+    const charInfo = charPersona ? charPersona.slice(0, 150) : `角色名：${charName}`;
+    const prompt = `角色信息：${charInfo}\n用户名：${userName}\n近期对话片段：${(recentChat||'').slice(0,100)}\n\n本次3条帖子话题方向：\n${chosenTopics.map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\n生成JSON：`;
 
     const resp = await xhsCallAPI(prompt, sysMsg);
     console.log('[XHS] raw resp:', resp ? resp.slice(0, 300) : 'null');
