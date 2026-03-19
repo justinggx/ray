@@ -6400,41 +6400,25 @@ function getMomentsCtx() {
     });
   } catch(e) { /* ignore */ }
 
-  // 2. 世界书全量扫描（深度/蓝灯/绿灯/所有词条）
-  //    数据源优先级：window.world_info 原始对象 → ctx 注入文本 → extension_prompts
+  // 2. 世界书扫描
+  //    注意：window.world_info 是 jQuery 事件缓存，不是世界书数据，不能使用
+  //    唯一可靠数据源：ctx.worldInfoBefore / ctx.worldInfoAfter（ST 已注入的触发词条）
   try {
     const wiTexts = [];
 
-    // 2a. window.world_info 原始对象（所有词条，无论是否触发）
-    if (window.world_info && typeof window.world_info === 'object') {
-      const books = Object.values(window.world_info);
-      books.forEach(book => {
-        const entries = Array.isArray(book) ? book
-          : (book && typeof book === 'object' ? Object.values(book) : []);
-        entries.forEach(entry => {
-          const content = entry?.content || entry?.text || '';
-          if (content) wiTexts.push(content);
-        });
-      });
-    }
-
-    // 2b. ST 另一个可能的全局：world_info 直接是 entries 对象
-    if (window.worldInfoData && typeof window.worldInfoData === 'object') {
-      Object.values(window.worldInfoData).forEach(entry => {
-        const content = entry?.content || entry?.text || '';
-        if (content) wiTexts.push(content);
-      });
-    }
-
-    // 2c. getContext 注入文本（已触发词条）
+    // 2a. ctx 注入文本（已触发词条，最可靠）
     [ctx?.worldInfoBefore, ctx?.worldInfoAfter, ctx?.world_info, ctx?.lorebook]
-      .filter(Boolean).forEach(s => wiTexts.push(s));
+      .filter(Boolean).forEach(s => wiTexts.push(String(s)));
 
-    // 2d. extension_prompts（深度注入的 prompt 文本）
+    // 2b. extension_prompts（深度注入的 prompt 文本）
     try {
       const ep = window.extension_prompts || {};
-      Object.values(ep).forEach(p => { if (p?.value) wiTexts.push(p.value); });
+      Object.values(ep).forEach(p => { if (p?.value) wiTexts.push(String(p.value)); });
     } catch(e) {}
+
+    // 2c. 调试：打印找到了多少文本
+    const totalLen = wiTexts.reduce((s,t) => s + t.length, 0);
+    console.log('[getMomentsCtx] wiTexts sources:', wiTexts.length, 'total chars:', totalLen);
 
     const allWIText = wiTexts.join('\n');
     if (allWIText) {
@@ -6475,6 +6459,34 @@ function getMomentsCtx() {
           npcPersonaMap[k] = bodyLines.slice(0, 350);
         }
       });
+
+      // 额外：解析 friends_circle 块（格式：name: X\n disposition: Y）作为兜底
+      // 即使个人词条未触发，friends_circle 汇总词条通常是常驻的
+      const fcMatch = allWIText.match(/friends_circle\s*:[\s\S]*?(?=<\/|\n\s*\n\s*\n|$)/i);
+      if (fcMatch) {
+        const fcText = fcMatch[0];
+        const fcEntries = fcText.split(/(?=\n\s{1,4}\w+_\w+:)/);
+        fcEntries.forEach(entry => {
+          const nameM = entry.match(/name\s*[:：]\s*([^\n]+)/i);
+          const dispM = entry.match(/disposition\s*[:：]\s*([^\n]+)/i);
+          const relM  = entry.match(/relations\s*[:：]\s*([^\n]+)/i);
+          if (!nameM) return;
+          const fcName = nameM[1].trim().split(/[（(,，\s]/)[0].trim();
+          if (!fcName || fcName.length < 2 || normNameKey(fcName) === normNameKey(charName)) return;
+          const fk = normNameKey(fcName);
+          if (npcPersonaMap[fk]) return; // 已有更详细的，不覆盖
+          const persona = [
+            dispM ? '性格：' + dispM[1].trim() : '',
+            relM  ? '关系：' + relM[1].trim().slice(0, 100) : ''
+          ].filter(Boolean).join('；');
+          if (persona) {
+            npcPersonaMap[fk] = persona;
+            console.log('[getMomentsCtx] friends_circle fallback:', fcName, '->', persona.slice(0,60));
+          }
+        });
+      }
+
+      console.log('[getMomentsCtx] npcPersonaMap keys:', Object.keys(npcPersonaMap));
     }
   } catch(e) { /* ignore */ }
 
