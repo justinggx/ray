@@ -2941,8 +2941,6 @@ const STATE = {
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
   xhsFeed: [],
-  xhsFeedPool: [],      // 完整帖子池，首屏只显示前3条
-  xhsDisplayCount: 3,   // 当前显示条数
   xhsCurrentPost: null,
   xhsSelectedTag: '日常',
   xhsReplyToCidx: null,
@@ -7213,7 +7211,7 @@ function buildXHSFeedItems() {
     while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
     return out;
   };
-  return pick(strangerPosts, 8).map((p, i) => ({
+  return pick(strangerPosts, 3).map((p, i) => ({
     id: `xhs_${Date.now()}_${i}`,
     from: 'stranger',
     user: p.user,
@@ -7263,41 +7261,18 @@ function renderXHSFeed(forceRefresh) {
   const box = $('#rp-xhs-list');
   if (!box.length) return;
 
-  // 用户发的帖子始终保留
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
+  const hasStranger = (STATE.xhsFeed || []).some(p => p.from !== 'user');
 
-  // forceRefresh = true → 右上角刷新按钮（追加更多），false → 首次加载
-  if (!STATE.xhsFeedPool || STATE.xhsFeedPool.filter(p=>p.from!=='user').length === 0) {
-    // 完全没有池子 → 重新生成
-    STATE.xhsDisplayCount = 3;
-    STATE.xhsFeedPool = [];
+  // 首次加载或强制刷新 → 重新调 API 生成3条新帖子
+  if (!hasStranger || forceRefresh) {
     box.empty();
     userPosts.forEach(p => box.append(renderXHSCard(p)));
     box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载最新动态…</div>');
-    buildXHSFeedWithAI(false);
+    buildXHSFeedWithAI();
     return;
   }
 
-  if (forceRefresh) {
-    // 刷新 → 追加3条；池子不够则重新生成
-    const strangerPool = STATE.xhsFeedPool.filter(p=>p.from!=='user');
-    const shown = STATE.xhsDisplayCount || 3;
-    if (shown >= strangerPool.length) {
-      // 池子耗尽，重新生成
-      STATE.xhsDisplayCount = 3;
-      STATE.xhsFeedPool = [];
-      box.empty();
-      userPosts.forEach(p => box.append(renderXHSCard(p)));
-      box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载更多动态…</div>');
-      buildXHSFeedWithAI(true);
-      return;
-    }
-    STATE.xhsDisplayCount = Math.min(shown + 3, strangerPool.length);
-  }
-
-  // 从池子取当前应显示的数量
-  const strangerPool = STATE.xhsFeedPool.filter(p=>p.from!=='user');
-  STATE.xhsFeed = [...userPosts, ...strangerPool.slice(0, STATE.xhsDisplayCount || 3)];
   _renderXHSList(box);
 }
 
@@ -7312,12 +7287,6 @@ function _renderXHSList(box) {
   const userPosts = list.filter(p => p.from === 'user');
   const otherPosts = list.filter(p => p.from !== 'user');
   [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
-  // 如果池子里还有更多，显示"加载更多"提示
-  const pool = STATE.xhsFeedPool ? STATE.xhsFeedPool.filter(p=>p.from!=='user') : [];
-  const shown = STATE.xhsDisplayCount || 3;
-  if (pool.length > shown) {
-    box.append('<div style="text-align:center;color:#bbb;padding:16px 0 8px;font-size:12px">↑ 点右上角刷新加载更多</div>');
-  }
 }
 
 // XHS 专用 API 调用：优先自定义API，fallback 用 generateQuietPrompt（真正的静默生成）
@@ -7332,7 +7301,7 @@ async function xhsCallAPI(prompt, sysMsg) {
       const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.key}` },
-        body: JSON.stringify({ model: cfg.model || 'deepseek-chat', messages: msgs, max_tokens: 800, temperature: 0.9 })
+        body: JSON.stringify({ model: cfg.model || 'deepseek-chat', messages: msgs, max_tokens: 1200, temperature: 0.95 })
       });
       const data = await res.json();
       const text = data.choices?.[0]?.message?.content?.trim();
@@ -7345,14 +7314,14 @@ async function xhsCallAPI(prompt, sysMsg) {
     const { generateQuietPrompt } = await import('../../../../script.js').catch(() => ({}));
     if (typeof generateQuietPrompt === 'function') {
       const fullPrompt = sysMsg ? sysMsg + '\n\n' + prompt : prompt;
-      const resp = await generateQuietPrompt({ quietPrompt: fullPrompt, responseLength: 800 });
+      const resp = await generateQuietPrompt({ quietPrompt: fullPrompt, responseLength: 1200 });
       if (resp && resp.trim()) return resp.trim();
     }
   } catch(e) { console.warn('[XHS] generateQuietPrompt error:', e.message); }
   return null;
 }
 
-async function buildXHSFeedWithAI(forceRefresh) {
+async function buildXHSFeedWithAI() {
   const now = new Date();
   const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
   const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
@@ -7360,7 +7329,7 @@ async function buildXHSFeedWithAI(forceRefresh) {
 
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
 
-  // 先读角色信息（getMomentsCtx 只读数据，不调生成API）
+  // 读角色信息
   let charName = '', userName = '', charPersona = '', recentChat = '';
   try {
     const ctx = await getMomentsCtx();
@@ -7373,27 +7342,47 @@ async function buildXHSFeedWithAI(forceRefresh) {
   }
   const charLast = charName.split(/\s+/).pop() || charName || 'TA';
 
-  // 调 AI（自定义API 或 ST generateQuietPrompt，由 xhsCallAPI 路由）
-  try {
-        const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成8条陌生网友视角的八卦帖子。
-要求：帖子作者是陌生路人/目击者，内容围绕charName和userName的关系，有具体细节不当谜语人，语气口语化。
-每条帖子附带5条评论，补料/阴阳/共情/猜测点名/理性分析各一种，有实质内容。
-只返回JSON，格式：[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]共8条。`;
+  // 随机选3个话题方向，保证每次刷新内容不重复
+  const topicPool = [
+    `围绕${charName}和${userName}关系的八卦讨论（目击者/知情人视角）`,
+    `关于${charName}的个人生活/性格传闻（不涉及${userName}）`,
+    `${charName}在商界/社交圈的传闻与评价`,
+    `探讨收养关系/年龄差感情的社会观察（以${charName}为例）`,
+    `${charName}的外形/品味/生活方式被路人讨论`,
+    `${userName}被目击或被讨论（陌生人视角，不知道她身份）`,
+    `某次公开活动上${charName}的行为引发讨论`,
+    `关于有钱有势的人如何对待身边年轻人的社会话题`,
+    `小道消息：${charName}圈子里的人际关系传闻`,
+    `${charName}的过去/背景被挖掘讨论`,
+  ];
+  const pick3 = (arr) => { const a=[...arr].sort(()=>Math.random()-0.5); return a.slice(0,3); };
+  const chosenTopics = pick3(topicPool);
 
-    const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
-    const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成8条小红书八卦帖子：`;
+  try {
+    const sysMsg = `你是一个小红书内容生成器。生成3条风格各异的帖子，每条10条评论。
+帖子要求：陌生路人/网友视角，口语化，有细节不当谜语人，话题多样不要全是同一种。
+评论要求：10条评论风格各异——短评（10-15字吐槽/阴阳/共情）和长评（懂哥深度分析，60-100字）混搭，至少2条长评。
+只返回JSON数组，格式：
+[{"user":"昵称emoji","tag":"标签","title":"标题","body":"正文60-100字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论内容"}]}]
+共3条，不要有其他文字。`;
+
+    const charInfo = charPersona ? charPersona.slice(0, 300) : `角色名：${charName}`;
+    const prompt = `角色信息：${charInfo}\n用户名：${userName}\n近期对话片段：${(recentChat||'').slice(0,300)}\n\n本次3条帖子话题方向：\n${chosenTopics.map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\n生成JSON：`;
 
     const resp = await xhsCallAPI(prompt, sysMsg);
     if (resp) {
       let items = [];
       try { const m = resp.match(/\[[\s\S]*\]/); if (m) items = JSON.parse(m[0]); } catch(e) {}
       if (Array.isArray(items) && items.length > 0) {
-        const aiPosts = items.map((p, i) => {
-          const aiComments = Array.isArray(p.comments) ? p.comments.map(c => ({
+        const aiPosts = items.slice(0, 3).map((p, i) => {
+          const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
             from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
           })) : [];
-          const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
-          preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
+          // 不足10条时用预置补齐
+          if (aiComments.length < 10) {
+            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
+            preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
+          }
           return {
             id: `xhs_ai_${Date.now()}_${i}`, from: 'stranger',
             user: p.user||`路人${i+1}🌿`, title: p.title||'', body: p.body||'',
@@ -7401,10 +7390,7 @@ async function buildXHSFeedWithAI(forceRefresh) {
             likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
           };
         });
-        // 存入池子（最多8条），首屏只显示3条
-        STATE.xhsFeedPool = [...userPosts, ...aiPosts];
-        STATE.xhsDisplayCount = 3;
-        STATE.xhsFeed = [...userPosts, ...aiPosts.slice(0, 3)];
+        STATE.xhsFeed = [...userPosts, ...aiPosts];
         saveState();
         _renderXHSList();
         return;
@@ -7412,14 +7398,13 @@ async function buildXHSFeedWithAI(forceRefresh) {
     }
   } catch(e) { console.warn('[XHS] AI feed build failed', e); }
 
-  // AI 失败 → fallback 本地模板（8条存池子，显示3条）
+  // AI 失败 → fallback 本地模板（取3条）
   const fbPosts = buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona);
-  STATE.xhsFeedPool = [...userPosts, ...fbPosts];
-  STATE.xhsDisplayCount = 3;
   STATE.xhsFeed = [...userPosts, ...fbPosts.slice(0, 3)];
   saveState();
   _renderXHSList();
 }
+
 
 // Fallback 通用模板（不假设任何角色关系）
 function buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona) {
