@@ -7276,90 +7276,74 @@ function _renderXHSList(box) {
 }
 
 async function buildXHSFeedWithAI(forceRefresh) {
-  const ctx = getContext() || {};
   const now = new Date();
   const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
   const rndInt = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
   const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
 
-  // 保留用户帖子
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
 
-  try {
-    const { charName, userName, charPersona, recentChat } = await getMomentsCtx();
-    const charLast = (charName||'').split(/\s+/).pop() || charName || 'TA';
+  // 检查是否配置了自定义 API（没有则不调任何 API，直接用本地模板）
+  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+  const hasCustomAPI = !!(cfg.mode === 'custom' && cfg.url && cfg.key);
 
-    // 构建 prompt：让 AI 理解角色关系，生成对应八卦
-    const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
+  if (hasCustomAPI) {
+    // 有自定义 API → 调 AI 生成
+    try {
+      const { charName, userName, charPersona, recentChat } = await getMomentsCtx();
+      const charLast = (charName||'').split(/\s+/).pop() || charName || 'TA';
 
-要求：
-- 帖子作者是不认识当事人的陌生路人、圈子边缘人、目击者
-- 帖子内容围绕 charName 和 userName 的关系展开，要有具体细节（目击细节、听到的传闻、分析观点）
-- 不能当谜语人，要有实质内容
-- 语气口语化，符合小红书风格
-- 帖子之间要有多样性：目击帖/分析帖/爆料帖/情感帖等类型都要有
-- 每条帖子附带5条评论，评论性格各异：补料/阴阳/共情/猜测点名/理性分析
-- 评论针对帖子内容，有实质内容，不只是"楼主快说"
+      const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
+要求：帖子作者是陌生路人/目击者，内容围绕charName和userName的关系，有具体细节不当谜语人，语气口语化。
+每条帖子附带5条评论，补料/阴阳/共情/猜测点名/理性分析各一种，有实质内容。
+只返回JSON，格式：[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]共6条。`;
 
-只返回JSON数组，格式：
-[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]
-共6条，comments每条5个。不要markdown，直接输出JSON。`;
+      const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
+      const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成6条小红书八卦帖子：`;
 
-    const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
-    const prompt = `角色信息：\n${charInfo}\n\n用户名：${userName}\n\n近期对话摘要（了解两人关系）：\n${(recentChat||'').slice(0,300)}\n\n请生成6条关于他们关系的小红书八卦帖子：`;
-
-    const resp = await lgCallAPI(prompt, 800, sysMsg);
-
-    if (resp) {
-      let items = [];
-      try {
-        const match = resp.match(/\[[\s\S]*\]/);
-        if (match) items = JSON.parse(match[0]);
-      } catch(e) { console.warn('[XHS] JSON parse failed', e); }
-
-      if (Array.isArray(items) && items.length > 0) {
-        const charLast2 = (charName||'').split(/\s+/).pop() || charName || 'TA';
-        const aiPosts = items.map((p, i) => ({
-          id: `xhs_ai_${Date.now()}_${i}`,
-          from: 'stranger',
-          user: p.user || `路人${i+1}🌿`,
-          title: p.title || '无标题',
-          body: p.body || '',
-          tag: p.tag || '八卦',
-          likes: typeof p.likes === 'number' ? p.likes : rndInt(500, 20000),
-          likedByUser: false,
-          comments: (() => {
+      const resp = await lgCallAPI(prompt, 800, sysMsg);
+      if (resp) {
+        let items = [];
+        try { const m = resp.match(/\[[\s\S]*\]/); if (m) items = JSON.parse(m[0]); } catch(e) {}
+        if (Array.isArray(items) && items.length > 0) {
+          const aiPosts = items.map((p, i) => {
             const aiComments = Array.isArray(p.comments) ? p.comments.map(c => ({
               from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
             })) : [];
-            // 用预置评论补满10条
-            if (aiComments.length < 10) {
-              const preset = _xhsPresetComments(charName, charLast2, rndInt, ts, {type:'general'});
-              preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
-            }
-            return aiComments;
-          })(),
-          time: ts(),
-          date: todayStr,
-        }));
-        STATE.xhsFeed = [...userPosts, ...aiPosts];
-        saveState();
-        _renderXHSList();
-        return;
+            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
+            preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
+            return {
+              id: `xhs_ai_${Date.now()}_${i}`, from: 'stranger',
+              user: p.user||`路人${i+1}🌿`, title: p.title||'', body: p.body||'',
+              tag: p.tag||'八卦', likes: typeof p.likes==='number' ? p.likes : rndInt(500,20000),
+              likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
+            };
+          });
+          STATE.xhsFeed = [...userPosts, ...aiPosts];
+          saveState();
+          _renderXHSList();
+          return;
+        }
       }
-    }
-  } catch(e) { console.warn('[XHS] AI feed build failed', e); }
+    } catch(e) { console.warn('[XHS] AI feed build failed', e); }
+  }
 
-  // Fallback：通用模板（不写死任何关系细节）
-  STATE.xhsFeed = [...userPosts, ...buildXHSFeedFallback(todayStr, rndInt, ts)];
+  // 无自定义 API 或 AI 失败 → 用基于角色信息的本地模板
+  const { charName, userName, charPersona } = await getMomentsCtx().catch(() => ({
+    charName: getContext()?.name2 || 'TA',
+    userName: getContext()?.name1 || '用户',
+    charPersona: '',
+  }));
+  STATE.xhsFeed = [...userPosts, ...buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona)];
   saveState();
   _renderXHSList();
 }
 
 // Fallback 通用模板（不假设任何角色关系）
-function buildXHSFeedFallback(todayStr, rndInt, ts) {
+function buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona) {
   const ctx = getContext() || {};
-  const charName = ctx?.name2 || ctx?.name || 'TA';
+  charName = charName || ctx?.name2 || ctx?.name || 'TA';
+  userName = userName || ctx?.name1 || '用户';
   const charLast = (charName).split(/\s+/).pop() || charName;
 
   const posts = [
