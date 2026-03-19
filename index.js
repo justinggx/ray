@@ -2534,11 +2534,11 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-xhs-post-body{background:var(--rp-xhs-card)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:22px!important;padding:14px 14px 18px!important;min-height:180px!important;line-height:1.8!important;box-shadow:0 6px 18px rgba(0,0,0,.04)!important}
 #rp-xhs-post-title::placeholder,#rp-xhs-post-body::placeholder{color:var(--rp-xhs-text-faint)!important}
 #rp-xhs-post-title:focus,#rp-xhs-post-body:focus{border-color:var(--rp-xhs-border-strong)!important;box-shadow:0 0 0 3px var(--rp-xhs-chip),0 8px 18px rgba(0,0,0,.04)!important;outline:none!important}
-#rp-xhs-tag-row{display:flex!important;flex-wrap:wrap!important;gap:8px!important;margin-top:8px!important}
+#rp-xhs-tag-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin-top:8px!important}
 #rp-xhs-detail-send,#rp-xhs-post-btn{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2))!important;color:#fff!important;border:none!important;box-shadow:0 8px 18px color-mix(in srgb,var(--rp-xhs-accent) 22%,transparent)!important}
 #rp-xhs-post-btn{border-radius:15px!important;padding:9px 18px!important;min-width:68px!important;font-weight:800!important;letter-spacing:.02em!important}
 #rp-xhs-detail-send{border-radius:15px!important;padding:9px 16px!important;min-width:62px!important;font-weight:700!important}
-.rp-xhs-tag-btn{background:var(--rp-xhs-card);color:var(--rp-xhs-accent);border:1px solid var(--rp-xhs-border);border-radius:16px;padding:7px 13px;font-size:12.5px;cursor:pointer;transition:all .15s;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,.03)}
+.rp-xhs-tag-btn{background:var(--rp-xhs-card);color:var(--rp-xhs-accent);border:1px solid var(--rp-xhs-border);border-radius:13px;padding:6px 8px!important;font-size:11px!important;line-height:1.15!important;cursor:pointer;transition:all .15s;font-family:inherit;box-shadow:0 3px 10px rgba(0,0,0,.03);width:100%!important;min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .rp-xhs-tag-btn:hover{background:var(--rp-xhs-soft)!important;border-color:var(--rp-xhs-border-strong)!important;transform:translateY(-1px)!important}
 .rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important;outline:none !important;box-shadow:0 8px 18px color-mix(in srgb,var(--rp-xhs-accent) 22%,transparent)!important;transform:translateY(-1px)!important}
 #rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important;animation:rpXhsLoadingFloat 1.8s ease-in-out infinite}
@@ -3593,6 +3593,9 @@ const HTML = `
                 <button class="rp-xhs-tag-btn" data-tag="碎碎念">＃碎碎念</button>
                 <button class="rp-xhs-tag-btn" data-tag="求安慰">＃求安慰</button>
                 <button class="rp-xhs-tag-btn" data-tag="八卦">＃八卦</button>
+                <button class="rp-xhs-tag-btn" data-tag="吐槽">＃吐槽</button>
+                <button class="rp-xhs-tag-btn" data-tag="记录">＃记录</button>
+                <button class="rp-xhs-tag-btn" data-tag="树洞">＃树洞</button>
               </div>
             </div>
           </div>
