@@ -7193,9 +7193,15 @@ async function buildXHSFeedWithAI(appendMode) {
     const prompt = `角色信息：${charInfo}\n用户名：${userName}\n近期对话片段：${(recentChat||'').slice(0,300)}\n\n本次3条帖子话题方向：\n${chosenTopics.map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\n生成JSON：`;
 
     const resp = await xhsCallAPI(prompt, sysMsg);
+    console.log('[XHS] raw resp:', resp ? resp.slice(0, 300) : 'null');
     if (resp) {
       let items = [];
-      try { const m = resp.match(/\[[\s\S]*\]/); if (m) items = JSON.parse(m[0]); } catch(e) {}
+      try {
+        let jsonStr = resp.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+        const m = jsonStr.match(/\[[\s\S]*\]/);
+        if (m) items = JSON.parse(m[0]);
+        else items = JSON.parse(jsonStr.trim());
+      } catch(e) { console.warn('[XHS] JSON parse error:', e.message); }
       if (Array.isArray(items) && items.length > 0) {
         const aiPosts = items.slice(0, 3).map((p, i) => {
           const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
@@ -7212,7 +7218,7 @@ async function buildXHSFeedWithAI(appendMode) {
         return;
       }
     }
-  } catch(e) { console.warn('[XHS] AI feed build failed', e); }
+  } catch(e) { console.error('[XHS] AI feed build EXCEPTION:', e); }
 
   // AI 失败 → 显示错误提示，让用户刷新重试（不用 fallback 池避免重复）
   $('#rp-xhs-loading').remove();
