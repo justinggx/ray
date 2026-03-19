@@ -6466,19 +6466,12 @@ async function _doGetMomentsCtx() {
         const block = bm[1];
         const nameMatch = block.match(/^\s*name\s*[:：]\s*(.+)/mi);
         if (!nameMatch) continue;
-        const wName = nameMatch[1].trim().replace(/[<>]/g, '');
+        const wName = nameMatch[1].trim().replace(/[<>]/g, '').split(/[\s,，]/)[0];
         if (!wName || normNameKey(wName) === normNameKey(charName)) continue;
-        const traitMatch = block.match(/traits\s*:([\s\S]*?)(?:relational_intelligence|background|work_life|role_in_group|emotional_depth|narrative_notes|$)/i);
-        const bgMatch    = block.match(/background_and_life\s*:([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
-        const toneMatch  = block.match(/tone\s*[:：]\s*(.+)/i);
-        const workMatch  = block.match(/work_life\s*[:：]\s*([\s\S]*?)(?:role_in_group|emotional_depth|narrative_notes|$)/i);
-        const parts = [];
-        if (traitMatch) parts.push('性格：' + traitMatch[1].replace(/-\s*/g, '').replace(/\s+/g, ' ').trim().slice(0, 250));
-        if (bgMatch)    parts.push('背景：' + bgMatch[1].replace(/\s+/g, ' ').trim().slice(0, 200));
-        if (workMatch)  parts.push('职业：' + workMatch[1].replace(/\s+/g, ' ').trim().slice(0, 150));
-        if (toneMatch)  parts.push('基调：' + toneMatch[1].trim().slice(0, 100));
-        if (parts.length > 0) {
-          npcPersonaMap[normNameKey(wName)] = parts.join('\n');
+        // 直接取词条全文，不做字段正则拆分（避免字段缺失/误匹配导致OOC）
+        const fullText = block.replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+        if (fullText.length > 20) {
+          npcPersonaMap[normNameKey(wName)] = fullText.slice(0, 500);
         }
       }
 
@@ -6600,7 +6593,7 @@ async function generateAIMoments() {
     // system message：人设 + 规则（每个角色分别说明，避免人设串台）
     const npcRules = selectedNPCs.map(n => {
       const p = resolveNpcPersonaByName(n, npcPersonaMap) || '';
-      return p ? ('- ' + n + ' 的人设：' + p.replace(/\n/g, '；').slice(0, 200) + '\n  禁止让 ' + n + ' 做任何与其身份地位不符的事') : ('- ' + n + '：根据剧情推断');
+      return p ? ('- ' + n + ' 的人设：' + p.replace(/\n/g, '；').slice(0, 400) + '\n  禁止让 ' + n + ' 做任何与其身份地位不符的事') : ('- ' + n + '：无人设，请根据名字和剧情推断，不得借用任何其他角色的背景');
     }).join('\n');
     const npcPersonaLines = selectedNPCs.map(n => {
       const p = resolveNpcPersonaByName(n, npcPersonaMap) || '';
