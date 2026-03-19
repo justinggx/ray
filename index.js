@@ -6348,7 +6348,7 @@ function resolveNpcPersonaByName(name, npcPersonaMap) {
   return '';
 }
 
-async function await getMomentsCtx() {
+async function getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
