@@ -6541,16 +6541,15 @@ async function momentAISocial(targetMomentId) {
   const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n只为以下角色生成2-4条社交互动（like/comment），禁止使用列表外的名字：' + charList2 + '\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，from字段必须严格使用上方列表中的名字，momentId必须与上方完全一致。';
   const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
+  const allowedFromSet = new Set(allChars.map(n => normNameKey(n)));
   try {
     const jsonStr2 = resp.match(/\[[\s\S]*\]/)?.[0];
     if (!jsonStr2) return;
     const actions = JSON.parse(jsonStr2);
     const now = new Date();
     const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  const allowedFromSet = new Set(allChars.map(n => normNameKey(n)));
     actions.slice(0, 6).forEach(a => {
       if (!a.from || !a.momentId) return;
-      // 过滤幻觉名字：只允许 allChars 里的角色（模糊匹配）
       const fromKey = normNameKey(a.from);
       const isAllowed = allowedFromSet.has(fromKey)
         || [...allowedFromSet].some(k => k.startsWith(fromKey) || fromKey.startsWith(k));
