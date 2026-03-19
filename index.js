@@ -3456,7 +3456,7 @@ const HTML = `
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="xhs">取消</button>
             <span class="rp-nav-title">发笔记</span>
-            <button id="rp-xhs-post-btn" class="rp-compose-post-btn">发布</button>
+            <button id="rp-xhs-post-btn" style="background:#ff2442;color:#fff;border:none;border-radius:16px;padding:4px 14px;font-size:12px;cursor:pointer;font-weight:600">发布</button>
           </div>
           <div style="padding:16px 14px;flex:1;overflow-y:auto">
             <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid #ffe4e8;padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box"/>
@@ -3988,6 +3988,12 @@ function bindUI() {
     var _fabChatId = STATE.chatId;
     setTimeout(function() { rebuildContactsFromHistory(_fabChatId); }, 300);
     phone.show();
+    // 若上次关闭时停留在临时页（compose/detail），重置到合理的上级
+    if (['xhs-compose','xhs-detail'].includes(STATE.currentView)) {
+      go('xhs');
+    } else if (STATE.currentView === 'home' || !STATE.currentView || STATE.currentView === 'lock') {
+      go('home');
+    }
     // 手机端: 修正 phone 面板位置（html有transform时 50%失效，用实际尺寸计算）
     if (IS_TOUCH_DEVICE) {
       setTimeout(() => {
