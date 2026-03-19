@@ -7298,29 +7298,17 @@ async function buildXHSFeedWithAI(forceRefresh) {
 - 不能当谜语人，要有实质内容
 - 语气口语化，符合小红书风格
 - 帖子之间要有多样性：目击帖/分析帖/爆料帖/情感帖等类型都要有
-- 每条帖子附带10条评论，评论性格各异：补料/对号入座/阴阳/共情/分析/猜测点名等
-- 评论要针对帖子具体内容回应，不能只是"楼主快说"
+- 每条帖子附带5条评论，评论性格各异：补料/阴阳/共情/猜测点名/理性分析
+- 评论针对帖子内容，有实质内容，不只是"楼主快说"
 
-严格按以下 JSON 格式返回，不要其他内容：
-[
-  {
-    "user": "昵称（带emoji）",
-    "tag": "标签（八卦/情感/随想/碎碎念之一）",
-    "title": "帖子标题",
-    "body": "帖子正文（60-120字）",
-    "likes": 数字,
-    "comments": [
-      {"user": "评论昵称（带emoji）", "text": "评论内容（15-30字）"},
-      ...共10条
-    ]
-  },
-  ...共6条
-]`;
+只返回JSON数组，格式：
+[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]
+共6条，comments每条5个。不要markdown，直接输出JSON。`;
 
     const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
     const prompt = `角色信息：\n${charInfo}\n\n用户名：${userName}\n\n近期对话摘要（了解两人关系）：\n${(recentChat||'').slice(0,300)}\n\n请生成6条关于他们关系的小红书八卦帖子：`;
 
-    const resp = await lgCallAPI(prompt, 2000, sysMsg);
+    const resp = await lgCallAPI(prompt, 800, sysMsg);
 
     if (resp) {
       let items = [];
@@ -7340,9 +7328,17 @@ async function buildXHSFeedWithAI(forceRefresh) {
           tag: p.tag || '八卦',
           likes: typeof p.likes === 'number' ? p.likes : rndInt(500, 20000),
           likedByUser: false,
-          comments: Array.isArray(p.comments) ? p.comments.map(c => ({
-            from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
-          })) : _xhsPresetComments(charName, charLast2, rndInt, ts, {type:'general'}),
+          comments: (() => {
+            const aiComments = Array.isArray(p.comments) ? p.comments.map(c => ({
+              from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
+            })) : [];
+            // 用预置评论补满10条
+            if (aiComments.length < 10) {
+              const preset = _xhsPresetComments(charName, charLast2, rndInt, ts, {type:'general'});
+              preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
+            }
+            return aiComments;
+          })(),
           time: ts(),
           date: todayStr,
         }));
