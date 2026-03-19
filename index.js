@@ -2422,6 +2422,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow: 0 3px 14px rgba(109,40,217,.45) !important;
 }
 .rp-compose-post-btn:active { opacity:.75 !important; }
+/* ── XHS 标签按钮 ── */
+.rp-xhs-tag-btn{background:#fff0f2;color:#ff2442;border:1px solid #ffc0ca;border-radius:16px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
+.rp-xhs-tag-btn:hover{background:#ffe0e6}
+.rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important}
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
@@ -2577,7 +2581,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-attach-panel{background:#111128;border-top-color:rgba(255,255,255,.07)}
 /* FIX #4: wallpaper layer */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
-.rp-view{z-index:1}
+.rp-view{z-index:1;position:relative}
 
 /* ══ LUDO GAME - Candy Garden 糖果花园 ══ */
 #rp-view-game{background:transparent;display:flex;flex-direction:column}
@@ -2934,6 +2938,9 @@ const STATE = {
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
   xhsFeed: [],
+  xhsCurrentPost: null,
+  xhsSelectedTag: '日常',
+  xhsReplyToCidx: null,
   wallpaper: null,
   darkMode: false,
   avatars: {},
@@ -3420,9 +3427,50 @@ const HTML = `
           <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
             <button class="rp-back" data-to="home" style="color:#ff2442">‹</button>
             <span class="rp-nav-title" style="color:#ff2442;font-weight:800">小红书</span>
-            <button id="rp-xhs-refresh" title="刷新" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">↻</button>
+            <div style="display:flex;gap:4px;align-items:center">
+              <button id="rp-xhs-compose" title="发笔记" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">✏️</button>
+              <button id="rp-xhs-refresh" title="刷新" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">↻</button>
+            </div>
           </div>
-          <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:8px 10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start"></div>
+          <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:6px 10px 14px"></div>
+        </div>
+
+        <!-- 小红书详情页 -->
+        <div id="rp-view-xhs-detail" class="rp-view" style="display:none;flex-direction:column;background:#fff">
+          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
+            <button class="rp-back" data-to="xhs" style="color:#ff2442">‹</button>
+            <span class="rp-nav-title" style="color:#ff2442;font-weight:700">帖子详情</span>
+            <span></span>
+          </div>
+          <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 70px"></div>
+          <div id="rp-xhs-detail-input-bar" style="position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ffe4e8;display:flex;align-items:center;padding:6px 10px;gap:8px">
+            <input id="rp-xhs-detail-input" type="text" placeholder="发表评论…" autocomplete="off" style="flex:1;border:1px solid #ffc0ca;border-radius:20px;padding:6px 12px;font-size:12px;outline:none"/>
+            <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer">发送</button>
+          </div>
+        </div>
+
+        <!-- 小红书发帖 -->
+        <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column;background:#fff">
+          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
+            <button class="rp-back" data-to="xhs" style="color:#ff2442">取消</button>
+            <span class="rp-nav-title" style="color:#ff2442;font-weight:700">发笔记</span>
+            <button id="rp-xhs-post-btn" style="background:#ff2442;color:#fff;border:none;border-radius:16px;padding:4px 14px;font-size:12px;cursor:pointer;font-weight:600">发布</button>
+          </div>
+          <div style="padding:16px 14px;flex:1;overflow-y:auto">
+            <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid #ffe4e8;padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box"/>
+            <textarea id="rp-xhs-post-body" placeholder="分享一下你的故事…" rows="6" style="width:100%;border:1px solid #ffe4e8;border-radius:10px;padding:10px;font-size:13px;outline:none;resize:none;box-sizing:border-box;line-height:1.6"></textarea>
+            <div style="margin-top:12px">
+              <div style="font-size:11px;color:#999;margin-bottom:6px">选择话题标签</div>
+              <div id="rp-xhs-tag-row" style="display:flex;flex-wrap:wrap;gap:6px">
+                <button class="rp-xhs-tag-btn" data-tag="日常">＃日常</button>
+                <button class="rp-xhs-tag-btn" data-tag="随想">＃随想</button>
+                <button class="rp-xhs-tag-btn" data-tag="情感">＃情感</button>
+                <button class="rp-xhs-tag-btn" data-tag="碎碎念">＃碎碎念</button>
+                <button class="rp-xhs-tag-btn" data-tag="求安慰">＃求安慰</button>
+                <button class="rp-xhs-tag-btn" data-tag="八卦">＃八卦</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- 发朋友圈 -->
@@ -4074,6 +4122,59 @@ function bindUI() {
     renderXHSFeed(true);
   });
 
+  // 小红书 - 点击卡片进详情
+  $(document).on('click', '.rp-xhs-card', function() {
+    const postId = $(this).data('xhsid');
+    if (postId) openXHSDetail(postId);
+  });
+
+  // 小红书 - 发帖按钮
+  $(document).on('click', '#rp-xhs-compose', function() {
+    STATE.xhsSelectedTag = '日常';
+    $('.rp-xhs-tag-btn').removeClass('rp-xhs-tag-selected');
+    go('xhs-compose');
+  });
+
+  // 小红书 - 标签选择
+  $(document).on('click', '.rp-xhs-tag-btn', function() {
+    $('.rp-xhs-tag-btn').removeClass('rp-xhs-tag-selected');
+    $(this).addClass('rp-xhs-tag-selected');
+    STATE.xhsSelectedTag = $(this).data('tag');
+  });
+
+  // 小红书 - 发布帖子
+  $(document).on('click', '#rp-xhs-post-btn', function() {
+    postUserXHS();
+  });
+
+  // 小红书 - 详情页点赞
+  $(document).on('click', '#rp-xhs-like-btn', function() {
+    const postId = $(this).data('postid') || STATE.xhsCurrentPost;
+    if (postId) toggleXHSLike(postId);
+  });
+
+  // 小红书 - 详情页发评论
+  $(document).on('click', '#rp-xhs-detail-send', function() {
+    const text = $('#rp-xhs-detail-input').val().trim();
+    if (!text || !STATE.xhsCurrentPost) return;
+    sendXHSComment(STATE.xhsCurrentPost, text, STATE.xhsReplyToCidx ?? null);
+  });
+  $(document).on('keydown', '#rp-xhs-detail-input', function(e) {
+    if (e.key === 'Enter') {
+      const text = $(this).val().trim();
+      if (!text || !STATE.xhsCurrentPost) return;
+      sendXHSComment(STATE.xhsCurrentPost, text, STATE.xhsReplyToCidx ?? null);
+    }
+  });
+
+  // 小红书 - 点击评论中的"回复"
+  $(document).on('click', '[data-reply-cidx]', function() {
+    const cidx = parseInt($(this).data('reply-cidx'));
+    const uname = $(this).data('reply-uname');
+    STATE.xhsReplyToCidx = cidx;
+    $('#rp-xhs-detail-input').val('').attr('placeholder', `回复 @${uname}…`).focus();
+  });
+
   $(document).on('click', '[data-app="api-settings"]', function() {
     lgFillAPIView();
     go('api-settings');
@@ -4636,6 +4737,17 @@ function go(view) {
   }
   if (view === 'xhs') {
     renderXHSFeed(false);
+  }
+  if (view === 'xhs-detail') {
+    // xhsCurrentPost 已在 openXHSDetail 中设置，这里只确保输入框重置
+    STATE.xhsReplyToCidx = null;
+    $('#rp-xhs-detail-input').val('').attr('placeholder','发表评论…');
+  }
+  if (view === 'xhs-compose') {
+    // 默认选中第一个标签
+    if (!STATE.xhsSelectedTag) STATE.xhsSelectedTag = '日常';
+    $('.rp-xhs-tag-btn').removeClass('rp-xhs-tag-selected');
+    $(`.rp-xhs-tag-btn[data-tag="${STATE.xhsSelectedTag}"]`).addClass('rp-xhs-tag-selected');
   }
 }
 
@@ -6919,60 +7031,121 @@ function renderMoments() {
   });
 }
 
-// 小红书封面色池
-const XHS_COVER_COLORS = [
-  'linear-gradient(135deg,#ffd6e0,#ffacc7)',
-  'linear-gradient(135deg,#c9e4ff,#a0c4ff)',
-  'linear-gradient(135deg,#d4f5d4,#95e1a0)',
-  'linear-gradient(135deg,#ffe8c0,#ffc87a)',
-  'linear-gradient(135deg,#e8d5ff,#c9a0ff)',
-  'linear-gradient(135deg,#ffd6d6,#ff9a9a)',
-  'linear-gradient(135deg,#d6f5f5,#80e0e0)',
-];
+// ================================================================
+// 小红书 - 完整重写
+// ================================================================
 
-const XHS_EMOJIS = ['🌸','✨','💫','🎀','🌿','🍵','🌙','🎵','📖','🌅','💭','🌷'];
-
+// 固定帖子模板（路人视角，围绕 charName/userName 议论）
 function buildXHSFeedItems() {
   const ctx = getContext() || {};
-  const charName = ctx?.name2 || ctx?.name || '角色';
-  const userName = ctx?.name1 || '我';
+  const charName = ctx?.name2 || ctx?.name || 'Sinclair';
+  const charLast = charName.split(/\s+/).pop() || charName; // 取姓
   const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const t = `${hh}:${mm}`;
-
-  const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
   const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  const ts = () => { const h=rndInt(8,23),m=rndInt(0,59); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; };
 
-  const posts = [
-    { user: '城市观察员🏙️', title: `关于"${charName}"的那件事`, body: `说实话我一开始也没想到会发展成这样，光看表面真的看不出来什么。`, tag: '日常观察', likes: rndInt(120,3200) },
-    { user: '深夜碎碎念✨', title: '有些人真的很难懂', body: `跟朋友说了${charName}最近的事，她说这种人她见过，建议我就当没发生。`, tag: '情感', likes: rndInt(80,890) },
-    { user: `${userName.slice(0,1)}同学的好友🌸`, title: '今天有点小感慨', body: `城市里每个人都有自己的故事，只是我们不一定都看得见。`, tag: '随想', likes: rndInt(45,560) },
-    { user: '吃瓜观众甲😎', title: `【实名好奇】${charName}到底是什么来头`, body: `评论区有没有懂的，一直看到这个名字，查了一下信息挺少的，好神秘。`, tag: '八卦', likes: rndInt(200,4800) },
-    { user: '城市生活记录🌿', title: '最近在思考一个问题', body: `当你和一个人产生交集的时候，你会想主动了解对方吗？还是等对方先开口？`, tag: '思考', likes: rndInt(150,2100) },
-    { user: `路人乙🎵`, title: '说个不太相关的', body: `今晚散步遇到一对很好看的男女，不认识但感觉气场很强，就这样。`, tag: '生活', likes: rndInt(30,430) },
-    { user: '晚安特供📖', title: `${charName}相关 有了解的来`, body: `看到有人讨论，进来凑个热闹。有没有一手资料的朋友。`, tag: '求料', likes: rndInt(310,5600) },
-    { user: '普通观察者🌙', title: '不评价 只记录', body: `很多事情在外人看来只是八卦，对当事人来说可能是很重要的转折。`, tag: '随想', likes: rndInt(60,780) },
+  // 路人网友库（八卦体）
+  const strangerPosts = [
+    {
+      user: '城市八卦速递🏙️', tag: '八卦',
+      title: `吃到瓜了吗？听说${charLast}家那位最近好像出事了`,
+      body: `不是我要说，那天在咖啡馆亲耳听到旁边桌在讨论，说的就是${charName}，具体内容不好多说，但感觉挺复杂的……评论区有没有知情人士？`,
+      likes: rndInt(320, 5800), comments: []
+    },
+    {
+      user: '深夜情感观察室✨', tag: '情感',
+      title: '有没有人觉得这种关系很微妙',
+      body: `年龄差这么大的两个人，一个是圈子里有头有脸的，一个还是学生，真的很难说清楚其中的权力关系。各位怎么看？`,
+      likes: rndInt(890, 12000), comments: []
+    },
+    {
+      user: '路过不路过🌿', tag: '随想',
+      title: '不说名字，你们猜猜我说的是谁',
+      body: `某位圈内人，姓${charLast}，最近的动向引发了不少讨论。我就说这么多，懂的都懂。`,
+      likes: rndInt(150, 3200), comments: []
+    },
+    {
+      user: '吃瓜第一线😎', tag: '八卦',
+      title: `【速报】关于${charName}的最新动态`,
+      body: `消息刚出，细节还在核实中。反正我的信息来源一直很准，大家先留意一下。有新进展我再更新。`,
+      likes: rndInt(1200, 28000), comments: []
+    },
+    {
+      user: '社会观察者碎碎念💭', tag: '碎碎念',
+      title: '有钱有地位的人，规则真的不一样吗',
+      body: `最近看到一个案例，就是关于${charLast}家的，不想评价对错，就是觉得普通人换个立场估计早就被指指点点了。唉。`,
+      likes: rndInt(200, 4100), comments: []
+    },
+    {
+      user: '午夜感慨ing🌙', tag: '随想',
+      title: '这种事为什么总是说不清楚',
+      body: `说是养父女关系，但那种相处方式……我不懂，也不敢评价，就是觉得外人很难理解。`,
+      likes: rndInt(450, 8700), comments: []
+    },
+    {
+      user: '八卦小报记者📰', tag: '八卦',
+      title: `有没有人整理过${charName}的完整资料`,
+      body: `搜了一下信息很少，感觉这个人刻意低调。但圈子里的人好像都知道他，神秘感拉满。求懂的人科普一下。`,
+      likes: rndInt(670, 9300), comments: []
+    },
+    {
+      user: '真实故事搬运工🎵', tag: '日常',
+      title: '我朋友跟我说了一件事，感觉挺震撼的',
+      body: `她认识的人里有个跟${charLast}家有交集的，说了一些事，我听完沉默了很久。有些关系真的太复杂，外人根本看不透。`,
+      likes: rndInt(88, 1900), comments: []
+    },
   ];
 
   const pick = (arr, n) => {
-    const c = [...arr];
-    const out = [];
-    while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
+    const c = [...arr]; const out = [];
+    while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
     return out;
   };
-
-  return pick(posts, 6).map((p, i) => ({
+  return pick(strangerPosts, 6).map((p, i) => ({
     id: `xhs_${Date.now()}_${i}`,
+    from: 'stranger',
     user: p.user,
     title: p.title,
     body: p.body,
     tag: p.tag,
-    likes: p.likes,
-    cover: XHS_COVER_COLORS[i % XHS_COVER_COLORS.length],
-    emoji: rnd(XHS_EMOJIS),
-    time: t,
+    likes: rndInt(0,1) === 0 ? p.likes : p.likes + rndInt(0, 50), // 轻微随机
+    likedByUser: false,
+    comments: p.comments || [],
+    time: ts(),
+    date: todayStr,
   }));
+}
+
+// 渲染单条帖子卡片（单列）
+function renderXHSCard(p) {
+  const likeK = p.likes >= 10000 ? (p.likes/10000).toFixed(1)+'w' : p.likes >= 1000 ? (p.likes/1000).toFixed(1)+'k' : p.likes;
+  const commentCount = p.comments ? p.comments.length : 0;
+  const isUser = p.from === 'user';
+  const avatarStyle = isUser
+    ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
+    : 'background:linear-gradient(135deg,#aaa,#777);color:#fff';
+  const avatarText = isUser ? '我' : (p.user || '').slice(0,1);
+  return `
+    <div class="rp-xhs-card" data-xhsid="${p.id}" style="background:#fff;border-radius:12px;margin-bottom:8px;padding:12px 14px;box-shadow:0 1px 4px rgba(255,36,66,.07);cursor:pointer;border:1px solid #fff0f2">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:600;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.user)}</div>
+          <div style="font-size:10px;color:#bbb">${p.time || ''}</div>
+        </div>
+        <div style="font-size:10px;background:#fff0f2;color:#ff2442;padding:2px 8px;border-radius:10px;flex-shrink:0;font-weight:600">#${escHtml(p.tag)}</div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.5;margin-bottom:4px">${escHtml(p.title)}</div>
+      <div style="font-size:12px;color:#666;line-height:1.6;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${escHtml(p.body)}</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:8px;border-top:1px solid #fff0f2">
+        <div style="font-size:11px;color:${p.likedByUser?'#ff2442':'#bbb'};display:flex;align-items:center;gap:3px">${p.likedByUser?'❤️':'🤍'} ${likeK}</div>
+        <div style="font-size:11px;color:#bbb;display:flex;align-items:center;gap:3px">💬 ${commentCount > 0 ? commentCount+'条' : '评论'}</div>
+        <div style="flex:1"></div>
+        <div style="font-size:10px;color:#ddd">${p.date||''}</div>
+      </div>
+    </div>
+  `;
 }
 
 function renderXHSFeed(forceRefresh) {
@@ -6980,32 +7153,242 @@ function renderXHSFeed(forceRefresh) {
   if (!box.length) return;
   if (!STATE.xhsFeed || STATE.xhsFeed.length === 0 || forceRefresh) {
     STATE.xhsFeed = buildXHSFeedItems();
+    saveState();
   }
   box.empty();
   const list = STATE.xhsFeed || [];
   if (!list.length) {
-    box.append('<div style="grid-column:1/-1;text-align:center;color:#ff2442;padding:40px;font-size:13px">暂无内容</div>');
+    box.append('<div style="text-align:center;color:#ff2442;padding:40px;font-size:13px">暂无内容</div>');
     return;
   }
-  list.forEach(p => {
-    const likeK = p.likes >= 1000 ? (p.likes/1000).toFixed(1) + 'k' : p.likes;
-    box.append(`
-      <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(255,36,66,.08);cursor:pointer" onclick="this.querySelector('.xhs-full').style.display=this.querySelector('.xhs-full').style.display==='block'?'none':'block'">
-        <div style="height:110px;background:${p.cover};display:flex;align-items:center;justify-content:center;font-size:36px;flex-direction:column;gap:4px">
-          <div>${p.emoji}</div>
-          <div style="font-size:9px;background:rgba(255,36,66,.15);color:#ff2442;padding:2px 7px;border-radius:10px;font-weight:600">#${escHtml(p.tag)}</div>
-        </div>
-        <div style="padding:8px 9px 6px">
-          <div style="font-size:12px;font-weight:700;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${escHtml(p.title)}</div>
-          <div class="xhs-full" style="display:none;font-size:11px;color:#555;line-height:1.5;margin-bottom:5px">${escHtml(p.body)}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
-            <div style="font-size:10px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">${escHtml(p.user)}</div>
-            <div style="font-size:10px;color:#ff2442;display:flex;align-items:center;gap:2px">❤️ ${likeK}</div>
+  // 用户帖子置顶
+  const userPosts = list.filter(p => p.from === 'user');
+  const otherPosts = list.filter(p => p.from !== 'user');
+  [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
+}
+
+// 打开详情页
+function openXHSDetail(postId) {
+  const post = (STATE.xhsFeed || []).find(p => p.id === postId);
+  if (!post) return;
+  STATE.xhsCurrentPost = postId;
+  renderXHSDetail(post);
+  go('xhs-detail');
+}
+
+function renderXHSDetail(post) {
+  const body = $('#rp-xhs-detail-body');
+  if (!body.length) return;
+  const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
+  const isUser = post.from === 'user';
+  const avatarStyle = isUser
+    ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
+    : 'background:linear-gradient(135deg,#aaa,#777);color:#fff';
+  const avatarText = isUser ? '我' : (post.user||'').slice(0,1);
+
+  let commentsHtml = '';
+  if (post.comments && post.comments.length > 0) {
+    commentsHtml = post.comments.map((c, idx) => {
+      const replyPart = (c.replyTo !== null && c.replyTo !== undefined && post.comments[c.replyTo])
+        ? `<span style="color:#999">回复 </span><span style="color:#ff2442">@${escHtml(post.comments[c.replyTo].user)}</span>：`
+        : '';
+      const isMe = c.from === 'user';
+      const cavStyle = isMe
+        ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
+        : 'background:linear-gradient(135deg,#ccc,#aaa);color:#fff';
+      const cavText = isMe ? '我' : (c.user||'').slice(0,1);
+      return `
+        <div class="rp-xhs-comment" data-cidx="${idx}" style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #fff5f6">
+          <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${cavStyle}">${escHtml(cavText)}</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:12px;font-weight:600;color:#333">${escHtml(c.user)}</span>
+              <span style="font-size:10px;color:#ccc">${c.time||''}</span>
+            </div>
+            <div style="font-size:12px;color:#444;line-height:1.6">${replyPart}${escHtml(c.text)}</div>
+            <div style="font-size:10px;color:#ff2442;margin-top:3px;cursor:pointer" data-reply-cidx="${idx}" data-reply-uname="${escHtml(c.user)}">回复</div>
           </div>
         </div>
+      `;
+    }).join('');
+  } else {
+    commentsHtml = '<div style="text-align:center;color:#ddd;font-size:12px;padding:20px 0">暂无评论，来抢沙发～</div>';
+  }
+
+  body.html(`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#333">${escHtml(post.user)}</div>
+        <div style="font-size:10px;color:#bbb">${post.date||''} ${post.time||''} · #${escHtml(post.tag)}</div>
       </div>
-    `);
+    </div>
+    <div style="font-size:15px;font-weight:800;color:#1a1a1a;line-height:1.5;margin-bottom:10px">${escHtml(post.title)}</div>
+    <div style="font-size:13px;color:#444;line-height:1.8;margin-bottom:16px">${escHtml(post.body)}</div>
+    <div style="display:flex;align-items:center;gap:16px;padding:10px 0;border-top:1px solid #fff0f2;border-bottom:1px solid #fff0f2;margin-bottom:14px">
+      <button id="rp-xhs-like-btn" data-postid="${post.id}" style="background:none;border:none;cursor:pointer;font-size:13px;color:${post.likedByUser?'#ff2442':'#bbb'};display:flex;align-items:center;gap:4px">${post.likedByUser?'❤️':'🤍'} <span id="rp-xhs-like-count">${likeK}</span></button>
+      <div style="font-size:13px;color:#bbb;display:flex;align-items:center;gap:4px">💬 <span>${(post.comments||[]).length}</span></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px">全部评论 · ${(post.comments||[]).length}条</div>
+    <div id="rp-xhs-comments-list">${commentsHtml}</div>
+  `);
+}
+
+// 用户发小红书帖子
+function postUserXHS() {
+  const title = $('#rp-xhs-post-title').val().trim();
+  const body = $('#rp-xhs-post-body').val().trim();
+  const tag = $('#rp-xhs-tag-btn-selected').length ? $('#rp-xhs-tag-btn-selected').data('tag') : (STATE.xhsSelectedTag || '日常');
+  if (!body) { alert('请输入内容'); return; }
+  const ctx = getContext() || {};
+  const userName = ctx?.name1 || '我';
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const dateStr = `${now.getMonth()+1}-${now.getDate()}`;
+  const post = {
+    id: `xhs_user_${Date.now()}`,
+    from: 'user',
+    user: userName,
+    title: title || body.slice(0,20) + (body.length>20?'…':''),
+    body,
+    tag,
+    likes: 0,
+    likedByUser: false,
+    comments: [],
+    time: ts,
+    date: dateStr,
+  };
+  STATE.xhsFeed = STATE.xhsFeed || [];
+  STATE.xhsFeed.unshift(post);
+  saveState();
+  // 清空表单
+  $('#rp-xhs-post-title').val('');
+  $('#rp-xhs-post-body').val('');
+  $('.rp-xhs-tag-btn').removeClass('rp-xhs-tag-selected');
+  STATE.xhsSelectedTag = '日常';
+  go('xhs');
+  renderXHSFeed(false);
+  // 延迟触发陌生网友评论
+  setTimeout(() => generateXHSStrangerComments(post.id), 2000);
+}
+
+// AI 生成陌生网友评论（多性格）
+async function generateXHSStrangerComments(postId) {
+  const post = (STATE.xhsFeed || []).find(p => p.id === postId);
+  if (!post || post.from !== 'user') return;
+  const ctx = getContext() || {};
+  const charName = ctx?.name2 || ctx?.name || 'Sinclair';
+  const charLast = charName.split(/\s+/).pop() || charName;
+
+  const sysMsg = `你是一个小红书评论模拟器。用户刚在小红书发了一篇帖子，你需要模拟 5 位性格各异的陌生网友（不认识用户，也不是故事中的角色）的评论。
+
+背景信息：
+- 用户与一个名叫 ${charName}（姓${charLast}）的人有特殊关系（养父与养女），这件事在网络上有一定讨论度
+- 网友们可能猜测到用户说的是 ${charLast} 家的事，但用猜测/暗示语气，不要直接点名
+
+性格类型（每条评论必须对应不同类型，严格各一条）：
+1. 吃瓜型：求细节，催更，加油起哄
+2. 担心型：关心用户情绪，温柔问候
+3. 阴阳怪气型：表面正常实则阴阳，暗讽或看戏
+4. 无脑力挺型：不管怎样都支持用户，冲动型
+5. 猜测爆瓜型：用猜测语气点出 ${charLast} 的名字或身份，带惊讶感
+
+要求：
+- 每条评论10-25字，口语化，符合小红书评论风格
+- 网友昵称要真实（带emoji），各不相同
+- 严格按 JSON 数组返回，格式：[{"user":"昵称","text":"评论内容","type":"类型"}]
+- 只返回 JSON，不要其他内容`;
+
+  const prompt = `用户帖子标题：${post.title}\n用户帖子内容：${post.body}`;
+  const resp = await lgCallAPI(prompt, 400, sysMsg);
+  if (!resp) return;
+
+  let items = [];
+  try {
+    const match = resp.match(/\[[\s\S]*\]/);
+    if (match) items = JSON.parse(match[0]);
+  } catch(e) { return; }
+  if (!Array.isArray(items) || items.length === 0) return;
+
+  const now = new Date();
+  const baseTs = now.getTime();
+  items.forEach((item, i) => {
+    if (!item.user || !item.text) return;
+    const t = new Date(baseTs + (i+1)*15000);
+    const ts = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    post.comments = post.comments || [];
+    post.comments.push({ from: 'stranger_'+i, user: item.user, text: item.text, time: ts, replyTo: null });
   });
+  saveState();
+  // 如果当前正在看这篇帖子的详情页，刷新评论区
+  if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
+    renderXHSDetail(post);
+  }
+}
+
+// 用户在详情页发评论
+async function sendXHSComment(postId, text, replyToCidx) {
+  const post = (STATE.xhsFeed || []).find(p => p.id === postId);
+  if (!post || !text.trim()) return;
+  const ctx = getContext() || {};
+  const userName = ctx?.name1 || '我';
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  post.comments = post.comments || [];
+  const replyToIdx = (replyToCidx !== null && replyToCidx !== undefined && post.comments[replyToCidx]) ? replyToCidx : null;
+  post.comments.push({ from: 'user', user: userName, text: text.trim(), time: ts, replyTo: replyToIdx });
+  STATE.xhsReplyToCidx = null;
+  $('#rp-xhs-detail-input').val('').attr('placeholder','发表评论…');
+  saveState();
+  renderXHSDetail(post);
+  // 触发一个陌生网友接话（概率70%）
+  if (Math.random() < 0.7) {
+    setTimeout(() => generateXHSReplyToComment(postId, text.trim(), userName), 1200);
+  }
+}
+
+// 陌生网友回复用户评论
+async function generateXHSReplyToComment(postId, userComment, userName) {
+  const post = (STATE.xhsFeed || []).find(p => p.id === postId);
+  if (!post) return;
+  const ctx = getContext() || {};
+  const charName = ctx?.name2 || ctx?.name || 'Sinclair';
+  const charLast = charName.split(/\s+/).pop() || charName;
+  const styles = ['吃瓜追问','担心关心','阴阳怪气','无脑力挺','路人质疑'];
+  const style = styles[Math.floor(Math.random()*styles.length)];
+  const recentComments = (post.comments||[]).slice(-4).map(c=>`${c.user}：${c.text}`).join('\n');
+
+  const sysMsg = `你是一个小红书陌生网友，性格类型：${style}。
+帖子背景：涉及用户与 ${charName}（姓${charLast}）的特殊关系（养父养女）。
+用口语化中文回复用户的评论，10-20字，符合小红书风格，只返回评论内容本身。`;
+  const prompt = `帖子：${post.title}\n近期评论：\n${recentComments}\n用户${userName}说：「${userComment}」\n你的回复：`;
+  const resp = await lgCallAPI(prompt, 80, sysMsg);
+  if (!resp) return;
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  // 生成一个随机昵称
+  const nickPool = ['路过看热闹的🍿','城市观察员🏙️','深夜分析师✨','吃瓜群众甲😎','沉默的旁观者🌿','真诚路人乙💭','在线围观中🎪','好奇的小透明🌸'];
+  const nick = nickPool[Math.floor(Math.random()*nickPool.length)];
+  // 找到用户刚才那条评论的 index，作为 replyTo
+  const _revIdx = [...post.comments].reverse().findIndex(c => c.from === 'user');
+  const userCidx = _revIdx >= 0 ? post.comments.length - 1 - _revIdx : null;
+  post.comments.push({ from: 'stranger_reply', user: nick, text: resp.trim().replace(/^[「"']|[」"']$/g,''), time: ts, replyTo: userCidx !== null && userCidx < post.comments.length ? userCidx : null });
+  saveState();
+  if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
+    renderXHSDetail(post);
+  }
+}
+
+// XHS 点赞切换
+function toggleXHSLike(postId) {
+  const post = (STATE.xhsFeed || []).find(p => p.id === postId);
+  if (!post) return;
+  post.likedByUser = !post.likedByUser;
+  post.likes = post.likedByUser ? post.likes + 1 : Math.max(0, post.likes - 1);
+  saveState();
+  // 更新详情页按钮（如果在详情页）
+  const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
+  $('#rp-xhs-like-btn').css('color', post.likedByUser ? '#ff2442' : '#bbb').html(`${post.likedByUser?'❤️':'🤍'} <span id="rp-xhs-like-count">${likeK}</span>`);
 }
 
 function escHtml(str) {
