@@ -7378,11 +7378,17 @@ async function buildXHSFeedWithAI(appendMode) {
   const chosenTopics = pick3(topicPool);
 
   try {
-    const sysMsg = `你是一个小红书内容生成器。生成3条风格各异的帖子，每条10条评论。
-帖子要求：陌生路人/网友视角，口语化，有细节不当谜语人，话题多样不要全是同一种。
-评论要求：10条评论风格各异——短评（10-15字吐槽/阴阳/共情）和长评（懂哥深度分析，60-100字）混搭，至少2条长评。
+    const sysMsg = `你是一个小红书内容生成器。严格按要求生成3条帖子，每条各自独立，内容和评论绝对不能重复。
+帖子要求：
+- 话题严格对应下方给出的3个不同方向，不要全写成同一种八卦
+- 陌生路人/网友视角，口语化，有具体细节，正文60-100字
+
+评论要求（每条帖子各自生成10条，三条帖子的评论内容不能相同）：
+- 必须包含：吐槽型（1条）、阴阳型（1条）、共情型（1条）、补料/爆料型（1条）、理性分析型（1条）、懂哥长评（2条，60-100字的深度分析）、看热闹型（1条）、质疑型（1条）、支持楼主型（1条）
+- 每条评论的昵称和内容都不能跟其他帖子的评论相同
+
 只返回JSON数组，格式：
-[{"user":"昵称emoji","tag":"标签","title":"标题","body":"正文60-100字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论内容"}]}]
+[{"user":"昵称emoji","tag":"标签","title":"标题","body":"正文","likes":数字,"comments":[{"user":"昵称emoji","text":"评论内容"}]}]
 共3条，不要有其他文字。`;
 
     const charInfo = charPersona ? charPersona.slice(0, 300) : `角色名：${charName}`;
@@ -7397,9 +7403,10 @@ async function buildXHSFeedWithAI(appendMode) {
           const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
             from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
           })) : [];
-          // 不足10条时用预置补齐
+          // 不足10条时用预置补齐，每个帖子用不同 type 避免重复
           if (aiComments.length < 10) {
-            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
+            const fillTypes = ['witness', 'relationship', 'social', 'info', 'general'];
+            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type: fillTypes[i % fillTypes.length]});
             preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
           }
           return {
@@ -7476,7 +7483,7 @@ function buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPers
     tag: p.tag,
     likes: p.likes,
     likedByUser: false,
-    comments: _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'}),
+    comments: _xhsPresetComments(charName, charLast, rndInt, ts, {type: ['witness','relationship','social','info','general','witness'][i] || 'general'}),
     time: ts(),
     date: todayStr,
   }));
