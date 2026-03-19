@@ -7275,6 +7275,38 @@ function _renderXHSList(box) {
   [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
 }
 
+// XHS 专用 API 调用：优先自定义API，fallback 用 generateQuietPrompt（真正的静默生成）
+async function xhsCallAPI(prompt, sysMsg) {
+  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
+  // 1. 自定义 API
+  if (cfg.mode === 'custom' && cfg.url && cfg.key) {
+    try {
+      const msgs = [];
+      if (sysMsg) msgs.push({ role: 'system', content: sysMsg });
+      msgs.push({ role: 'user', content: prompt });
+      const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.key}` },
+        body: JSON.stringify({ model: cfg.model || 'deepseek-chat', messages: msgs, max_tokens: 800, temperature: 0.9 })
+      });
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content?.trim();
+      if (text) return text;
+    } catch(e) { console.warn('[XHS] custom API error:', e.message); }
+    return null;
+  }
+  // 2. ST 主 API：用 generateQuietPrompt（真正静默，不写聊天不触发事件）
+  try {
+    const { generateQuietPrompt } = await import('../../../../script.js').catch(() => ({}));
+    if (typeof generateQuietPrompt === 'function') {
+      const fullPrompt = sysMsg ? sysMsg + '\n\n' + prompt : prompt;
+      const resp = await generateQuietPrompt({ quietPrompt: fullPrompt, responseLength: 800 });
+      if (resp && resp.trim()) return resp.trim();
+    }
+  } catch(e) { console.warn('[XHS] generateQuietPrompt error:', e.message); }
+  return null;
+}
+
 async function buildXHSFeedWithAI(forceRefresh) {
   const now = new Date();
   const todayStr = `${now.getMonth()+1}-${now.getDate()}`;
@@ -7283,57 +7315,56 @@ async function buildXHSFeedWithAI(forceRefresh) {
 
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
 
-  // 检查是否配置了自定义 API（没有则不调任何 API，直接用本地模板）
-  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
-  const hasCustomAPI = !!(cfg.mode === 'custom' && cfg.url && cfg.key);
+  // 先读角色信息（getMomentsCtx 只读数据，不调生成API）
+  let charName = '', userName = '', charPersona = '', recentChat = '';
+  try {
+    const ctx = await getMomentsCtx();
+    charName = ctx.charName || ''; userName = ctx.userName || '';
+    charPersona = ctx.charPersona || ''; recentChat = ctx.recentChat || '';
+  } catch(e) {
+    const ctx0 = getContext() || {};
+    charName = ctx0?.name2 || ctx0?.name || 'TA';
+    userName = ctx0?.name1 || '用户';
+  }
+  const charLast = charName.split(/\s+/).pop() || charName || 'TA';
 
-  if (hasCustomAPI) {
-    // 有自定义 API → 调 AI 生成
-    try {
-      const { charName, userName, charPersona, recentChat } = await getMomentsCtx();
-      const charLast = (charName||'').split(/\s+/).pop() || charName || 'TA';
-
-      const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
+  // 调 AI（自定义API 或 ST generateQuietPrompt，由 xhsCallAPI 路由）
+  try {
+        const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
 要求：帖子作者是陌生路人/目击者，内容围绕charName和userName的关系，有具体细节不当谜语人，语气口语化。
 每条帖子附带5条评论，补料/阴阳/共情/猜测点名/理性分析各一种，有实质内容。
 只返回JSON，格式：[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]共6条。`;
 
-      const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
-      const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成6条小红书八卦帖子：`;
+    const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
+    const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成6条小红书八卦帖子：`;
 
-      const resp = await lgCallAPI(prompt, 800, sysMsg);
-      if (resp) {
-        let items = [];
-        try { const m = resp.match(/\[[\s\S]*\]/); if (m) items = JSON.parse(m[0]); } catch(e) {}
-        if (Array.isArray(items) && items.length > 0) {
-          const aiPosts = items.map((p, i) => {
-            const aiComments = Array.isArray(p.comments) ? p.comments.map(c => ({
-              from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
-            })) : [];
-            const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
-            preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
-            return {
-              id: `xhs_ai_${Date.now()}_${i}`, from: 'stranger',
-              user: p.user||`路人${i+1}🌿`, title: p.title||'', body: p.body||'',
-              tag: p.tag||'八卦', likes: typeof p.likes==='number' ? p.likes : rndInt(500,20000),
-              likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
-            };
-          });
-          STATE.xhsFeed = [...userPosts, ...aiPosts];
-          saveState();
-          _renderXHSList();
-          return;
-        }
+    const resp = await xhsCallAPI(prompt, sysMsg);
+    if (resp) {
+      let items = [];
+      try { const m = resp.match(/\[[\s\S]*\]/); if (m) items = JSON.parse(m[0]); } catch(e) {}
+      if (Array.isArray(items) && items.length > 0) {
+        const aiPosts = items.map((p, i) => {
+          const aiComments = Array.isArray(p.comments) ? p.comments.map(c => ({
+            from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
+          })) : [];
+          const preset = _xhsPresetComments(charName, charLast, rndInt, ts, {type:'general'});
+          preset.forEach(c => { if (aiComments.length < 10 && !aiComments.find(x=>x.user===c.user)) aiComments.push(c); });
+          return {
+            id: `xhs_ai_${Date.now()}_${i}`, from: 'stranger',
+            user: p.user||`路人${i+1}🌿`, title: p.title||'', body: p.body||'',
+            tag: p.tag||'八卦', likes: typeof p.likes==='number' ? p.likes : rndInt(500,20000),
+            likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
+          };
+        });
+        STATE.xhsFeed = [...userPosts, ...aiPosts];
+        saveState();
+        _renderXHSList();
+        return;
       }
-    } catch(e) { console.warn('[XHS] AI feed build failed', e); }
-  }
+    }
+  } catch(e) { console.warn('[XHS] AI feed build failed', e); }
 
-  // 无自定义 API 或 AI 失败 → 用基于角色信息的本地模板
-  const { charName, userName, charPersona } = await getMomentsCtx().catch(() => ({
-    charName: getContext()?.name2 || 'TA',
-    userName: getContext()?.name1 || '用户',
-    charPersona: '',
-  }));
+  // AI 失败 → fallback 本地模板
   STATE.xhsFeed = [...userPosts, ...buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona)];
   saveState();
   _renderXHSList();
