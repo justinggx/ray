@@ -2425,7 +2425,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── XHS 标签按钮 ── */
 .rp-xhs-tag-btn{background:#fff0f2;color:#ff2442;border:1px solid #ffc0ca;border-radius:16px;padding:4px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit}
 /* XHS 视图允许内部 flex 滚动 */
-#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{display:flex!important;flex-direction:column!important;overflow:hidden!important}
+/* XHS 视图：flex布局通过JS显示时设置，CSS不强制display */
+#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important}
 .rp-xhs-tag-btn:hover{background:#ffe0e6}
 .rp-xhs-tag-selected{background:#ff2442 !important;color:#fff !important;border-color:#ff2442 !important}
 /* ── MOMENT IMAGE ── */
@@ -4729,7 +4730,13 @@ function go(view) {
   if (view === 'api-settings') { lgFillAPIView(); }
   if (view === 'themes') { lgRenderThemePicker(); }
   $('.rp-view').hide();
-  $(`#rp-view-${view}`).show();
+  // xhs 系列视图需要 flex 布局，不能用 show()（会设成 block）
+  const xhsFlexViews = ['xhs','xhs-detail','xhs-compose'];
+  if (xhsFlexViews.includes(view)) {
+    $(`#rp-view-${view}`).css('display','flex');
+  } else {
+    $(`#rp-view-${view}`).show();
+  }
   $('#rp-home-ind').toggle(view !== 'lock');
   STATE.currentView = view;
 
