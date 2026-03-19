@@ -2941,6 +2941,8 @@ const STATE = {
   pendingMessages: [], // FIX3: 多条消息队列
   moments: [],
   xhsFeed: [],
+  xhsFeedPool: [],      // 完整帖子池，首屏只显示前3条
+  xhsDisplayCount: 3,   // 当前显示条数
   xhsCurrentPost: null,
   xhsSelectedTag: '日常',
   xhsReplyToCidx: null,
@@ -7053,7 +7055,7 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
   // postCtx: { type } 用于匹配对应评论组
   const type = postCtx && postCtx.type || 'general';
 
-  // 按帖子类型预置具体化评论
+  // 按帖子类型预置具体化评论（含懂哥长评，每池13-15条随机抽10）
   const commentsByType = {
     // 目击/现场帖
     witness: [
@@ -7067,6 +7069,9 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
       { user:'补充情报📎', text:`${charName}这个人圈子里一直有点争议，这不是第一次了` },
       { user:'保护当事人💙', text:'希望那个女生自己是清醒的，这种关系权力差太大了' },
       { user:'侦探模式开启🕵️', text:'年龄差、收养关系、那种相处方式……这几个词放一起细思极恐' },
+      { user:'懂行人深度分析📐', text:`说说我了解到的：${charLast}在他那个圈子里属于绝对的主导型人格，对亲密关系有极强的掌控需求。这类人对"自己人"的保护欲和占有欲基本是合并存在的——所以你们看到的那种氛围，不是偶然的，是他一贯的处事风格投射到这段关系里的结果。旁观者觉得奇怪很正常，当局者往往反而觉得是"被珍视"。` },
+      { user:'研究过类似案例🔬', text:`从依恋心理学角度讲，"救助者-被救助者"结构发展成情感纠缠是有迹可循的。${charLast}2020年收养，那时候女孩大概处于最脆弱、最需要安全感的阶段——在那个时间点建立起来的依附关系，边界感是很难后天建立的。这不是在为任何人开脱，只是解释为什么这段关系会发展成外界看起来这么"奇怪"的样子。` },
+      { user:'见过太多这种事😮💨', text:`在这个圈子边缘混了几年，${charLast}这类案例真的不少见。通常模式是：有钱有地位的男性，以某种"帮助"为名进入一个年轻女性的生命，逐渐建立起一种让对方很难脱离的情感结构。外人觉得不正常，当事人却往往觉得这就是世界运转的方式。这种关系里的"爱"可能是真实的，但权力结构带来的问题同样真实。` },
     ],
     // 关系质疑帖
     relationship: [
@@ -7075,11 +7080,14 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
       { user:'我有内部消息🤫', text:`听说${charLast}之前就有类似传闻，这不是孤例` },
       { user:'两边都了解的人👀', text:'那个女生我认识，她自己好像也很难说清楚自己的感受' },
       { user:'阴阳一下😌', text:'嗯嗯，有钱人家的事，我们这种人理解不了的，太深奥了' },
-      { user:'站女生这边🙋‍♀️', text:'不管怎样，这种关系里女生永远是弱势的那个，希望她好' },
+      { user:'站女生这边🙋♀️', text:'不管怎样，这种关系里女生永远是弱势的那个，希望她好' },
       { user:'补充瓜料🍉', text:`${charName}在业内口碑一直有争议，这件事其实圈子里早就在传` },
       { user:'理性但心疼😔', text:'说是父女但年龄差才二十出头，这真的很难不让人多想' },
-      { user:'经历过类似的😮‍💨', text:'这种关系真的很消耗人，希望当事人能想清楚' },
+      { user:'经历过类似的😮💨', text:'这种关系真的很消耗人，希望当事人能想清楚' },
       { user:'吃瓜+共情中🥲', text:'看完这帖子心里很不是滋味，说不上来什么感觉' },
+      { user:'做过功课的人📚', text:`我专门查过${charLast}的背景——他在圈子里的形象是非常"克制"的那种人，公开场合几乎不流露私人情感。所以他和养女之间那种隐约可见的亲密感，反而更说明问题：这不是他不懂分寸，是他选择了这样。一个那么在意形象的人，愿意让别人看到这些，本身就是一种表态。` },
+      { user:'关系动力学爱好者🧩', text:`有个细节我觉得很重要：从任何公开信息来看，那个女生在被收养之后的社交圈基本都在${charLast}可控范围内。这不一定是刻意的隔离，但结果是一样的——她的情感参照系基本就是他。在这种情况下谈"她是自愿的"，这个"自愿"本身就值得打问号，不是说她不真诚，而是她可能根本没有别的参照来知道什么是不正常的。` },
+      { user:'冷静但有点难受的路人🌧️', text:`说一个我自己有点矛盾的感受：看他们相处的描述，某种程度上能理解为什么对方会被吸引——那种被全力守护、被认真对待的感觉，对一个早年缺乏安全感的人来说是很难抗拒的。但恰恰是这一点让我觉得不舒服，因为这不是公平的相遇，这是一个成年人对一个孩子从最脆弱的时候开始建立的影响力。` },
     ],
     // 社会观察帖
     social: [
@@ -7088,15 +7096,18 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
       { user:'见过更离谱的😑', text:'这算什么，圈子里比这更炸的多了，只是没曝出来' },
       { user:'法律空白😰', text:'收养关系的边界本来就是法律灰色地带，根本没法追责' },
       { user:'媒体视角📰', text:'这种事如果当事人不自己发声，外人说再多也没用' },
-      { user:'无力感发言😶‍🌫️', text:'看多了这种新闻就麻了，有权有钱的人规则确实不一样' },
+      { user:'无力感发言😶🌫️', text:'看多了这种新闻就麻了，有权有钱的人规则确实不一样' },
       { user:'还是有正义的🌟', text:'希望有人能记录下来，有些事不能就这么过去了' },
       { user:'冷静看这件事🔎', text:`${charName}这个名字在某些圈子里一直有点微妙，不是第一次听到了` },
       { user:'当事人身边人👤', text:'我认识和他们有交集的人，那个氛围……真的很不一样' },
-      { user:'哎😮‍💨', text:'说多了又怕被找上门，就说这种事真的太微妙了' },
+      { user:'哎😮💨', text:'说多了又怕被找上门，就说这种事真的太微妙了' },
+      { user:'在这个行业里的人🏢', text:`${charLast}能维持到现在没有什么大的舆论危机，靠的不只是低调，是他对信息流向有很强的掌控意识。圈子里有些事大家心知肚明但不会说——不是因为觉得正常，是因为说出来的代价太大，而且最终也不会有什么结果。这是权力的另一种表现形式，比明面上的霸道更难处理。` },
+      { user:'研究权力结构的人🔩', text:`有个现象值得说：这类关系之所以能持续存在，很大程度上是因为社会对"自愿"的定义太简单了。"她没有反抗"不等于"她自愿"，"她说喜欢他"不等于"这段关系是健康的"。在${charLast}这种资源量级的人面前，"自愿"背后的条件结构根本不是普通人能想象的。` },
+      { user:'观察了很久才发言📝', text:`我在相关帖子底下潜水很久了，说几句：评论区总有人说"你们这是用道德绑架别人的感情"。但我想反问一下：如果这段关系里的权力是完全对等的，双方是在完全自由的状态下相遇相爱的，为什么要把收养关系保留那么久？那个名分对他们来说意味着什么？这不是道德问题，这是一个结构问题。` },
     ],
     // 资料科普帖
     info: [
-      { user:'我来科普🙋', text:`${charName}，${charLast}家，商界，低调，在某个圈子里很有地位，这些是公开信息` },
+      { user:'我来科普🙋', text:`${charName}，${charLast}家，商界低调，在某个圈子里很有地位，这些是公开信息` },
       { user:'补充背景📖', text:'收养的事当时在小范围有人知道，但他们一直没有公开过多细节' },
       { user:'认识他的人🤐', text:`${charLast}这个人我有朋友接触过，说话很有分寸，但某些行为让人看不透` },
       { user:'信息拼接中🗂️', text:'把最近几条相关帖子放一起看，能拼出一个比较清晰的轮廓' },
@@ -7106,6 +7117,9 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
       { user:'好奇宝宝发言❓', text:'养父女同居是正常的嘛？还是说他们有单独的住所？' },
       { user:'阴阳鉴定师😇', text:'嗯这很正常，有钱人家的收养方式本来就多种多样嘛' },
       { user:'真心希望没事🕊️', text:'不管背后是什么，希望那个女孩子是被善待的' },
+      { user:'情报收集完毕🗃️', text:`整理一下已知信息：${charLast}，收养时间2020年，养女当时未成年。之后两人基本以低调方式共同出现在一些私人场合，公开社媒上几乎没有记录。有意思的是，相关词条被主动清理过——不是自然消失，是被清理过。这本身说明了某种程度的信息管理意识，也说明他清楚这件事在外人眼里是什么性质。` },
+      { user:'把碎片拼起来的人🧩', text:`说一个细节：${charName}对外的人设一直是"低调、克制、重私生活"，但从现有信息看，他在某些私下场合对养女的那种占有式保护并不算低调——只是在他可控的圈子里。这说明他的"低调"是选择性的，不是真的回避关注，是在掌控谁能看到什么。这个逻辑想明白了，很多事就说得通了。` },
+      { user:'逻辑通了才发言💡', text:`很多人在纠结"他们到底有没有越界"，但这个问题问偏了。真正值得问的是：这段关系里，那个女生有没有真实的退出自由？她的物质、情感、社会关系，有多少是独立于${charLast}存在的？如果答案是"基本上都依赖他"，那不管有没有越界，这个结构本身就不健康。` },
     ],
     // 通用
     general: [
@@ -7119,11 +7133,14 @@ function _xhsPresetComments(charName, charLast, rndInt, ts, postCtx) {
       { user:'补刀小能手🔪', text:'说是收养，但那种保护欲和占有感……和普通父女差太多了' },
       { user:'中立观察者🔭', text:'两边我都不了解，但这件事本身的模式让人不舒服' },
       { user:'最后说一句💬', text:'不管结果怎样，希望所有人都能被好好对待' },
+      { user:'看了很多才来评论📖', text:`说实话我关注${charLast}相关的内容挺久了。我的感受是：这段关系不是"坏人和受害者"那么简单，但也不能因为复杂就变成"没问题"。那个女生可能是真的爱他，他也可能是真的在乎她——但两件事可以同时成立：感情是真实的，关系结构是有问题的。这两件事不互斥。` },
+      { user:'懂感情也懂权力的人🌐', text:`有个很关键的问题大家都在绕着走：${charLast}收养她的时候，他是完全清醒地知道自己在做什么的成年人；而她，是一个刚刚失去家庭庇护、在最脆弱的阶段进入一段全新关系的孩子。这个起点上的不对等，是后来所有"复杂"的根源。不是说他一定有恶意，而是说这个结构本身就不给她留任何谈判空间。` },
+      { user:'最后一个理性声音💬', text:`我见过很多"为${charLast}辩护"的评论，说当事人自愿、说感情是真的、说外人不该评判。这些说法都有一定道理，但都回避了最核心的问题：一个在你最无力的时候"救"了你的人，给你提供了一切——住所、安全感、情感支持——当他表现出超出界限的情感时，你说"不"的能力有多少？不是不爱他，是根本无法负担失去他的代价。` },
     ],
   };
 
   const comments = commentsByType[type] || commentsByType.general;
-  // 打乱后取10条
+  // 打乱后取10条（池子13-15条，确保每次评论组合不同）
   const shuffled = [...comments].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 10).map(c => ({
     from: 'stranger_preset', user: c.user, text: c.text, time: ts(), replyTo: null
@@ -7196,7 +7213,7 @@ function buildXHSFeedItems() {
     while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
     return out;
   };
-  return pick(strangerPosts, 6).map((p, i) => ({
+  return pick(strangerPosts, 8).map((p, i) => ({
     id: `xhs_${Date.now()}_${i}`,
     from: 'stranger',
     user: p.user,
@@ -7249,16 +7266,38 @@ function renderXHSFeed(forceRefresh) {
   // 用户发的帖子始终保留
   const userPosts = (STATE.xhsFeed || []).filter(p => p.from === 'user');
 
-  if (!STATE.xhsFeed || STATE.xhsFeed.filter(p=>p.from!=='user').length === 0 || forceRefresh) {
-    // 先显示 loading 占位
+  // forceRefresh = true → 右上角刷新按钮（追加更多），false → 首次加载
+  if (!STATE.xhsFeedPool || STATE.xhsFeedPool.filter(p=>p.from!=='user').length === 0) {
+    // 完全没有池子 → 重新生成
+    STATE.xhsDisplayCount = 3;
+    STATE.xhsFeedPool = [];
     box.empty();
     userPosts.forEach(p => box.append(renderXHSCard(p)));
     box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载最新动态…</div>');
-    // 异步 AI 生成
-    buildXHSFeedWithAI(forceRefresh);
+    buildXHSFeedWithAI(false);
     return;
   }
 
+  if (forceRefresh) {
+    // 刷新 → 追加3条；池子不够则重新生成
+    const strangerPool = STATE.xhsFeedPool.filter(p=>p.from!=='user');
+    const shown = STATE.xhsDisplayCount || 3;
+    if (shown >= strangerPool.length) {
+      // 池子耗尽，重新生成
+      STATE.xhsDisplayCount = 3;
+      STATE.xhsFeedPool = [];
+      box.empty();
+      userPosts.forEach(p => box.append(renderXHSCard(p)));
+      box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载更多动态…</div>');
+      buildXHSFeedWithAI(true);
+      return;
+    }
+    STATE.xhsDisplayCount = Math.min(shown + 3, strangerPool.length);
+  }
+
+  // 从池子取当前应显示的数量
+  const strangerPool = STATE.xhsFeedPool.filter(p=>p.from!=='user');
+  STATE.xhsFeed = [...userPosts, ...strangerPool.slice(0, STATE.xhsDisplayCount || 3)];
   _renderXHSList(box);
 }
 
@@ -7273,6 +7312,12 @@ function _renderXHSList(box) {
   const userPosts = list.filter(p => p.from === 'user');
   const otherPosts = list.filter(p => p.from !== 'user');
   [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
+  // 如果池子里还有更多，显示"加载更多"提示
+  const pool = STATE.xhsFeedPool ? STATE.xhsFeedPool.filter(p=>p.from!=='user') : [];
+  const shown = STATE.xhsDisplayCount || 3;
+  if (pool.length > shown) {
+    box.append('<div style="text-align:center;color:#bbb;padding:16px 0 8px;font-size:12px">↑ 点右上角刷新加载更多</div>');
+  }
 }
 
 // XHS 专用 API 调用：优先自定义API，fallback 用 generateQuietPrompt（真正的静默生成）
@@ -7330,13 +7375,13 @@ async function buildXHSFeedWithAI(forceRefresh) {
 
   // 调 AI（自定义API 或 ST generateQuietPrompt，由 xhsCallAPI 路由）
   try {
-        const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成6条陌生网友视角的八卦帖子。
+        const sysMsg = `你是一个小红书帖子生成器。根据提供的角色信息，生成8条陌生网友视角的八卦帖子。
 要求：帖子作者是陌生路人/目击者，内容围绕charName和userName的关系，有具体细节不当谜语人，语气口语化。
 每条帖子附带5条评论，补料/阴阳/共情/猜测点名/理性分析各一种，有实质内容。
-只返回JSON，格式：[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]共6条。`;
+只返回JSON，格式：[{"user":"昵称emoji","tag":"八卦","title":"标题","body":"正文50-80字","likes":数字,"comments":[{"user":"昵称emoji","text":"评论15-25字"}]}]共8条。`;
 
     const charInfo = charPersona ? charPersona.slice(0, 400) : `角色名：${charName}`;
-    const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成6条小红书八卦帖子：`;
+    const prompt = `角色：${charInfo}\n用户名：${userName}\n近期对话：${(recentChat||'').slice(0,200)}\n生成8条小红书八卦帖子：`;
 
     const resp = await xhsCallAPI(prompt, sysMsg);
     if (resp) {
@@ -7356,7 +7401,10 @@ async function buildXHSFeedWithAI(forceRefresh) {
             likedByUser: false, comments: aiComments, time: ts(), date: todayStr,
           };
         });
-        STATE.xhsFeed = [...userPosts, ...aiPosts];
+        // 存入池子（最多8条），首屏只显示3条
+        STATE.xhsFeedPool = [...userPosts, ...aiPosts];
+        STATE.xhsDisplayCount = 3;
+        STATE.xhsFeed = [...userPosts, ...aiPosts.slice(0, 3)];
         saveState();
         _renderXHSList();
         return;
@@ -7364,8 +7412,11 @@ async function buildXHSFeedWithAI(forceRefresh) {
     }
   } catch(e) { console.warn('[XHS] AI feed build failed', e); }
 
-  // AI 失败 → fallback 本地模板
-  STATE.xhsFeed = [...userPosts, ...buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona)];
+  // AI 失败 → fallback 本地模板（8条存池子，显示3条）
+  const fbPosts = buildXHSFeedFallback(todayStr, rndInt, ts, charName, userName, charPersona);
+  STATE.xhsFeedPool = [...userPosts, ...fbPosts];
+  STATE.xhsDisplayCount = 3;
+  STATE.xhsFeed = [...userPosts, ...fbPosts.slice(0, 3)];
   saveState();
   _renderXHSList();
 }
