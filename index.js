@@ -8060,7 +8060,19 @@ Object.assign(window, {
 // ================================================================
 //  ENTRY
 // ================================================================
-jQuery(async () => { await init(); });
+jQuery(async () => {
+  try {
+    await init();
+  } catch(e) {
+    console.error('[Raymond Phone] init failed:', e);
+    // 兜底：确保 FAB 可见
+    setTimeout(() => {
+      if (!document.getElementById('rp-fab')) {
+        try { init(); } catch(e2) {}
+      }
+    }, 1500);
+  }
+});
 
 
 
