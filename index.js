@@ -6628,7 +6628,7 @@ async function charRespondToUserMoment(momentId) {
 async function momentAISocial(targetMomentId) {
   const moments = STATE.moments || [];
   if (moments.length === 0) return;
-  const { charName, npcs, charPersona, npcPersonaMap } = getMomentsCtx();
+  const { charName, npcs, charPersona, npcPersonaMap, recentChat } = getMomentsCtx();
   const allChars = [charName, ...npcs];
   if (allChars.length === 0) return;
   const targets = targetMomentId
@@ -6636,7 +6636,7 @@ async function momentAISocial(targetMomentId) {
     : moments.slice(-6);
   if (targets.length === 0) return;
   const momentsSummary = targets.map(m =>
-    'ID="' + m.id + '" 作者="' + m.name + '" 内容="' + m.text.slice(0, 60) + '"'
+    'ID="' + m.id + '" 作者="' + m.name + '" 内容="' + m.text.slice(0, 150) + '"'
   ).join('\n');
   const charList2 = allChars.join('、');
   const npcPersonaText2 = npcs
@@ -6646,13 +6646,15 @@ async function momentAISocial(targetMomentId) {
     })
     .filter(Boolean)
     .join('\n');
+  const recentChatSnippet = recentChat ? recentChat.slice(-400) : '';
   const sysMsg2 = '你是角色扮演社交媒体互动模拟器。\n'
     + '主角 ' + charName + ' 人设（含英文名/别名）：' + (charPersona ? charPersona.slice(0, 500) : '（根据动态推断）') + '\n'
     + '其他角色：' + (npcs.join('、') || '无') + (npcPersonaText2 ? ('\nNPC人设卡（优先）：\n' + npcPersonaText2) : '') + '\n'
+    + (recentChatSnippet ? ('近期剧情背景（帮助理解动态语境）：\n' + recentChatSnippet + '\n') : '')
     + '规则：\n'
     + '1. 互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。\n'
-    + '2. 【重要】如果动态内容提到了主角 ' + charName + ' 本人（包括其英文名、别名、昵称），'
-    + charName + ' 必须以当事人第一人称视角回应，不得以旁观者身份评论自己。';
+    + '2. 【自我认知规则】结合近期剧情背景和人设，语义判断动态内容是否与 ' + charName + ' 直接相关（如：提到其家人、正在发生在他身上的事、他参与的事件等）。'
+    + '如果是，' + charName + ' 必须以当事人第一人称视角回应（"我的女儿""我刚才也在""我知道"等），绝不能以旁观者身份评论自己身边发生的事。';
   const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n只为以下角色生成2-4条社交互动（like/comment），禁止使用列表外的名字：' + charList2 + '\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，from字段必须严格使用上方列表中的名字，momentId必须与上方完全一致。';
   const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
