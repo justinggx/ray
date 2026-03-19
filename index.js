@@ -7187,7 +7187,8 @@ async function buildXHSFeedWithAI(appendMode) {
 
 只返回JSON数组，格式：
 [{"user":"昵称emoji","tag":"标签","title":"标题","body":"正文","likes":数字,"comments":[{"user":"昵称emoji","text":"评论内容"}]}]
-共3条，不要有其他文字。`;
+共3条，不要有其他文字。
+重要：所有字段值内部不能出现双引号，如需引用请用「」或【】代替。`;
 
     const charInfo = charPersona ? charPersona.slice(0, 300) : `角色名：${charName}`;
     const prompt = `角色信息：${charInfo}\n用户名：${userName}\n近期对话片段：${(recentChat||'').slice(0,300)}\n\n本次3条帖子话题方向：\n${chosenTopics.map((t,i)=>`${i+1}. ${t}`).join('\n')}\n\n生成JSON：`;
@@ -7197,11 +7198,33 @@ async function buildXHSFeedWithAI(appendMode) {
     if (resp) {
       let items = [];
       try {
-        let jsonStr = resp.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+        let jsonStr = resp.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
         const m = jsonStr.match(/\[[\s\S]*\]/);
-        if (m) items = JSON.parse(m[0]);
-        else items = JSON.parse(jsonStr.trim());
-      } catch(e) { console.warn('[XHS] JSON parse error:', e.message); }
+        if (m) jsonStr = m[0];
+        // 修复 AI 在字符串值里用双引号的问题（如 "Theo"）
+        // 策略：逐字符状态机，在 JSON 字符串值内遇到未转义双引号时替换为「」
+        jsonStr = (function fixInnerQuotes(s) {
+          let out = '', inStr = false, key = false, i = 0;
+          while (i < s.length) {
+            const ch = s[i];
+            if (!inStr) {
+              if (ch === '"') { inStr = true; out += ch; }
+              else out += ch;
+            } else {
+              if (ch === '\\') { out += ch + (s[i+1]||''); i += 2; continue; }
+              if (ch === '"') {
+                // 判断是结束引号还是内部引号：后面紧跟 : , } ] 或空白+这些字符
+                const rest = s.slice(i+1).trimStart();
+                if (/^[:\],}]/.test(rest)) { inStr = false; out += ch; }
+                else { out += '\u2019'; } // 替换为右单引号 '
+              } else { out += ch; }
+            }
+            i++;
+          }
+          return out;
+        })(jsonStr);
+        items = JSON.parse(jsonStr);
+      } catch(e) { console.warn('[XHS] JSON parse error:', e.message, resp ? resp.slice(0,300) : ''); }
       if (Array.isArray(items) && items.length > 0) {
         const aiPosts = items.slice(0, 3).map((p, i) => {
           const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
