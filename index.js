@@ -7120,36 +7120,9 @@ function _renderXHSList(box) {
   [...userPosts, ...otherPosts].forEach(p => box.append(renderXHSCard(p)));
 }
 
-// XHS 专用 API 调用：优先自定义API，fallback 用 generateQuietPrompt（真正的静默生成）
+// XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
 async function xhsCallAPI(prompt, sysMsg) {
-  const cfg = (() => { try { return JSON.parse(localStorage.getItem('rp_ludo_api') || '{}'); } catch(e) { return {}; } })();
-  // 1. 自定义 API
-  if (cfg.mode === 'custom' && cfg.url && cfg.key) {
-    try {
-      const msgs = [];
-      if (sysMsg) msgs.push({ role: 'system', content: sysMsg });
-      msgs.push({ role: 'user', content: prompt });
-      const res = await fetch(`${cfg.url.replace(/\/+$/, '')}/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.key}` },
-        body: JSON.stringify({ model: cfg.model || 'deepseek-chat', messages: msgs, max_tokens: 1200, temperature: 0.95 })
-      });
-      const data = await res.json();
-      const text = data.choices?.[0]?.message?.content?.trim();
-      if (text) return text;
-    } catch(e) { console.warn('[XHS] custom API error:', e.message); }
-    return null;
-  }
-  // 2. ST 主 API：用 generateQuietPrompt（真正静默，不写聊天不触发事件）
-  try {
-    const { generateQuietPrompt } = await import('../../../../script.js').catch(() => ({}));
-    if (typeof generateQuietPrompt === 'function') {
-      const fullPrompt = sysMsg ? sysMsg + '\n\n' + prompt : prompt;
-      const resp = await generateQuietPrompt({ quietPrompt: fullPrompt, responseLength: 1200 });
-      if (resp && resp.trim()) return resp.trim();
-    }
-  } catch(e) { console.warn('[XHS] generateQuietPrompt error:', e.message); }
-  return null;
+  return await lgCallAPI(prompt, 1200, sysMsg);
 }
 
 async function buildXHSFeedWithAI(appendMode) {
