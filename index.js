@@ -7227,7 +7227,7 @@ function renderXHSFeed(forceRefresh) {
   if (!hasStranger) {
     // 首次加载：清空后显示 loading，调 API
     box.empty();
-    box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">✨ 正在加载最新动态…</div>');
+    box.append('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:30px;font-size:13px">正在加载最新动态…</div>');
     buildXHSFeedWithAI(false);
     return;
   }
@@ -7235,7 +7235,7 @@ function renderXHSFeed(forceRefresh) {
   if (forceRefresh) {
     // 刷新：保留现有帖子，顶部插入 loading，后台生成追加
     if ($('#rp-xhs-loading').length) return; // 防止重复触发
-    box.prepend('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:16px;font-size:13px">✨ 正在加载更多…</div>');
+    box.prepend('<div id="rp-xhs-loading" style="text-align:center;color:#ff2442;padding:16px;font-size:13px">正在加载更多…</div>');
     buildXHSFeedWithAI(true);
     return;
   }
