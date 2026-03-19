@@ -48,7 +48,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
     backdrop-filter: blur(12px) !important;
     z-index: 2147483647 !important;
   }
-  /* PC mode: phone stays at fixed right:84px — centering via JS class only */
+  /* PC mode: phone stays at fixed right:84px - centering via JS class only */
   #rp-phone.rp-mobile-pos {
     left: calc(50vw - 150px) !important;
     top: calc(50vh - 280px) !important;
@@ -608,7 +608,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 
 
 /* ══════════════════════════════════════════════════════
-   THEME ICON SYSTEM — each theme gets its own visual language
+   THEME ICON SYSTEM - each theme gets its own visual language
    ══════════════════════════════════════════════════════ */
 
 /* ── Base: remove all hardcoded inline bg on icons ── */
@@ -622,7 +622,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 #rp-phone .rp-app-ico:active { transform: scale(.88) !important; }
 
-/* ══ 🌸 CANDY: PINK BUBBLES — perfect circles, pearl glass ══ */
+/* ══ 🌸 CANDY: PINK BUBBLES - perfect circles, pearl glass ══ */
 #rp-phone.rp-theme-candy .rp-app-ico {
   background: transparent !important;
   border: none !important;
@@ -691,7 +691,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   color: rgba(126, 34, 78, .58) !important;
 }
 
-/* ══ ✨ STAR: DARK TECH CHIPS — sharp rectangles, neon glow ══ */
+/* ══ ✨ STAR: DARK TECH CHIPS - sharp rectangles, neon glow ══ */
 #rp-phone.rp-theme-star .rp-app-ico {
   background: transparent !important;
   border: none !important;
@@ -744,7 +744,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   box-shadow: 0 0 8px rgba(120,60,255,.25) !important;
 }
 
-/* ══ 🌿 MISTY: WATERCOLOR OVALS — soft rounded, pearl white ══ */
+/* ══ 🌿 MISTY: WATERCOLOR OVALS - soft rounded, pearl white ══ */
 #rp-phone.rp-theme-misty .rp-app-ico {
   background: transparent !important;
   border: none !important;
@@ -1232,7 +1232,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 }
 
 /* ════════════════════════════════════════════════════
-   ✨ STAR THEME — Complete inner-page polish
+   ✨ STAR THEME - Complete inner-page polish
    ════════════════════════════════════════════════════ */
 
 /* Clock: lavender glow on dark wallpaper */
@@ -1293,7 +1293,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-nav-add { color: #a78bfa !important; }
 
 /* ════════════════════════════════════════════════════
-   🌿 MISTY THEME — Complete inner-page polish
+   🌿 MISTY THEME - Complete inner-page polish
    ════════════════════════════════════════════════════ */
 
 /* Clock: white for contrast on blue wallpaper */
@@ -1590,7 +1590,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-candy .rp-moment-comment { color: #5a1530 !important; }
 #rp-phone.rp-theme-candy .rp-moment-cname { color: #c03060 !important; }
 #rp-phone.rp-theme-candy .rp-moment-reply-btn { color: rgba(180,40,80,.65) !important; }
-/* candy is default theme — no rp-theme-candy class ever added; base rule handles it */
+/* candy is default theme - no rp-theme-candy class ever added; base rule handles it */
 #rp-phone.rp-theme-candy .rp-moment-comments-wrap { background: rgba(220,80,120,.06) !important; }
 #rp-phone.rp-theme-candy .rp-moment-act { color: rgba(160,50,80,.5) !important; }
 #rp-phone.rp-theme-candy .rp-moment-bar { border-top-color: rgba(200,80,120,.15) !important; }
@@ -1679,6 +1679,10 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-star .rp-moment-comments-wrap { background: rgba(80,50,180,.12) !important; }
 #rp-phone.rp-theme-star .rp-moment-act { color: rgba(180,165,255,.55) !important; }
 #rp-phone.rp-theme-star .rp-moment-bar { border-top-color: rgba(130,90,255,.15) !important; }
+#rp-phone.rp-theme-star .rp-moment-cinput { background: rgba(255,255,255,.07) !important; border-color: rgba(130,90,255,.3) !important; color: #e8e0ff !important; }
+#rp-phone.rp-theme-star .rp-moment-cinput::placeholder { color: rgba(200,185,255,.4) !important; }
+#rp-phone.rp-theme-star .rp-moment-input-row { border-top-color: rgba(130,90,255,.15) !important; }
+#rp-phone.rp-theme-star .rp-moment-csend { background: rgba(130,90,255,.25) !important; color: #d4c8ff !important; border-color: rgba(130,90,255,.4) !important; }
 /* Thread list */
 #rp-phone.rp-theme-star .rp-tn { color: #e8e0ff !important; font-weight: 600 !important; }
 #rp-phone.rp-theme-star .rp-tp { color: rgba(200,185,255,.6) !important; }
@@ -1867,7 +1871,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty .rp-home-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.0;background-image:none}
 /* misty lock same grain */
 #rp-phone.rp-theme-misty .rp-lock-bg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.0;background-image:none}
-/* star particles – only visible in star theme (via home-bg pseudo-element) */
+/* star particles - only visible in star theme (via home-bg pseudo-element) */
 #rp-phone.rp-theme-star .rp-home-bg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.2px 1.2px at 12% 18%,rgba(255,255,255,.75) 0%,transparent 100%),radial-gradient(1px 1px at 35% 8%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 72% 22%,rgba(255,255,255,.85) 0%,transparent 100%),radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 25% 42%,rgba(255,255,255,.65) 0%,transparent 100%),radial-gradient(1px 1px at 58% 55%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 45% 70%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 80% 65%,rgba(255,255,255,.55) 0%,transparent 100%),radial-gradient(1.2px 1.2px at 8% 80%,rgba(255,255,255,.7) 0%,transparent 100%),radial-gradient(1px 1px at 92% 12%,rgba(255,255,255,.6) 0%,transparent 100%),radial-gradient(1px 1px at 62% 88%,rgba(255,255,255,.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 18% 60%,rgba(255,255,255,.6) 0%,transparent 100%)}
 #rp-view-themes{background:transparent !important;display:flex;flex-direction:column}
 .rp-theme-card{background:var(--rp-tc-bg);border-radius:18px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(100,60,200,.1);transition:transform .15s,box-shadow .15s}
@@ -2045,14 +2049,14 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-phone.rp-theme-misty #rp-gen-diary{color:rgba(220,238,252,.90)!important;filter:drop-shadow(0 1px 3px rgba(0,20,60,.43))!important}
 /* Candy gen-diary explicit (candy has no theme class, CSS var handles it but be safe) */
 #rp-gen-diary{color:var(--rp-nav-btn,#c0306a)}
-/* Diary icon — BASE = Candy (no theme class on #rp-phone for candy) */
+/* Diary icon - BASE = Candy (no theme class on #rp-phone for candy) */
 .rp-ico-diary{color:#c03060!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5))!important}
-/* Diary icon — Star override */
+/* Diary icon - Star override */
 #rp-phone.rp-theme-star .rp-ico-diary{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
-/* Diary icon — Misty override */
+/* Diary icon - Misty override */
 #rp-phone.rp-theme-misty .rp-ico-diary{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
 
-/* Games icon — align style with other linear icons */
+/* Games icon - align style with other linear icons */
 .rp-ico-games{color:#c03060!important;filter:drop-shadow(0 0 5px rgba(255,255,255,.7)) drop-shadow(0 1px 4px rgba(200,60,90,.5))!important}
 #rp-phone.rp-theme-star .rp-ico-games{color:#ffffff!important;filter:drop-shadow(0 0 6px rgba(160,130,255,.7)) drop-shadow(0 1px 3px rgba(0,0,0,.5))!important}
 #rp-phone.rp-theme-misty .rp-ico-games{color:rgba(222,240,253,.91)!important;filter:drop-shadow(0 1px 3px rgba(0,20,80,.48)) drop-shadow(0 0 4px rgba(0,10,50,.28))!important}
@@ -2198,7 +2202,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── COMPOSE MODAL ── */
 /* ── Compose Modal ── */
 /* ══════════════════════════════════════════════════════════
-   COMPOSE MODAL — 磨砂壁纸玻璃效果（三主题通用）
+   COMPOSE MODAL - 磨砂壁纸玻璃效果（三主题通用）
    结构：::before=模糊壁纸  ::after=主题色调层  子元素z-index:2
    ══════════════════════════════════════════════════════════ */
 #rp-compose-modal {
@@ -2247,7 +2251,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 /* ── Dark mode ── */
 .rp-dark #rp-compose-modal::after { background: rgba(4,3,18,.86); }
 
-/* ══ 导航栏 — 更亮玻璃条，带模糊分隔感 ══ */
+/* ══ 导航栏 - 更亮玻璃条，带模糊分隔感 ══ */
 #rp-compose-modal .rp-nav-bar {
   background: rgba(255,255,255,.55) !important;
   backdrop-filter: blur(20px) saturate(1.6) !important;
@@ -2575,7 +2579,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-wallpaper-layer{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none}
 .rp-view{z-index:1}
 
-/* ══ LUDO GAME — Candy Garden 糖果花园 ══ */
+/* ══ LUDO GAME - Candy Garden 糖果花园 ══ */
 #rp-view-game{background:transparent;display:flex;flex-direction:column}
 .rp-dark #rp-view-game{background:transparent}
 #rp-view-game .rp-nav-bar{background:rgba(255,255,255,.55)!important;border-bottom:1px solid rgba(180,120,200,.2)!important}
@@ -2623,7 +2627,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark .game-msg-char{color:#c084fc}
 .game-msg-sys{color:#9ca3af;text-align:center;font-style:italic}
 .rp-dark .game-msg-sys{color:rgba(255,255,255,.35)}
-/* ── Square Event Popup — bright clean card ── */
+/* ── Square Event Popup - bright clean card ── */
 #rp-sq-event{position:absolute;inset:0;z-index:60;background:rgba(100,50,150,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;border-radius:48px}
 #rp-sq-event-box{background:#fff;border:1px solid rgba(200,150,255,.3);border-radius:24px;padding:24px 22px;max-width:230px;text-align:center;box-shadow:0 8px 40px rgba(150,80,200,.2),0 2px 8px rgba(0,0,0,.08)}
 .rp-dark #rp-sq-event-box{background:linear-gradient(145deg,#1e0a30,#120520)}
@@ -2636,7 +2640,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-dark #rp-sq-event-note{color:rgba(220,180,255,.5)}
 #rp-sq-event-done{background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:22px;padding:10px 28px;font-size:14px;cursor:pointer;font-weight:700;letter-spacing:.3px;box-shadow:0 4px 16px rgba(168,85,247,.35)}
 #rp-sq-event-done:active{transform:scale(.96)}
-/* ── Task bar — 居中弹窗 ── */
+/* ── Task bar - 居中弹窗 ── */
 #rp-sq-task-bar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;background:#fff;border:1px solid rgba(200,150,255,.3);color:#2d1060;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 20px;z-index:55;box-shadow:0 8px 40px rgba(150,80,200,.2),0 2px 10px rgba(0,0,0,.08);text-align:center}
 .rp-dark #rp-sq-task-bar{background:linear-gradient(145deg,#1e0a30,#120520);color:#f0e0ff;border-color:rgba(200,150,255,.2)}
 #rp-sq-task-text{font-size:13px;font-weight:700;line-height:1.5;margin-bottom:12px;white-space:normal;word-break:break-all;color:#2d1060}
@@ -3295,9 +3299,11 @@ const HTML = `
                 <div class="rp-app-ico rp-ico-diary"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="4" width="20" height="32" rx="3.5" stroke-width="2"/><circle cx="10" cy="12" r="2.5" stroke-width="1.6"/><circle cx="10" cy="20" r="2.5" stroke-width="1.6"/><circle cx="10" cy="28" r="2.5" stroke-width="1.6"/><line x1="15" y1="14" x2="27" y2="14" stroke-width="1.7"/><line x1="15" y1="20" x2="27" y2="20" stroke-width="1.7" opacity=".7"/><line x1="15" y1="26" x2="24" y2="26" stroke-width="1.7" opacity=".5"/></svg></div>
                 <div class="rp-app-lbl">日记</div>
               </div>
-              <div class="rp-app" data-app="xhs" title="吃瓜热榜">
-                <div class="rp-app-ico">📰</div>
-                <div class="rp-app-lbl">热榜</div>
+              <div class="rp-app" data-app="xhs" title="小红书">
+                <div class="rp-app-ico" style="background:linear-gradient(145deg,#ff2442,#ff6b6b)">
+                  <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="10" fill="transparent"/><text x="8" y="28" font-size="22" font-weight="900" fill="white" font-family="serif">小</text></svg>
+                </div>
+                <div class="rp-app-lbl">小红书</div>
               </div>
 
             </div>
@@ -3349,7 +3355,7 @@ const HTML = `
         <div id="rp-view-themes" class="rp-view" style="display:none">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
-            
+
           </div>
           <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px">
             <div style="font-size:13px;font-weight:600;color:var(--rp-themes-label);text-align:center;margin-bottom:18px;opacity:.75;letter-spacing:.4px">✨ 选择主题</div>
@@ -3415,14 +3421,14 @@ const HTML = `
           <div id="rp-moments-list"></div>
         </div>
 
-        <!-- 热榜（类小红书） -->
-        <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column;background:var(--rp-moments-bg)">
-          <div class="rp-nav-bar">
-            <button class="rp-back" data-to="home">‹</button>
-            <span class="rp-nav-title">热榜</span>
-            <button id="rp-xhs-refresh" title="刷新热榜" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer">↻</button>
+        <!-- 小红书 -->
+        <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column;background:#fff1f2">
+          <div class="rp-nav-bar" style="background:#fff;border-bottom:1px solid #ffe4e8">
+            <button class="rp-back" data-to="home" style="color:#ff2442">‹</button>
+            <span class="rp-nav-title" style="color:#ff2442;font-weight:800">小红书</span>
+            <button id="rp-xhs-refresh" title="刷新" style="width:28px;height:28px;border:none;background:transparent;font-size:18px;cursor:pointer;color:#ff2442">↻</button>
           </div>
-          <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:10px 12px 14px"></div>
+          <div id="rp-xhs-list" style="flex:1;overflow-y:auto;padding:8px 10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start"></div>
         </div>
 
         <!-- 发朋友圈 -->
@@ -4310,7 +4316,7 @@ function bindUI() {
     body.innerHTML = document.getElementById('rp-game-chat').innerHTML;
     jQuery('#rp-game-chat-fs').show();
     body.scrollTop = body.scrollHeight;
-    
+
     // Bind close button directly (not via delegation)
     jQuery('#rp-game-chat-fs-close').off('click').on('click', function(e) {
       e.stopPropagation();
@@ -4940,7 +4946,7 @@ function sendSMS() {
       // 对话对象是主角：根据场景决定口头还是短信回复
       oocText = `[手机短信提示：${th.name}收到{{user}}的短信，当前时间${ts}。按世界书手机UI协议输出，且必须满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>。]`;
     } else {
-      // FIX1（加强版）: NPC联系人——明确告知 AI 此 NPC 真实存在，主角完全不知情
+      // FIX1（加强版）: NPC联系人--明确告知 AI 此 NPC 真实存在，主角完全不知情
       const charName = mainCharName || '主角';
       oocText = `[叙事指令：{{user}}私下给NPC"${th.name}"发了手机短信（时间${ts}）。${charName}完全不知情，本轮不得提及此短信。请按世界书手机UI协议输出，并严格满足：仅在<PHONE>...</PHONE>内输出手机内容；至少一条<SMS FROM="${th.name}" TIME="${ts}">内容</SMS>。]`;
     }
@@ -4968,7 +4974,7 @@ function sendSMS() {
   ta.dispatchEvent(new Event('input', { bubbles: true }));
   document.querySelector('#send_but')?.click();
 
-  // 记录一次“等待手机回复”的状态：若模型未输出 <PHONE>，后续走兜底解析
+  // 记录一次"等待手机回复"的状态：若模型未输出 <PHONE>，后续走兜底解析
   STATE._pendingPhoneReply = {
     threadId: STATE.currentThread,
     fromName: th.name,
@@ -5048,7 +5054,7 @@ function onAIMessage() {
         beautifySMSInChat();
         return;
       }
-      // 标签存在但未解析出任何消息：继续走兜底，避免“正文污染且手机无消息”
+      // 标签存在但未解析出任何消息：继续走兜底，避免"正文污染且手机无消息"
     }
 
     // 关闭正文兜底入手机：避免把正文第一句（如日期碎片）误写入手机消息
@@ -5068,7 +5074,7 @@ function cleanPhoneFallbackReply(raw, fromName) {
   text = text.replace(/<think>[\s\S]*?<\/think>/gi, ' ');
   // 去掉结构化标签
   text = text.replace(/<[^>]{1,80}>/g, ' ');
-  // 常见“奇怪总结段”关键词行
+  // 常见"奇怪总结段"关键词行
   const badLine = /(剧情摘要|故事走向|联系测试|未解决|规则|状态|Stage|DAILY_NOTE|FLASH_MEMORY|BROKEN_RULES|INBOX|关系进度|条目|清单)/i;
   const lines = text
     .split(/\n+/)
@@ -5079,7 +5085,7 @@ function cleanPhoneFallbackReply(raw, fromName) {
 
   // 优先取引号里的短句
   const joined = lines.join(' ');
-  const q = joined.match(/[“\"「]([^”\"」\n]{2,80})[”\"」]/);
+  const q = joined.match(/["\"「]([^"\"」\n]{2,80})["\"」]/);
   if (q && q[1]) return q[1].trim().slice(0, 80);
 
   // 否则取第一条像对话的句子
@@ -5095,7 +5101,7 @@ function sanitizeSmsText(text) {
   const lines = t.split(/\n+/).map(s => s.trim()).filter(Boolean);
   if (!lines.length) return '';
 
-  // 去掉前置“日期碎片行”（如 2023/11/06 17: 或 2023-11-06 17:21）
+  // 去掉前置"日期碎片行"（如 2023/11/06 17: 或 2023-11-06 17:21）
   const dateHead = /^\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\s+\d{1,2}(?::\d{0,2})?\s*$/;
   if (lines.length > 1 && dateHead.test(lines[0])) {
     lines.shift();
@@ -5176,8 +5182,8 @@ function rewritePhoneEchoInChat(block, fp) {
 function getTagAttrs(attrText) {
   const attrs = {};
   if (!attrText) return attrs;
-  // 兼容：KEY="v" / KEY='v' / KEY=“v” / KEY=‘v’ / KEY=v(无引号)
-  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|“([^”]*)”|‘([^’]*)’|([^\s>]+))/g;
+  // 兼容：KEY="v" / KEY='v' / KEY="v" / KEY='v' / KEY=v(无引号)
+  const attrRe = /(\w+)\s*=\s*(?:"([^"]*)"|'([^']*)'|"([^"]*)"|'([^']*)'|([^\s>]+))/g;
   let am;
   while ((am = attrRe.exec(attrText)) !== null) {
     attrs[am[1].toUpperCase()] = (am[2] ?? am[3] ?? am[4] ?? am[5] ?? am[6] ?? '').trim();
@@ -6187,7 +6193,7 @@ function applyWallpaper() {
   const wp   = STATE.wallpaper;
   const prev = document.getElementById('rp-wall-preview');
   // Apply wallpaper directly onto the view bg layers (home + lock)
-  // #rp-wallpaper-layer is behind z-index:1 views and never visible — bypass it
+  // #rp-wallpaper-layer is behind z-index:1 views and never visible - bypass it
   document.querySelectorAll('.rp-home-bg, .rp-lock-bg').forEach(el => {
     if (wp) {
       // wallpaper image + semi-transparent white overlay for readability
@@ -6427,18 +6433,18 @@ async function generateAIMoments() {
     // system message：人设 + 规则
     const sysMsg = '你是一个角色扮演故事中的社交媒体模拟器。\n\n'
       + '【主角 ' + charName + ' 的人设】\n' + (charPersona || '（未获取到人设，请根据对话推断）') + '\n\n'
-      + (npcs.length > 0 ? '【故事中的其他角色】' + npcs.join('、') + '（根据近期剧情推断其语气风格）\n' : '')
-      + (npcPersonaText ? ('【NPC人设卡（优先遵守）】\n' + npcPersonaText + '\n\n') : '\n')
+      + (npcPersonaText ? ('【NPC人设卡（最高优先级，严格遵守每个NPC的性格和语气风格）】\n' + npcPersonaText + '\n\n') : '')
+      + (npcs.length > 0 && !npcPersonaText ? '【故事中的其他角色】' + npcs.join('、') + '\n\n' : '')
       + '【生成规则】\n'
-      + '1. 每个角色的语气、措辞必须严格符合其在故事中的性格和人设\n'
-      + '2. ' + charName + ' 必须用其人设中描述的语气说话，不得混用其他角色的口吻\n'
-      + '3. NPC 根据近期剧情中的言行推断其风格\n'
+      + '1. 每个角色发的朋友圈必须和近期剧情直接相关，不能发与剧情无关的内容\n'
+      + '2. 每个角色的语气、措辞必须100%符合其人设，NPC尤其不能用主角的口吻\n'
+      + '3. 内容要像真实社交媒体发帖：口语化、有情绪、不解释太多\n'
       + '4. 所有内容必须使用中文\n'
       + '5. 只返回 JSON 数组，不要任何其他文字';
     const prompt = '近期主线剧情（主楼层最新对话）：\n' + recentChat
-      + '\n\n请为以下角色各写1条朋友圈动态，共 ' + allChars.length + ' 条，每人1条，不重复：'
+      + '\n\n请为以下角色各写1条与剧情相关的朋友圈动态，共 ' + allChars.length + ' 条，每人1条：'
       + charList
-      + '\n格式：[{"from":"角色名","text":"动态内容（1-3句话，自然口语，与剧情有关）"},...]';
+      + '\n格式：[{"from":"角色名","text":"动态内容（1-2句，口语化，与剧情直接相关）"},...]';
     const resp = await lgCallAPI(prompt, 600, sysMsg);
     if (!resp) throw new Error('API无响应');
     const jsonStr = resp.match(/\[[\s\S]*\]/)?.[0];
@@ -6641,6 +6647,19 @@ function renderMoments() {
   });
 }
 
+// 小红书封面色池
+const XHS_COVER_COLORS = [
+  'linear-gradient(135deg,#ffd6e0,#ffacc7)',
+  'linear-gradient(135deg,#c9e4ff,#a0c4ff)',
+  'linear-gradient(135deg,#d4f5d4,#95e1a0)',
+  'linear-gradient(135deg,#ffe8c0,#ffc87a)',
+  'linear-gradient(135deg,#e8d5ff,#c9a0ff)',
+  'linear-gradient(135deg,#ffd6d6,#ff9a9a)',
+  'linear-gradient(135deg,#d6f5f5,#80e0e0)',
+];
+
+const XHS_EMOJIS = ['🌸','✨','💫','🎀','🌿','🍵','🌙','🎵','📖','🌅','💭','🌷'];
+
 function buildXHSFeedItems() {
   const ctx = getContext() || {};
   const charName = ctx?.name2 || ctx?.name || '角色';
@@ -6650,63 +6669,68 @@ function buildXHSFeedItems() {
   const mm = String(now.getMinutes()).padStart(2, '0');
   const t = `${hh}:${mm}`;
 
-  const official = [
-    { from: '市民热线', tag: '官媒', text: `【晚间路况】${userName}常走线路车流恢复正常，建议错峰出行。` },
-    { from: '城事发布', tag: '官媒', text: `【通报】关于“${charName}与${userName}同框”相关讨论，提醒理性吃瓜，勿造谣传谣。` },
-    { from: '交通观察', tag: '官媒', text: `【提醒】近期夜间代驾需求走高，相关安全话题持续升温。` },
-    { from: '都市频道', tag: '官媒', text: `【街访】路人称“更关注事件后续处理，不站队先看证据”。` },
-    { from: '法治在线', tag: '官媒', text: `【普法】网络传播未核实隐私信息，可能触及侵权风险。` }
-  ];
+  const rnd = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-  const crowd = [
-    { from: '吃瓜路人A', tag: '路人', text: `我就想知道后续，别又烂尾。` },
-    { from: '地铁口热心群众', tag: '路人', text: `看评论区一半在嗑CP，一半在讨论规则，太真实了。` },
-    { from: '夜宵摊观察员', tag: '路人', text: `感觉这事关键不是八卦，是双方后续怎么表态。` },
-    { from: '匿名网友', tag: '路人', text: `路过，坐等实锤，先不站队。` }
+  const posts = [
+    { user: '城市观察员🏙️', title: `关于"${charName}"的那件事`, body: `说实话我一开始也没想到会发展成这样，光看表面真的看不出来什么。`, tag: '日常观察', likes: rndInt(120,3200) },
+    { user: '深夜碎碎念✨', title: '有些人真的很难懂', body: `跟朋友说了${charName}最近的事，她说这种人她见过，建议我就当没发生。`, tag: '情感', likes: rndInt(80,890) },
+    { user: `${userName.slice(0,1)}同学的好友🌸`, title: '今天有点小感慨', body: `城市里每个人都有自己的故事，只是我们不一定都看得见。`, tag: '随想', likes: rndInt(45,560) },
+    { user: '吃瓜观众甲😎', title: `【实名好奇】${charName}到底是什么来头`, body: `评论区有没有懂的，一直看到这个名字，查了一下信息挺少的，好神秘。`, tag: '八卦', likes: rndInt(200,4800) },
+    { user: '城市生活记录🌿', title: '最近在思考一个问题', body: `当你和一个人产生交集的时候，你会想主动了解对方吗？还是等对方先开口？`, tag: '思考', likes: rndInt(150,2100) },
+    { user: `路人乙🎵`, title: '说个不太相关的', body: `今晚散步遇到一对很好看的男女，不认识但感觉气场很强，就这样。`, tag: '生活', likes: rndInt(30,430) },
+    { user: '晚安特供📖', title: `${charName}相关 有了解的来`, body: `看到有人讨论，进来凑个热闹。有没有一手资料的朋友。`, tag: '求料', likes: rndInt(310,5600) },
+    { user: '普通观察者🌙', title: '不评价 只记录', body: `很多事情在外人看来只是八卦，对当事人来说可能是很重要的转折。`, tag: '随想', likes: rndInt(60,780) },
   ];
 
   const pick = (arr, n) => {
     const c = [...arr];
     const out = [];
-    while (c.length && out.length < n) {
-      out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
-    }
+    while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
     return out;
   };
 
-  const items = [...pick(official, 4), ...pick(crowd, 2)].map((x, i) => ({
+  return pick(posts, 6).map((p, i) => ({
     id: `xhs_${Date.now()}_${i}`,
-    from: x.from,
-    tag: x.tag,
+    user: p.user,
+    title: p.title,
+    body: p.body,
+    tag: p.tag,
+    likes: p.likes,
+    cover: XHS_COVER_COLORS[i % XHS_COVER_COLORS.length],
+    emoji: rnd(XHS_EMOJIS),
     time: t,
-    text: x.text,
   }));
-
-  return items;
 }
 
 function renderXHSFeed(forceRefresh) {
   const box = $('#rp-xhs-list');
   if (!box.length) return;
-  if (!STATE.xhsFeed || forceRefresh) {
+  if (!STATE.xhsFeed || STATE.xhsFeed.length === 0 || forceRefresh) {
     STATE.xhsFeed = buildXHSFeedItems();
   }
-
   box.empty();
   const list = STATE.xhsFeed || [];
   if (!list.length) {
-    box.append('<div class="rp-moments-empty"><span>📰</span><span>暂无热榜</span></div>');
+    box.append('<div style="grid-column:1/-1;text-align:center;color:#ff2442;padding:40px;font-size:13px">暂无内容</div>');
     return;
   }
-
   list.forEach(p => {
+    const likeK = p.likes >= 1000 ? (p.likes/1000).toFixed(1) + 'k' : p.likes;
     box.append(`
-      <div style="background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.06);border-radius:14px;padding:11px 12px;margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <div style="font-size:12px;font-weight:700;color:#27364a">${escHtml(p.from)}</div>
-          <div style="font-size:11px;color:#7f8da3">${escHtml(p.tag)} · ${escHtml(p.time)}</div>
+      <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(255,36,66,.08);cursor:pointer" onclick="this.querySelector('.xhs-full').style.display=this.querySelector('.xhs-full').style.display==='block'?'none':'block'">
+        <div style="height:110px;background:${p.cover};display:flex;align-items:center;justify-content:center;font-size:36px;flex-direction:column;gap:4px">
+          <div>${p.emoji}</div>
+          <div style="font-size:9px;background:rgba(255,36,66,.15);color:#ff2442;padding:2px 7px;border-radius:10px;font-weight:600">#${escHtml(p.tag)}</div>
         </div>
-        <div style="font-size:13px;line-height:1.6;color:#1c2734">${escHtml(p.text)}</div>
+        <div style="padding:8px 9px 6px">
+          <div style="font-size:12px;font-weight:700;color:#1a1a1a;line-height:1.4;margin-bottom:4px">${escHtml(p.title)}</div>
+          <div class="xhs-full" style="display:none;font-size:11px;color:#555;line-height:1.5;margin-bottom:5px">${escHtml(p.body)}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+            <div style="font-size:10px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px">${escHtml(p.user)}</div>
+            <div style="font-size:10px;color:#ff2442;display:flex;align-items:center;gap:2px">❤️ ${likeK}</div>
+          </div>
+        </div>
       </div>
     `);
   });
@@ -6796,7 +6820,7 @@ function sendMomentComment(momentId, text, replyToName) {
 
 // ================================================================
 // ================================================================
-//  2048 GAME — 互动版（user/char 轮流）
+//  2048 GAME - 互动版（user/char 轮流）
 // ================================================================
 
 const LG2048 = {
@@ -7316,7 +7340,7 @@ function lgInit() {
     LG._animFrame = requestAnimationFrame(_animLoop);
   };
   LG._animFrame = requestAnimationFrame(_animLoop);
-  lgStatus('你先出手 — 按🎲掷骰子！');
+  lgStatus('你先出手 - 按🎲掷骰子！');
   lgMsg('sys', `游戏开始！先到终点者胜。粉=你，紫=${LG.charName}`);
   setTimeout(() => lgCharComment('game_start'), 900);
 }
@@ -7400,7 +7424,7 @@ function lgRender() {
     }
   });
 
-  // ── Event markers — USER PATH ONLY (fix: 仅标注用户路径，避免误判) ──
+  // ── Event markers - USER PATH ONLY (fix: 仅标注用户路径，避免误判) ──
   {
     const pulse = 0.5 + 0.5 * Math.abs(Math.sin(Date.now() / 800));
     C.save();
@@ -7573,7 +7597,7 @@ async function lgCharTurn() {
     LG.charSkip = false;
     lgMsg('sys', `⏸️ ${LG.charName}本轮停留，轮到你了`);
     LG.turn = 'user';
-    lgStatus('你的回合 — 按🎲掷骰子！');
+    lgStatus('你的回合 - 按🎲掷骰子！');
     $('#rp-dice-btn').prop('disabled', false);
     return;
   }
@@ -7601,7 +7625,7 @@ async function lgCharTurn() {
     setTimeout(() => lgCharTurn(), 1000);
   } else {
     LG.turn = 'user';
-    lgStatus('你的回合 — 按🎲掷骰子！');
+    lgStatus('你的回合 - 按🎲掷骰子！');
     $('#rp-dice-btn').prop('disabled', false);
   }
 }
@@ -7754,7 +7778,7 @@ function lgGetPersona() {
   try {
     // Try multiple ways to get context
     const ctx = getContext?.() || window.SillyTavern?.getContext?.() || {};
-    
+
     // Try to get character from multiple sources
     let char = null;
     if (ctx.characters && ctx.characterId !== undefined) {
@@ -7764,16 +7788,16 @@ function lgGetPersona() {
     if (!char && typeof this_chid !== 'undefined' && window.characters) {
       char = window.characters[this_chid];
     }
-    
+
     if (!char) {
       console.warn('[Ludo] No character data found');
       return '';
     }
-    
+
     const personality = (char.personality || '').replace(/\s+/g, ' ').trim();
     const description = (char.description || '').replace(/\s+/g, ' ').trim();
     const src = personality || description.substring(0, 200);
-    
+
     if (src) {
       return `【角色人设】${src}。`;
     }
@@ -7902,7 +7926,7 @@ async function lgTriggerSquareEvent(player, pos) {
   document.getElementById('rp-sq-event-text').textContent = ev.text;
   const noteEl = document.getElementById('rp-sq-event-note');
   noteEl.textContent = isUser ? (ev.note || '') : `${LG.charName}将完成此任务`;
-  lgMsg('sys', `📍 第${pos}格 ${ev.emoji} — ${ev.text}`);
+  lgMsg('sys', `📍 第${pos}格 ${ev.emoji} - ${ev.text}`);
   LG.taskChatCount = 2;
 
   // 步骤一：显示弹窗，等待点「确认」
@@ -8055,7 +8079,7 @@ async function lgGameChat(text) {
   const cName  = LG.charName;
   const persona = g2048GetPersona();
   // Completion-style prompt: AI fills dialogue directly after open quote
-  const taskNote = LG.taskActive ? `\n[当前待完成任务：「${LG.taskActive}」——必须直接完成，不许回避]` : '';
+  const taskNote = LG.taskActive ? `\n[当前待完成任务：「${LG.taskActive}」--必须直接完成，不许回避]` : '';
   const prompt = `${persona}${taskNote}\n[游戏聊天]用户说："${text}"\n${cName}简短回应（动作描写≤8字）："`;
 
   // 使用 lgCallAPI（支持自定义 API + ST fallback）
