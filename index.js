@@ -5579,7 +5579,7 @@ async function postUserDiary() {
   finally { $('#rp-diary-send').prop('disabled', false); }
 }
 
-function postUserMoment() {
+async function postUserMoment() {
   const text = $('#rp-compose-text').val().trim();
   if (!text) return;
   const now = new Date();
@@ -6348,7 +6348,7 @@ function resolveNpcPersonaByName(name, npcPersonaMap) {
   return '';
 }
 
-function getMomentsCtx() {
+async function await getMomentsCtx() {
   const ctx = getContext();
   const charName = ctx?.name2 || ctx?.characters?.[ctx?.characterId]?.name || '对方';
   const userName = ctx?.name1 || '用户';
@@ -6401,24 +6401,41 @@ function getMomentsCtx() {
   } catch(e) { /* ignore */ }
 
   // 2. 世界书扫描
-  //    注意：window.world_info 是 jQuery 事件缓存，不是世界书数据，不能使用
-  //    唯一可靠数据源：ctx.worldInfoBefore / ctx.worldInfoAfter（ST 已注入的触发词条）
+  //    window.world_info 是 jQuery 事件缓存，ctx.worldInfoBefore/After 在独立API调用时为空
+  //    正确方式：用 ctx.loadWorldInfo 直接读取世界书原始词条（全部61条均可读到）
   try {
     const wiTexts = [];
 
-    // 2a. ctx 注入文本（已触发词条，最可靠）
+    // 2a. 用 loadWorldInfo 读取当前角色绑定的世界书（异步，但 getMomentsCtx 调用方需 await）
+    // 从 charInfo 里找世界书名（ST 把世界书名存在角色的 data.extensions.world 字段）
+    try {
+      const charObj = (ctx?.characters && ctx?.characterId !== undefined)
+        ? ctx.characters[ctx.characterId] : (ctx?.char || null);
+      const wiName = charObj?.data?.extensions?.world || charObj?.extensions?.world || '';
+      if (wiName && typeof ctx.loadWorldInfo === 'function') {
+        const wiData = await ctx.loadWorldInfo(wiName);
+        if (wiData?.entries) {
+          Object.values(wiData.entries).forEach(e => {
+            const content = e?.content || e?.text || '';
+            if (content) wiTexts.push(content);
+          });
+          console.log('[getMomentsCtx] loadWorldInfo:', wiName, '- entries:', Object.keys(wiData.entries).length);
+        }
+      }
+    } catch(e) { console.warn('[getMomentsCtx] loadWorldInfo failed:', e.message); }
+
+    // 2b. 兜底：ctx 注入文本（已触发词条）
     [ctx?.worldInfoBefore, ctx?.worldInfoAfter, ctx?.world_info, ctx?.lorebook]
       .filter(Boolean).forEach(s => wiTexts.push(String(s)));
 
-    // 2b. extension_prompts（深度注入的 prompt 文本）
+    // 2c. extension_prompts
     try {
       const ep = window.extension_prompts || {};
       Object.values(ep).forEach(p => { if (p?.value) wiTexts.push(String(p.value)); });
     } catch(e) {}
 
-    // 2c. 调试：打印找到了多少文本
     const totalLen = wiTexts.reduce((s,t) => s + t.length, 0);
-    console.log('[getMomentsCtx] wiTexts sources:', wiTexts.length, 'total chars:', totalLen);
+    console.log('[getMomentsCtx] wiTexts total chars:', totalLen);
 
     const allWIText = wiTexts.join('\n');
     if (allWIText) {
@@ -6518,7 +6535,7 @@ async function generateAIMoments() {
   const btn = document.getElementById('rp-gen-moments');
   if (btn) { btn.disabled = true; btn.classList.add('rp-spinning'); }
   try {
-    const { charName, npcs, recentChat, charPersona, npcPersonaMap } = getMomentsCtx();
+    const { charName, npcs, recentChat, charPersona, npcPersonaMap } = await getMomentsCtx();
     // 每次随机挑选：char 固定 + 从 NPC 里随机取2个，保证每次刷新都不同
     // Fisher-Yates 洗牌，保证真随机；每次最多取3个 NPC（限制 token 消耗）
     const npcPool = [...npcs];
@@ -6587,12 +6604,12 @@ async function generateAIMoments() {
 async function charRespondToUserMoment(momentId) {
   const moment = (STATE.moments || []).find(function(m) { return m.id === momentId; });
   if (!moment) return;
-  const ctx = getMomentsCtx();
+  const ctx = await getMomentsCtx();
   const charName = ctx.charName;
   const charPersona = ctx.charPersona;
   if (!charName) return;
   // 强制主角写一条评论
-  const { recentChat: _rc } = getMomentsCtx();
+  const { recentChat: _rc } = await getMomentsCtx();
   const sysMsg = '你正在扮演 ' + charName + '。\n'
     + (charPersona ? '你的人设：' + charPersona.slice(0, 300) + '\n' : '')
     + '【重要】你和"' + (getContext()?.name1 || '用户') + '"是亲密关系（朋友/家人/恋人等），不是陌生人或旁观者。'
@@ -6615,7 +6632,7 @@ async function charRespondToUserMoment(momentId) {
   }
   // NPC 们强制回复（逐个单独请求，避免雷同；按人数：1好友=1条，2=2条，3+取2条NPC）
   setTimeout(async function() {
-    const { npcs, npcPersonaMap } = getMomentsCtx();
+    const { npcs, npcPersonaMap } = await getMomentsCtx();
     const alreadyCommented = new Set((moment.comments || []).map(c => c.name));
     const pendingNPCs = npcs.filter(n => !alreadyCommented.has(n));
     const maxNPC = Math.min(pendingNPCs.length, Math.max(0, 3 - (alreadyCommented.has(charName) ? 1 : 0)));
@@ -6650,7 +6667,7 @@ async function charRespondToUserMoment(momentId) {
 async function momentAISocial(targetMomentId) {
   const moments = STATE.moments || [];
   if (moments.length === 0) return;
-  const { charName, npcs, charPersona, npcPersonaMap, recentChat } = getMomentsCtx();
+  const { charName, npcs, charPersona, npcPersonaMap, recentChat } = await getMomentsCtx();
   const allChars = [charName, ...npcs];
   if (allChars.length === 0) return;
   const targets = targetMomentId
@@ -6716,7 +6733,7 @@ async function friendsInteractOnMoment(momentId) {
   const moment = (STATE.moments || []).find(m => m.id === momentId);
   if (!moment) return;
 
-  const { charName, npcs, npcPersonaMap } = getMomentsCtx();
+  const { charName, npcs, npcPersonaMap } = await getMomentsCtx();
 
   // 所有好友（主角 + NPC），排除动态作者本人
   const authorName = moment.name;
@@ -6787,7 +6804,7 @@ async function generateAIReply(momentId, userCommentText, fromName) {
   const moment = STATE.moments?.find(m => m.id === momentId);
   if (!moment) return;
   const authorName = fromName || moment.name;
-  const { charName, charPersona, npcPersonaMap } = getMomentsCtx();
+  const { charName, charPersona, npcPersonaMap } = await getMomentsCtx();
   let sysMsg3 = '';
   if (authorName === charName && charPersona) {
     sysMsg3 = '你正在扮演 ' + charName + '，人设如下：\n' + charPersona.slice(0, 300) + '\n\n回复时必须严格符合该人设的语气和性格，用中文回复，不超过20字，只返回回复内容本身。';
@@ -7006,7 +7023,7 @@ function toggleLike(momentId) {
   saveState();
 }
 
-function sendMomentComment(momentId, text, replyToName) {
+async function sendMomentComment(momentId, text, replyToName) {
   const moment = STATE.moments && STATE.moments.find(m => m.id === momentId);
   if (!moment || !text.trim()) return;
   const now = new Date();
