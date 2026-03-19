@@ -2989,7 +2989,7 @@ function cleanInvalidContacts() {
 // 不依赖 CHAT_CHANGED 是否触发
 function syncToCurrentChat() {
   const ctx = getContext();
-  const newChatId = ctx?.chatId || ('char_' + ctx?.characterId) || 'default';
+  const newChatId = ctx?.chatId || (ctx?.characterId != null ? 'char_' + ctx.characterId : 'default');
   if (newChatId === STATE.chatId) return; // 已一致，跳过
 
   console.log('[Phone] syncToCurrentChat:', STATE.chatId, '->', newChatId);
@@ -3093,7 +3093,7 @@ async function fetchServerSettings() {
 function rebuildContactsFromHistory(chatId) {
   try {
     const ctx = getContext();
-    const currentId = ctx?.chatId || ('char_' + ctx?.characterId) || 'default';
+    const currentId = ctx?.chatId || (ctx?.characterId != null ? 'char_' + ctx.characterId : 'default');
     if (currentId !== chatId) return; // chatId 已变，放弃
     const msgs = ctx?.chat || [];
     let changed = false;
@@ -3751,7 +3751,7 @@ async function init() {
 
   // FIX2: 记录初始 chatId 并从 localStorage 恢复状态
   const ctx = getContext();
-  STATE.chatId = ctx?.chatId || `char_${ctx?.characterId}` || 'default';
+  STATE.chatId = ctx?.chatId || (ctx?.characterId != null ? `char_${ctx?.characterId}` : 'default');
 
   const saved = loadState(STATE.chatId);
   if (saved) {
@@ -3827,7 +3827,7 @@ async function init() {
 // ================================================================
 function onChatChanged() {
   const ctx = getContext();
-  const newChatId = ctx?.chatId || `char_${ctx?.characterId}` || 'default';
+  const newChatId = ctx?.chatId || (ctx?.characterId != null ? `char_${ctx?.characterId}` : 'default');
 
   if (newChatId === STATE.chatId) return;
 
@@ -4935,7 +4935,7 @@ function sendSMS() {
       isMainChar = th.name.toLowerCase().includes(mainCharName.toLowerCase()) ||
         mainCharName.toLowerCase().includes(th.name.toLowerCase());
     } else {
-      isMainChar = (th.id === 'raymond' || th.id === 'gaspard');
+      isMainChar = false; // mainCharName未知时保守处理，一律走NPC路径
     }
 
     if (isMainChar) {
