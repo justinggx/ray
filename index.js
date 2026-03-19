@@ -2507,9 +2507,13 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-xhs-tag-btn{background:var(--rp-xhs-card);color:var(--rp-xhs-accent);border:1px solid var(--rp-xhs-border);border-radius:16px;padding:5px 12px;font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit;box-shadow:none}
 .rp-xhs-tag-btn:hover{background:var(--rp-xhs-soft)!important;border-color:var(--rp-xhs-border-strong)!important}
 .rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important;outline:none !important;box-shadow:0 8px 18px color-mix(in srgb,var(--rp-xhs-accent) 22%,transparent)!important}
-#rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important}
+#rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important;animation:rpXhsLoadingFloat 1.8s ease-in-out infinite}
+#rp-xhs-loading::before{content:"✨";display:inline-block;margin-right:6px;color:var(--rp-xhs-accent)!important;animation:rpXhsSparkle 1s ease-in-out infinite}
 #rp-xhs-loading::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.10) 35%,rgba(255,255,255,.42) 50%,rgba(255,255,255,.10) 65%,transparent 100%);transform:translateX(-120%);animation:rpXhsShine 1.5s ease-in-out infinite;pointer-events:none}
+#rp-xhs-loading{color:var(--rp-xhs-accent)!important;font-weight:700!important;letter-spacing:.02em!important;text-shadow:0 0 10px color-mix(in srgb,var(--rp-xhs-accent) 16%,transparent)!important}
 @keyframes rpXhsShine{to{transform:translateX(120%)}}
+@keyframes rpXhsLoadingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes rpXhsSparkle{0%,100%{transform:scale(1) rotate(0deg);opacity:.9}50%{transform:scale(1.12) rotate(8deg);opacity:1}}
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
 .rp-moment-img{width:100%;display:block;border-radius:8px}
