@@ -7122,7 +7122,7 @@ function _renderXHSList(box) {
 
 // XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
 async function xhsCallAPI(prompt, sysMsg) {
-  return await lgCallAPI(prompt, 3000, sysMsg);
+  return await lgCallAPI(prompt, 4096, sysMsg);
 }
 
 async function buildXHSFeedWithAI(appendMode) {
