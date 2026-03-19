@@ -6385,6 +6385,20 @@ function getMomentsCtx() {
     });
   } catch(e) { /* ignore */ }
 
+  // 兜底：从 chat 历史里提取 NPC 发言样本（用于没有角色卡的世界书 NPC）
+  try {
+    const chatHistory = ctx?.chat || [];
+    chatHistory.slice(-40).forEach(msg => {
+      if (msg.is_user) return;
+      const spk = (msg.name || '').trim();
+      if (!spk || spk === charName) return;
+      const k = normNameKey(spk);
+      if (npcPersonaMap[k]) return; // 已有角色卡，不覆盖
+      const sample = (msg.mes || '').replace(/<[^>]+>/g, '').trim().slice(0, 120);
+      if (sample) npcPersonaMap[k] = '（根据发言推断）语气样本：' + sample;
+    });
+  } catch(e) { /* ignore */ }
+
   return {
     charName,
     userName,
@@ -6501,7 +6515,7 @@ async function momentAISocial(targetMomentId) {
     .filter(Boolean)
     .join('\n');
   const sysMsg2 = '你是角色扮演社交媒体互动模拟器。\n主角 ' + charName + ' 人设：' + (charPersona ? charPersona.slice(0, 200) : '（根据动态推断）') + '\n其他角色：' + (npcs.join('、') || '无') + (npcPersonaText2 ? ('\nNPC人设卡（优先）：\n' + npcPersonaText2) : '') + '\n规则：互动语气必须符合各角色性格；所有评论用中文；角色不能与自己的动态互动。';
-  const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n为角色（' + charList2 + '）生成2-4条社交互动（like/comment）。\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，momentId必须与上方完全一致。';
+  const prompt2 = '朋友圈动态列表：\n' + momentsSummary + '\n\n只为以下角色生成2-4条社交互动（like/comment），禁止使用列表外的名字：' + charList2 + '\n格式：只返回JSON数组 [{"type":"like","from":"角色名","momentId":"完整ID"},{...}]，from字段必须严格使用上方列表中的名字，momentId必须与上方完全一致。';
   const resp = await lgCallAPI(prompt2, 400, sysMsg2);
   if (!resp) return;
   try {
@@ -6510,8 +6524,14 @@ async function momentAISocial(targetMomentId) {
     const actions = JSON.parse(jsonStr2);
     const now = new Date();
     const ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const allowedFromSet = new Set(allChars.map(n => normNameKey(n)));
     actions.slice(0, 6).forEach(a => {
       if (!a.from || !a.momentId) return;
+      // 过滤幻觉名字：只允许 allChars 里的角色（模糊匹配）
+      const fromKey = normNameKey(a.from);
+      const isAllowed = allowedFromSet.has(fromKey)
+        || [...allowedFromSet].some(k => k.startsWith(fromKey) || fromKey.startsWith(k));
+      if (!isAllowed) return;
       const m = moments.find(mo => mo.id === a.momentId);
       if (!m || m.name === a.from) return;
       if (a.type === 'like') {
