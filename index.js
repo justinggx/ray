@@ -7122,7 +7122,7 @@ function _renderXHSList(box) {
 
 // XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
 async function xhsCallAPI(prompt, sysMsg) {
-  return await lgCallAPI(prompt, 1200, sysMsg);
+  return await lgCallAPI(prompt, 3000, sysMsg);
 }
 
 async function buildXHSFeedWithAI(appendMode) {
@@ -7179,10 +7179,10 @@ async function buildXHSFeedWithAI(appendMode) {
     const sysMsg = `你是一个小红书内容生成器。严格按要求生成3条帖子，每条各自独立，内容和评论绝对不能重复。
 帖子要求：
 - 话题严格对应下方给出的3个不同方向，不要全写成同一种八卦
-- 陌生路人/网友视角，口语化，有具体细节，正文60-100字
+- 陌生路人/网友视角，口语化，有具体细节，正文40-60字
 
 评论要求（每条帖子各自生成10条，三条帖子的评论内容不能相同）：
-- 必须包含：吐槽型（1条）、阴阳型（1条）、共情型（1条）、补料/爆料型（1条）、理性分析型（1条）、懂哥长评（2条，60-100字的深度分析）、看热闹型（1条）、质疑型（1条）、支持楼主型（1条）
+- 必须包含：吐槽型（1条）、阴阳型（1条）、共情型（1条）、补料型（1条）、理性分析型（1条）、懂哥长评（2条，40-60字深度分析）、看热闹型（1条）、质疑型（1条）、支持型（1条）
 - 每条评论的昵称和内容都不能跟其他帖子的评论相同
 
 只返回JSON数组，格式：
