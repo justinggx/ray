@@ -5406,9 +5406,6 @@ function extractSmsSummaries(block) {
 
 function rewritePhoneEchoInChat(block, fp) {
   try {
-    const smsList = extractSmsSummaries(block);
-    if (!smsList.length) return;
-
     const allMsgs = document.querySelectorAll('.mes:not([is_user="true"])');
     if (!allMsgs.length) return;
     const lastMsg = allMsgs[allMsgs.length - 1];
@@ -5417,30 +5414,22 @@ function rewritePhoneEchoInChat(block, fp) {
 
     if (fp && textEl.dataset.rpPhoneRewriteFp === fp) return;
 
+    // 只删 <phone>...</phone> 标签本身，char 的叙事正文完整保留
     let html = textEl.innerHTML || '';
     html = html
       .replace(/<phone>[\s\S]*?<\/phone>/gi, '')
       .replace(/&lt;phone&gt;[\s\S]*?&lt;\/phone&gt;/gi, '');
 
-    // 去掉正文中泄露的短信原文（先按整行删，再全局兜底删）
-    smsList.forEach(s => {
-      const t = escapeRegExp(s.text.trim());
-      if (!t) return;
-      const lineRe = new RegExp(`(?:<br\\s*\\/?>(?:\\s|&nbsp;|\\u3000)*|\\n|^)${t}(?=(?:\\s|&nbsp;|\\u3000)*(?:<br\\s*\\/?>|\\n|$))`, 'gi');
-      html = html.replace(lineRe, '');
-      // 兜底：有些主题会把文本包在 span/样式里，行边界匹配会失效
-      const anyRe = new RegExp(t, 'gi');
-      html = html.replace(anyRe, '');
-    });
-
     // 清理多余换行
     html = html
-      .replace(/(?:<br\s*\/?>\s*){2,}/gi, '<br>')
+      .replace(/(?:<br\s*\/?>[\s]*){2,}/gi, '<br>')
       .replace(/^\s*(?:<br\s*\/?>\s*)+/i, '')
       .replace(/(?:<br\s*\/?>\s*)+$/i, '')
       .trim();
-    textEl.innerHTML = html;
 
+    if (html !== (textEl.innerHTML || '').trim()) {
+      textEl.innerHTML = html;
+    }
     if (fp) textEl.dataset.rpPhoneRewriteFp = fp;
   } catch(e) {
     console.warn('[Raymond Phone] rewritePhoneEchoInChat:', e);
