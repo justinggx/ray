@@ -3101,15 +3101,18 @@ const CHAT_STORE = {};
 // 所有读头像的地方统一调 getAvatar(key)，写头像调 setAvatar(key, dataUrl)
 const _AV = {};
 function getAvatar(key) {
-  // 优先从模块级 _AV 读，不受 STATE 覆盖影响
+  // window._rpAV 最高优先级，不受任何闭包/STATE切换影响
+  if (window._rpAV && window._rpAV[key]) return window._rpAV[key];
   if (_AV[key]) return _AV[key];
   if (STATE.avatars && STATE.avatars[key]) {
-    _AV[key] = STATE.avatars[key]; // 顺便备份
+    setAvatar(key, STATE.avatars[key]);
     return STATE.avatars[key];
   }
   return null;
 }
 function setAvatar(key, dataUrl) {
+  window._rpAV = window._rpAV || {};
+  window._rpAV[key] = dataUrl;
   _AV[key] = dataUrl;
   STATE.avatars = STATE.avatars || {};
   STATE.avatars[key] = dataUrl;
@@ -4036,8 +4039,10 @@ async function init() {
   }
   // 合并全局头像（优先级最高，覆盖 chatId 绑定的旧头像）
   mergeGlobalAvatars();
-  // 同步到 _AV 模块缓存
+  // 同步到 _AV 和 window._rpAV
   Object.assign(_AV, STATE.avatars || {});
+  window._rpAV = Object.assign(window._rpAV || {}, STATE.avatars || {});
+  console.log('[Phone:av] init avatars:', Object.keys(window._rpAV || {}));
   // 立即同步清理无效联系人（不等延迟，防止用户看到 SillyTavern）
   cleanInvalidContacts();
 
