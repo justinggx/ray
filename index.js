@@ -5514,8 +5514,15 @@ function parsePhone(block) {
   }
 
   const notifRe = /<NOTIFY\s+TYPE="([^"]+)"\s+TEXT="([^"]+)"\/>/gi;
+  const _uname = (typeof getContext === 'function' ? getContext()?.name1 : null) || '';
   while ((m = notifRe.exec(block)) !== null) {
-    addLockNotif(m[1], m[2]);
+    const nType = m[1], nText = m[2];
+    // 跳过由 user 操作触发的位置/红包通知（AI 叙事确认，非 char 主动发起）
+    if (STATE._suppressUserNotifUntil && Date.now() < STATE._suppressUserNotifUntil) {
+      const lowerText = nText.toLowerCase();
+      if (lowerText.includes('位置') || lowerText.includes('红包')) { parsedCount++; continue; }
+    }
+    addLockNotif(nType, nText);
     parsedCount++;
   }
 
@@ -5635,6 +5642,9 @@ function showBanner(from, text, time) {
 }
 
 function addLockNotif(type, text) {
+  // 去重：同 type+text 已在通知列表中则跳过
+  const isDupe = STATE.notifications.some(n => n.type === type && n.text === text);
+  if (isDupe) return;
   STATE.notifications.push({ type, text });
   refreshLockNotifs();
 }
@@ -6142,6 +6152,7 @@ function sendUserHongbao() {
   const ta = document.querySelector('#send_textarea');
   if (ta) {
     const action = `*{{user}}发给${thread.name}一个¥${amount}的红包，备注"${note}"*`;
+    STATE._suppressUserNotifUntil = Date.now() + 8000; // 8s 内屏蔽位置/红包通知
     ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
     ta.dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector('#send_but')?.click();
@@ -6243,6 +6254,7 @@ function sendLocation() {
   const ta = document.querySelector('#send_textarea');
   if (ta) {
     const action = `*{{user}}向${thread.name}共享了位置：${place}*`;
+    STATE._suppressUserNotifUntil = Date.now() + 8000; // 8s 内屏蔽位置/红包通知
     ta.value = ta.value.trim() ? `${ta.value.trim()}\n${action}` : action;
     ta.dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector('#send_but')?.click();
