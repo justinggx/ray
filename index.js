@@ -5873,6 +5873,7 @@ function closeCompose() {
 //  DIARY
 // ================================================================
 function renderDiary() {
+  mergeGlobalAvatars();
   var container = $('#rp-diary-list').empty();
   var entries = (STATE.diary || []).slice().reverse();
   if (!entries.length) {
@@ -7472,6 +7473,7 @@ function renderXHSFeed(forceRefresh) {
 }
 
 function _renderXHSList(box) {
+  mergeGlobalAvatars();
   box = box || $('#rp-xhs-list');
   box.empty();
   const list = STATE.xhsFeed || [];
@@ -7633,6 +7635,7 @@ function openXHSDetail(postId) {
 }
 
 function renderXHSDetail(post) {
+  mergeGlobalAvatars();
   const body = $('#rp-xhs-detail-body');
   if (!body.length) return;
   const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
