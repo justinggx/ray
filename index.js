@@ -4611,23 +4611,43 @@ function bindUI() {
     updateAvatarPreviewSwatch($(this).val());
   });
 
-  // Settings: file input change - read image and store
+  // Settings: file input change - read image, resize to max 200px, then store
   $(document).on('change', '#rp-avatar-file-input', function(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const who = $('#rp-avatar-select').val();
     const reader = new FileReader();
     reader.onload = function(ev) {
-      STATE.avatars = STATE.avatars || {};
-      STATE.avatars[who] = ev.target.result;
-      saveState();
-      updateAvatarPreviewSwatch(who);
-      renderMoments();
-      renderThreadList();
-      renderDiary();
-      if (STATE.currentView === 'thread' && STATE.currentThread) {
-        openThread(STATE.currentThread);
-      }
+      // Resize to max 200x200 to avoid localStorage quota issues
+      const img = new Image();
+      img.onload = function() {
+        const MAX = 200;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        STATE.avatars = STATE.avatars || {};
+        STATE.avatars[who] = dataUrl;
+        // 头像独立存全局 key（与大 payload 分开，避免 quota 失败）
+        try {
+          localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars));
+          console.log('[Phone] avatar saved globally for:', who, 'size:', dataUrl.length);
+        } catch(e) {
+          console.warn('[Phone] avatar save failed (quota?):', e);
+        }
+        saveState();
+        updateAvatarPreviewSwatch(who);
+        renderMoments();
+        renderThreadList();
+        renderDiary();
+        if (STATE.currentView === 'thread' && STATE.currentThread) {
+          openThread(STATE.currentThread);
+        }
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
     // Reset input so same file can be selected again
