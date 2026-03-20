@@ -6070,7 +6070,9 @@ function openSettings() {
   updateAvatarPreviewSwatch($('#rp-avatar-select').val());
   go('settings');
   // 每次打开设置页重新绑定文件上传事件（避免 jQuery delegation 失效）
+  console.log('[Phone:av] openSettings called');
   const fileInput = document.getElementById('rp-avatar-file-input');
+  console.log('[Phone:av] fileInput el:', fileInput, 'uploadBtn:', document.getElementById('rp-avatar-upload-btn'));
   const uploadBtn = document.getElementById('rp-avatar-upload-btn');
   if (fileInput && uploadBtn) {
     // 移除旧监听器，防止重复
