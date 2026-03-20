@@ -5439,9 +5439,7 @@ function rewritePhoneEchoInChat(block, fp) {
       .replace(/^\s*(?:<br\s*\/?>\s*)+/i, '')
       .replace(/(?:<br\s*\/?>\s*)+$/i, '')
       .trim();
-    const fallbackFrom = getContext()?.name || '角色';
-    const summary = smsList.map(s => `${s.from || fallbackFrom}：${s.text}`).join('<br>');
-    textEl.innerHTML = html ? `${html}<br>${summary}` : summary;
+    textEl.innerHTML = html;
 
     if (fp) textEl.dataset.rpPhoneRewriteFp = fp;
   } catch(e) {
