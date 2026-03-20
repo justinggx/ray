@@ -5295,15 +5295,17 @@ function onAIMessage() {
     if (!last?.mes) return;
 
     const raw = last.mes;
-    // 记录指纹，供轮询/事件双通道去重（同一条消息多事件触发时只处理一次）
+    // 指纹：只用于成功解析后去重，流式中间态不记录
     const fp = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
     if (fp === STATE._lastAiFingerprint) return;
-    STATE._lastAiFingerprint = fp;
     const normalizedRaw = normalizePhoneMarkup(raw);
 
     // 流式生成中间态保护：标签未闭合时先不解析，避免把半截内容写进手机
+    // 注意：此处 return 前不记录指纹，等完整消息到来时再处理
     if (/<PHONE\b/i.test(normalizedRaw) && !/<\/PHONE>/i.test(normalizedRaw)) return;
     if (/<SMS\b/i.test(normalizedRaw) && !/<\/SMS>/i.test(normalizedRaw)) return;
+    // 消息完整，记录指纹防止同一完整消息被重复处理
+    STATE._lastAiFingerprint = fp;
     const phoneMatch = normalizedRaw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
     // 兼容：有些模型会漏掉 <PHONE> 包裹，但仍输出 <SMS>/<GMSG>
     const hasBarePhoneTags = /<(SMS|GMSG|NOTIFY|MOMENTS|COMMENT|SYNC|CALL|VOICE|HONGBAO)\b/i.test(normalizedRaw);
@@ -5340,18 +5342,9 @@ function onAIMessage() {
       // 标签存在但未解析出任何消息：继续走兜底，避免"正文污染且手机无消息"
     }
 
-    // 兜底：AI 没有输出 <PHONE><SMS> 格式，但有 _pendingPhoneReply，尝试从正文提取回复写入手机
+    // 关闭正文兜底入手机：避免把正文第一句（如日期碎片）误写入手机消息
     if (STATE._pendingPhoneReply && Date.now() - STATE._pendingPhoneReply.sentAt < 120000) {
-      const pending = STATE._pendingPhoneReply;
       STATE._pendingPhoneReply = null;
-      const fallbackText = cleanPhoneFallbackReply(normalizedRaw, pending.fromName || '');
-      if (fallbackText && pending.threadId && STATE.threads?.[pending.threadId]) {
-        const now = new Date();
-        const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        incomingMsg(pending.threadId, fallbackText, ts);
-        console.log('[Raymond Phone] 正文兜底写入手机:', fallbackText);
-        beautifySMSInChat();
-      }
     }
   } catch (e) {
     console.warn('[Raymond Phone]', e);
