@@ -3326,19 +3326,41 @@ function saveState() {
   try {
     const threads = JSON.parse(JSON.stringify(STATE.threads));
     for (const th of Object.values(threads)) {
-      if (th.messages) th.messages = th.messages.map(m =>
-        (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
-      );
+      if (th.messages) {
+        // 截断消息到最近100条，防止 localStorage 超配额
+        if (th.messages.length > 100) th.messages = th.messages.slice(-100);
+        th.messages = th.messages.map(m =>
+          (m.type === 'image' && m.src?.startsWith('data:')) ? { ...m, src: '__img_expired__' } : m
+        );
+      }
     }
+    // moments 只保留最近50条
+    const moments = (STATE.moments || []).slice(-50);
     const payload = {
       threads,
       notifications: STATE.notifications,
       sync: STATE.sync,
-      moments: STATE.moments,
+      moments,
       diary: STATE.diary || [],
       darkMode: STATE.darkMode,
     };
-    localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
+    const jsonStr = JSON.stringify(payload);
+    // 如果写入失败，先清理同 key 旧数据再重试
+    try {
+      localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, jsonStr);
+    } catch(q) {
+      // QuotaExceeded：清理其他旧聊天 key，只保留当前
+      try {
+        const curKey = `rp-phone-v1-${STATE.chatId}`;
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('rp-phone-v1-') && k !== curKey) localStorage.removeItem(k);
+        });
+        localStorage.setItem(curKey, jsonStr);
+        console.log('[Phone] saveState: cleared old keys, retry ok');
+      } catch(q2) {
+        console.warn('[Raymond Phone] saveState failed even after cleanup', q2);
+      }
+    }
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
