@@ -3728,7 +3728,7 @@ const HTML = `
               <div class="rp-set-row">
                 <div id="rp-avatar-preview-swatch" class="rp-set-avatar-preview" style="background:linear-gradient(145deg,#64748b,#475569)">我</div>
                 <span class="rp-set-hint">点击右侧上传图片</span>
-                <label class="rp-avatar-upload-btn" for="rp-avatar-file-input">📷 选择</label>
+                <button class="rp-avatar-upload-btn" id="rp-avatar-upload-btn">📷 选择</button>
                 <input type="file" id="rp-avatar-file-input" accept="image/*" style="display:none">
               </div>
             </div>
@@ -4661,6 +4661,12 @@ function bindUI() {
   // Settings: avatar select change
   $(document).on('change', '#rp-avatar-select', function() {
     updateAvatarPreviewSwatch($(this).val());
+  });
+
+  $(document).on('click', '#rp-avatar-upload-btn', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $('#rp-avatar-file-input').val('').trigger('click');
   });
 
   // Settings: file input change - read image, resize to max 200px, then store
