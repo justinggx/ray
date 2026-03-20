@@ -4613,38 +4613,56 @@ function bindUI() {
 
   // Settings: file input change - read image, resize to max 200px, then store
   $(document).on('change', '#rp-avatar-file-input', function(e) {
+    console.log('[Phone:av] file input change fired');
     const file = e.target.files && e.target.files[0];
-    if (!file) return;
+    if (!file) { console.log('[Phone:av] no file'); return; }
+    console.log('[Phone:av] file:', file.name, file.size, 'who:', $('#rp-avatar-select').val());
     const who = $('#rp-avatar-select').val();
     const reader = new FileReader();
+    reader.onerror = function(err) { console.error('[Phone:av] FileReader error:', err); };
     reader.onload = function(ev) {
+      console.log('[Phone:av] FileReader loaded, dataURL len:', ev.target.result && ev.target.result.length);
       // Resize to max 200x200 to avoid localStorage quota issues
       const img = new Image();
+      img.onerror = function(err) { console.error('[Phone:av] Image load error:', err); };
       img.onload = function() {
-        const MAX = 200;
-        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-        const w = Math.round(img.width * scale);
-        const h = Math.round(img.height * scale);
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        STATE.avatars = STATE.avatars || {};
-        STATE.avatars[who] = dataUrl;
-        // 头像独立存全局 key（与大 payload 分开，避免 quota 失败）
+        console.log('[Phone:av] Image loaded:', img.width, 'x', img.height);
         try {
-          localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars));
-          console.log('[Phone] avatar saved globally for:', who, 'size:', dataUrl.length);
-        } catch(e) {
-          console.warn('[Phone] avatar save failed (quota?):', e);
-        }
-        saveState();
-        updateAvatarPreviewSwatch(who);
-        renderMoments();
-        renderThreadList();
-        renderDiary();
-        if (STATE.currentView === 'thread' && STATE.currentThread) {
-          openThread(STATE.currentThread);
+          const MAX = 200;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          console.log('[Phone:av] canvas resized to:', w, 'x', h, 'dataUrl len:', dataUrl.length);
+          STATE.avatars = STATE.avatars || {};
+          STATE.avatars[who] = dataUrl;
+          // 头像独立存全局 key（与大 payload 分开，避免 quota 失败）
+          try {
+            localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars));
+            console.log('[Phone:av] saved globally for:', who);
+          } catch(qe) {
+            console.error('[Phone:av] localStorage quota error:', qe);
+          }
+          saveState();
+          updateAvatarPreviewSwatch(who);
+          renderMoments();
+          renderThreadList();
+          renderDiary();
+          if (STATE.currentView === 'thread' && STATE.currentThread) {
+            openThread(STATE.currentThread);
+          }
+        } catch(canvasErr) {
+          console.error('[Phone:av] canvas error:', canvasErr);
+          // Fallback: save original dataURL directly
+          STATE.avatars = STATE.avatars || {};
+          STATE.avatars[who] = ev.target.result;
+          try { localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars)); } catch(e2) {}
+          saveState();
+          updateAvatarPreviewSwatch(who);
+          renderMoments(); renderThreadList(); renderDiary();
         }
       };
       img.src = ev.target.result;
