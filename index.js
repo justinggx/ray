@@ -5297,13 +5297,30 @@ function onAIMessage() {
     const raw = last.mes;
     // 指纹：只用于成功解析后去重，流式中间态不记录
     const fp = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
-    if (fp === STATE._lastAiFingerprint) return;
+    if (fp === STATE._lastAiFingerprint) {
+      console.log('[Phone:diag] onAIMessage skipped: same fingerprint');
+      return;
+    }
     const normalizedRaw = normalizePhoneMarkup(raw);
+    const hasPhoneOpen  = /<PHONE\b/i.test(normalizedRaw);
+    const hasPhoneClose = /<\/PHONE>/i.test(normalizedRaw);
+    const hasSmsOpen    = /<SMS\b/i.test(normalizedRaw);
+    const hasSmsClose   = /<\/SMS>/i.test(normalizedRaw);
+    console.log('[Phone:diag] onAIMessage called', {
+      rawLen: raw.length,
+      hasPhoneOpen, hasPhoneClose, hasSmsOpen, hasSmsClose,
+      rawSnippet: raw.slice(0, 120)
+    });
 
-    // 流式生成中间态保护：标签未闭合时先不解析，避免把半截内容写进手机
-    // 注意：此处 return 前不记录指纹，等完整消息到来时再处理
-    if (/<PHONE\b/i.test(normalizedRaw) && !/<\/PHONE>/i.test(normalizedRaw)) return;
-    if (/<SMS\b/i.test(normalizedRaw) && !/<\/SMS>/i.test(normalizedRaw)) return;
+    // 流式生成中间态保护
+    if (hasPhoneOpen && !hasPhoneClose) {
+      console.log('[Phone:diag] EARLY RETURN: PHONE not closed (streaming)');
+      return;
+    }
+    if (hasSmsOpen && !hasSmsClose) {
+      console.log('[Phone:diag] EARLY RETURN: SMS not closed (streaming)');
+      return;
+    }
     // 消息完整，记录指纹防止同一完整消息被重复处理
     STATE._lastAiFingerprint = fp;
     const phoneMatch = normalizedRaw.match(/<PHONE>([\s\S]*?)<\/PHONE>/i);
@@ -5511,8 +5528,12 @@ function parsePhone(block) {
       fromRaw = STATE.threads[threadId]?.name || '';
     }
 
-    if (!threadId) continue;
+    if (!threadId) {
+      console.log('[Phone:diag] parsePhone: no threadId found for FROM=' + fromRaw0);
+      continue;
+    }
     const fallbackTime = `${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`;
+    console.log('[Phone:diag] incomingMsg called', { threadId, text: text.slice(0,40), time: time || fallbackTime });
     incomingMsg(threadId, text, time || fallbackTime);
     parsedCount++;
   }
@@ -5609,7 +5630,10 @@ function incomingMsg(threadId, text, time) {
 
   // 去重：相同 from+text 在近期消息中不重复插入（time 可能略有不同）
   const isDup = th.messages.some(m => m.from === threadId && m.text === text);
-  if (isDup) return;
+  if (isDup) {
+    console.log('[Phone:diag] incomingMsg DEDUP blocked:', text.slice(0, 40));
+    return;
+  }
 
   th.messages.push({ from: threadId, text, time });
 
