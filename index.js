@@ -1997,8 +1997,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-diary-gen-btn:disabled{opacity:.35;cursor:default}
 .rp-diary-gen-btn.rp-spinning{animation:rpSpin .7s linear infinite}
 .rp-diary-entry{margin-bottom:14px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.6);box-shadow:0 2px 12px rgba(0,0,0,.06)}
-.rp-diary-hd{display:flex;align-items:center;gap:8px;padding:10px 14px 6px}
-.rp-diary-av{width:32px;height:32px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.rp-diary-hd{padding:10px 14px 6px}
 .rp-diary-meta{display:flex;flex-direction:column}
 .rp-diary-author{font-size:13px;font-weight:600;color:#1a1a2e}
 .rp-diary-date{font-size:11px;color:#888}
@@ -5928,9 +5927,6 @@ function renderDiary() {
   var charAvatarBg = 'linear-gradient(145deg,#7c3aed,#0891b2)';
   entries.forEach(function(e) {
     var isAI = e.author === 'ai';
-    var avHtml = isAI
-      ? '<div class="rp-diary-av" style="background:' + charAvatarBg + '">' + charName.slice(0,2) + '</div>'
-      : '<div class="rp-diary-av" style="background:linear-gradient(145deg,#64748b,#475569)">\u6211</div>';
     var authorLabel = isAI ? charName : '\u6211';
     var replyHtml = '';
     if (!isAI && e.reply) {
@@ -5939,7 +5935,7 @@ function renderDiary() {
     }
     container.append(
       '<div class="rp-diary-entry">'
-      + '<div class="rp-diary-hd">' + avHtml
+      + '<div class="rp-diary-hd">'
       + '<div class="rp-diary-meta"><div class="rp-diary-author">' + authorLabel + '</div>'
       + '<div class="rp-diary-date">' + escHtml(e.date) + ' ' + escHtml(e.time) + '</div></div></div>'
       + '<div class="rp-diary-body">' + escHtml(e.text) + '</div>'
@@ -7506,13 +7502,9 @@ function renderXHSCard(p) {
   const likeK = p.likes >= 10000 ? (p.likes/10000).toFixed(1)+'w' : p.likes >= 1000 ? (p.likes/1000).toFixed(1)+'k' : p.likes;
   const commentCount = p.comments ? p.comments.length : 0;
   const isUser = p.from === 'user';
-  const _xhsAvColor = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const _avColor = isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAvColor(p.user||'')};color:#fff`;
-  const avatarHtml = `<div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${_avColor}">${escHtml(isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
   return `
     <div class="rp-xhs-card" data-xhsid="${p.id}" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        ${avatarHtml}
         <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.user)}</div>
           <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${p.time || ''}</div>
@@ -7725,9 +7717,7 @@ function renderXHSDetail(post) {
   if (!body.length) return;
   const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
   const isUser = post.from === 'user';
-  const _xhsAv2Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const _detAvColor = isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv2Color(post.user||'')};color:#fff`;
-  const detailAvHtml = `<div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${_detAvColor}">${escHtml(isUser ? '我' : (post.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
+
 
   let commentsHtml = '';
   if (post.comments && post.comments.length > 0) {
@@ -7737,12 +7727,10 @@ function renderXHSDetail(post) {
         : '';
       const isMe = c.from === 'user';
       const _xhsAv3Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-      const _comAvColor = isMe ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv3Color(c.user||'')};color:#fff`;
-      const commentAvHtml = `<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${_comAvColor}">${escHtml(isMe ? '我' : (c.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
+
       return `
-        <div class="rp-xhs-comment" data-cidx="${idx}" style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #fff5f6">
-          ${commentAvHtml}
-          <div style="flex:1">
+        <div class="rp-xhs-comment" data-cidx="${idx}" style="padding:8px 0;border-bottom:1px solid #fff5f6">
+          <div>
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
               <span style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333)">${escHtml(c.user)}</span>
               <span style="font-size:10px;color:var(--rp-xhs-text-faint,#ccc)">${c.time||''}</span>
@@ -7758,8 +7746,7 @@ function renderXHSDetail(post) {
   }
 
   body.html(`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      ${detailAvHtml}
+    <div style="margin-bottom:14px">
       <div>
         <div style="font-size:13px;font-weight:700;color:var(--rp-xhs-text,#333)">${escHtml(post.user)}</div>
         <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${post.date||''} ${post.time||''} · ${escHtml(post.tag)}</div>
