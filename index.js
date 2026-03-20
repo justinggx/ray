@@ -7730,14 +7730,12 @@ function renderXHSDetail(post) {
 
       return `
         <div class="rp-xhs-comment" data-cidx="${idx}" style="padding:8px 0;border-bottom:1px solid #fff5f6">
-          <div>
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-              <span style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333)">${escHtml(c.user)}</span>
-              <span style="font-size:10px;color:var(--rp-xhs-text-faint,#ccc)">${c.time||''}</span>
-            </div>
-            <div style="font-size:12px;color:var(--rp-xhs-text-soft,#444);line-height:1.6">${replyPart}${escHtml(c.text)}</div>
-            <div style="font-size:10px;color:#ff2442;margin-top:3px;cursor:pointer" data-reply-cidx="${idx}" data-reply-uname="${escHtml(c.user)}">回复</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:2px">
+            <span style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333)">${escHtml(c.user)}</span>
+            <span style="font-size:10px;color:var(--rp-xhs-text-faint,#ccc)">${c.time||''}</span>
           </div>
+          <div style="font-size:12px;color:var(--rp-xhs-text-soft,#444);line-height:1.6">${replyPart}${escHtml(c.text)}</div>
+          <div style="font-size:10px;color:#ff2442;margin-top:3px;cursor:pointer" data-reply-cidx="${idx}" data-reply-uname="${escHtml(c.user)}">回复</div>
         </div>
       `;
     }).join('');
@@ -7747,10 +7745,8 @@ function renderXHSDetail(post) {
 
   body.html(`
     <div style="margin-bottom:14px">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--rp-xhs-text,#333)">${escHtml(post.user)}</div>
-        <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${post.date||''} ${post.time||''} · ${escHtml(post.tag)}</div>
-      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--rp-xhs-text,#333)">${escHtml(post.user)}</div>
+      <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${post.date||''} ${post.time||''} · ${escHtml(post.tag)}</div>
     </div>
     <div style="font-size:15px;font-weight:800;color:var(--rp-xhs-text,#1a1a1a);line-height:1.5;margin-bottom:10px">${escHtml(post.title)}</div>
     <div style="font-size:13px;color:var(--rp-xhs-text-soft,#444);line-height:1.8;margin-bottom:16px">${escHtml(post.body)}</div>
