@@ -5802,10 +5802,12 @@ function renderDiary() {
   var charAv = STATE.avatars && STATE.avatars[charName];
   entries.forEach(function(e) {
     var isAI = e.author === 'ai';
+    var userAv = STATE.avatars && STATE.avatars['user'];
     var avHtml = isAI
       ? (charAv ? '<div class="rp-diary-av rp-av-img" style="overflow:hidden"><img src="' + charAv + '" style="width:100%;height:100%;object-fit:cover"/></div>'
                : '<div class="rp-diary-av" style="background:' + charAvatarBg + '">' + charName.slice(0,2) + '</div>')
-      : '<div class="rp-diary-av" style="background:linear-gradient(145deg,#64748b,#475569)">\u6211</div>';
+      : (userAv ? '<div class="rp-diary-av rp-av-img" style="overflow:hidden"><img src="' + userAv + '" style="width:100%;height:100%;object-fit:cover"/></div>'
+                : '<div class="rp-diary-av" style="background:linear-gradient(145deg,#64748b,#475569)">\u6211</div>');
     var authorLabel = isAI ? charName : '\u6211';
     var replyHtml = '';
     if (!isAI && e.reply) {
@@ -7335,14 +7337,14 @@ function renderXHSCard(p) {
   const commentCount = p.comments ? p.comments.length : 0;
   const isUser = p.from === 'user';
   const _xhsAvColor = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const avatarStyle = isUser
-    ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-    : `background:${_xhsAvColor(p.user||'')};color:#fff`;
-  const avatarText = isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
+  const _userAv = STATE.avatars && STATE.avatars['user'];
+  const avatarHtml = isUser && _userAv
+    ? `<img src="${_userAv}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
+    : `<div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAvColor(p.user||'')};color:#fff`}">${escHtml(isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
   return `
     <div class="rp-xhs-card" data-xhsid="${p.id}" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
+        ${avatarHtml}
         <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.user)}</div>
           <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${p.time || ''}</div>
@@ -7553,10 +7555,10 @@ function renderXHSDetail(post) {
   const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
   const isUser = post.from === 'user';
   const _xhsAv2Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const avatarStyle = isUser
-    ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-    : `background:${_xhsAv2Color(post.user||'')};color:#fff`;
-  const avatarText = isUser ? '我' : (post.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
+  const _userAv2 = STATE.avatars && STATE.avatars['user'];
+  const detailAvHtml = isUser && _userAv2
+    ? `<img src="${_userAv2}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
+    : `<div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv2Color(post.user||'')};color:#fff`}">${escHtml(isUser ? '我' : (post.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
 
   let commentsHtml = '';
   if (post.comments && post.comments.length > 0) {
@@ -7566,13 +7568,13 @@ function renderXHSDetail(post) {
         : '';
       const isMe = c.from === 'user';
       const _xhsAv3Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-      const cavStyle = isMe
-        ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-        : `background:${_xhsAv3Color(c.user||'')};color:#fff`;
-      const cavText = isMe ? '我' : (c.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
+      const _userAv3 = STATE.avatars && STATE.avatars['user'];
+      const commentAvHtml = isMe && _userAv3
+        ? `<img src="${_userAv3}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
+        : `<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${isMe ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv3Color(c.user||'')};color:#fff`}">${escHtml(isMe ? '我' : (c.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
       return `
         <div class="rp-xhs-comment" data-cidx="${idx}" style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #fff5f6">
-          <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${cavStyle}">${escHtml(cavText)}</div>
+          ${commentAvHtml}
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
               <span style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333)">${escHtml(c.user)}</span>
@@ -7590,7 +7592,7 @@ function renderXHSDetail(post) {
 
   body.html(`
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-      <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
+      ${detailAvHtml}
       <div>
         <div style="font-size:13px;font-weight:700;color:var(--rp-xhs-text,#333)">${escHtml(post.user)}</div>
         <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${post.date||''} ${post.time||''} · ${escHtml(post.tag)}</div>
