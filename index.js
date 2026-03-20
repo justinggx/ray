@@ -3337,11 +3337,8 @@ function saveState() {
       moments: STATE.moments,
       diary: STATE.diary || [],
       darkMode: STATE.darkMode,
-      avatars: STATE.avatars || {},
     };
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
-    // 头像额外独立保存（全局，不随 chatId 变化）
-    saveGlobalAvatars();
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
@@ -4661,7 +4658,6 @@ function bindUI() {
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = dataUrl;
           saveGlobalAvatars();
-          saveState();
           updateAvatarPreviewSwatch(who);
           renderMoments();
           renderThreadList();
@@ -4675,7 +4671,6 @@ function bindUI() {
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = ev.target.result;
           saveGlobalAvatars();
-          saveState();
           updateAvatarPreviewSwatch(who);
           renderMoments(); renderThreadList(); renderDiary();
         }
