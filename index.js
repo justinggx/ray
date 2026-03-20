@@ -4614,6 +4614,7 @@ function bindUI() {
       updateAvatarPreviewSwatch(who);
       renderMoments();
       renderThreadList();
+      renderDiary();
       if (STATE.currentView === 'thread' && STATE.currentThread) {
         openThread(STATE.currentThread);
       }
@@ -5901,10 +5902,10 @@ async function postUserDiary() {
       + (_recentCtx2 ? '\u4eca\u65e5\u6545\u4e8b\u80cc\u666f\uff1a\n' + _recentCtx2 + '\n\n' : '')
       + '\u7528\u6237\u5199\u4e86\u4e00\u7bc7\u65e5\u8bb0\u5206\u4eab\u7ed9' + charName2
       + '\uff0c\u4ee5' + charName2 + '\u7684\u8eab\u4efd\u771f\u5b9e\u56de\u5e94\uff0c\u4f53\u73b0TA\u7684\u4e2a\u6027\u3002\n'
-      + '\u8981\u6c42\uff1a30-60\u5b57\u4e2d\u6587\uff0c\u7b26\u5408\u89d2\u8272\u6027\u683c\u7684\u7eaf\u5bf9\u8bdd\u6587\u5b57\u3002\n'
+      + '\u8981\u6c42\uff1a50-120\u5b57\u4e2d\u6587\uff0c\u60c5\u611f\u771f\u5b9e\uff0c\u5145\u5206\u4f53\u73b0\u89d2\u8272\u6027\u683c\u3002\u53ef\u4ee5\u5305\u542b\u5173\u5fc3\u3001\u60c5\u7eea\u3001\u8f7b\u5fae\u53cd\u5dee\u6216\u76f4\u63a5\u7684\u60c5\u611f\u8868\u8fbe\uff0c\u4f46\u5fc5\u987b\u771f\u60c5\u5b9e\u611f\uff0c\u4e0d\u8981\u5754\u71e5\u5355\u8c03\u3002\n'
       + '\u4e25\u7981\uff1a\u52a8\u4f5c\u63cf\u5199\uff08\u62ec\u53f7\u5185\u5c0f\u52a8\u4f5c\uff09\u3001\u6807\u9898\u3001\u6bb5\u843d\u683c\u5f0f\u3001\u661f\u53f7\u3001\u62ec\u53f7()\uff08\uff09\uff0c\u76f4\u63a5\u8f93\u51fa\u56de\u5e94\u6b63\u6587\u3002';
-    var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n' + charName2 + '\u7684\u56de\u5e94\uff1a';
-    var resp2 = await lgCallAPI(prompt2, 200, sysMsg2);
+    var prompt2 = '\u7528\u6237\u65e5\u8bb0\uff1a\u300c' + text + '\u300d\n\u8bf7\u4ee5' + charName2 + '\u7684\u89d2\u8272\u56de\u5e94\uff0c\u60c5\u611f\u771f\u5b9e\u81ea\u7136\uff0c\u7b26\u5408\u5176\u4e00\u8d2f\u7684\u6027\u683c\u3002' + charName2 + '\u7684\u56de\u5e94\uff1a';
+    var resp2 = await lgCallAPI(prompt2, 500, sysMsg2);
     if (resp2) {
       var cleaned2 = resp2.trim().replace(/^[\u300c"'\u300d"']+|[\u300d"'\u300c"']+ $/g, '').trim();
       var now2 = new Date();
