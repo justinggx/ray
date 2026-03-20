@@ -3315,6 +3315,8 @@ function saveState() {
       avatars: STATE.avatars || {},
     };
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
+    // 头像额外独立保存（全局，不随 chatId 变化）
+    try { localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars || {})); } catch(e) {}
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
@@ -3967,6 +3969,14 @@ async function init() {
     STATE.darkMode = saved.darkMode || false;
     console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
   }
+  // 合并全局头像（优先级最高，覆盖 chatId 绑定的旧头像）
+  try {
+    const globalAv = localStorage.getItem('rp-phone-avatars-global');
+    if (globalAv) {
+      const parsed = JSON.parse(globalAv);
+      STATE.avatars = Object.assign({}, STATE.avatars || {}, parsed);
+    }
+  } catch(e) {}
   // 立即同步清理无效联系人（不等延迟，防止用户看到 SillyTavern）
   cleanInvalidContacts();
 
