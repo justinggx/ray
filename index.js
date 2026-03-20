@@ -5873,16 +5873,17 @@ function refreshWidget() {
 // ================================================================
 function makeDraggable() {
   const phone = document.querySelector('#rp-phone');
-  if (!phone || phone._rpDragPC) return;
-  phone._rpDragPC = true; // 防止热重载重复绑定
+  if (!phone) return;
+  // 移除旧 handler 防止重复（用具名函数）
+  if (phone._rpMoveHandler) document.removeEventListener('mousemove', phone._rpMoveHandler);
+  if (phone._rpUpHandler)   document.removeEventListener('mouseup',   phone._rpUpHandler);
   let dragging = false, ox, oy, ex, ey;
 
   phone.addEventListener('mousedown', e => {
-    if (IS_TOUCH_DEVICE) return; // 触控设备不用鼠标拖拽
+    if (IS_TOUCH_DEVICE) return;
     if (e.target.closest('input,textarea,select,button,a,[contenteditable]')) return;
     dragging = true;
     const r = phone.getBoundingClientRect();
-    // 先把 right/bottom 定位切换成 left/top，避免双向约束冲突
     phone.style.right = 'auto';
     phone.style.bottom = 'auto';
     phone.style.left = r.left + 'px';
@@ -5890,12 +5891,14 @@ function makeDraggable() {
     ox = r.left; oy = r.top; ex = e.clientX; ey = e.clientY;
     e.preventDefault();
   });
-  document.addEventListener('mousemove', e => {
+  phone._rpMoveHandler = e => {
     if (!dragging) return;
     phone.style.left = (ox + e.clientX - ex) + 'px';
     phone.style.top  = (oy + e.clientY - ey) + 'px';
-  });
-  document.addEventListener('mouseup', () => { dragging = false; });
+  };
+  phone._rpUpHandler = () => { dragging = false; };
+  document.addEventListener('mousemove', phone._rpMoveHandler);
+  document.addEventListener('mouseup',   phone._rpUpHandler);
 }
 
 // ================================================================
