@@ -4036,6 +4036,8 @@ async function init() {
   }
   // 合并全局头像（优先级最高，覆盖 chatId 绑定的旧头像）
   mergeGlobalAvatars();
+  // 同步到 _AV 模块缓存
+  Object.assign(_AV, STATE.avatars || {});
   // 立即同步清理无效联系人（不等延迟，防止用户看到 SillyTavern）
   cleanInvalidContacts();
 
@@ -6067,6 +6069,57 @@ function openSettings() {
   populateAvatarSelect();
   updateAvatarPreviewSwatch($('#rp-avatar-select').val());
   go('settings');
+  // 每次打开设置页重新绑定文件上传事件（避免 jQuery delegation 失效）
+  const fileInput = document.getElementById('rp-avatar-file-input');
+  const uploadBtn = document.getElementById('rp-avatar-upload-btn');
+  if (fileInput && uploadBtn) {
+    // 移除旧监听器，防止重复
+    const newInput = fileInput.cloneNode(true);
+    fileInput.parentNode.replaceChild(newInput, fileInput);
+    uploadBtn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      newInput.value = '';
+      newInput.click();
+    };
+    newInput.onchange = function(e) {
+      console.log('[Phone:av] onchange fired native, files:', this.files && this.files.length);
+      const file = this.files && this.files[0];
+      if (!file) return;
+      const who = document.getElementById('rp-avatar-select')?.value || 'user';
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const MAX = 200;
+          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          console.log('[Phone:av] avatar ready, who:', who, 'len:', dataUrl.length);
+          setAvatar(who, dataUrl);
+          updateAvatarPreviewSwatch(who);
+          renderMoments();
+          renderThreadList();
+          renderDiary();
+          if (STATE.currentView === 'thread' && STATE.currentThread) openThread(STATE.currentThread);
+        };
+        img.onerror = function() {
+          // canvas 失败时直接用原始 dataURL
+          const dataUrl = ev.target.result;
+          console.log('[Phone:av] img load err, using raw, who:', who);
+          setAvatar(who, dataUrl);
+          updateAvatarPreviewSwatch(who);
+          renderMoments(); renderThreadList(); renderDiary();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+  }
 }
 
 function populateAvatarSelect() {
