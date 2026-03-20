@@ -3973,6 +3973,8 @@ async function init() {
   updateClock();
   setInterval(updateClock, 1000);
 
+  // 扩展初始化/热重载时清空指纹，防止旧指纹导致第一条新消息被 skip
+  STATE._lastAiFingerprint = null;
   bindUI();
   makeDraggable();
   renderThreadList();
