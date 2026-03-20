@@ -3573,17 +3573,17 @@ const HTML = `
         </div>
 
         <!-- 小红书发帖 -->
-        <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column;background:#fff">
+        <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column">
           <div class="rp-nav-bar">
-            <button class="rp-back" data-to="xhs" style="font-size:12px;padding:4px 12px;border-radius:8px;border:1px solid var(--rp-xhs-border,#ffe0e6);background:transparent;color:var(--rp-xhs-accent,#ff2442);cursor:pointer;font-weight:600">取消</button>
+            <button class="rp-back" data-to="xhs" style="font-size:12px;padding:4px 12px;border-radius:8px;border:1px solid var(--rp-xhs-border,#ffe0e6);background:transparent;color:var(--rp-xhs-text,#333);cursor:pointer;font-weight:600">取消</button>
             <span class="rp-nav-title">发笔记</span>
             <button id="rp-xhs-post-btn" style="font-size:12px;padding:4px 12px;border-radius:8px;border:none;background:#ff2442;color:#fff;cursor:pointer;font-weight:600">发布</button>
           </div>
-          <div style="padding:16px 14px;flex:1;overflow-y:auto">
-            <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid #ffe4e8;padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box"/>
-            <textarea id="rp-xhs-post-body" placeholder="分享一下你的故事…" rows="6" style="width:100%;border:1px solid #ffe4e8;border-radius:10px;padding:10px;font-size:13px;outline:none;resize:none;box-sizing:border-box;line-height:1.6"></textarea>
+          <div style="padding:16px 14px;flex:1;overflow-y:auto;background:var(--rp-xhs-bg)">
+            <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid var(--rp-xhs-border,#ffe4e8);padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box;background:transparent;color:var(--rp-xhs-text,#1a1a1a)"/>
+            <textarea id="rp-xhs-post-body" placeholder="分享一下你的故事…" rows="6" style="width:100%;border:1px solid var(--rp-xhs-border,#ffe4e8);border-radius:10px;padding:10px;font-size:13px;outline:none;resize:none;box-sizing:border-box;line-height:1.6;background:var(--rp-xhs-card,#fff);color:var(--rp-xhs-text,#1a1a1a)"></textarea>
             <div style="margin-top:10px">
-              <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:.03em">话题</div>
+              <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb);margin-bottom:5px;letter-spacing:.03em">话题</div>
               <div id="rp-xhs-tag-row" style="display:flex;flex-wrap:wrap;gap:5px">
                 <button class="rp-xhs-tag-btn" data-tag="日常">＃日常</button>
                 <button class="rp-xhs-tag-btn" data-tag="随想">＃随想</button>
