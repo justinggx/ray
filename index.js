@@ -2477,7 +2477,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-xhs-shadow:0 10px 26px rgba(80,120,160,.10);
   --rp-xhs-shadow-2:0 18px 36px rgba(80,120,160,.14);
 }
-#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important;background:var(--rp-xhs-bg)!important;min-height:0!important;height:100%!important}
+#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important;background:var(--rp-xhs-bg,#fff)!important;min-height:0!important;height:100%!important}
 #rp-view-xhs .rp-nav-bar,#rp-view-xhs-detail .rp-nav-bar,#rp-view-xhs-compose .rp-nav-bar{flex:0 0 auto!important;background:var(--rp-xhs-panel)!important;border-bottom:1px solid var(--rp-xhs-border)!important;backdrop-filter:blur(14px) saturate(1.08)!important;-webkit-backdrop-filter:blur(14px) saturate(1.08)!important}
 #rp-view-xhs .rp-nav-title,#rp-view-xhs-detail .rp-nav-title,#rp-view-xhs-compose .rp-nav-title{color:var(--rp-xhs-text)!important}
 #rp-view-xhs .rp-back,#rp-view-xhs-detail .rp-back,#rp-view-xhs-compose .rp-back,#rp-xhs-compose,#rp-xhs-refresh{color:var(--rp-xhs-accent)!important}
@@ -2535,8 +2535,8 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-xhs-tag-row{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin-top:8px!important}
 #rp-xhs-detail-send,#rp-xhs-post-btn{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2))!important;color:#fff!important;border:none!important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important}
 #rp-xhs-post-btn{border-radius:10px!important;padding:4px 12px!important;min-width:0!important;font-weight:600!important;font-size:12px!important;letter-spacing:0!important}
-#rp-xhs-detail-send{border-radius:15px!important;padding:9px 16px!important;min-width:62px!important;font-weight:700!important}
-.rp-xhs-tag-btn{background:linear-gradient(180deg,var(--rp-xhs-card),var(--rp-xhs-panel))!important;color:var(--rp-xhs-accent)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:999px!important;padding:0 10px!important;height:24px!important;min-height:24px!important;font-size:10.5px!important;line-height:1.2!important;font-weight:500!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#rp-xhs-detail-send{border-radius:10px!important;padding:5px 14px!important;min-width:0!important;font-weight:600!important;font-size:12px!important}
+.rp-xhs-tag-btn{background:var(--rp-xhs-chip,rgba(255,36,66,.06))!important;color:var(--rp-xhs-text,#333)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:999px!important;padding:0 10px!important;height:24px!important;min-height:24px!important;font-size:10.5px!important;line-height:1.2!important;font-weight:500!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .rp-xhs-tag-btn:hover{background:var(--rp-xhs-soft)!important;border-color:var(--rp-xhs-border-strong)!important;transform:translateY(-1px)!important}
 .rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important;outline:none !important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important;transform:translateY(-1px)!important}
 #rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important;animation:rpXhsLoadingFloat 1.8s ease-in-out infinite}
@@ -3559,7 +3559,7 @@ const HTML = `
         </div>
 
         <!-- 小红书详情页 -->
-        <div id="rp-view-xhs-detail" class="rp-view" style="display:none;flex-direction:column;background:#fff">
+        <div id="rp-view-xhs-detail" class="rp-view" style="display:none;flex-direction:column">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="xhs">‹</button>
             <span class="rp-nav-title">帖子详情</span>
@@ -3567,7 +3567,7 @@ const HTML = `
           </div>
           <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
           <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;display:flex;align-items:center;padding:6px 10px 16px;gap:8px;overflow:visible;min-width:0">
-            <textarea id="rp-xhs-detail-input" placeholder="发表评论…" autocomplete="off" rows="1" style="flex:1;border-radius:14px;padding:6px 12px;font-size:12px;outline:none;resize:none;overflow:hidden;line-height:1.5;max-height:72px;font-family:inherit;box-sizing:border-box;min-width:0"></textarea>
+            <textarea id="rp-xhs-detail-input" placeholder="发表评论…" autocomplete="off" rows="1" style="flex:1;border-radius:14px;padding:6px 12px;font-size:12px;outline:none;resize:none;overflow:hidden;line-height:1.5;max-height:72px;font-family:inherit;box-sizing:border-box;min-width:0;color:var(--rp-xhs-text,#1a1a1a);background:var(--rp-xhs-card,#fff)"></textarea>
             <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap;display:inline-flex !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important">发送</button>
           </div>
         </div>
@@ -3575,7 +3575,7 @@ const HTML = `
         <!-- 小红书发帖 -->
         <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column">
           <div class="rp-nav-bar">
-            <button class="rp-back" data-to="xhs" style="font-size:12px;padding:4px 12px;border-radius:8px;border:1px solid var(--rp-xhs-border,#ffe0e6);background:transparent;color:var(--rp-xhs-text,#333);cursor:pointer;font-weight:600">取消</button>
+            <button class="rp-back" data-to="xhs" style="font-size:12px;padding:5px 14px;border-radius:10px;border:1px solid var(--rp-xhs-border,#ffe0e6);background:transparent;color:var(--rp-xhs-text,#eee);cursor:pointer;font-weight:600">取消</button>
             <span class="rp-nav-title">发笔记</span>
             <button id="rp-xhs-post-btn" style="font-size:12px;padding:4px 12px;border-radius:8px;border:none;background:#ff2442;color:#fff;cursor:pointer;font-weight:600">发布</button>
           </div>
