@@ -2543,6 +2543,18 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-xhs-loading::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.10) 35%,rgba(255,255,255,.42) 50%,rgba(255,255,255,.10) 65%,transparent 100%);transform:translateX(-120%);animation:rpXhsShine 1.5s ease-in-out infinite;pointer-events:none}
 #rp-xhs-loading{color:var(--rp-xhs-accent)!important;font-weight:700!important;letter-spacing:.02em!important}
 @keyframes rpXhsShine{to{transform:translateX(120%)}}
+#rp-phone.rp-theme-star #rp-xhs-detail-input,
+#rp-phone.rp-theme-star #rp-xhs-post-title,
+#rp-phone.rp-theme-star #rp-xhs-post-body{color:#eee7ff!important;background:rgba(35,22,78,.96)!important;border-color:rgba(167,139,250,.25)!important}
+#rp-phone.rp-theme-star #rp-xhs-detail-input::placeholder,
+#rp-phone.rp-theme-star #rp-xhs-post-title::placeholder,
+#rp-phone.rp-theme-star #rp-xhs-post-body::placeholder{color:rgba(210,195,255,.55)!important}
+#rp-phone.rp-theme-misty #rp-xhs-detail-input,
+#rp-phone.rp-theme-misty #rp-xhs-post-title,
+#rp-phone.rp-theme-misty #rp-xhs-post-body{color:#16324a!important;background:rgba(242,251,255,.97)!important;border-color:rgba(74,127,168,.2)!important}
+#rp-phone.rp-theme-misty #rp-xhs-detail-input::placeholder,
+#rp-phone.rp-theme-misty #rp-xhs-post-title::placeholder,
+#rp-phone.rp-theme-misty #rp-xhs-post-body::placeholder{color:rgba(74,127,168,.5)!important}
 @keyframes rpXhsLoadingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 /* ── MOMENT IMAGE ── */
 .rp-moment-img-wrap{margin-bottom:10px;border-radius:8px;overflow:hidden;max-width:180px}
