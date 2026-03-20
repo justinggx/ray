@@ -5547,8 +5547,12 @@ function parsePhone(block) {
   }
   // ── HONGBAO ──
   const hongbaoRe = /<HONGBAO\s+FROM="([^"]+)"\s+AMOUNT="([^"]+)"(?:\s+NOTE="([^"]*)")?\s*\/?>/gi;
+  const _userName = (typeof getContext === 'function' ? getContext()?.name1 : null) || '';
   while ((m = hongbaoRe.exec(block)) !== null) {
-    incomingHongbao(m[1].trim(), m[2].trim(), m[3] ? m[3].trim() : '恭喜发财');
+    const fromName = m[1].trim();
+    // 跳过 user 自己发出的红包（AI 确认回显），只处理 char 发来的
+    if (_userName && fromName.toLowerCase() === _userName.toLowerCase()) continue;
+    incomingHongbao(fromName, m[2].trim(), m[3] ? m[3].trim() : '恭喜发财');
     parsedCount++;
   }
   // ── VOICE ──
