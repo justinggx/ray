@@ -3367,6 +3367,7 @@ function saveState() {
       moments,
       diary: STATE.diary || [],
       darkMode: STATE.darkMode,
+      avatars: Object.assign({}, _AV),
     };
     const jsonStr = JSON.stringify(payload);
     // 如果写入失败，先清理同 key 旧数据再重试
@@ -5022,6 +5023,8 @@ function go(view) {
   $('#rp-home-ind').toggle(view !== 'lock');
   STATE.currentView = view;
 
+  if (view === 'settings') { _bindAvatarUpload(); }
+
   if (view === 'messages') {
     renderThreadList();
   }
@@ -6072,63 +6075,56 @@ async function postUserMoment() {
 // ================================================================
 //  SETTINGS / AVATAR MANAGEMENT
 // ================================================================
+function _bindAvatarUpload() {
+  const fileInput = document.getElementById('rp-avatar-file-input');
+  const uploadBtn = document.getElementById('rp-avatar-upload-btn');
+  if (!fileInput || !uploadBtn) { console.log('[Phone:av] _bindAvatarUpload: elements not found'); return; }
+  console.log('[Phone:av] _bindAvatarUpload: binding');
+  const newInput = fileInput.cloneNode(true);
+  fileInput.parentNode.replaceChild(newInput, fileInput);
+  uploadBtn.onclick = function(e) {
+    e.preventDefault(); e.stopPropagation();
+    newInput.value = ''; newInput.click();
+  };
+  newInput.onchange = function() {
+    console.log('[Phone:av] onchange fired, files:', this.files && this.files.length);
+    const file = this.files && this.files[0];
+    if (!file) return;
+    const who = document.getElementById('rp-avatar-select')?.value || 'user';
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = new Image();
+      img.onload = function() {
+        const MAX = 200;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        console.log('[Phone:av] ready, who:', who, 'len:', dataUrl.length);
+        setAvatar(who, dataUrl);
+        updateAvatarPreviewSwatch(who);
+        renderMoments(); renderThreadList(); renderDiary();
+        if (STATE.currentView === 'thread' && STATE.currentThread) openThread(STATE.currentThread);
+      };
+      img.onerror = function() {
+        const dataUrl = ev.target.result;
+        console.log('[Phone:av] img err, raw, who:', who);
+        setAvatar(who, dataUrl);
+        updateAvatarPreviewSwatch(who);
+        renderMoments(); renderThreadList(); renderDiary();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+}
+
 function openSettings() {
   populateAvatarSelect();
   updateAvatarPreviewSwatch($('#rp-avatar-select').val());
   go('settings');
-  // 每次打开设置页重新绑定文件上传事件（避免 jQuery delegation 失效）
-  console.log('[Phone:av] openSettings called');
-  const fileInput = document.getElementById('rp-avatar-file-input');
-  console.log('[Phone:av] fileInput el:', fileInput, 'uploadBtn:', document.getElementById('rp-avatar-upload-btn'));
-  const uploadBtn = document.getElementById('rp-avatar-upload-btn');
-  if (fileInput && uploadBtn) {
-    // 移除旧监听器，防止重复
-    const newInput = fileInput.cloneNode(true);
-    fileInput.parentNode.replaceChild(newInput, fileInput);
-    uploadBtn.onclick = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      newInput.value = '';
-      newInput.click();
-    };
-    newInput.onchange = function(e) {
-      console.log('[Phone:av] onchange fired native, files:', this.files && this.files.length);
-      const file = this.files && this.files[0];
-      if (!file) return;
-      const who = document.getElementById('rp-avatar-select')?.value || 'user';
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const img = new Image();
-        img.onload = function() {
-          const MAX = 200;
-          const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-          const w = Math.round(img.width * scale);
-          const h = Math.round(img.height * scale);
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          console.log('[Phone:av] avatar ready, who:', who, 'len:', dataUrl.length);
-          setAvatar(who, dataUrl);
-          updateAvatarPreviewSwatch(who);
-          renderMoments();
-          renderThreadList();
-          renderDiary();
-          if (STATE.currentView === 'thread' && STATE.currentThread) openThread(STATE.currentThread);
-        };
-        img.onerror = function() {
-          // canvas 失败时直接用原始 dataURL
-          const dataUrl = ev.target.result;
-          console.log('[Phone:av] img load err, using raw, who:', who);
-          setAvatar(who, dataUrl);
-          updateAvatarPreviewSwatch(who);
-          renderMoments(); renderThreadList(); renderDiary();
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    };
-  }
 }
 
 function populateAvatarSelect() {
