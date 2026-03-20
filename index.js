@@ -7262,7 +7262,7 @@ function _renderXHSList(box) {
 
 // XHS API 调用：直接复用 lgCallAPI，和其他功能保持一致
 async function xhsCallAPI(prompt, sysMsg) {
-  return await lgCallAPI(prompt, 1500, sysMsg);
+  return await lgCallAPI(prompt, 3500, sysMsg);
 }
 
 async function buildXHSFeedWithAI(appendMode) {
@@ -7321,8 +7321,8 @@ async function buildXHSFeedWithAI(appendMode) {
 - 话题严格对应下方给出的3个不同方向，不要全写成同一种八卦
 - 陌生路人/网友视角，口语化，有具体细节，正文40-60字
 
-评论要求（每条帖子各自生成10条，三条帖子的评论内容不能相同）：
-- 必须包含：吐槽型（1条）、阴阳型（1条）、共情型（1条）、补料型（1条）、理性分析型（1条）、懂哥长评（2条，40-60字深度分析）、看热闹型（1条）、质疑型（1条）、支持型（1条）
+评论要求（每条帖子各自生成5条，三条帖子的评论内容不能相同）：
+- 必须包含：吐槽型（1条）、共情型（1条）、懂哥长评（1条，30-40字）、看热闹型（1条）、补料型（1条）
 - 每条评论的昵称和内容都不能跟其他帖子的评论相同
 
 只返回JSON数组，格式：
@@ -7367,7 +7367,7 @@ async function buildXHSFeedWithAI(appendMode) {
       } catch(e) { console.warn('[XHS] JSON parse error:', e.message, resp ? resp.slice(0,300) : ''); }
       if (Array.isArray(items) && items.length > 0) {
         const aiPosts = items.slice(0, 3).map((p, i) => {
-          const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 10).map(c => ({
+          const aiComments = Array.isArray(p.comments) ? p.comments.slice(0, 5).map(c => ({
             from: 'stranger_preset', user: c.user||'路人', text: c.text||'', time: ts(), replyTo: null
           })) : [];
           return {
