@@ -3194,6 +3194,7 @@ function syncToCurrentChat() {
     }
     STATE.currentThread = null;
   }
+  mergeGlobalAvatars();
 
   cleanInvalidContacts();
   autoAddCharContact();
@@ -3296,6 +3297,16 @@ function findOrCreateThread(nameRaw) {
 // ================================================================
 //  PERSISTENCE (localStorage)
 // ================================================================
+// 从全局 localStorage key 合并头像（不被 chatId 覆盖）
+function mergeGlobalAvatars() {
+  try {
+    const raw = localStorage.getItem('rp-phone-avatars-global');
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    STATE.avatars = Object.assign({}, STATE.avatars || {}, parsed);
+  } catch(e) {}
+}
+
 function saveState() {
   if (!STATE.chatId) return;
   try {
@@ -3970,13 +3981,7 @@ async function init() {
     console.log('[Raymond Phone] 已恢复历史状态 chatId:', STATE.chatId);
   }
   // 合并全局头像（优先级最高，覆盖 chatId 绑定的旧头像）
-  try {
-    const globalAv = localStorage.getItem('rp-phone-avatars-global');
-    if (globalAv) {
-      const parsed = JSON.parse(globalAv);
-      STATE.avatars = Object.assign({}, STATE.avatars || {}, parsed);
-    }
-  } catch(e) {}
+  mergeGlobalAvatars();
   // 立即同步清理无效联系人（不等延迟，防止用户看到 SillyTavern）
   cleanInvalidContacts();
 
@@ -4095,6 +4100,7 @@ function onChatChanged() {
       STATE.currentThread = null;
     }
   }
+  mergeGlobalAvatars();
 
   // 重置 UI（加载新状态后立即同步清理无效联系人）
   cleanInvalidContacts();
