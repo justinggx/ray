@@ -5874,6 +5874,7 @@ function closeCompose() {
 // ================================================================
 function renderDiary() {
   mergeGlobalAvatars();
+  console.log('[Phone:diag] renderDiary STATE.avatars=', JSON.stringify(STATE.avatars));
   var container = $('#rp-diary-list').empty();
   var entries = (STATE.diary || []).slice().reverse();
   if (!entries.length) {
@@ -7356,6 +7357,7 @@ async function generateAIReply(momentId, userCommentText, fromName) {
 //  MOMENTS
 // ================================================================
 function renderMoments() {
+  console.log('[Phone:diag] renderMoments STATE.avatars=', JSON.stringify(STATE.avatars));
   const container = $('#rp-moments-list').empty();
   if (!STATE.moments || STATE.moments.length === 0) {
     container.append('<div class="rp-moments-empty"><span>📭</span><span>暂无动态</span></div>');
@@ -7474,6 +7476,7 @@ function renderXHSFeed(forceRefresh) {
 
 function _renderXHSList(box) {
   mergeGlobalAvatars();
+  console.log('[Phone:diag] _renderXHSList STATE.avatars=', JSON.stringify(STATE.avatars));
   box = box || $('#rp-xhs-list');
   box.empty();
   const list = STATE.xhsFeed || [];
