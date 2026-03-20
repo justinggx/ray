@@ -5603,8 +5603,8 @@ function incomingMsg(threadId, text, time) {
   const th = STATE.threads[threadId];
   if (!th) return;
 
-  // 去重：相同 from+time+text 不重复插入（防止多次扫描历史消息产生重复）
-  const isDup = th.messages.some(m => m.from === threadId && m.time === time && m.text === text);
+  // 去重：相同 from+text 在近期消息中不重复插入（time 可能略有不同）
+  const isDup = th.messages.some(m => m.from === threadId && m.text === text);
   if (isDup) return;
 
   th.messages.push({ from: threadId, text, time });
@@ -5629,6 +5629,12 @@ function incomingMsg(threadId, text, time) {
 //  NOTIFICATION BANNER
 // ================================================================
 function showBanner(from, text, time) {
+  // 短时去重：同 from+text 在 3s 内不重复弹出
+  const key = from + '|' + text;
+  if (STATE._lastBannerKey === key && Date.now() - (STATE._lastBannerAt || 0) < 3000) return;
+  STATE._lastBannerKey = key;
+  STATE._lastBannerAt = Date.now();
+
   const b = $('#rp-notif-banner');
   $('#rp-nb-from').text(from);
   $('#rp-nb-text').text(text.length > 45 ? text.slice(0, 45) + '…' : text);
