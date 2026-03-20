@@ -7584,40 +7584,65 @@ async function sendXHSComment(postId, text, replyToCidx) {
   setTimeout(() => generateXHSReplyToComment(postId, text.trim(), userName), 1200);
 }
 
-// 陌生网友回复用户评论
+// 陌生网友回复用户评论（3条，3种侧重，错峰推送）
 async function generateXHSReplyToComment(postId, userComment, userName) {
   const post = (STATE.xhsFeed || []).find(p => p.id === postId);
   if (!post) return;
   const ctx = getContext() || {};
   const charName = ctx?.name2 || ctx?.name || 'TA';
   const charLast = charName.split(/\s+/).pop() || charName;
-  const styles = ['吃瓜追问','担心关心','阴阳怪气','无脑力挺','路人质疑'];
-  const style = styles[Math.floor(Math.random()*styles.length)];
-  const recentComments = (post.comments||[]).slice(-4).map(c=>`${c.user}：${c.text}`).join('\n');
+  const recentComments = (post.comments||[]).slice(-5).map(c=>`${c.user}：${c.text}`).join('\n');
 
-  const sysMsg = `你是一个小红书陌生网友，性格类型：${style}。
+  const sysMsg = `你是小红书评论区生成器。用户${userName}刚发了一条评论，现在生成3个不同陌生网友的回复。
+3个回复必须侧重方向各不相同：
+1. 吃瓜追问型：好奇追问细节，语气八卦
+2. 情绪共鸣型：共情支持或心疼，带情绪
+3. 阴阳/质疑型：隐含质疑或阴阳怪气，口吻微妙
 帖子背景：涉及用户与 ${charName}（姓${charLast}）的相关话题。
-生成一个口语化中文回复，10-20字，符合小红书风格。
-同时生成一个带emoji的网友昵称（不要用固定模板，要有创意）。
-只返回JSON：{"user":"昵称emoji","text":"回复内容"}`;
-  const prompt = `帖子：${post.title}\n近期评论：\n${recentComments}\n用户${userName}说：「${userComment}」`;
-  const resp = await lgCallAPI(prompt, 100, sysMsg);
+每条回复15-25字，口语化，符合小红书风格，昵称要有创意带emoji。
+只返回JSON数组：[{"user":"昵称emoji","text":"回复内容"},{"user":"昵称emoji","text":"回复内容"},{"user":"昵称emoji","text":"回复内容"}]`;
+
+  const prompt = `帖子标题：${post.title}\n近期评论：\n${recentComments}\n用户${userName}刚说：「${userComment}」\n生成3条回复JSON：`;
+
+  const resp = await lgCallAPI(prompt, 300, sysMsg);
   if (!resp) return;
-  const now = new Date();
-  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  let nick = '路人甲🍿', replyText = resp.trim().replace(/^[「"']|[」"']$/g,'');
+
+  let replies = [];
   try {
-    const m = resp.match(/\{[\s\S]*\}/);
-    if (m) { const obj = JSON.parse(m[0]); nick = obj.user || nick; replyText = obj.text || replyText; }
-  } catch(e) {}
-  // 找到用户刚才那条评论的 index，作为 replyTo
+    const m = resp.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim().match(/\[[\s\S]*\]/);
+    if (m) replies = JSON.parse(m[0]);
+  } catch(e) {
+    // fallback：尝试单条
+    try {
+      const m2 = resp.match(/\{[\s\S]*?\}/g);
+      if (m2) replies = m2.map(s => { try { return JSON.parse(s); } catch(e2) { return null; } }).filter(Boolean);
+    } catch(e3) {}
+  }
+  if (!replies.length) return;
+
+  // 找到用户刚才那条评论的 index
   const _revIdx = [...post.comments].reverse().findIndex(c => c.from === 'user');
   const userCidx = _revIdx >= 0 ? post.comments.length - 1 - _revIdx : null;
-  post.comments.push({ from: 'stranger_reply', user: nick, text: replyText, time: ts, replyTo: userCidx !== null && userCidx < post.comments.length ? userCidx : null });
-  saveState();
-  if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
-    renderXHSDetail(post);
-  }
+
+  // 错峰推送：0s / 1.5s / 3.5s
+  const delays = [0, 1500, 3500];
+  replies.slice(0, 3).forEach((r, i) => {
+    setTimeout(() => {
+      const p2 = (STATE.xhsFeed || []).find(x => x.id === postId);
+      if (!p2) return;
+      const now = new Date();
+      const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const nick = r.user || '路人甲🍿';
+      const replyText = (r.text || '').trim();
+      if (!replyText) return;
+      const refIdx = (userCidx !== null && userCidx < p2.comments.length) ? userCidx : null;
+      p2.comments.push({ from: 'stranger_reply', user: nick, text: replyText, time: ts, replyTo: refIdx });
+      saveState();
+      if (STATE.currentView === 'xhs-detail' && STATE.xhsCurrentPost === postId) {
+        renderXHSDetail(p2);
+      }
+    }, delays[i]);
+  });
 }
 
 // XHS 点赞切换
