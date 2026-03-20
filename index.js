@@ -3419,7 +3419,7 @@ function loadState(chatId) {
 //  HTML
 // ================================================================
 const HTML = `
-<div id="rp-fab" title="打开手机"><img src="https://i.postimg.cc/x8Nsnh8L/ke-ai-shou-ji-tu-biao-she-ji.png" style="width:100%;height:100%;object-fit:contain;display:block;" draggable="false" /></div>
+<div id="rp-fab" title="打开手机"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><rect x="8" y="3" width="32" height="42" rx="6" fill="#fff" stroke="#e0e0e0" stroke-width="1.5"/><rect x="11" y="7" width="26" height="30" rx="3" fill="#f0f4ff"/><circle cx="24" cy="41" r="2.2" fill="#c8c8d0"/><rect x="19" y="5" width="10" height="2" rx="1" fill="#d0d0d8"/><rect x="13" y="10" width="22" height="14" rx="2" fill="#7c9fff" opacity=".7"/><rect x="13" y="27" width="10" height="3" rx="1.5" fill="#b0bcff"/><rect x="25" y="27" width="10" height="3" rx="1.5" fill="#ffa0b4"/><rect x="13" y="32" width="22" height="3" rx="1.5" fill="#e0e0e8"/></svg></div>
 <div id="rp-wrapper">
 
   <div id="rp-phone" style="display:none">
