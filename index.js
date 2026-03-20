@@ -3297,14 +3297,28 @@ function findOrCreateThread(nameRaw) {
 // ================================================================
 //  PERSISTENCE (localStorage)
 // ================================================================
-// 从全局 localStorage key 合并头像（不被 chatId 覆盖）
+// 从全局 key 合并头像（sessionStorage 优先，localStorage 兜底）
 function mergeGlobalAvatars() {
   try {
-    const raw = localStorage.getItem('rp-phone-avatars-global');
+    const raw = sessionStorage.getItem('rp-phone-avatars-global')
+             || localStorage.getItem('rp-phone-avatars-global');
     if (!raw) return;
     const parsed = JSON.parse(raw);
     STATE.avatars = Object.assign({}, STATE.avatars || {}, parsed);
   } catch(e) {}
+}
+
+// 持久化头像到 sessionStorage（不受 localStorage 配额限制）
+function saveGlobalAvatars() {
+  try {
+    const json = JSON.stringify(STATE.avatars || {});
+    sessionStorage.setItem('rp-phone-avatars-global', json);
+    console.log('[Phone:av] saved to sessionStorage, keys:', Object.keys(STATE.avatars || {}));
+  } catch(e) {
+    console.warn('[Phone:av] sessionStorage save failed:', e);
+  }
+  // 也尝试 localStorage，失败不影响
+  try { localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars || {})); } catch(e) {}
 }
 
 function saveState() {
@@ -3327,7 +3341,7 @@ function saveState() {
     };
     localStorage.setItem(`rp-phone-v1-${STATE.chatId}`, JSON.stringify(payload));
     // 头像额外独立保存（全局，不随 chatId 变化）
-    try { localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars || {})); } catch(e) {}
+    saveGlobalAvatars();
     const es = _extSettings();
     if (es) {
       if (!es[EXT_KEY]) es[EXT_KEY] = {};
@@ -4645,13 +4659,7 @@ function bindUI() {
           console.log('[Phone:av] canvas resized to:', w, 'x', h, 'dataUrl len:', dataUrl.length);
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = dataUrl;
-          // 头像独立存全局 key（与大 payload 分开，避免 quota 失败）
-          try {
-            localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars));
-            console.log('[Phone:av] saved globally for:', who);
-          } catch(qe) {
-            console.error('[Phone:av] localStorage quota error:', qe);
-          }
+          saveGlobalAvatars();
           saveState();
           updateAvatarPreviewSwatch(who);
           renderMoments();
@@ -4665,7 +4673,7 @@ function bindUI() {
           // Fallback: save original dataURL directly
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = ev.target.result;
-          try { localStorage.setItem('rp-phone-avatars-global', JSON.stringify(STATE.avatars)); } catch(e2) {}
+          saveGlobalAvatars();
           saveState();
           updateAvatarPreviewSwatch(who);
           renderMoments(); renderThreadList(); renderDiary();
