@@ -4298,6 +4298,7 @@ function bindUI() {
   // ── Diary app ──
   $(document).on('click', '[data-app="diary"]', function() {
     STATE.diary = STATE.diary || [];
+    mergeGlobalAvatars();
     renderDiary();
     go('diary');
   });
@@ -4970,9 +4971,11 @@ function go(view) {
     renderThreadList();
   }
   if (view === 'moments') {
+    mergeGlobalAvatars();
     renderMoments();
   }
   if (view === 'xhs') {
+    mergeGlobalAvatars();
     renderXHSFeed(false);
   }
   if (view === 'xhs-detail') {
