@@ -3101,7 +3101,13 @@ const CHAT_STORE = {};
 // 所有读头像的地方统一调 getAvatar(key)，写头像调 setAvatar(key, dataUrl)
 const _AV = {};
 function getAvatar(key) {
-  return _AV[key] || STATE.avatars[key] || null;
+  // 优先从模块级 _AV 读，不受 STATE 覆盖影响
+  if (_AV[key]) return _AV[key];
+  if (STATE.avatars && STATE.avatars[key]) {
+    _AV[key] = STATE.avatars[key]; // 顺便备份
+    return STATE.avatars[key];
+  }
+  return null;
 }
 function setAvatar(key, dataUrl) {
   _AV[key] = dataUrl;
@@ -3157,6 +3163,9 @@ function syncToCurrentChat() {
   const ctx = getContext();
   const newChatId = ctx?.chatId || (ctx?.characterId != null ? 'char_' + ctx.characterId : 'default');
   if (newChatId === STATE.chatId) return; // 已一致，跳过
+
+  // 切换前把当前头像备份到 _AV（防止切换后丢失）
+  Object.assign(_AV, STATE.avatars || {});
 
   console.log('[Phone] syncToCurrentChat:', STATE.chatId, '->', newChatId);
 
