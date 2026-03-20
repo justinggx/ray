@@ -5232,9 +5232,10 @@ function sendSMS() {
     oocText,
   });
   if (hasExtPrompt) {
-    setExtensionPrompt('rp-phone-ooc', oocText, extension_prompt_types.BEFORE_PROMPT, 0, false, 0);
+    // 将 smsLine 和 oocText 合并注入，用户聊天框不显示任何提示语
+    setExtensionPrompt('rp-phone-ooc', `${smsLine}\n${oocText}`, extension_prompt_types.BEFORE_PROMPT, 0, false, 0);
     console.log('[Raymond Phone] setExtensionPrompt called with BEFORE_PROMPT, depth=0');
-    ta.value = mainText ? `${mainText}\n${smsLine}` : smsLine;
+    ta.value = mainText || '';
   } else {
     // 降级：OOC 直接写入消息（旧版 ST 兼容）
     console.warn('[Raymond Phone] setExtensionPrompt not available, falling back to inline OOC');
