@@ -5340,9 +5340,18 @@ function onAIMessage() {
       // 标签存在但未解析出任何消息：继续走兜底，避免"正文污染且手机无消息"
     }
 
-    // 关闭正文兜底入手机：避免把正文第一句（如日期碎片）误写入手机消息
+    // 兜底：AI 没有输出 <PHONE><SMS> 格式，但有 _pendingPhoneReply，尝试从正文提取回复写入手机
     if (STATE._pendingPhoneReply && Date.now() - STATE._pendingPhoneReply.sentAt < 120000) {
+      const pending = STATE._pendingPhoneReply;
       STATE._pendingPhoneReply = null;
+      const fallbackText = cleanPhoneFallbackReply(normalizedRaw, pending.fromName || '');
+      if (fallbackText && pending.threadId && STATE.threads?.[pending.threadId]) {
+        const now = new Date();
+        const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        incomingMsg(pending.threadId, fallbackText, ts);
+        console.log('[Raymond Phone] 正文兜底写入手机:', fallbackText);
+        beautifySMSInChat();
+      }
     }
   } catch (e) {
     console.warn('[Raymond Phone]', e);
