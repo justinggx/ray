@@ -4006,7 +4006,7 @@ async function init() {
         if (!last?.mes) return;
         const fp = `${ctx?.chatId || ''}|${last.mes.length}|${last.mes.slice(0, 24)}|${last.mes.slice(-24)}`;
         if (fp === STATE._lastAiFingerprint) return;
-        STATE._lastAiFingerprint = fp;
+        // 不在这里写指纹，让 onAIMessage 内部统一管理
         onAIMessage();
       } catch(e) {}
     }, 1200);
