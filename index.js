@@ -3546,7 +3546,7 @@ const HTML = `
         </div>
 
         <!-- 小红书 -->
-        <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column;background:#fff1f2">
+        <div id="rp-view-xhs" class="rp-view" style="display:none;flex-direction:column">
           <div class="rp-nav-bar">
             <button class="rp-back" data-to="home">‹</button>
             <span class="rp-nav-title">小红书</span>
@@ -7196,22 +7196,22 @@ function renderXHSCard(p) {
     : `background:${_xhsAvColor(p.user||'')};color:#fff`;
   const avatarText = isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
   return `
-    <div class="rp-xhs-card" data-xhsid="${p.id}" style="background:#fff;border-radius:12px;margin-bottom:8px;padding:12px 14px;box-shadow:0 1px 4px rgba(255,36,66,.07);cursor:pointer;border:1px solid #fff0f2">
+    <div class="rp-xhs-card" data-xhsid="${p.id}" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
         <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${avatarStyle}">${escHtml(avatarText)}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:12px;font-weight:600;color:var(--rp-xhs-text,#333);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.user)}</div>
           <div style="font-size:10px;color:var(--rp-xhs-text-faint,#bbb)">${p.time || ''}</div>
         </div>
-        <div style="font-size:10px;background:#fff0f2;color:#ff2442;padding:2px 8px;border-radius:10px;flex-shrink:0;font-weight:600">${escHtml(p.tag)}</div>
+        <div style="font-size:10px;background:var(--rp-xhs-chip,rgba(255,36,66,.08));color:var(--rp-xhs-accent,#ff2442);padding:2px 8px;border-radius:10px;flex-shrink:0;font-weight:600">${escHtml(p.tag)}</div>
       </div>
       <div style="font-size:13px;font-weight:700;color:var(--rp-xhs-text,#1a1a1a);line-height:1.5;margin-bottom:4px">${escHtml(p.title)}</div>
       <div style="font-size:12px;color:var(--rp-xhs-text-soft,#666);line-height:1.6;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${escHtml(p.body)}</div>
-      <div style="display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:8px;border-top:1px solid #fff0f2">
-        <div style="font-size:11px;color:${p.likedByUser?'#ff2442':'#bbb'};display:flex;align-items:center;gap:3px">${p.likedByUser?'❤️':'🤍'} ${likeK}</div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:10px;padding-top:8px;border-top:1px solid var(--rp-xhs-border,rgba(0,0,0,.06))">
+        <div style="font-size:11px;color:${p.likedByUser?'var(--rp-xhs-accent,#ff2442)':'var(--rp-xhs-text-faint,#bbb)'};display:flex;align-items:center;gap:3px">${p.likedByUser?'❤️':'🤍'} ${likeK}</div>
         <div style="font-size:11px;color:var(--rp-xhs-text-faint,#bbb);display:flex;align-items:center;gap:3px">💬 ${commentCount > 0 ? commentCount+'条' : '评论'}</div>
         <div style="flex:1"></div>
-        <div style="font-size:10px;color:#ddd">${p.date||''}</div>
+        <div style="font-size:10px;color:var(--rp-xhs-text-faint,#ccc)">${p.date||''}</div>
       </div>
     </div>
   `;
