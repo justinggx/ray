@@ -2477,15 +2477,15 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   --rp-xhs-shadow:0 10px 26px rgba(80,120,160,.10);
   --rp-xhs-shadow-2:0 18px 36px rgba(80,120,160,.14);
 }
-#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important;background:var(--rp-xhs-bg)!important;min-height:0!important}
+#rp-view-xhs,#rp-view-xhs-detail,#rp-view-xhs-compose{flex-direction:column!important;overflow:hidden!important;background:var(--rp-xhs-bg)!important;min-height:0!important;height:100%!important}
 #rp-view-xhs .rp-nav-bar,#rp-view-xhs-detail .rp-nav-bar,#rp-view-xhs-compose .rp-nav-bar{flex:0 0 auto!important;background:var(--rp-xhs-panel)!important;border-bottom:1px solid var(--rp-xhs-border)!important;backdrop-filter:blur(14px) saturate(1.08)!important;-webkit-backdrop-filter:blur(14px) saturate(1.08)!important}
 #rp-view-xhs .rp-nav-title,#rp-view-xhs-detail .rp-nav-title,#rp-view-xhs-compose .rp-nav-title{color:var(--rp-xhs-text)!important}
 #rp-view-xhs .rp-back,#rp-view-xhs-detail .rp-back,#rp-view-xhs-compose .rp-back,#rp-xhs-compose,#rp-xhs-refresh{color:var(--rp-xhs-accent)!important}
 #rp-xhs-list,#rp-xhs-detail-body{scrollbar-width:none;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;overscroll-behavior-y:contain!important}
 #rp-xhs-list::-webkit-scrollbar,#rp-xhs-detail-body::-webkit-scrollbar{display:none}
-.rp-xhs-card{background:var(--rp-xhs-card)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:20px!important;box-shadow:var(--rp-xhs-shadow)!important;padding:14px 15px!important;margin:0 0 12px!important;position:relative;overflow:hidden!important;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease!important}
-.rp-xhs-card::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);pointer-events:none}
-.rp-xhs-card:hover{transform:translateY(-1px)!important;box-shadow:var(--rp-xhs-shadow-2)!important;border-color:var(--rp-xhs-border-strong)!important}
+.rp-xhs-card{background:transparent!important;border:none!important;border-bottom:1px solid var(--rp-xhs-border)!important;border-radius:0!important;box-shadow:none!important;padding:12px 14px!important;margin:0!important;position:relative;overflow:hidden!important;transition:background .12s ease!important}
+.rp-xhs-card::before{display:none}
+.rp-xhs-card:hover{background:var(--rp-xhs-soft,rgba(255,36,66,.03))!important}
 .rp-xhs-card>div:first-child>div:first-child,.rp-xhs-comment>div:first-child,#rp-xhs-detail-body>div:first-child>div:first-child{box-shadow:0 8px 18px rgba(0,0,0,.08)!important}
 .rp-xhs-card>div:first-child>div:nth-child(2)>div:first-child,#rp-xhs-detail-body>div:first-child>div:nth-child(2)>div:first-child,.rp-xhs-comment>div:nth-child(2)>div:first-child>span:first-child,#rp-xhs-detail-body>div:nth-child(5){color:var(--rp-xhs-text)!important}
 .rp-xhs-card>div:first-child>div:nth-child(2)>div:nth-child(2),#rp-xhs-detail-body>div:first-child>div:nth-child(2)>div:nth-child(2),.rp-xhs-comment>div:nth-child(2)>div:first-child>span:nth-child(2){color:var(--rp-xhs-text-faint)!important}
@@ -2536,7 +2536,7 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 #rp-xhs-detail-send,#rp-xhs-post-btn{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2))!important;color:#fff!important;border:none!important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important}
 #rp-xhs-post-btn{border-radius:10px!important;padding:4px 12px!important;min-width:0!important;font-weight:600!important;font-size:12px!important;letter-spacing:0!important}
 #rp-xhs-detail-send{border-radius:15px!important;padding:9px 16px!important;min-width:62px!important;font-weight:700!important}
-.rp-xhs-tag-btn{background:linear-gradient(180deg,var(--rp-xhs-card),var(--rp-xhs-panel))!important;color:var(--rp-xhs-accent)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:12px!important;padding:0 8px!important;height:28px!important;min-height:28px!important;font-size:11px!important;line-height:1.2!important;font-weight:600!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.rp-xhs-tag-btn{background:linear-gradient(180deg,var(--rp-xhs-card),var(--rp-xhs-panel))!important;color:var(--rp-xhs-accent)!important;border:1px solid var(--rp-xhs-border)!important;border-radius:999px!important;padding:0 10px!important;height:24px!important;min-height:24px!important;font-size:10.5px!important;line-height:1.2!important;font-weight:500!important;cursor:pointer!important;transition:all .15s!important;font-family:inherit!important;box-shadow:0 3px 10px rgba(0,0,0,.03)!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .rp-xhs-tag-btn:hover{background:var(--rp-xhs-soft)!important;border-color:var(--rp-xhs-border-strong)!important;transform:translateY(-1px)!important}
 .rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important}.rp-xhs-tag-btn.rp-xhs-tag-selected{background:linear-gradient(135deg,var(--rp-xhs-accent),var(--rp-xhs-accent-2)) !important;color:#fff !important;border-color:transparent !important;outline:none !important;box-shadow:0 8px 18px rgba(0,0,0,.15)!important;transform:translateY(-1px)!important}
 #rp-xhs-loading{background:var(--rp-xhs-panel)!important;border:1px dashed var(--rp-xhs-border)!important;border-radius:16px!important;box-shadow:var(--rp-xhs-shadow)!important;position:relative;overflow:hidden!important;animation:rpXhsLoadingFloat 1.8s ease-in-out infinite}
@@ -3575,16 +3575,16 @@ const HTML = `
         <!-- 小红书发帖 -->
         <div id="rp-view-xhs-compose" class="rp-view" style="display:none;flex-direction:column;background:#fff">
           <div class="rp-nav-bar">
-            <button class="rp-back" data-to="xhs">取消</button>
+            <button class="rp-back" data-to="xhs" style="font-size:12px;padding:4px 12px;border-radius:8px;border:1px solid var(--rp-xhs-border,#ffe0e6);background:transparent;color:var(--rp-xhs-accent,#ff2442);cursor:pointer;font-weight:600">取消</button>
             <span class="rp-nav-title">发笔记</span>
-            <button id="rp-xhs-post-btn" style="background:#ff2442;color:#fff;border:none;border-radius:16px;padding:4px 14px;font-size:12px;cursor:pointer;font-weight:600">发布</button>
+            <button id="rp-xhs-post-btn" style="font-size:12px;padding:4px 12px;border-radius:8px;border:none;background:#ff2442;color:#fff;cursor:pointer;font-weight:600">发布</button>
           </div>
           <div style="padding:16px 14px;flex:1;overflow-y:auto">
             <input id="rp-xhs-post-title" type="text" placeholder="填写标题（选填）" maxlength="40" style="width:100%;border:none;border-bottom:1px solid #ffe4e8;padding:6px 0;font-size:14px;font-weight:600;outline:none;margin-bottom:10px;box-sizing:border-box"/>
             <textarea id="rp-xhs-post-body" placeholder="分享一下你的故事…" rows="6" style="width:100%;border:1px solid #ffe4e8;border-radius:10px;padding:10px;font-size:13px;outline:none;resize:none;box-sizing:border-box;line-height:1.6"></textarea>
-            <div style="margin-top:12px">
-              <div style="font-size:11px;color:#999;margin-bottom:6px">选择话题标签</div>
-              <div id="rp-xhs-tag-row" style="display:flex;flex-wrap:wrap;gap:6px">
+            <div style="margin-top:10px">
+              <div style="font-size:10px;color:#bbb;margin-bottom:5px;letter-spacing:.03em">话题</div>
+              <div id="rp-xhs-tag-row" style="display:flex;flex-wrap:wrap;gap:5px">
                 <button class="rp-xhs-tag-btn" data-tag="日常">＃日常</button>
                 <button class="rp-xhs-tag-btn" data-tag="随想">＃随想</button>
                 <button class="rp-xhs-tag-btn" data-tag="情感">＃情感</button>
@@ -7190,10 +7190,11 @@ function renderXHSCard(p) {
   const likeK = p.likes >= 10000 ? (p.likes/10000).toFixed(1)+'w' : p.likes >= 1000 ? (p.likes/1000).toFixed(1)+'k' : p.likes;
   const commentCount = p.comments ? p.comments.length : 0;
   const isUser = p.from === 'user';
+  const _xhsAvColor = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
   const avatarStyle = isUser
     ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-    : 'background:linear-gradient(135deg,#aaa,#777);color:#fff';
-  const avatarText = isUser ? '我' : (p.user || '').slice(0,1);
+    : `background:${_xhsAvColor(p.user||'')};color:#fff`;
+  const avatarText = isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
   return `
     <div class="rp-xhs-card" data-xhsid="${p.id}" style="background:#fff;border-radius:12px;margin-bottom:8px;padding:12px 14px;box-shadow:0 1px 4px rgba(255,36,66,.07);cursor:pointer;border:1px solid #fff0f2">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
@@ -7407,10 +7408,11 @@ function renderXHSDetail(post) {
   if (!body.length) return;
   const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
   const isUser = post.from === 'user';
+  const _xhsAv2Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
   const avatarStyle = isUser
     ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-    : 'background:linear-gradient(135deg,#aaa,#777);color:#fff';
-  const avatarText = isUser ? '我' : (post.user||'').slice(0,1);
+    : `background:${_xhsAv2Color(post.user||'')};color:#fff`;
+  const avatarText = isUser ? '我' : (post.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
 
   let commentsHtml = '';
   if (post.comments && post.comments.length > 0) {
@@ -7419,10 +7421,11 @@ function renderXHSDetail(post) {
         ? `<span style="color:#999">回复 </span><span style="color:#ff2442">@${escHtml(post.comments[c.replyTo].user)}</span>：`
         : '';
       const isMe = c.from === 'user';
+      const _xhsAv3Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
       const cavStyle = isMe
         ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff'
-        : 'background:linear-gradient(135deg,#ccc,#aaa);color:#fff';
-      const cavText = isMe ? '我' : (c.user||'').slice(0,1);
+        : `background:${_xhsAv3Color(c.user||'')};color:#fff`;
+      const cavText = isMe ? '我' : (c.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?';
       return `
         <div class="rp-xhs-comment" data-cidx="${idx}" style="display:flex;gap:8px;padding:8px 0;border-bottom:1px solid #fff5f6">
           <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${cavStyle}">${escHtml(cavText)}</div>
