@@ -6800,6 +6800,19 @@ async function _doGetMomentsCtx() {
       Object.values(ep).forEach(p => { if (p?.value) wiTexts.push(String(p.value)); });
     } catch(e) {}
 
+    // 2d. 全量扫描 window.world_info（ST内存常驻，不依赖词条触发）
+    // 结构：window.world_info = { "世界书名": { entries: { id: { content, key, ... } } } }
+    try {
+      const wi = window.world_info || {};
+      Object.values(wi).forEach(book => {
+        const entries = book?.entries || book?.content || {};
+        Object.values(entries).forEach(e => {
+          const content = e?.content || e?.text || '';
+          if (content && content.length > 10) wiTexts.push(content);
+        });
+      });
+    } catch(e) { console.warn('[getMomentsCtx] window.world_info scan failed:', e.message); }
+
     const totalLen = wiTexts.reduce((s,t) => s + t.length, 0);
     console.log('[getMomentsCtx] wiTexts total chars:', totalLen);
 
@@ -6820,6 +6833,48 @@ async function _doGetMomentsCtx() {
           npcPersonaMap[normNameKey(wName)] = fullText.slice(0, 500);
         }
       }
+
+      // 兼容：按世界书词条逐个解析，支持 [角色名 — 标题] 格式
+      // 先把 allWIText 按词条边界切分（每个词条之间通常有明显空行或分隔符）
+      // 策略：遍历每个词条文本，找到 [Name ...] 或 ## Name 或 name: Name 等标题行提取名字
+      const wiEntries = wiTexts; // 每个 wiTexts 元素对应一条世界书词条内容
+      wiEntries.forEach(entryText => {
+        if (!entryText || entryText.length < 10) return;
+        // 尝试多种标题格式提取角色名
+        let extractedName = '';
+
+        // 格式1: [Gaspard de Valois — 标题] 或 [Name]
+        const bracketMatch = entryText.match(/^\s*\[([^\]—\-\|\/\\]+?)(?:[—\-\|\/\\][^\]]*?)?\]/m);
+        if (bracketMatch) {
+          extractedName = bracketMatch[1].trim();
+        }
+        // 格式2: ## Name 或 # Name
+        if (!extractedName) {
+          const mdMatch = entryText.match(/^\s*#{1,3}\s*([^\n#\-—]+)/m);
+          if (mdMatch) extractedName = mdMatch[1].trim().replace(/[*_`]/g, '');
+        }
+        // 格式3: name: Xxx
+        if (!extractedName) {
+          const nameColonMatch = entryText.match(/^\s*name\s*[:：]\s*([^\n]+)/mi);
+          if (nameColonMatch) extractedName = nameColonMatch[1].trim().split(/[（(,，\s]/)[0];
+        }
+
+        if (!extractedName || extractedName.length < 2) return;
+        // 取姓名主体（去掉括号/破折号后面的描述词）
+        const nameCore = extractedName.split(/[（(【\[,，]/)[0].trim();
+        if (!nameCore || nameCore.length < 2) return;
+        if (normNameKey(nameCore) === normNameKey(charName)) return;
+
+        const k = normNameKey(nameCore);
+        if (npcPersonaMap[k]) return; // 已有精确匹配，不覆盖
+
+        // 取词条全文作为人设（去掉HTML标签，截断到600字）
+        const fullText = entryText.replace(/<[^>]+>/g, '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+        if (fullText.length > 30) {
+          npcPersonaMap[k] = fullText.slice(0, 600);
+          console.log('[getMomentsCtx] WI entry matched:', nameCore, '→ key:', k, '| len:', fullText.length);
+        }
+      });
 
       // 兼容：一个词条里塞多个 NPC（按空行/特殊分隔符分段，每段尝试找名字）
       const segments = allWIText.split(/\n{2,}/);
