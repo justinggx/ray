@@ -7593,13 +7593,13 @@ async function generateXHSReplyToComment(postId, userComment, userName) {
   const charLast = charName.split(/\s+/).pop() || charName;
   const recentComments = (post.comments||[]).slice(-5).map(c=>`${c.user}：${c.text}`).join('\n');
 
-  const sysMsg = `你是小红书评论区生成器。用户${userName}刚发了一条评论，现在生成3个不同陌生网友的回复。
-3个回复必须侧重方向各不相同：
-1. 吃瓜追问型：好奇追问细节，语气八卦
-2. 情绪共鸣型：共情支持或心疼，带情绪
-3. 阴阳/质疑型：隐含质疑或阴阳怪气，口吻微妙
+  const sysMsg = `你是小红书评论区生成器。根据帖子内容和用户评论，生成3个自然贴切的陌生网友回复。
+要求：
+- 3条回复必须紧扣帖子主题和用户说的话，不能答非所问
+- 3条风格各异（如：追问细节、调侃起哄、加料补充、共情、质疑等——根据帖子氛围自选，八卦帖就用八卦风，情感帖才用共情）
+- 每条15-25字，口语化小红书风格，昵称带emoji有创意
+- 绝对不能出现与帖子氛围不符的回复（如八卦帖下出现「抱抱你」「辛苦了」）
 帖子背景：涉及用户与 ${charName}（姓${charLast}）的相关话题。
-每条回复15-25字，口语化，符合小红书风格，昵称要有创意带emoji。
 只返回JSON数组：[{"user":"昵称emoji","text":"回复内容"},{"user":"昵称emoji","text":"回复内容"},{"user":"昵称emoji","text":"回复内容"}]`;
 
   const prompt = `帖子标题：${post.title}\n近期评论：\n${recentComments}\n用户${userName}刚说：「${userComment}」\n生成3条回复JSON：`;
