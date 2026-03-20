@@ -5233,7 +5233,7 @@ function sendSMS() {
   }
 
   // FIX1: 用 setExtensionPrompt 注入隐藏 OOC，不在聊天框显示
-  const hasExtPrompt = typeof setExtensionPrompt === 'function';
+  const hasExtPrompt = typeof setExtensionPrompt === 'function' && extension_prompt_types;
   console.log('[Raymond Phone] sendSMS triggered', {
     threadId: STATE.currentThread,
     threadType: th.type,
@@ -5243,7 +5243,7 @@ function sendSMS() {
   });
   if (hasExtPrompt) {
     // 将 smsLine 和 oocText 合并注入，用户聊天框不显示任何提示语
-    setExtensionPrompt('rp-phone-ooc', `${smsLine}\n${oocText}`, (extension_prompt_types && extension_prompt_types.BEFORE_PROMPT) || 1, 0, false, 0);
+    setExtensionPrompt('rp-phone-ooc', `${smsLine}\n${oocText}`, extension_prompt_types.BEFORE_PROMPT, 0, false, 0);
     console.log('[Raymond Phone] setExtensionPrompt called with BEFORE_PROMPT, depth=0');
     ta.value = mainText || '';
   } else {
@@ -5295,8 +5295,10 @@ function onAIMessage() {
     if (!last?.mes) return;
 
     const raw = last.mes;
-    // 记录指纹，供轮询/事件双通道去重
-    STATE._lastAiFingerprint = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
+    // 记录指纹，供轮询/事件双通道去重（同一条消息多事件触发时只处理一次）
+    const fp = `${ctx?.chatId || ''}|${raw.length}|${raw.slice(0, 24)}|${raw.slice(-24)}`;
+    if (fp === STATE._lastAiFingerprint) return;
+    STATE._lastAiFingerprint = fp;
     const normalizedRaw = normalizePhoneMarkup(raw);
 
     // 流式生成中间态保护：标签未闭合时先不解析，避免把半截内容写进手机
