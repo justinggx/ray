@@ -3566,8 +3566,8 @@ const HTML = `
             <span></span>
           </div>
           <div id="rp-xhs-detail-body" style="flex:1;overflow-y:auto;padding:14px 14px 10px"></div>
-          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;background:#fff;border-top:1px solid rgba(0,0,0,.07);display:flex;align-items:center;padding:6px 10px 16px;gap:8px;overflow:visible;min-width:0">
-            <textarea id="rp-xhs-detail-input" placeholder="发表评论…" autocomplete="off" rows="1" style="flex:1;border:1px solid #ffc0ca;border-radius:14px;padding:6px 12px;font-size:12px;outline:none;resize:none;overflow:hidden;line-height:1.5;max-height:72px;font-family:inherit;box-sizing:border-box;min-width:0"></textarea>
+          <div id="rp-xhs-detail-input-bar" style="flex-shrink:0;display:flex;align-items:center;padding:6px 10px 16px;gap:8px;overflow:visible;min-width:0">
+            <textarea id="rp-xhs-detail-input" placeholder="发表评论…" autocomplete="off" rows="1" style="flex:1;border-radius:14px;padding:6px 12px;font-size:12px;outline:none;resize:none;overflow:hidden;line-height:1.5;max-height:72px;font-family:inherit;box-sizing:border-box;min-width:0"></textarea>
             <button id="rp-xhs-detail-send" style="background:#ff2442;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap;display:inline-flex !important;visibility:visible !important;opacity:1 !important;pointer-events:auto !important">发送</button>
           </div>
         </div>
