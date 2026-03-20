@@ -6011,6 +6011,9 @@ function resolveCall(result) {
 // ================================================================
 function incomingHongbao(fromRaw, amount, note) {
   const thread = findOrCreateThread(fromRaw);
+  // 去重：同 from+amount+note 已存在则跳过
+  const isDup = thread.messages.some(m => m.type === 'hongbao' && m.name === fromRaw && m.amount === amount && m.note === note);
+  if (isDup) return;
   const now = new Date();
   const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   thread.messages.push({
@@ -6048,6 +6051,9 @@ function openHongbao(threadId, msgId) {
 // ================================================================
 function incomingVoice(fromRaw, time, duration, text) {
   const thread = findOrCreateThread(fromRaw);
+  // 去重：同 from+duration+text 已存在则跳过
+  const isDup = thread.messages.some(m => m.type === 'voice' && m.name === fromRaw && m.duration === duration && m.text === text);
+  if (isDup) return;
   thread.messages.push({
     id: `vc_${Date.now()}`, from: 'incoming',
     type: 'voice', name: fromRaw, time,
@@ -6089,6 +6095,9 @@ function incomingGroupMsg(fromRaw, groupName, time, text) {
   }
   const thread = STATE.threads[groupId];
   const senderTh = findOrCreateThread(fromRaw);
+  // 去重：同 from+time+text 已存在则跳过
+  const isDup = thread.messages.some(m => m.type === 'group_msg' && m.name === fromRaw && m.text === text);
+  if (isDup) return;
   thread.messages.push({
     id: `gm_${Date.now()}`, from: 'incoming',
     type: 'group_msg', name: fromRaw, time, text,
