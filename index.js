@@ -3097,6 +3097,18 @@ const STATE = {
 // FIX2: 按 chatId 存储各窗口的手机状态（内存缓存）
 const CHAT_STORE = {};
 
+// 头像模块级缓存——独立于 STATE.avatars，不受 chatId 切换影响
+// 所有读头像的地方统一调 getAvatar(key)，写头像调 setAvatar(key, dataUrl)
+const _AV = {};
+function getAvatar(key) {
+  return _AV[key] || STATE.avatars[key] || null;
+}
+function setAvatar(key, dataUrl) {
+  _AV[key] = dataUrl;
+  STATE.avatars = STATE.avatars || {};
+  STATE.avatars[key] = dataUrl;
+}
+
 
 // 自动将当前对话的 char 加入联系人（每个对话框独立，无需开场白 <PHONE> 标签）
 function autoAddCharContact() {
@@ -4679,6 +4691,7 @@ function bindUI() {
           console.log('[Phone:av] canvas resized to:', w, 'x', h, 'dataUrl len:', dataUrl.length);
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = dataUrl;
+          setAvatar(who, dataUrl);
           saveGlobalAvatars();
           updateAvatarPreviewSwatch(who);
           renderMoments();
@@ -4692,6 +4705,7 @@ function bindUI() {
           // Fallback: save original dataURL directly
           STATE.avatars = STATE.avatars || {};
           STATE.avatars[who] = ev.target.result;
+          setAvatar(who, ev.target.result);
           saveGlobalAvatars();
           updateAvatarPreviewSwatch(who);
           renderMoments(); renderThreadList(); renderDiary();
@@ -5034,7 +5048,7 @@ function openThread(threadId) {
   th.unread = 0;
   refreshBadges();
 
-  const _hdImg = STATE.avatars && STATE.avatars[th.name];
+  const _hdImg = getAvatar(th.name);
   if (_hdImg) {
     $('#rp-hd-av').empty().append(`<img class="rp-av-photo" src="${_hdImg}" alt=""/>`).css('background', 'transparent');
   } else {
@@ -5222,7 +5236,7 @@ function renderBubbles(threadId) {
     const isGrpThread = thread.type === 'group' || (threadId && threadId.startsWith('grp_'));
     const wrap = $('<div>').addClass('rp-bwrap ' + (isUser ? 'rp-out' : 'rp-in') + (isGrpThread ? ' rp-grp' : ''));
     if (isGrpThread && isUser) {
-      const uImg = STATE.avatars && STATE.avatars['user'];
+      const uImg = getAvatar('user');
       const uAvHtml = uImg
         ? `<div class="rp-grp-av rp-av-img"><img class="rp-av-photo" src="${uImg}" alt=""/></div>`
         : `<div class="rp-grp-av" style="background:linear-gradient(145deg,#64748b,#475569)">我</div>`;
@@ -5884,10 +5898,10 @@ function renderDiary() {
   var _ctx = getContext();
   var charName = _ctx && _ctx.name2 ? _ctx.name2 : 'TA';
   var charAvatarBg = 'linear-gradient(145deg,#7c3aed,#0891b2)';
-  var charAv = STATE.avatars && STATE.avatars[charName];
+  var charAv = getAvatar(charName);
   entries.forEach(function(e) {
     var isAI = e.author === 'ai';
-    var userAv = STATE.avatars && STATE.avatars['user'];
+    var userAv = getAvatar('user');
     var avHtml = isAI
       ? (charAv ? '<div class="rp-diary-av rp-av-img" style="overflow:hidden"><img src="' + charAv + '" style="width:100%;height:100%;object-fit:cover"/></div>'
                : '<div class="rp-diary-av" style="background:' + charAvatarBg + '">' + charName.slice(0,2) + '</div>')
@@ -7423,7 +7437,7 @@ function renderXHSCard(p) {
   const commentCount = p.comments ? p.comments.length : 0;
   const isUser = p.from === 'user';
   const _xhsAvColor = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const _userAv = STATE.avatars && STATE.avatars['user'];
+  const _userAv = getAvatar('user');
   const avatarHtml = isUser && _userAv
     ? `<img src="${_userAv}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
     : `<div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAvColor(p.user||'')};color:#fff`}">${escHtml(isUser ? '我' : (p.user || '?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
@@ -7644,7 +7658,7 @@ function renderXHSDetail(post) {
   const likeK = post.likes >= 10000 ? (post.likes/10000).toFixed(1)+'w' : post.likes >= 1000 ? (post.likes/1000).toFixed(1)+'k' : post.likes;
   const isUser = post.from === 'user';
   const _xhsAv2Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-  const _userAv2 = STATE.avatars && STATE.avatars['user'];
+  const _userAv2 = getAvatar('user');
   const detailAvHtml = isUser && _userAv2
     ? `<img src="${_userAv2}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
     : `<div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;${isUser ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv2Color(post.user||'')};color:#fff`}">${escHtml(isUser ? '我' : (post.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
@@ -7657,7 +7671,7 @@ function renderXHSDetail(post) {
         : '';
       const isMe = c.from === 'user';
       const _xhsAv3Color = (s) => { const c=['#ff6b6b','#ffa94d','#a9e34b','#63e6be','#74c0fc','#e599f7','#ff8fab','#f783ac']; let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))&0xffff; return c[h%c.length]; };
-      const _userAv3 = STATE.avatars && STATE.avatars['user'];
+      const _userAv3 = getAvatar('user');
       const commentAvHtml = isMe && _userAv3
         ? `<img src="${_userAv3}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`
         : `<div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;${isMe ? 'background:linear-gradient(135deg,#ff2442,#ff6b88);color:#fff' : `background:${_xhsAv3Color(c.user||'')};color:#fff`}">${escHtml(isMe ? '我' : (c.user||'?').replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g,'').slice(0,1) || '?')}</div>`;
