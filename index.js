@@ -4255,7 +4255,9 @@ function bindUI() {
   $('#rp-swipe-zone, #rp-lock-time, #rp-lock-date').on('click', () => go('home'));
 
   $(document).on('click', '.rp-app[data-app]', function () {
-    go($(this).data('app'));
+    const app = $(this).data('app');
+    if (app === 'settings') { openSettings(); return; }
+    go(app);
   });
 
   $(document).on('click', '.rp-thread[data-thread]', function () {
