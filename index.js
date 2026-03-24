@@ -2994,34 +2994,51 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-api-save-btn{flex:1;padding:9px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer}
 .rp-api-cancel-btn{padding:9px 14px;background:rgba(120,60,180,.08);border:1px solid rgba(168,85,247,.2);border-radius:16px;font-size:13px;color:#7c3aed;cursor:pointer}
 
-/* ── EDIT PENCIL BUTTON ── */
+/* ── EDIT PENCIL BUTTON (SVG线条铅笔，适配主题色) ── */
 .rp-edit-btn {
-  display:none; align-items:center; justify-content:center;
-  width:20px; height:20px; border-radius:50%;
-  background:rgba(0,0,0,.08); border:none; cursor:pointer;
-  color:var(--rp-nav-btn,#c0306a); font-size:12px; line-height:1;
-  flex-shrink:0; margin-left:4px; transition:background .15s;
-  padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:50%;
+  background:rgba(0,0,0,.06); border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); line-height:1;
+  flex-shrink:0; margin-left:4px; transition:opacity .15s,background .15s;
+  padding:3px; opacity:0; pointer-events:none;
 }
-.rp-edit-btn:hover,.rp-edit-btn:active { background:rgba(0,0,0,.16); }
+/* 桌面端：hover 气泡时显示 */
 .rp-bwrap.rp-in:hover .rp-edit-btn,
-.rp-bwrap.rp-in .rp-edit-btn:focus { display:flex; }
+.rp-bwrap.rp-in .rp-edit-btn:focus { opacity:1; pointer-events:auto; }
+/* 触屏端：常驻半透明，随时可点 */
+@media (hover:none) and (pointer:coarse) {
+  .rp-edit-btn { opacity:0.5; pointer-events:auto; }
+}
+.rp-edit-btn:hover,.rp-edit-btn:active { background:rgba(0,0,0,.14); opacity:1; }
 /* 游戏聊天铅笔 */
 .game-msg-char { position:relative; display:flex; align-items:flex-start; gap:4px; }
 .game-edit-btn {
-  display:none; background:none; border:none; cursor:pointer;
-  color:var(--rp-nav-btn,#c0306a); font-size:12px; padding:0 2px;
-  flex-shrink:0; line-height:1.4;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:none; border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); padding:2px;
+  flex-shrink:0; line-height:1; width:18px; height:18px;
+  opacity:0; pointer-events:none; transition:opacity .15s;
 }
-.game-msg-char:hover .game-edit-btn { display:inline; }
+.game-msg-char:hover .game-edit-btn { opacity:1; pointer-events:auto; }
+@media (hover:none) and (pointer:coarse) {
+  .game-edit-btn { opacity:0.5; pointer-events:auto; }
+}
+.game-edit-btn:active { opacity:1; }
 /* 日记回复铅笔 */
 .rp-diary-reply { position:relative; }
 .rp-diary-edit-btn {
-  display:none; background:none; border:none; cursor:pointer;
-  color:var(--rp-nav-btn,#c0306a); font-size:12px; padding:0 2px;
-  line-height:1.4;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:none; border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); padding:2px;
+  width:18px; height:18px; line-height:1;
+  opacity:0; pointer-events:none; transition:opacity .15s;
 }
-.rp-diary-reply:hover .rp-diary-edit-btn { display:inline; }
+.rp-diary-reply:hover .rp-diary-edit-btn { opacity:1; pointer-events:auto; }
+@media (hover:none) and (pointer:coarse) {
+  .rp-diary-edit-btn { opacity:0.5; pointer-events:auto; }
+}
+.rp-diary-edit-btn:active { opacity:1; }
 /* 内联编辑区 */
 .rp-inline-edit-wrap {
   display:flex; flex-direction:column; gap:4px;
@@ -3032,9 +3049,25 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
   border-radius:12px !important; padding:8px 10px !important;
   font-size:13px !important; font-family:inherit !important;
   resize:none !important; outline:none !important;
-  background:rgba(255,255,255,.92) !important; color:#1a1a2e !important;
+  background:#ffffff !important; color:#1a1a2e !important;
   line-height:1.45 !important; min-height:48px !important;
   box-shadow:0 0 0 3px rgba(192,48,106,.12) !important;
+}
+/* star主题(深色): 编辑区用深紫底+亮字 */
+#rp-phone.rp-theme-star .rp-inline-textarea {
+  background:#1e1060 !important; color:#e8e0ff !important;
+  border-color:#a78bfa !important;
+  box-shadow:0 0 0 3px rgba(167,139,250,.18) !important;
+}
+/* misty主题(浅蓝): 白底深字 */
+#rp-phone.rp-theme-misty .rp-inline-textarea {
+  background:#f0f8ff !important; color:#0d2236 !important;
+  border-color:#3d8abf !important;
+  box-shadow:0 0 0 3px rgba(61,138,191,.14) !important;
+}
+/* candy主题(粉色,默认): 白底深字 */
+.rp-inline-textarea {
+  background:#ffffff !important; color:#2d1030 !important;
 }
 .rp-inline-edit-btns {
   display:flex; gap:6px; justify-content:flex-end;
@@ -5326,7 +5359,7 @@ function renderBubbles(threadId) {
       const bbl = $('<div>').addClass('rp-bubble ' + (isUser ? 'rp-sent' : 'rp-recv')).text(msg.text);
       const ts  = $('<div>').addClass('rp-bts').text(msg.time);
       if (!isUser) {
-        const editBtn = $('<button class="rp-edit-btn" title="编辑">✏️</button>');
+        const editBtn = $('<button class="rp-edit-btn" title="编辑"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;pointer-events:none"><rect x="3.5" y="1.2" width="4" height="9.5" rx="0.8" transform="rotate(38 7 7)" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.8 2.5 L11.4 4.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M3.2 9.8 L2.5 11.6 L4.3 10.9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" opacity="0.7"/><circle cx="5.5" cy="5.5" r="0" fill="none"/></svg></button>');
         editBtn.on('click', function() { rpInlineEdit(bbl[0], threadId, msg); });
         wrap.append(bbl, editBtn, ts);
       } else {
@@ -5989,7 +6022,7 @@ function renderDiary() {
     var replyHtml = '';
     if (!isAI && e.reply) {
       replyHtml = '<div class="rp-diary-reply"><div class="rp-diary-reply-name">' + escHtml(charName)
-        + '<button class="rp-diary-edit-btn" onclick="diaryInlineEdit(this,\'' + e.id + '\')" title="编辑">✏️</button></div>'
+        + '<button class="rp-diary-edit-btn" onclick="diaryInlineEdit(this,\'' + e.id + '\')" title="编辑"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;pointer-events:none"><rect x="3.5" y="1.2" width="4" height="9.5" rx="0.8" transform="rotate(38 7 7)" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.8 2.5 L11.4 4.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M3.2 9.8 L2.5 11.6 L4.3 10.9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" opacity="0.7"/><circle cx="5.5" cy="5.5" r="0" fill="none"/></svg></button></div>'
         + '<div class="rp-diary-reply-text">' + escHtml(e.reply) + '</div></div>';
     }
     container.append(
@@ -8271,7 +8304,7 @@ function g2048Render() {
 function g2048Msg(type, text) {
   var cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
   var pre = type === 'char' ? LG2048.charName + ': ' : '';
-  var editBtn = type === 'char' ? '<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑">✏️</button>' : '';
+  var editBtn = type === 'char' ? '<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;pointer-events:none"><rect x="3.5" y="1.2" width="4" height="9.5" rx="0.8" transform="rotate(38 7 7)" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.8 2.5 L11.4 4.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M3.2 9.8 L2.5 11.6 L4.3 10.9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" opacity="0.7"/><circle cx="5.5" cy="5.5" r="0" fill="none"/></svg></button>' : '';
   $('#g2048-chat').append('<div class="game-msg ' + cls + '"><span class="game-msg-text">' + pre + text + '</span>' + editBtn + '</div>');
   var el = document.getElementById('g2048-chat');
   if (el) el.scrollTop = el.scrollHeight;
@@ -8983,7 +9016,7 @@ function lgStatus(txt) { $('#rp-game-status-text').text(txt); }
 function lgMsg(type, text) {
   const cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
   const pre  = type === 'char' ? `${LG.charName}: ` : '';
-  const editBtnHtml = type === 'char' ? `<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑">✏️</button>` : '';
+  const editBtnHtml = type === 'char' ? `<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;pointer-events:none"><rect x="3.5" y="1.2" width="4" height="9.5" rx="0.8" transform="rotate(38 7 7)" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M9.8 2.5 L11.4 4.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M3.2 9.8 L2.5 11.6 L4.3 10.9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" opacity="0.7"/><circle cx="5.5" cy="5.5" r="0" fill="none"/></svg></button>` : '';
   const msgHtml = `<div class="game-msg ${cls}"><span class="game-msg-text">${pre}${text}</span>${editBtnHtml}</div>`;
   $('#rp-game-chat').append(msgHtml);
   const el = document.getElementById('rp-game-chat');
@@ -9461,10 +9494,17 @@ function gameInlineEdit(btn) {
   textSpan.style.display = 'none';
   btn.style.display = 'none';
 
+  const _ph = document.getElementById('rp-phone');
+  const _isStar = _ph && _ph.classList.contains('rp-theme-star');
+  const _isMisty = _ph && _ph.classList.contains('rp-theme-misty');
+  const _taBg = _isStar ? '#1e1060' : _isMisty ? '#f0f8ff' : '#ffffff';
+  const _taColor = _isStar ? '#e8e0ff' : _isMisty ? '#0d2236' : '#2d1030';
+  const _taBtn = getComputedStyle(_ph || document.body).getPropertyValue('--rp-nav-btn').trim() || '#c0306a';
+
   const ta = document.createElement('textarea');
   ta.value = origText;
   ta.rows = 2;
-  ta.style.cssText = 'flex:1;border-radius:8px;border:1.5px solid var(--rp-nav-btn,#c0306a);padding:4px 8px;font-size:12px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.9);color:#1a1a2e;line-height:1.4;';
+  ta.style.cssText = 'flex:1;border-radius:8px;border:1.5px solid ' + _taBtn + ';padding:4px 8px;font-size:12px;font-family:inherit;resize:none;outline:none;background:' + _taBg + ';color:' + _taColor + ';line-height:1.4;';
 
   const okBtn = document.createElement('button');
   okBtn.textContent = '✓';
@@ -9507,10 +9547,17 @@ function diaryInlineEdit(btn, entryId) {
   textEl.style.display = 'none';
   btn.style.display = 'none';
 
+  const _ph = document.getElementById('rp-phone');
+  const _isStar = _ph && _ph.classList.contains('rp-theme-star');
+  const _isMisty = _ph && _ph.classList.contains('rp-theme-misty');
+  const _taBg = _isStar ? '#1e1060' : _isMisty ? '#f0f8ff' : '#ffffff';
+  const _taColor = _isStar ? '#e8e0ff' : _isMisty ? '#0d2236' : '#2d1030';
+  const _taBtn = getComputedStyle(_ph || document.body).getPropertyValue('--rp-nav-btn').trim() || '#c0306a';
+
   const ta = document.createElement('textarea');
   ta.value = origText;
   ta.rows = 3;
-  ta.style.cssText = 'width:100%;box-sizing:border-box;border:1.5px solid var(--rp-nav-btn,#c0306a);border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.92);color:#1a1a2e;line-height:1.5;';
+  ta.style.cssText = 'width:100%;box-sizing:border-box;border:1.5px solid ' + _taBtn + ';border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;resize:none;outline:none;background:' + _taBg + ';color:' + _taColor + ';line-height:1.5;';
 
   const okBtn = document.createElement('button');
   okBtn.textContent = '✓';
