@@ -2994,6 +2994,59 @@ const RP_PHONE_CSS = `/* ── wrapper ── */
 .rp-api-save-btn{flex:1;padding:9px;background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;border:none;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer}
 .rp-api-cancel-btn{padding:9px 14px;background:rgba(120,60,180,.08);border:1px solid rgba(168,85,247,.2);border-radius:16px;font-size:13px;color:#7c3aed;cursor:pointer}
 
+/* ── EDIT PENCIL BUTTON ── */
+.rp-edit-btn {
+  display:none; align-items:center; justify-content:center;
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(0,0,0,.08); border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); font-size:12px; line-height:1;
+  flex-shrink:0; margin-left:4px; transition:background .15s;
+  padding:0;
+}
+.rp-edit-btn:hover,.rp-edit-btn:active { background:rgba(0,0,0,.16); }
+.rp-bwrap.rp-in:hover .rp-edit-btn,
+.rp-bwrap.rp-in .rp-edit-btn:focus { display:flex; }
+/* 游戏聊天铅笔 */
+.game-msg-char { position:relative; display:flex; align-items:flex-start; gap:4px; }
+.game-edit-btn {
+  display:none; background:none; border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); font-size:12px; padding:0 2px;
+  flex-shrink:0; line-height:1.4;
+}
+.game-msg-char:hover .game-edit-btn { display:inline; }
+/* 日记回复铅笔 */
+.rp-diary-reply { position:relative; }
+.rp-diary-edit-btn {
+  display:none; background:none; border:none; cursor:pointer;
+  color:var(--rp-nav-btn,#c0306a); font-size:12px; padding:0 2px;
+  line-height:1.4;
+}
+.rp-diary-reply:hover .rp-diary-edit-btn { display:inline; }
+/* 内联编辑区 */
+.rp-inline-edit-wrap {
+  display:flex; flex-direction:column; gap:4px;
+  max-width:72%; min-width:80px;
+}
+.rp-inline-textarea {
+  border:1.5px solid var(--rp-nav-btn,#c0306a) !important;
+  border-radius:12px !important; padding:8px 10px !important;
+  font-size:13px !important; font-family:inherit !important;
+  resize:none !important; outline:none !important;
+  background:rgba(255,255,255,.92) !important; color:#1a1a2e !important;
+  line-height:1.45 !important; min-height:48px !important;
+  box-shadow:0 0 0 3px rgba(192,48,106,.12) !important;
+}
+.rp-inline-edit-btns {
+  display:flex; gap:6px; justify-content:flex-end;
+}
+.rp-inline-ok, .rp-inline-cancel {
+  width:28px; height:28px; border-radius:50%; border:none;
+  cursor:pointer; font-size:14px; display:flex;
+  align-items:center; justify-content:center; font-weight:700;
+}
+.rp-inline-ok { background:var(--rp-nav-btn,#c0306a); color:#fff; }
+.rp-inline-cancel { background:rgba(0,0,0,.1); color:#555; }
+
 `;
 
 // ================================================================
@@ -5272,7 +5325,13 @@ function renderBubbles(threadId) {
     } else {
       const bbl = $('<div>').addClass('rp-bubble ' + (isUser ? 'rp-sent' : 'rp-recv')).text(msg.text);
       const ts  = $('<div>').addClass('rp-bts').text(msg.time);
-      wrap.append(bbl, ts);
+      if (!isUser) {
+        const editBtn = $('<button class="rp-edit-btn" title="编辑">✏️</button>');
+        editBtn.on('click', function() { rpInlineEdit(bbl[0], threadId, msg); });
+        wrap.append(bbl, editBtn, ts);
+      } else {
+        wrap.append(bbl, ts);
+      }
     }
     area.append(wrap);
   });
@@ -5929,7 +5988,8 @@ function renderDiary() {
     var authorLabel = isAI ? charName : '\u6211';
     var replyHtml = '';
     if (!isAI && e.reply) {
-      replyHtml = '<div class="rp-diary-reply"><div class="rp-diary-reply-name">' + escHtml(charName) + '</div>'
+      replyHtml = '<div class="rp-diary-reply"><div class="rp-diary-reply-name">' + escHtml(charName)
+        + '<button class="rp-diary-edit-btn" onclick="diaryInlineEdit(this,\'' + e.id + '\')" title="编辑">✏️</button></div>'
         + '<div class="rp-diary-reply-text">' + escHtml(e.reply) + '</div></div>';
     }
     container.append(
@@ -8211,7 +8271,8 @@ function g2048Render() {
 function g2048Msg(type, text) {
   var cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
   var pre = type === 'char' ? LG2048.charName + ': ' : '';
-  $('#g2048-chat').append('<div class="game-msg ' + cls + '">' + pre + text + '</div>');
+  var editBtn = type === 'char' ? '<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑">✏️</button>' : '';
+  $('#g2048-chat').append('<div class="game-msg ' + cls + '"><span class="game-msg-text">' + pre + text + '</span>' + editBtn + '</div>');
   var el = document.getElementById('g2048-chat');
   if (el) el.scrollTop = el.scrollHeight;
 }
@@ -8922,7 +8983,8 @@ function lgStatus(txt) { $('#rp-game-status-text').text(txt); }
 function lgMsg(type, text) {
   const cls = type === 'user' ? 'game-msg-user' : type === 'char' ? 'game-msg-char' : 'game-msg-sys';
   const pre  = type === 'char' ? `${LG.charName}: ` : '';
-  const msgHtml = `<div class="game-msg ${cls}">${pre}${text}</div>`;
+  const editBtnHtml = type === 'char' ? `<button class="game-edit-btn" onclick="gameInlineEdit(this)" title="编辑">✏️</button>` : '';
+  const msgHtml = `<div class="game-msg ${cls}"><span class="game-msg-text">${pre}${text}</span>${editBtnHtml}</div>`;
   $('#rp-game-chat').append(msgHtml);
   const el = document.getElementById('rp-game-chat');
   if (el) el.scrollTop = el.scrollHeight;
@@ -9345,3 +9407,140 @@ jQuery(async () => {
 
 
 
+
+// ================================================================
+//  INLINE EDIT HELPERS
+// ================================================================
+
+// P1: 聊天气泡内联编辑
+function rpInlineEdit(bubbleEl, threadId, msg) {
+  if (bubbleEl.querySelector('.rp-inline-edit-wrap')) return; // 防重入
+  const origText = msg.text;
+  const wrap = document.createElement('div');
+  wrap.className = 'rp-inline-edit-wrap';
+  const ta = document.createElement('textarea');
+  ta.className = 'rp-inline-textarea';
+  ta.value = origText;
+  ta.rows = 3;
+  const btnRow = document.createElement('div');
+  btnRow.className = 'rp-inline-edit-btns';
+  const okBtn = document.createElement('button');
+  okBtn.className = 'rp-inline-ok'; okBtn.textContent = '✓';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'rp-inline-cancel'; cancelBtn.textContent = '✕';
+  btnRow.append(cancelBtn, okBtn);
+  wrap.append(ta, btnRow);
+
+  // 隐藏原气泡文字，插入编辑区
+  bubbleEl.style.display = 'none';
+  bubbleEl.parentNode.insertBefore(wrap, bubbleEl.nextSibling);
+  ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+
+  okBtn.onclick = function() {
+    const newText = ta.value.trim();
+    if (newText && newText !== origText) {
+      msg.text = newText;
+      const th = STATE.threads[threadId];
+      if (th) { saveState(); }
+      renderBubbles(threadId);
+    } else {
+      wrap.remove(); bubbleEl.style.display = '';
+    }
+  };
+  cancelBtn.onclick = function() {
+    wrap.remove(); bubbleEl.style.display = '';
+  };
+}
+
+// P2/P3: 游戏聊天内联编辑（只改 DOM，不持久化）
+function gameInlineEdit(btn) {
+  const msgDiv = btn.parentElement;
+  const textSpan = msgDiv.querySelector('.game-msg-text');
+  if (!textSpan || msgDiv.querySelector('textarea')) return;
+  const origText = textSpan.textContent;
+  textSpan.style.display = 'none';
+  btn.style.display = 'none';
+
+  const ta = document.createElement('textarea');
+  ta.value = origText;
+  ta.rows = 2;
+  ta.style.cssText = 'flex:1;border-radius:8px;border:1.5px solid var(--rp-nav-btn,#c0306a);padding:4px 8px;font-size:12px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.9);color:#1a1a2e;line-height:1.4;';
+
+  const okBtn = document.createElement('button');
+  okBtn.textContent = '✓';
+  okBtn.style.cssText = 'width:24px;height:24px;border-radius:50%;border:none;background:var(--rp-nav-btn,#c0306a);color:#fff;cursor:pointer;font-size:13px;font-weight:700;flex-shrink:0;';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = '✕';
+  cancelBtn.style.cssText = 'width:24px;height:24px;border-radius:50%;border:none;background:rgba(0,0,0,.12);color:#555;cursor:pointer;font-size:13px;font-weight:700;flex-shrink:0;';
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:4px;align-items:center;margin-top:3px;justify-content:flex-end;';
+  btnRow.append(cancelBtn, okBtn);
+
+  const editWrap = document.createElement('div');
+  editWrap.style.cssText = 'display:flex;flex-direction:column;gap:2px;flex:1;';
+  editWrap.append(ta, btnRow);
+  msgDiv.appendChild(editWrap);
+  ta.focus();
+
+  okBtn.onclick = function() {
+    const newText = ta.value.trim();
+    if (newText) textSpan.textContent = newText;
+    editWrap.remove();
+    textSpan.style.display = '';
+    btn.style.display = '';
+  };
+  cancelBtn.onclick = function() {
+    editWrap.remove();
+    textSpan.style.display = '';
+    btn.style.display = '';
+  };
+}
+
+// P4: 日记回复内联编辑
+function diaryInlineEdit(btn, entryId) {
+  const replyDiv = btn.closest('.rp-diary-reply');
+  const textEl = replyDiv && replyDiv.querySelector('.rp-diary-reply-text');
+  if (!textEl || replyDiv.querySelector('textarea')) return;
+  const origText = textEl.textContent;
+  textEl.style.display = 'none';
+  btn.style.display = 'none';
+
+  const ta = document.createElement('textarea');
+  ta.value = origText;
+  ta.rows = 3;
+  ta.style.cssText = 'width:100%;box-sizing:border-box;border:1.5px solid var(--rp-nav-btn,#c0306a);border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;resize:none;outline:none;background:rgba(255,255,255,.92);color:#1a1a2e;line-height:1.5;';
+
+  const okBtn = document.createElement('button');
+  okBtn.textContent = '✓';
+  okBtn.style.cssText = 'width:28px;height:28px;border-radius:50%;border:none;background:var(--rp-nav-btn,#c0306a);color:#fff;cursor:pointer;font-size:14px;font-weight:700;';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = '✕';
+  cancelBtn.style.cssText = 'width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.1);color:#555;cursor:pointer;font-size:14px;font-weight:700;';
+
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:6px;justify-content:flex-end;margin-top:4px;';
+  btnRow.append(cancelBtn, okBtn);
+
+  replyDiv.appendChild(ta);
+  replyDiv.appendChild(btnRow);
+  ta.focus();
+
+  okBtn.onclick = function() {
+    const newText = ta.value.trim();
+    if (newText) {
+      const entry = (STATE.diary || []).find(function(d){ return d.id === entryId; });
+      if (entry) { entry.reply = newText; saveState(); }
+    }
+    ta.remove(); btnRow.remove();
+    textEl.textContent = newText || origText;
+    textEl.style.display = '';
+    btn.style.display = '';
+  };
+  cancelBtn.onclick = function() {
+    ta.remove(); btnRow.remove();
+    textEl.style.display = '';
+    btn.style.display = '';
+  };
+}
