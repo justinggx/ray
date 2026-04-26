@@ -1270,9 +1270,9 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>关闭正常世界观 · 背景地位</span>
-              <span>开启中世纪世界观 · 背景地位</span>
-              <span>关目标体系</span>
+              <span>需关闭正常世界观 · 背景地位</span>
+              <span>需开启中世纪世界观 · 背景地位</span>
+              <span>需关闭目标体系</span>
             </div>
             <button class="jbtn" onclick="jmp(6)">点击进入 · 处刑前夜</button>
           </div>
@@ -1296,10 +1296,10 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>关闭正常世界观 · 背景地位</span>
-              <span>开启中世纪世界观 · 背景地位</span>
-              <span>同时开启战败王女线</span>
-              <span>关目标体系</span>
+              <span>需关闭正常世界观 · 背景地位</span>
+              <span>需开启中世纪世界观 · 背景地位</span>
+              <span>需开启战败王女线</span>
+              <span>需关闭目标体系</span>
             </div>
             <button class="jbtn" onclick="jmp(7)">点击进入 · 战败的耻辱</button>
           </div>
@@ -1329,7 +1329,7 @@ button{font:inherit}
             "你跟他，平时是什么关系？"
           </div>
           <div class="cft">
-            <div class="cnote"><span>开启养父线 · char 主动</span></div>
+            <div class="cnote"><span>需开启养父线 · char 主动</span></div>
             <button class="jbtn" onclick="jmp(8)">点击进入 · 谎言还是实话</button>
           </div>
         </div>
@@ -1353,7 +1353,7 @@ button{font:inherit}
             "我在等你的解释。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>开启养父线 · user 主动</span></div>
+            <div class="cnote"><span>需开启养父线 · user 主动</span></div>
             <button class="jbtn" onclick="jmp(9)">点击进入 · 门禁后的黄昏</button>
           </div>
         </div>
@@ -1373,7 +1373,7 @@ button{font:inherit}
             "你可以叫我 Papa，或者 Dad。如果这些都不习惯……先生也可以。我们可以慢慢来。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>开启养父线 · 童养媳</span></div>
+            <div class="cnote"><span>需开启养父线 · 童养媳</span></div>
             <button class="jbtn" onclick="jmp(10)">点击进入 · 名分之前</button>
           </div>
         </div>
@@ -1433,7 +1433,7 @@ button{font:inherit}
             "既然是重要的人，为什么之前没听你提起过？……嗯？"
           </div>
           <div class="cft">
-            <div class="cnote"><span>开启兄妹骨科线</span></div>
+            <div class="cnote"><span>需开启兄妹骨科线</span></div>
             <button class="jbtn" onclick="jmp(11)">点击进入 · 错位来客</button>
           </div>
         </div>
@@ -1453,7 +1453,7 @@ button{font:inherit}
             你仔细对比了一会儿，不赞同地开口："是吗？可是我觉得哥哥就不凶。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>开启兄妹骨科线</span></div>
+            <div class="cnote"><span>需开启兄妹骨科线</span></div>
             <button class="jbtn" onclick="jmp(12)">点击进入 · 书脊与阳光</button>
           </div>
         </div>
@@ -1523,7 +1523,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>开竞业对手线</span>
+              <span>需开启竞业对手线</span>
             </div>
             <button class="jbtn" onclick="jmp(19)">点击进入 · 另一面窥探</button>
           </div>
@@ -1545,7 +1545,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>开竞业对手线</span>
+              <span>需开启竞业对手线</span>
             </div>
             <button class="jbtn" onclick="jmp(20)">点击进入 · 苏黎世金库</button>
           </div>
@@ -1680,7 +1680,7 @@ button{font:inherit}
 你却一脸茫然：“先生，我们认识吗？”
           </div>
           <div class="cft">
-            <div class="cnote" style="visibility:hidden;border:none"></div>
+            <div class="cnote"><span>需开启失忆线世界书</span></div>
             <button class="jbtn" onclick="jmp(25)">点击进入 · 锈蚀的名字</button>
           </div>
         </div>
@@ -1700,7 +1700,7 @@ button{font:inherit}
             "好久不见。" 他冲你勾了勾唇角。
           </div>
           <div class="cft">
-            <div class="cnote" style="visibility:hidden;border:none"></div>
+            <div class="cnote"><span>需开启失忆线世界书</span></div>
             <button class="jbtn" onclick="jmp(26)">点击进入 · 联合起来的欺骗</button>
           </div>
         </div>
