@@ -1669,15 +1669,15 @@ button{font:inherit}
       <div class="card" data-row="am0">
         <div class="cov" onclick="togR(this)">
           <img src="https://i.postimg.cc/655fx2cs/banana-20260426-214149.jpg" alt="">
-          <div class="clbl"><small>Amnesia</small><strong>失忆 · 腿不想要了？</strong></div>
+          <div class="clbl"><small>Amnesia</small><strong>失忆线 · 前男友</strong></div>
           <div class="ctog"><svg viewBox="0 0 16 16"><polyline points="2,5 8,11 14,5"/></svg></div>
         </div>
         <div class="cbody">
           <div class="ctxt">
-            跟 Raymond 分手时，你们闹得很难看。他用尽狠话威胁你，说只要被他抓到，你这辈子都别想用自己的腿走路。<br>
-            不出半年，一场意外大火烧尽了你的记忆。<br>
-            晚宴上再度相遇，他当着所有人的面问你："腿……不想要了？"<br>
-            你却一脸茫然："先生，我们认识吗？"
+           跟Raymond分手时，你们闹得很难看。他用尽狠话威胁你，说只要被他抓到，你这辈子都别想用自己的腿走路。<br>
+而彼时你已落地南澳，直接开嘲：“Raymond，下次想养东西，建议养条狗。狗不会跑，还听话。”<br>
+不出半年，一场意外大火烧尽了你的记忆。晚宴上，你们再度相遇，他当着所有人的面问你：“怎么回来了，腿不想要了？”<br>
+你却一脸茫然：“先生，我们认识吗？”
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
@@ -1689,7 +1689,7 @@ button{font:inherit}
       <div class="card" data-row="am0">
         <div class="cov" onclick="togR(this)">
           <img src="https://i.postimg.cc/tgXxW8cQ/banana-20260426-214756.jpg" alt="">
-          <div class="clbl"><small>Amnesia</small><strong>失忆 · Mon.</strong></div>
+          <div class="clbl"><small>Amnesia</small><strong>失忆 · 褪色的旧照片</strong></div>
           <div class="ctog"><svg viewBox="0 0 16 16"><polyline points="2,5 8,11 14,5"/></svg></div>
         </div>
         <div class="cbody">
@@ -1701,7 +1701,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(26)">点击进入 · 纤维里的旧香</button>
+            <button class="jbtn" onclick="jmp(26)">点击进入 · 联合起来的欺骗</button>
           </div>
         </div>
       </div>
