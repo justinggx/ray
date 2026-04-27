@@ -819,11 +819,16 @@ button{font:inherit}
   justify-content:center;
   pointer-events:none;
   opacity:0;
-  background:linear-gradient(180deg, rgba(6,5,4,.08) 0%, rgba(6,5,4,.78) 100%);
-  transition:opacity .32s ease;
+  visibility:hidden;
+  background:
+    radial-gradient(circle at center, rgba(215,188,127,.12) 0%, rgba(215,188,127,.04) 22%, rgba(6,5,4,0) 46%),
+    linear-gradient(180deg, rgba(6,5,4,.10) 0%, rgba(6,5,4,.82) 100%);
+  transition:opacity .32s ease, visibility 0s linear .32s;
 }
 .jump-overlay.show{
   opacity:1;
+  visibility:visible;
+  transition:opacity .32s ease;
 }
 .jump-overlay-inner{
   position:relative;
@@ -857,6 +862,19 @@ button{font:inherit}
 .jump-overlay.show .jump-overlay-inner::after{
   transform:translateX(-50%) scaleX(1);
 }
+.jump-overlay-sweep{
+  position:absolute;
+  inset:-18% -10%;
+  border-radius:999px;
+  background:linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,244,214,.10) 42%, rgba(255,236,188,.42) 50%, rgba(255,244,214,.10) 58%, rgba(255,255,255,0) 100%);
+  mix-blend-mode:screen;
+  filter:blur(10px);
+  opacity:0;
+  transform:translateX(-26%) skewX(-18deg);
+}
+.jump-overlay.show .jump-overlay-sweep{
+  animation:jumpSweep .9s cubic-bezier(.22,.8,.22,1) .08s forwards;
+}
 .jump-overlay-kicker{
   font:600 11px/1 "Inter",sans-serif;
   letter-spacing:.42em;
@@ -878,6 +896,22 @@ button{font:inherit}
   font:500 13px/1.7 "Noto Serif SC",serif;
   letter-spacing:.16em;
   color:rgba(244,223,180,.82);
+}
+@keyframes jumpSweep{
+  0%{
+    opacity:0;
+    transform:translateX(-30%) skewX(-18deg);
+  }
+  15%{
+    opacity:.22;
+  }
+  50%{
+    opacity:.85;
+  }
+  100%{
+    opacity:0;
+    transform:translateX(30%) skewX(-18deg);
+  }
 }
 @media (prefers-reduced-motion:reduce){
   .cnote span,
@@ -1242,7 +1276,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(1)">点击进入 · 越界的代价</button>
+            <button class="jbtn" onclick="jmp(1, this)">点击进入 · 越界的代价</button>
           </div>
         </div>
       </div>
@@ -1261,7 +1295,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(2)">点击进入 · 无路可退</button>
+            <button class="jbtn" onclick="jmp(2, this)">点击进入 · 无路可退</button>
           </div>
         </div>
       </div>
@@ -1281,7 +1315,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(3)">点击进入 · 晨昏不醒</button>
+            <button class="jbtn" onclick="jmp(3, this)">点击进入 · 晨昏不醒</button>
           </div>
         </div>
       </div>
@@ -1300,7 +1334,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(21)">点击进入 · 忘记取消的订阅</button>
+            <button class="jbtn" onclick="jmp(21, this)">点击进入 · 忘记取消的订阅</button>
           </div>
         </div>
       </div>
@@ -1325,7 +1359,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(4)">点击进入 · 锁定的目标</button>
+            <button class="jbtn" onclick="jmp(4, this)">点击进入 · 锁定的目标</button>
           </div>
         </div>
       </div>
@@ -1345,7 +1379,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(5)">点击进入 · 一念之间</button>
+            <button class="jbtn" onclick="jmp(5, this)">点击进入 · 一念之间</button>
           </div>
         </div>
       </div>
@@ -1375,7 +1409,7 @@ button{font:inherit}
               <span>需开启中世纪线世界书</span>
               <span>需关闭目标体系世界书</span>
             </div>
-            <button class="jbtn" onclick="jmp(6)">点击进入 · 处刑前夜</button>
+            <button class="jbtn" onclick="jmp(6, this)">点击进入 · 处刑前夜</button>
           </div>
         </div>
       </div>
@@ -1402,7 +1436,7 @@ button{font:inherit}
               <span>需开启战败王女线世界书</span>
               <span>需关闭目标体系世界书</span>
             </div>
-            <button class="jbtn" onclick="jmp(7)">点击进入 · 战败的耻辱</button>
+            <button class="jbtn" onclick="jmp(7, this)">点击进入 · 战败的耻辱</button>
           </div>
         </div>
       </div>
@@ -1431,7 +1465,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启养父线 · char 主动世界书</span></div>
-            <button class="jbtn" onclick="jmp(8)">点击进入 · 谎言还是实话</button>
+            <button class="jbtn" onclick="jmp(8, this)">点击进入 · 谎言还是实话</button>
           </div>
         </div>
       </div>
@@ -1455,7 +1489,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启养父线 · user 主动世界书</span></div>
-            <button class="jbtn" onclick="jmp(9)">点击进入 · 门禁后的黄昏</button>
+            <button class="jbtn" onclick="jmp(9, this)">点击进入 · 门禁后的黄昏</button>
           </div>
         </div>
       </div>
@@ -1475,7 +1509,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启养父线 · 童养媳世界书</span></div>
-            <button class="jbtn" onclick="jmp(10)">点击进入 · 名分之前</button>
+            <button class="jbtn" onclick="jmp(10, this)">点击进入 · 名分之前</button>
           </div>
         </div>
       </div>
@@ -1494,7 +1528,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启亲父女线世界书</span></div>
-            <button class="jbtn" onclick="jmp(23)">点击进入 · 实习的执行总监</button>
+            <button class="jbtn" onclick="jmp(23, this)">点击进入 · 实习的执行总监</button>
           </div>
         </div>
       </div>
@@ -1513,7 +1547,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启亲父女线世界书</span></div>
-            <button class="jbtn" onclick="jmp(24)">点击进入 · 越界的人</button>
+            <button class="jbtn" onclick="jmp(24, this)">点击进入 · 越界的人</button>
           </div>
         </div>
       </div>
@@ -1535,7 +1569,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启兄妹骨科线世界书</span></div>
-            <button class="jbtn" onclick="jmp(11)">点击进入 · 错位来客</button>
+            <button class="jbtn" onclick="jmp(11, this)">点击进入 · 错位来客</button>
           </div>
         </div>
       </div>
@@ -1555,7 +1589,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启兄妹骨科线世界书</span></div>
-            <button class="jbtn" onclick="jmp(12)">点击进入 · 书脊与阳光</button>
+            <button class="jbtn" onclick="jmp(12, this)">点击进入 · 书脊与阳光</button>
           </div>
         </div>
       </div>
@@ -1576,7 +1610,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启小妈线世界书</span></div>
-            <button class="jbtn" onclick="jmp(15)">点击进入 · 烟与月光</button>
+            <button class="jbtn" onclick="jmp(15, this)">点击进入 · 烟与月光</button>
           </div>
         </div>
       </div>
@@ -1597,7 +1631,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启小妈线世界书</span></div>
-            <button class="jbtn" onclick="jmp(16)">点击进入 · 掉码现场</button>
+            <button class="jbtn" onclick="jmp(16, this)">点击进入 · 掉码现场</button>
           </div>
         </div>
       </div>
@@ -1626,7 +1660,7 @@ button{font:inherit}
             <div class="cnote">
               <span>需开启竞业对手线世界书</span>
             </div>
-            <button class="jbtn" onclick="jmp(19)">点击进入 · 另一面窥探</button>
+            <button class="jbtn" onclick="jmp(19, this)">点击进入 · 另一面窥探</button>
           </div>
         </div>
       </div>
@@ -1648,7 +1682,7 @@ button{font:inherit}
             <div class="cnote">
               <span>需开启竞业对手线世界书</span>
             </div>
-            <button class="jbtn" onclick="jmp(20)">点击进入 · 苏黎世金库</button>
+            <button class="jbtn" onclick="jmp(20, this)">点击进入 · 苏黎世金库</button>
           </div>
         </div>
       </div>
@@ -1674,7 +1708,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(17)">点击进入 · 掌心娇</button>
+            <button class="jbtn" onclick="jmp(17, this)">点击进入 · 掌心娇</button>
           </div>
         </div>
       </div>
@@ -1692,7 +1726,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(18)">点击进入 · 真假错</button>
+            <button class="jbtn" onclick="jmp(18, this)">点击进入 · 真假错</button>
           </div>
         </div>
       </div>
@@ -1711,7 +1745,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote" style="visibility:hidden;border:none"></div>
-            <button class="jbtn" onclick="jmp(22)">点击进入 · 逾期审批</button>
+            <button class="jbtn" onclick="jmp(22, this)">点击进入 · 逾期审批</button>
           </div>
         </div>
       </div>
@@ -1737,7 +1771,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启ABO线世界书</span></div>
-            <button class="jbtn" onclick="jmp(13)">点击进入 · 未被允许的反应</button>
+            <button class="jbtn" onclick="jmp(13, this)">点击进入 · 未被允许的反应</button>
           </div>
         </div>
       </div>
@@ -1758,7 +1792,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启ABO线世界书</span></div>
-            <button class="jbtn" onclick="jmp(14)">点击进入 · 被覆盖的你</button>
+            <button class="jbtn" onclick="jmp(14, this)">点击进入 · 被覆盖的你</button>
           </div>
         </div>
       </div>
@@ -1782,7 +1816,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启失忆线世界书</span></div>
-            <button class="jbtn" onclick="jmp(25)">点击进入 · 锈蚀的名字</button>
+            <button class="jbtn" onclick="jmp(25, this)">点击进入 · 锈蚀的名字</button>
           </div>
         </div>
       </div>
@@ -1802,7 +1836,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote"><span>需开启失忆线世界书</span></div>
-            <button class="jbtn" onclick="jmp(26)">点击进入 · 联合起来的欺骗</button>
+            <button class="jbtn" onclick="jmp(26, this)">点击进入 · 联合起来的欺骗</button>
           </div>
         </div>
       </div>
@@ -1950,14 +1984,19 @@ function toggleMore(btn){
   btn.textContent = hidden ? '收起' : '展开更多';
 }
 
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function ensureJumpOverlay(){
   let overlay = document.getElementById('jumpOverlay');
   if(overlay) return overlay;
   overlay = document.createElement('div');
   overlay.id = 'jumpOverlay';
   overlay.className = 'jump-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
   overlay.innerHTML = `
-    <div class="jump-overlay-inner" aria-hidden="true">
+    <div class="jump-overlay-inner">
       <div class="jump-overlay-sweep"></div>
       <div class="jump-overlay-kicker">Raymond Augustine</div>
       <div class="jump-overlay-title">Augustine</div>
@@ -1967,28 +2006,32 @@ function ensureJumpOverlay(){
   return overlay;
 }
 
-function playJumpOverlay(){
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduceMotion) return Promise.resolve();
+async function playJumpOverlay(){
   const overlay = ensureJumpOverlay();
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   overlay.classList.remove('show');
   void overlay.offsetWidth;
-  return new Promise(resolve=>{
-    requestAnimationFrame(()=>{
-      overlay.classList.add('show');
-      setTimeout(resolve, 1250);
-    });
-  });
+
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  overlay.classList.add('show');
+
+  if(reduceMotion){
+    await wait(220);
+    return;
+  }
+
+  await wait(950);
 }
 
-async function jmp(i){
+async function jmp(i, btnEl){
   if(typeof setChatMessages!=='function'){
     alert('请确保酒馆助手插件已开启。');
     return;
   }
-  const btn = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('jbtn')
+  const btn = btnEl || (document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('jbtn')
     ? document.activeElement
-    : null;
+    : null);
   try{
     btn?.classList.add('is-jumping');
     await playJumpOverlay();
