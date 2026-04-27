@@ -1,5 +1,5 @@
 ```
-<!-- v1.3.4 -->
+<!-- v1.3.5 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,7 +26,7 @@
     display: inline-block;
     padding: 12px 18px;
     border-radius: 14px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .btn {
@@ -42,7 +42,7 @@
     color: #3a2e26;
     border: none;
     outline: none;
-    transition: transform 0.15s, filter 0.15s;
+    transition: transform 0.15s, filter 0.15s, box-shadow 0.2s ease;
     background: linear-gradient(180deg, rgba(250,246,240,0.45) 0%, rgba(232,224,210,0.35) 100%);
     box-shadow:
       0 0 0 1px #a08060,
@@ -77,50 +77,69 @@
   }
   .btn:active { transform: scale(0.98); filter: brightness(0.95); }
 
-  .jump-overlay {
+  .jump-ring {
     position: absolute;
     inset: 0;
     border-radius: 14px;
-    background:
-      radial-gradient(circle at center, rgba(255,245,220,0.14) 0%, rgba(120,90,60,0.18) 38%, rgba(18,14,12,0.52) 100%);
-    opacity: 0;
     pointer-events: none;
-    transform: scale(0.92);
-    transition: opacity 280ms ease, transform 320ms cubic-bezier(.22,.8,.22,1);
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 160ms ease, transform 380ms cubic-bezier(.22,.8,.22,1);
   }
 
-  .jump-overlay::before {
+  .jump-ring::before {
     content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 160%;
-    height: 22px;
-    transform: translate(-50%, -50%) rotate(-10deg) scaleX(.55);
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,240,208,.08) 36%, rgba(255,232,180,.72) 50%, rgba(255,240,208,.08) 64%, rgba(255,255,255,0) 100%);
-    filter: blur(7px);
+    inset: -2px;
+    border-radius: 16px;
+    background: conic-gradient(
+      from 0deg,
+      rgba(255,255,255,0) 0deg,
+      rgba(255,255,255,0) 250deg,
+      rgba(255,248,220,0.18) 285deg,
+      rgba(255,255,255,0.95) 316deg,
+      rgba(255,235,180,0.85) 336deg,
+      rgba(255,255,255,0) 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    padding: 2px;
+    filter: blur(0.2px) drop-shadow(0 0 8px rgba(255,245,210,0.45));
     opacity: 0;
-    transition: opacity 240ms ease 70ms, transform 320ms cubic-bezier(.22,.8,.22,1) 70ms;
   }
 
-  .jump-overlay.show {
+  .jump-ring.show {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.02);
   }
 
-  .jump-overlay.show::before {
+  .jump-ring.show::before {
     opacity: 1;
-    transform: translate(-50%, -50%) rotate(-10deg) scaleX(1);
+    animation: ringOrbit 900ms linear 1;
+  }
+
+  .jump-wrap.is-jumping .btn {
+    box-shadow:
+      0 0 0 1px #b7946e,
+      inset 0 1px 0 rgba(255,255,255,0.58),
+      0 0 18px rgba(255,240,210,0.18),
+      0 4px 14px rgba(120,85,55,0.16);
+  }
+
+  @keyframes ringOrbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 </style>
 </head>
 <body>
   <div class="divider"></div>
-  <div class="jump-wrap">
-    <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const o=document.getElementById('jumpOverlay');if(o){o.className='jump-overlay show';await new Promise(r=>setTimeout(r,320));}if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
+  <div id="jumpWrap" class="jump-wrap">
+    <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const w=document.getElementById('jumpWrap');const o=document.getElementById('jumpRing');if(w)w.className='jump-wrap is-jumping';if(o)o.className='jump-ring show';await new Promise(r=>setTimeout(r,520));if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
       返回剧情索引
     </button>
-    <div id="jumpOverlay" class="jump-overlay"></div>
+    <div id="jumpRing" class="jump-ring"></div>
   </div>
 </body>
 </html>
