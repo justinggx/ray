@@ -810,10 +810,13 @@ button{font:inherit}
   box-shadow:0 0 0 1px rgba(237,220,181,.28), 0 10px 28px rgba(202,155,84,.30);
   filter:brightness(1.05);
 }
+body.jump-overlay-active{
+  overflow:hidden;
+}
 .jump-overlay{
   position:fixed;
   inset:0;
-  z-index:9999;
+  z-index:2147483647;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -823,6 +826,8 @@ button{font:inherit}
   background:
     radial-gradient(circle at center, rgba(215,188,127,.12) 0%, rgba(215,188,127,.04) 22%, rgba(6,5,4,0) 46%),
     linear-gradient(180deg, rgba(6,5,4,.10) 0%, rgba(6,5,4,.82) 100%);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
   transition:opacity .32s ease, visibility 0s linear .32s;
 }
 .jump-overlay.show{
@@ -881,6 +886,8 @@ button{font:inherit}
   text-transform:uppercase;
   color:rgba(244,223,180,.72);
   margin-bottom:14px;
+  opacity:0;
+  transform:translateY(8px);
 }
 .jump-overlay-title{
   font-family:"Cormorant Garamond",serif;
@@ -890,12 +897,35 @@ button{font:inherit}
   text-transform:uppercase;
   color:#f5e4bf;
   text-shadow:0 4px 24px rgba(0,0,0,.35);
+  opacity:0;
+  transform:translateY(10px) scale(.985);
 }
 .jump-overlay-sub{
   margin-top:12px;
   font:500 13px/1.7 "Noto Serif SC",serif;
   letter-spacing:.16em;
   color:rgba(244,223,180,.82);
+  opacity:0;
+  transform:translateY(12px);
+}
+.jump-overlay.show .jump-overlay-kicker{
+  animation:jumpTextIn .34s ease .06s forwards;
+}
+.jump-overlay.show .jump-overlay-title{
+  animation:jumpTextIn .42s cubic-bezier(.22,.8,.22,1) .12s forwards;
+}
+.jump-overlay.show .jump-overlay-sub{
+  animation:jumpTextIn .36s ease .2s forwards;
+}
+@keyframes jumpTextIn{
+  from{
+    opacity:0;
+    transform:translateY(12px) scale(.985);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
 }
 @keyframes jumpSweep{
   0%{
@@ -923,6 +953,12 @@ button{font:inherit}
   .jbtn{
     animation:none !important;
     transition:none !important;
+  }
+  .jump-overlay.show .jump-overlay-kicker,
+  .jump-overlay.show .jump-overlay-title,
+  .jump-overlay.show .jump-overlay-sub{
+    opacity:1;
+    transform:none;
   }
 }
 .spacer{height:42px}
@@ -1988,6 +2024,19 @@ function wait(ms){
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function safeMatchMedia(query){
+  try{
+    return typeof window.matchMedia === 'function' ? window.matchMedia(query) : null;
+  }catch(_){
+    return null;
+  }
+}
+
+function forceReflow(el){
+  if(!el) return;
+  void el.offsetWidth;
+}
+
 function ensureJumpOverlay(){
   let overlay = document.getElementById('jumpOverlay');
   if(overlay) return overlay;
@@ -2008,20 +2057,29 @@ function ensureJumpOverlay(){
 
 async function playJumpOverlay(){
   const overlay = ensureJumpOverlay();
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = !!safeMatchMedia('(prefers-reduced-motion: reduce)')?.matches;
 
+  document.body.classList.add('jump-overlay-active');
   overlay.classList.remove('show');
-  void overlay.offsetWidth;
+  forceReflow(overlay);
 
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   overlay.classList.add('show');
+  forceReflow(overlay);
 
   if(reduceMotion){
-    await wait(220);
+    await wait(260);
     return;
   }
 
-  await wait(950);
+  await wait(1180);
+}
+
+function cleanupJumpOverlay(){
+  document.body.classList.remove('jump-overlay-active');
+  const overlay = document.getElementById('jumpOverlay');
+  if(!overlay) return;
+  overlay.classList.remove('show');
 }
 
 async function jmp(i, btnEl){
@@ -2041,8 +2099,7 @@ async function jmp(i, btnEl){
     console.error(e);
   }finally{
     btn?.classList.remove('is-jumping');
-    const overlay = document.getElementById('jumpOverlay');
-    overlay?.classList.remove('show');
+    cleanupJumpOverlay();
   }
 }
 
