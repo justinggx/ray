@@ -1,28 +1,27 @@
-<!-- v1.3.1 -->
+```
 <!DOCTYPE html>
 <html>
 <head>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%;
-    background: transparent;
-  }
   body {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 0 0 18px;
-    text-align: center;
   }
 
   .divider {
     width: 60%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(140,100,70,0.3), transparent);
-    margin: 1em auto 18px;
+    margin-top: 1em;
+    margin-bottom: 18px;
   }
 
   .btn {
     position: relative;
-    display: inline-block;
     padding: 10px 44px;
     border-radius: 6px;
     cursor: pointer;
@@ -71,9 +70,9 @@
 </head>
 <body>
   <div class="divider"></div>
-  <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()">
+  <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
     返回剧情索引
   </button>
 </body>
 </html>
-
+```
