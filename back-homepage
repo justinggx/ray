@@ -1,5 +1,5 @@
 ```
-<!-- v1.3.5 -->
+<!-- v1.3.6 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,8 +24,8 @@
   .jump-wrap {
     position: relative;
     display: inline-block;
-    padding: 12px 18px;
-    border-radius: 14px;
+    padding: 14px 20px;
+    border-radius: 16px;
     overflow: visible;
   }
 
@@ -42,7 +42,7 @@
     color: #3a2e26;
     border: none;
     outline: none;
-    transition: transform 0.15s, filter 0.15s, box-shadow 0.2s ease;
+    transition: transform 0.15s, filter 0.15s, box-shadow 0.22s ease;
     background: linear-gradient(180deg, rgba(250,246,240,0.45) 0%, rgba(232,224,210,0.35) 100%);
     box-shadow:
       0 0 0 1px #a08060,
@@ -80,63 +80,88 @@
   .jump-ring {
     position: absolute;
     inset: 0;
-    border-radius: 14px;
+    border-radius: 16px;
     pointer-events: none;
     opacity: 0;
-    transform: scale(0.96);
-    transition: opacity 160ms ease, transform 380ms cubic-bezier(.22,.8,.22,1);
+    transform: scale(0.97);
+    transition: opacity 180ms ease, transform 420ms cubic-bezier(.22,.8,.22,1);
   }
 
   .jump-ring::before {
     content: '';
     position: absolute;
-    inset: -2px;
-    border-radius: 16px;
-    background: conic-gradient(
-      from 0deg,
-      rgba(255,255,255,0) 0deg,
-      rgba(255,255,255,0) 250deg,
-      rgba(255,248,220,0.18) 285deg,
-      rgba(255,255,255,0.95) 316deg,
-      rgba(255,235,180,0.85) 336deg,
-      rgba(255,255,255,0) 360deg
-    );
+    inset: -3px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(255,247,228,0.95), rgba(255,228,170,0.75));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    padding: 2px;
-    filter: blur(0.2px) drop-shadow(0 0 8px rgba(255,245,210,0.45));
+    padding: 2.5px;
     opacity: 0;
+    box-shadow:
+      0 0 10px rgba(255,244,214,0.45),
+      0 0 18px rgba(255,226,156,0.28);
+  }
+
+  .jump-ring::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 0;
+    top: 0;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(255,244,214,0.95) 28%, rgba(255,223,156,0.92) 56%, rgba(255,223,156,0) 78%);
+    filter: blur(0.25px) drop-shadow(0 0 8px rgba(255,246,221,0.92)) drop-shadow(0 0 16px rgba(255,227,160,0.65));
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.75);
   }
 
   .jump-ring.show {
     opacity: 1;
-    transform: scale(1.02);
+    transform: scale(1.03);
   }
 
   .jump-ring.show::before {
     opacity: 1;
-    animation: ringOrbit 900ms linear 1;
+  }
+
+  .jump-ring.show::after {
+    opacity: 1;
+    animation: orbitDot 650ms linear 1 forwards, pulseDot 260ms ease-in-out 2 alternate;
   }
 
   .jump-wrap.is-jumping .btn {
     box-shadow:
-      0 0 0 1px #b7946e,
-      inset 0 1px 0 rgba(255,255,255,0.58),
-      0 0 18px rgba(255,240,210,0.18),
+      0 0 0 1px #c29c73,
+      inset 0 1px 0 rgba(255,255,255,0.62),
+      0 0 22px rgba(255,241,205,0.26),
+      0 0 34px rgba(255,225,150,0.14),
       0 4px 14px rgba(120,85,55,0.16);
   }
 
-  @keyframes ringOrbit {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  @keyframes orbitDot {
+    0%   { left: 0%;   top: 0%;   transform: translate(-50%, -50%) scale(.78); }
+    12%  { left: 50%;  top: 0%;   transform: translate(-50%, -50%) scale(1); }
+    25%  { left: 100%; top: 0%;   transform: translate(-50%, -50%) scale(.88); }
+    37%  { left: 100%; top: 50%;  transform: translate(-50%, -50%) scale(1); }
+    50%  { left: 100%; top: 100%; transform: translate(-50%, -50%) scale(.9); }
+    62%  { left: 50%;  top: 100%; transform: translate(-50%, -50%) scale(1); }
+    75%  { left: 0%;   top: 100%; transform: translate(-50%, -50%) scale(.88); }
+    87%  { left: 0%;   top: 50%;  transform: translate(-50%, -50%) scale(1); }
+    100% { left: 0%;   top: 0%;   transform: translate(-50%, -50%) scale(.78); }
+  }
+
+  @keyframes pulseDot {
+    from { filter: blur(0.25px) drop-shadow(0 0 8px rgba(255,246,221,0.92)) drop-shadow(0 0 16px rgba(255,227,160,0.65)); }
+    to   { filter: blur(0.15px) drop-shadow(0 0 12px rgba(255,252,240,1)) drop-shadow(0 0 24px rgba(255,227,160,0.92)); }
   }
 </style>
 </head>
 <body>
   <div class="divider"></div>
   <div id="jumpWrap" class="jump-wrap">
-    <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const w=document.getElementById('jumpWrap');const o=document.getElementById('jumpRing');if(w)w.className='jump-wrap is-jumping';if(o)o.className='jump-ring show';await new Promise(r=>setTimeout(r,520));if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
+    <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const w=document.getElementById('jumpWrap');const o=document.getElementById('jumpRing');if(w)w.className='jump-wrap is-jumping';if(o)o.className='jump-ring show';await new Promise(r=>setTimeout(r,650));if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
       返回剧情索引
     </button>
     <div id="jumpRing" class="jump-ring"></div>
