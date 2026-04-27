@@ -1,27 +1,28 @@
-<!-- v1.3.0 -->
+<!-- v1.3.1 -->
 <!DOCTYPE html>
 <html>
 <head>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
+  html, body {
+    width: 100%;
     background: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  }
+  body {
     padding: 0 0 18px;
+    text-align: center;
   }
 
   .divider {
     width: 60%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(140,100,70,0.3), transparent);
-    margin-top: 1em;
-    margin-bottom: 18px;
+    margin: 1em auto 18px;
   }
 
   .btn {
     position: relative;
+    display: inline-block;
     padding: 10px 44px;
     border-radius: 6px;
     cursor: pointer;
@@ -70,7 +71,9 @@
 </head>
 <body>
   <div class="divider"></div>
-  <button class="btn" onclick="(async()=>{try{const p=window.parent||window;const f=window.setChatMessages??p.setChatMessages;const d=(p.document&&p.document.body)?p.document:p.document||document;if(d&&d.getElementById&&!d.getElementById('backJumpOverlay')){const o=d.createElement('div');o.id='backJumpOverlay';o.innerHTML='<div class=left></div><div class=right></div><div class=v></div><div class=line></div><div class=glow></div><div class=sweep></div>';const s=d.createElement('style');s.id='backJumpOverlayStyle';s.textContent='#backJumpOverlay{position:fixed;inset:0;z-index:2147483647;pointer-events:none;overflow:hidden;opacity:0;background:rgba(6,5,4,.08);transition:opacity .18s ease}#backJumpOverlay.show{opacity:1}#backJumpOverlay .left,#backJumpOverlay .right{position:absolute;top:0;bottom:0;width:52vw}#backJumpOverlay .left{left:0;background:linear-gradient(90deg,rgba(3,2,2,.96) 0%,rgba(8,6,5,.92) 72%,rgba(34,24,14,.72) 100%);transform:translateX(-103%)}#backJumpOverlay .right{right:0;background:linear-gradient(270deg,rgba(3,2,2,.96) 0%,rgba(8,6,5,.92) 72%,rgba(34,24,14,.72) 100%);transform:translateX(103%)}#backJumpOverlay .v{position:absolute;inset:0;background:radial-gradient(circle at center,rgba(215,188,127,.08) 0%,rgba(12,10,8,.24) 28%,rgba(6,5,4,.72) 72%,rgba(4,3,3,.92) 100%);opacity:0}#backJumpOverlay .line{position:absolute;left:50%;top:0;width:1px;height:100%;transform:translateX(-50%) scaleY(.18);transform-origin:center;background:linear-gradient(180deg,rgba(215,188,127,0) 0%,rgba(215,188,127,.92) 18%,rgba(255,240,208,.98) 50%,rgba(215,188,127,.92) 82%,rgba(215,188,127,0) 100%);box-shadow:0 0 18px rgba(215,188,127,.48),0 0 34px rgba(215,188,127,.22);opacity:0}#backJumpOverlay .glow{position:absolute;left:50%;top:50%;width:min(42vw,420px);height:min(42vw,420px);transform:translate(-50%,-50%) scale(.68);border-radius:999px;background:radial-gradient(circle,rgba(255,236,188,.22) 0%,rgba(215,188,127,.14) 24%,rgba(215,188,127,.05) 46%,rgba(215,188,127,0) 72%);filter:blur(10px);opacity:0}#backJumpOverlay .sweep{position:absolute;left:50%;top:50%;width:min(120vw,1600px);height:28px;transform:translate(-50%,-50%) rotate(-12deg) scaleX(.35);background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,244,214,.06) 36%,rgba(255,236,188,.78) 50%,rgba(255,244,214,.06) 64%,rgba(255,255,255,0) 100%);filter:blur(8px);opacity:0;mix-blend-mode:screen}#backJumpOverlay.show .left{transition:transform 420ms cubic-bezier(.76,0,.24,1);transform:translateX(0)}#backJumpOverlay.show .right{transition:transform 420ms cubic-bezier(.76,0,.24,1);transform:translateX(0)}#backJumpOverlay.show .v{transition:opacity 300ms ease;opacity:1}#backJumpOverlay.show .line{transition:opacity 180ms ease 220ms,transform 280ms cubic-bezier(.22,.8,.22,1) 220ms;opacity:.96;transform:translateX(-50%) scaleY(1)}#backJumpOverlay.show .glow{transition:opacity 260ms ease 220ms,transform 360ms cubic-bezier(.22,.8,.22,1) 220ms;opacity:.9;transform:translate(-50%,-50%) scale(1)}#backJumpOverlay.show .sweep{transition:opacity 180ms ease 310ms,transform 320ms cubic-bezier(.22,.8,.22,1) 310ms;opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scaleX(1)}';d.head&&d.head.appendChild(s);d.body.appendChild(o);}const o=d&&d.getElementById?d.getElementById('backJumpOverlay'):null;if(o){o.classList.remove('show');void o.offsetWidth;o.classList.add('show');}if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()">返回剧情索引</button>
+  <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()">
+    返回剧情索引
+  </button>
 </body>
 </html>
 
