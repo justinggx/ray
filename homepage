@@ -1,5 +1,5 @@
 ```html
-<!-- v2.6.8 -->
+<!-- v2.6.9 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2056,12 +2056,82 @@ function ensureJumpOverlay(){
   overlay.setAttribute('aria-hidden', 'true');
   overlay.innerHTML = `
     <div class="jump-overlay-inner">
-      <div class="jump-overlay-sweep"></div>
       <div class="jump-overlay-kicker">Raymond Augustine</div>
       <div class="jump-overlay-title">Augustine</div>
       <div class="jump-overlay-sub">你已被他亲自选中。</div>
     </div>`;
   document.body.appendChild(overlay);
+
+  const inner = overlay.querySelector('.jump-overlay-inner');
+  const kicker = overlay.querySelector('.jump-overlay-kicker');
+  const title = overlay.querySelector('.jump-overlay-title');
+  const sub = overlay.querySelector('.jump-overlay-sub');
+
+  overlay.style.cssText = [
+    'position:fixed',
+    'inset:0',
+    'z-index:2147483647',
+    'display:none',
+    'align-items:center',
+    'justify-content:center',
+    'padding:24px',
+    'opacity:0',
+    'visibility:hidden',
+    'pointer-events:none',
+    'background:rgba(6,5,4,.78)',
+    '-webkit-backdrop-filter:blur(14px)',
+    'backdrop-filter:blur(14px)'
+  ].join(';');
+
+  inner.style.cssText = [
+    'width:min(86vw, 720px)',
+    'max-width:720px',
+    'padding:34px 28px',
+    'border-radius:24px',
+    'border:1px solid rgba(215,188,127,.42)',
+    'background:linear-gradient(180deg, rgba(20,15,12,.96), rgba(8,6,5,.98))',
+    'box-shadow:0 30px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05)',
+    'text-align:center',
+    'opacity:1',
+    'transform:translateY(18px) scale(.94)',
+    'filter:blur(0)',
+    'transition:none'
+  ].join(';');
+
+  kicker.style.cssText = [
+    'margin:0 0 14px',
+    'font:700 12px/1.1 Inter,sans-serif',
+    'letter-spacing:.42em',
+    'text-transform:uppercase',
+    'color:rgba(247,231,196,.88)',
+    'opacity:0',
+    'transform:translateY(10px)',
+    'text-shadow:0 2px 12px rgba(0,0,0,.42)'
+  ].join(';');
+
+  title.style.cssText = [
+    'margin:0',
+    'font-family:"Cormorant Garamond",serif',
+    'font-size:clamp(3.2rem, 7vw, 5.6rem)',
+    'line-height:1',
+    'letter-spacing:.18em',
+    'text-transform:uppercase',
+    'color:#f7e7c4',
+    'opacity:0',
+    'transform:translateY(14px) scale(.97)',
+    'text-shadow:0 8px 28px rgba(0,0,0,.58), 0 0 26px rgba(215,188,127,.20)'
+  ].join(';');
+
+  sub.style.cssText = [
+    'margin:16px 0 0',
+    'font:600 14px/1.85 "Noto Serif SC",serif',
+    'letter-spacing:.16em',
+    'color:rgba(247,231,196,.94)',
+    'opacity:0',
+    'transform:translateY(14px)',
+    'text-shadow:0 2px 14px rgba(0,0,0,.46)'
+  ].join(';');
+
   return overlay;
 }
 
@@ -2072,108 +2142,70 @@ async function playJumpOverlay(){
   const title = overlay.querySelector('.jump-overlay-title');
   const sub = overlay.querySelector('.jump-overlay-sub');
   const reduceMotion = !!safeMatchMedia('(prefers-reduced-motion: reduce)')?.matches;
-  const canAnimate = typeof Element !== 'undefined' && typeof overlay.animate === 'function';
 
   document.body.classList.add('jump-overlay-active');
-  overlay.classList.remove('show');
-  overlay.style.opacity = '0';
-  overlay.style.visibility = 'hidden';
   overlay.style.display = 'flex';
-  if(inner){
-    inner.style.opacity = '1';
-    inner.style.transform = 'translateY(8px) scale(.985)';
-    inner.style.filter = 'blur(1px)';
-  }
-  if(kicker){
-    kicker.style.opacity = '1';
-    kicker.style.transform = 'translateY(8px)';
-  }
-  if(title){
-    title.style.opacity = '1';
-    title.style.transform = 'translateY(10px) scale(.985)';
-  }
-  if(sub){
-    sub.style.opacity = '1';
-    sub.style.transform = 'translateY(12px)';
-  }
-  forceReflow(overlay);
+  overlay.style.visibility = 'visible';
+  overlay.style.opacity = '1';
+  overlay.style.background = 'rgba(6,5,4,.82)';
 
+  inner.style.transform = 'translateY(18px) scale(.94)';
+  kicker.style.opacity = '0';
+  kicker.style.transform = 'translateY(10px)';
+  title.style.opacity = '0';
+  title.style.transform = 'translateY(14px) scale(.97)';
+  sub.style.opacity = '0';
+  sub.style.transform = 'translateY(14px)';
+
+  forceReflow(overlay);
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-  overlay.style.visibility = 'visible';
-  overlay.classList.add('show');
-  forceReflow(overlay);
-
-  if(canAnimate){
-    const jobs = [];
-    jobs.push(
-      overlay.animate(
-        [{ opacity: 0 }, { opacity: 1 }],
-        { duration: reduceMotion ? 120 : 220, easing: 'ease-out', fill: 'forwards' }
-      ).finished.catch(()=>{})
-    );
-    if(inner){
-      jobs.push(
-        inner.animate(
-          [
-            { transform: 'translateY(8px) scale(.985)', filter: 'blur(1px)' },
-            { transform: 'translateY(0) scale(1)', filter: 'blur(0)' }
-          ],
-          { duration: reduceMotion ? 140 : 420, easing: 'cubic-bezier(.22,.8,.22,1)', fill: 'forwards' }
-        ).finished.catch(()=>{})
-      );
-    }
-    const textTargets = [
-      [kicker, reduceMotion ? 120 : 260, 40, 'translateY(8px)'],
-      [title, reduceMotion ? 150 : 360, 110, 'translateY(10px) scale(.985)'],
-      [sub, reduceMotion ? 140 : 300, 180, 'translateY(12px)']
-    ];
-    textTargets.forEach(([el, duration, delay, fromTransform])=>{
-      if(!el) return;
-      jobs.push(
-        el.animate(
-          [
-            { transform: fromTransform },
-            { transform: 'translateY(0) scale(1)' }
-          ],
-          { duration, delay: reduceMotion ? 0 : delay, easing: 'ease-out', fill: 'forwards' }
-        ).finished.catch(()=>{})
-      );
-    });
-    await Promise.all(jobs);
-    await wait(reduceMotion ? 520 : 760);
+  if(reduceMotion){
+    inner.style.transition = 'none';
+    inner.style.transform = 'translateY(0) scale(1)';
+    kicker.style.transition = 'none';
+    kicker.style.opacity = '1';
+    kicker.style.transform = 'translateY(0)';
+    title.style.transition = 'none';
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(0) scale(1)';
+    sub.style.transition = 'none';
+    sub.style.opacity = '1';
+    sub.style.transform = 'translateY(0)';
+    await wait(900);
     return;
   }
 
-  overlay.style.opacity = '1';
-  overlay.style.visibility = 'visible';
-  if(inner){
-    inner.style.opacity = '1';
-    inner.style.transform = 'translateY(0) scale(1)';
-    inner.style.filter = 'blur(0)';
-  }
-  if(kicker){ kicker.style.opacity = '1'; kicker.style.transform = 'translateY(0)'; }
-  if(title){ title.style.opacity = '1'; title.style.transform = 'translateY(0) scale(1)'; }
-  if(sub){ sub.style.opacity = '1'; sub.style.transform = 'translateY(0)'; }
-  await wait(reduceMotion ? 800 : 1450);
+  inner.style.transition = 'transform 420ms cubic-bezier(.22,.8,.22,1), box-shadow 420ms ease';
+  kicker.style.transition = 'opacity 220ms ease, transform 220ms ease';
+  title.style.transition = 'opacity 320ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
+  sub.style.transition = 'opacity 260ms ease, transform 260ms ease';
+
+  inner.style.transform = 'translateY(0) scale(1)';
+  inner.style.boxShadow = '0 34px 100px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.05)';
+
+  await wait(120);
+  kicker.style.opacity = '1';
+  kicker.style.transform = 'translateY(0)';
+
+  await wait(90);
+  title.style.opacity = '1';
+  title.style.transform = 'translateY(0) scale(1)';
+
+  await wait(90);
+  sub.style.opacity = '1';
+  sub.style.transform = 'translateY(0)';
+
+  await wait(900);
 }
 
 function cleanupJumpOverlay(){
   document.body.classList.remove('jump-overlay-active');
   const overlay = document.getElementById('jumpOverlay');
   if(!overlay) return;
-  overlay.classList.remove('show');
+  overlay.style.display = 'none';
   overlay.style.opacity = '0';
   overlay.style.visibility = 'hidden';
-  const inner = overlay.querySelector('.jump-overlay-inner');
-  if(inner){
-    inner.style.opacity = '';
-    inner.style.transform = '';
-  }
-  overlay.querySelectorAll('.jump-overlay-kicker, .jump-overlay-title, .jump-overlay-sub').forEach(el=>{
-    el.style.opacity = '';
-    el.style.transform = '';
-  });
 }
 
 async function jmp(i, btnEl){
