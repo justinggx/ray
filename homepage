@@ -1,5 +1,5 @@
 ```html
-<!-- v2.7.1 -->
+<!-- v2.7.2 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2056,8 +2056,8 @@ function positionJumpOverlay(){
   const vv = window.visualViewport;
   const viewportWidth = vv?.width || window.innerWidth || document.documentElement.clientWidth || 0;
   const viewportHeight = vv?.height || window.innerHeight || document.documentElement.clientHeight || 0;
-  const viewportLeft = (vv?.pageLeft ?? window.scrollX ?? window.pageXOffset ?? 0);
-  const viewportTop = (vv?.pageTop ?? window.scrollY ?? window.pageYOffset ?? 0);
+  const viewportLeft = vv?.offsetLeft || 0;
+  const viewportTop = vv?.offsetTop || 0;
 
   const centerX = viewportLeft + viewportWidth / 2;
   const centerY = viewportTop + viewportHeight / 2;
@@ -2103,7 +2103,7 @@ function ensureJumpOverlay(){
   ].join(';');
 
   inner.style.cssText = [
-    'position:absolute',
+    'position:fixed',
     'left:50%',
     'top:50%',
     'width:min(86vw, 720px)',
