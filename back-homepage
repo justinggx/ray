@@ -1,0 +1,78 @@
+```
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 18px;
+  }
+
+  .divider {
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(140,100,70,0.3), transparent);
+    margin-top: 1em;
+    margin-bottom: 18px;
+  }
+
+  .btn {
+    position: relative;
+    padding: 10px 44px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #3a2e26;
+    border: none;
+    outline: none;
+    transition: transform 0.15s, filter 0.15s;
+    background: linear-gradient(180deg, rgba(250,246,240,0.45) 0%, rgba(232,224,210,0.35) 100%);
+    box-shadow:
+      0 0 0 1px #a08060,
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      0 2px 8px rgba(120,85,55,0.1);
+  }
+
+  .btn::before, .btn::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.5rem;
+    color: #7a6050;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  .btn::before { left: 18px; animation-delay: 0s; }
+  .btn::after  { right: 18px; animation-delay: 1s; }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.35; transform: translateY(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateY(-50%) scale(1.4); }
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, rgba(255,251,244,0.6) 0%, rgba(238,230,216,0.5) 100%);
+    box-shadow:
+      0 0 0 1px #8a6a50,
+      inset 0 1px 0 rgba(255,255,255,0.6),
+      0 3px 10px rgba(120,85,55,0.15);
+  }
+  .btn:active { transform: scale(0.98); filter: brightness(0.95); }
+</style>
+</head>
+<body>
+  <div class="divider"></div>
+  <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
+    返回剧情索引
+  </button>
+</body>
+</html>
+```
