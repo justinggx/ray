@@ -1,4 +1,4 @@
-<!-- v1.1.2 -->
+<!-- v1.1.3 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,20 +7,16 @@
   html, body { width: 100%; }
   body {
     background: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
     padding: 0 0 18px;
     overflow: visible;
+    text-align: center;
   }
 
   .divider {
     width: 60%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(140,100,70,0.3), transparent);
-    margin-top: 1em;
-    margin-bottom: 18px;
+    margin: 1em auto 18px;
   }
 
   .btn {
@@ -28,6 +24,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin: 0 auto;
     padding: 10px 44px;
     border-radius: 6px;
     cursor: pointer;
@@ -71,153 +68,12 @@
       inset 0 1px 0 rgba(255,255,255,0.6),
       0 3px 10px rgba(120,85,55,0.15);
   }
-
   .btn:active { transform: scale(0.98); filter: brightness(0.95); }
   .btn[disabled] { pointer-events: none; filter: brightness(1.05); }
 </style>
 </head>
 <body>
   <div class="divider"></div>
-  <button id="backBtn" class="btn">返回剧情索引</button>
-
-<script>
-(function(){
-  const btn = document.getElementById('backBtn');
-  if(!btn) return;
-
-  function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  function forceReflow(el){
-    if(!el) return;
-    void el.offsetWidth;
-  }
-
-  function ensureJumpOverlay(){
-    let overlay = document.getElementById('jumpOverlay');
-    if(overlay) return overlay;
-
-    overlay = document.createElement('div');
-    overlay.id = 'jumpOverlay';
-    overlay.setAttribute('aria-hidden', 'true');
-    overlay.innerHTML = '<div data-l="left"></div><div data-l="right"></div><div data-l="vignette"></div><div data-l="line"></div><div data-l="glow"></div><div data-l="sweep"></div>';
-    document.body.appendChild(overlay);
-
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:none;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;background:rgba(6,5,4,.08)';
-    overlay.querySelector('[data-l="left"]').style.cssText = 'position:absolute;top:0;bottom:0;left:0;width:52vw;background:linear-gradient(90deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);transform:translateX(-103%)';
-    overlay.querySelector('[data-l="right"]').style.cssText = 'position:absolute;top:0;bottom:0;right:0;width:52vw;background:linear-gradient(270deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);transform:translateX(103%)';
-    overlay.querySelector('[data-l="vignette"]').style.cssText = 'position:absolute;inset:0;background:radial-gradient(circle at center, rgba(215,188,127,.08) 0%, rgba(12,10,8,.24) 28%, rgba(6,5,4,.72) 72%, rgba(4,3,3,.92) 100%);opacity:0';
-    overlay.querySelector('[data-l="line"]').style.cssText = 'position:absolute;left:50%;top:0;width:1px;height:100%;transform:translateX(-50%) scaleY(.18);transform-origin:center;background:linear-gradient(180deg, rgba(215,188,127,0) 0%, rgba(215,188,127,.92) 18%, rgba(255,240,208,.98) 50%, rgba(215,188,127,.92) 82%, rgba(215,188,127,0) 100%);box-shadow:0 0 18px rgba(215,188,127,.48), 0 0 34px rgba(215,188,127,.22);opacity:0';
-    overlay.querySelector('[data-l="glow"]').style.cssText = 'position:absolute;left:50%;top:50%;width:min(42vw, 420px);height:min(42vw, 420px);transform:translate(-50%, -50%) scale(.68);border-radius:999px;background:radial-gradient(circle, rgba(255,236,188,.22) 0%, rgba(215,188,127,.14) 24%, rgba(215,188,127,.05) 46%, rgba(215,188,127,0) 72%);filter:blur(10px);opacity:0';
-    overlay.querySelector('[data-l="sweep"]').style.cssText = 'position:absolute;left:50%;top:50%;width:min(120vw, 1600px);height:28px;transform:translate(-50%, -50%) rotate(-12deg) scaleX(.35);background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,244,214,.06) 36%, rgba(255,236,188,.78) 50%, rgba(255,244,214,.06) 64%, rgba(255,255,255,0) 100%);filter:blur(8px);opacity:0;mix-blend-mode:screen';
-
-    return overlay;
-  }
-
-  async function playJumpOverlay(){
-    const overlay = ensureJumpOverlay();
-    const reduceMotion = (()=>{
-      try{ return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-      catch(_){ return false; }
-    })();
-
-    const left = overlay.querySelector('[data-l="left"]');
-    const right = overlay.querySelector('[data-l="right"]');
-    const vignette = overlay.querySelector('[data-l="vignette"]');
-    const line = overlay.querySelector('[data-l="line"]');
-    const glow = overlay.querySelector('[data-l="glow"]');
-    const sweep = overlay.querySelector('[data-l="sweep"]');
-
-    overlay.style.display = 'block';
-    overlay.style.visibility = 'visible';
-    overlay.style.opacity = '1';
-
-    left.style.transition = 'none';
-    right.style.transition = 'none';
-    vignette.style.transition = 'none';
-    line.style.transition = 'none';
-    glow.style.transition = 'none';
-    sweep.style.transition = 'none';
-
-    left.style.transform = 'translateX(-103%)';
-    right.style.transform = 'translateX(103%)';
-    vignette.style.opacity = '0';
-    line.style.opacity = '0';
-    line.style.transform = 'translateX(-50%) scaleY(.18)';
-    glow.style.opacity = '0';
-    glow.style.transform = 'translate(-50%, -50%) scale(.68)';
-    sweep.style.opacity = '0';
-    sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(.35)';
-
-    forceReflow(overlay);
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    if(reduceMotion){
-      left.style.transform = 'translateX(0)';
-      right.style.transform = 'translateX(0)';
-      vignette.style.opacity = '1';
-      line.style.opacity = '.95';
-      line.style.transform = 'translateX(-50%) scaleY(1)';
-      glow.style.opacity = '.7';
-      glow.style.transform = 'translate(-50%, -50%) scale(1)';
-      await wait(700);
-      return;
-    }
-
-    left.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
-    right.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
-    vignette.style.transition = 'opacity 300ms ease';
-    line.style.transition = 'opacity 180ms ease, transform 280ms cubic-bezier(.22,.8,.22,1)';
-    glow.style.transition = 'opacity 260ms ease, transform 360ms cubic-bezier(.22,.8,.22,1)';
-    sweep.style.transition = 'opacity 180ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
-
-    left.style.transform = 'translateX(0)';
-    right.style.transform = 'translateX(0)';
-    vignette.style.opacity = '1';
-
-    await wait(220);
-    line.style.opacity = '.96';
-    line.style.transform = 'translateX(-50%) scaleY(1)';
-    glow.style.opacity = '.9';
-    glow.style.transform = 'translate(-50%, -50%) scale(1)';
-
-    await wait(90);
-    sweep.style.opacity = '1';
-    sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(1)';
-
-    await wait(220);
-    sweep.style.transition = 'opacity 220ms ease';
-    sweep.style.opacity = '0';
-
-    await wait(360);
-  }
-
-  async function goBack(){
-    const f = window.setChatMessages || (window.parent && window.parent.setChatMessages);
-    if(typeof f !== 'function'){
-      console.error('setChatMessages unavailable');
-      return;
-    }
-    btn.disabled = true;
-    try{
-      await playJumpOverlay();
-      await f([{message_id:0, swipe_id:0}]);
-    }catch(e){
-      console.error(e);
-    }finally{
-      const overlay = document.getElementById('jumpOverlay');
-      if(overlay){
-        overlay.style.display = 'none';
-        overlay.style.opacity = '0';
-        overlay.style.visibility = 'hidden';
-      }
-      btn.disabled = false;
-    }
-  }
-
-  btn.onclick = goBack;
-})();
-</script>
+  <button class="btn" onclick='(async()=>{const btn=this;const wait=(ms)=>new Promise(r=>setTimeout(r,ms));const f=window.setChatMessages||(window.parent&&window.parent.setChatMessages);if(typeof f!=="function"){console.error("setChatMessages unavailable");return;}btn.disabled=true;try{let o=document.getElementById("jumpOverlay");if(!o){o=document.createElement("div");o.id="jumpOverlay";o.innerHTML="<div data-l=left></div><div data-l=right></div><div data-l=vignette></div><div data-l=line></div><div data-l=glow></div><div data-l=sweep></div>";document.body.appendChild(o);}const l=o.querySelector("[data-l=left]");const r=o.querySelector("[data-l=right]");const v=o.querySelector("[data-l=vignette]");const n=o.querySelector("[data-l=line]");const g=o.querySelector("[data-l=glow]");const s=o.querySelector("[data-l=sweep]");o.style.cssText="position:fixed;inset:0;z-index:2147483647;display:block;opacity:1;visibility:visible;pointer-events:none;overflow:hidden;background:rgba(6,5,4,.08)";l.style.cssText="position:absolute;top:0;bottom:0;left:0;width:52vw;background:linear-gradient(90deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);transform:translateX(-103%)";r.style.cssText="position:absolute;top:0;bottom:0;right:0;width:52vw;background:linear-gradient(270deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);transform:translateX(103%)";v.style.cssText="position:absolute;inset:0;background:radial-gradient(circle at center, rgba(215,188,127,.08) 0%, rgba(12,10,8,.24) 28%, rgba(6,5,4,.72) 72%, rgba(4,3,3,.92) 100%);opacity:0";n.style.cssText="position:absolute;left:50%;top:0;width:1px;height:100%;transform:translateX(-50%) scaleY(.18);transform-origin:center;background:linear-gradient(180deg, rgba(215,188,127,0) 0%, rgba(215,188,127,.92) 18%, rgba(255,240,208,.98) 50%, rgba(215,188,127,.92) 82%, rgba(215,188,127,0) 100%);box-shadow:0 0 18px rgba(215,188,127,.48),0 0 34px rgba(215,188,127,.22);opacity:0";g.style.cssText="position:absolute;left:50%;top:50%;width:min(42vw,420px);height:min(42vw,420px);transform:translate(-50%,-50%) scale(.68);border-radius:999px;background:radial-gradient(circle, rgba(255,236,188,.22) 0%, rgba(215,188,127,.14) 24%, rgba(215,188,127,.05) 46%, rgba(215,188,127,0) 72%);filter:blur(10px);opacity:0";s.style.cssText="position:absolute;left:50%;top:50%;width:min(120vw,1600px);height:28px;transform:translate(-50%,-50%) rotate(-12deg) scaleX(.35);background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,244,214,.06) 36%, rgba(255,236,188,.78) 50%, rgba(255,244,214,.06) 64%, rgba(255,255,255,0) 100%);filter:blur(8px);opacity:0;mix-blend-mode:screen";void o.offsetWidth;await new Promise(res=>requestAnimationFrame(()=>requestAnimationFrame(res)));const rm=(()=>{try{return typeof window.matchMedia==="function"&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(_){return false;}})();if(rm){l.style.transform="translateX(0)";r.style.transform="translateX(0)";v.style.opacity="1";n.style.opacity=".95";n.style.transform="translateX(-50%) scaleY(1)";g.style.opacity=".7";g.style.transform="translate(-50%,-50%) scale(1)";await wait(700);}else{l.style.transition="transform 420ms cubic-bezier(.76,0,.24,1)";r.style.transition="transform 420ms cubic-bezier(.76,0,.24,1)";v.style.transition="opacity 300ms ease";n.style.transition="opacity 180ms ease, transform 280ms cubic-bezier(.22,.8,.22,1)";g.style.transition="opacity 260ms ease, transform 360ms cubic-bezier(.22,.8,.22,1)";s.style.transition="opacity 180ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)";l.style.transform="translateX(0)";r.style.transform="translateX(0)";v.style.opacity="1";await wait(220);n.style.opacity=".96";n.style.transform="translateX(-50%) scaleY(1)";g.style.opacity=".9";g.style.transform="translate(-50%,-50%) scale(1)";await wait(90);s.style.opacity="1";s.style.transform="translate(-50%,-50%) rotate(-12deg) scaleX(1)";await wait(220);s.style.transition="opacity 220ms ease";s.style.opacity="0";await wait(360);}await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}finally{const o=document.getElementById("jumpOverlay");if(o){o.style.display="none";o.style.opacity="0";o.style.visibility="hidden";}btn.disabled=false;}})()'>返回剧情索引</button>
 </body>
 </html>
