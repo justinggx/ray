@@ -1,5 +1,5 @@
 ```html
-<!-- v2.7.0 -->
+<!-- v2.7.1 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2047,6 +2047,25 @@ function forceReflow(el){
   void el.offsetWidth;
 }
 
+function positionJumpOverlay(){
+  const overlay = document.getElementById('jumpOverlay');
+  if(!overlay) return;
+  const inner = overlay.querySelector('.jump-overlay-inner');
+  if(!inner) return;
+
+  const vv = window.visualViewport;
+  const viewportWidth = vv?.width || window.innerWidth || document.documentElement.clientWidth || 0;
+  const viewportHeight = vv?.height || window.innerHeight || document.documentElement.clientHeight || 0;
+  const viewportLeft = (vv?.pageLeft ?? window.scrollX ?? window.pageXOffset ?? 0);
+  const viewportTop = (vv?.pageTop ?? window.scrollY ?? window.pageYOffset ?? 0);
+
+  const centerX = viewportLeft + viewportWidth / 2;
+  const centerY = viewportTop + viewportHeight / 2;
+
+  inner.style.left = centerX + 'px';
+  inner.style.top = centerY + 'px';
+}
+
 function ensureJumpOverlay(){
   let overlay = document.getElementById('jumpOverlay');
   if(overlay) return overlay;
@@ -2084,7 +2103,7 @@ function ensureJumpOverlay(){
   ].join(';');
 
   inner.style.cssText = [
-    'position:fixed',
+    'position:absolute',
     'left:50%',
     'top:50%',
     'width:min(86vw, 720px)',
@@ -2161,8 +2180,10 @@ async function playJumpOverlay(){
   sub.style.opacity = '0';
   sub.style.transform = 'translateY(14px)';
 
+  positionJumpOverlay();
   forceReflow(overlay);
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  positionJumpOverlay();
 
   if(reduceMotion){
     inner.style.transition = 'none';
@@ -2259,10 +2280,17 @@ function removeStrayHtmlText(){
 document.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.card.ex').forEach(setH);
   removeStrayHtmlText();
+  positionJumpOverlay();
 });
 window.addEventListener('resize', ()=>{
   document.querySelectorAll('.card.ex').forEach(setH);
+  positionJumpOverlay();
 });
+window.addEventListener('scroll', positionJumpOverlay, { passive:true });
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', positionJumpOverlay);
+  window.visualViewport.addEventListener('scroll', positionJumpOverlay);
+}
 
 /* ── Starfield ── */
 (function(){
