@@ -1,4 +1,4 @@
-<!-- v1.2.1 -->
+<!-- v1.2.2 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -94,7 +94,6 @@
     top: 0;
     bottom: 0;
     width: 52vw;
-    will-change: transform;
   }
   #jumpOverlay .left {
     left: 0;
@@ -148,12 +147,44 @@
     opacity: 0;
     mix-blend-mode: screen;
   }
+
+  #jumpOverlay.fx {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+  }
+  #jumpOverlay.fx .left {
+    animation: jumpLeft 420ms cubic-bezier(.76,0,.24,1) forwards;
+  }
+  #jumpOverlay.fx .right {
+    animation: jumpRight 420ms cubic-bezier(.76,0,.24,1) forwards;
+  }
+  #jumpOverlay.fx .vignette {
+    animation: fadeIn 300ms ease forwards;
+  }
+  #jumpOverlay.fx .line {
+    animation: lineIn 280ms cubic-bezier(.22,.8,.22,1) 220ms forwards;
+  }
+  #jumpOverlay.fx .glow {
+    animation: glowIn 360ms cubic-bezier(.22,.8,.22,1) 220ms forwards;
+  }
+  #jumpOverlay.fx .sweep {
+    animation: sweepIn 320ms cubic-bezier(.22,.8,.22,1) 310ms forwards, sweepOut 220ms ease 530ms forwards;
+  }
+
+  @keyframes jumpLeft { from { transform: translateX(-103%); } to { transform: translateX(0); } }
+  @keyframes jumpRight { from { transform: translateX(103%); } to { transform: translateX(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes lineIn { from { opacity: 0; transform: translateX(-50%) scaleY(.18); } to { opacity: .96; transform: translateX(-50%) scaleY(1); } }
+  @keyframes glowIn { from { opacity: 0; transform: translate(-50%, -50%) scale(.68); } to { opacity: .9; transform: translate(-50%, -50%) scale(1); } }
+  @keyframes sweepIn { from { opacity: 0; transform: translate(-50%, -50%) rotate(-12deg) scaleX(.35); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scaleX(1); } }
+  @keyframes sweepOut { from { opacity: 1; } to { opacity: 0; } }
 </style>
 </head>
 <body>
   <div class="wrap">
     <div class="divider"></div>
-    <button id="backBtn" class="btn" onclick="backHomepage(this)">返回剧情索引</button>
+    <button class="btn" onclick='(async(btn)=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f!=="function"){console.error("setChatMessages unavailable");return;}btn.disabled=true;const o=document.getElementById("jumpOverlay");if(o){o.className="fx";}await new Promise(x=>setTimeout(x,620));await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}finally{const o=document.getElementById("jumpOverlay");if(o){o.className="";o.style.display="none";o.style.opacity="0";o.style.visibility="hidden";}btn.disabled=false;}})(this)'>返回剧情索引</button>
   </div>
 
   <div id="jumpOverlay" aria-hidden="true">
@@ -164,162 +195,6 @@
     <div class="glow"></div>
     <div class="sweep"></div>
   </div>
-
-<script>
-function safeMatchMedia(query){
-  try {
-    if (typeof window.matchMedia === 'function') return window.matchMedia(query);
-  } catch (e) {}
-  return null;
-}
-
-function forceReflow(el){
-  if (!el) return;
-  void el.offsetWidth;
-}
-
-function afterTwoFrames(cb){
-  var raf = window.requestAnimationFrame || function(fn){ return setTimeout(fn, 16); };
-  raf(function(){ raf(cb); });
-}
-
-function getChatSetter(){
-  if (typeof window.setChatMessages === 'function') return window.setChatMessages;
-  try {
-    if (window.parent && typeof window.parent.setChatMessages === 'function') return window.parent.setChatMessages;
-  } catch (e) {}
-  return null;
-}
-
-function hideOverlay(){
-  var overlay = document.getElementById('jumpOverlay');
-  if (!overlay) return;
-  overlay.style.display = 'none';
-  overlay.style.opacity = '0';
-  overlay.style.visibility = 'hidden';
-}
-
-function callBackHome(done){
-  var fn = getChatSetter();
-  if (!fn) {
-    console.error('setChatMessages unavailable');
-    if (done) done(false);
-    return;
-  }
-
-  try {
-    var result = fn([{ message_id: 0, swipe_id: 0 }]);
-    if (result && typeof result.then === 'function') {
-      result.then(function(){ if (done) done(true); }).catch(function(err){ console.error(err); if (done) done(false); });
-    } else {
-      if (done) done(true);
-    }
-  } catch (err) {
-    console.error(err);
-    if (done) done(false);
-  }
-}
-
-function playJumpOverlay(done){
-  var overlay = document.getElementById('jumpOverlay');
-  if (!overlay) {
-    if (done) done();
-    return;
-  }
-
-  var left = overlay.children[0];
-  var right = overlay.children[1];
-  var vignette = overlay.children[2];
-  var line = overlay.children[3];
-  var glow = overlay.children[4];
-  var sweep = overlay.children[5];
-  var reduceMotion = !!(safeMatchMedia('(prefers-reduced-motion: reduce)') && safeMatchMedia('(prefers-reduced-motion: reduce)').matches);
-
-  overlay.style.display = 'block';
-  overlay.style.visibility = 'visible';
-  overlay.style.opacity = '1';
-
-  left.style.transition = 'none';
-  right.style.transition = 'none';
-  vignette.style.transition = 'none';
-  line.style.transition = 'none';
-  glow.style.transition = 'none';
-  sweep.style.transition = 'none';
-
-  left.style.transform = 'translateX(-103%)';
-  right.style.transform = 'translateX(103%)';
-  vignette.style.opacity = '0';
-  line.style.opacity = '0';
-  line.style.transform = 'translateX(-50%) scaleY(.18)';
-  glow.style.opacity = '0';
-  glow.style.transform = 'translate(-50%, -50%) scale(.68)';
-  sweep.style.opacity = '0';
-  sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(.35)';
-
-  forceReflow(overlay);
-
-  afterTwoFrames(function(){
-    if (reduceMotion) {
-      left.style.transform = 'translateX(0)';
-      right.style.transform = 'translateX(0)';
-      vignette.style.opacity = '1';
-      line.style.opacity = '.95';
-      line.style.transform = 'translateX(-50%) scaleY(1)';
-      glow.style.opacity = '.7';
-      glow.style.transform = 'translate(-50%, -50%) scale(1)';
-      setTimeout(function(){ if (done) done(); }, 700);
-      return;
-    }
-
-    left.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
-    right.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
-    vignette.style.transition = 'opacity 300ms ease';
-    line.style.transition = 'opacity 180ms ease, transform 280ms cubic-bezier(.22,.8,.22,1)';
-    glow.style.transition = 'opacity 260ms ease, transform 360ms cubic-bezier(.22,.8,.22,1)';
-    sweep.style.transition = 'opacity 180ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
-
-    left.style.transform = 'translateX(0)';
-    right.style.transform = 'translateX(0)';
-    vignette.style.opacity = '1';
-
-    setTimeout(function(){
-      line.style.opacity = '.96';
-      line.style.transform = 'translateX(-50%) scaleY(1)';
-      glow.style.opacity = '.9';
-      glow.style.transform = 'translate(-50%, -50%) scale(1)';
-
-      setTimeout(function(){
-        sweep.style.opacity = '1';
-        sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(1)';
-
-        setTimeout(function(){
-          sweep.style.transition = 'opacity 220ms ease';
-          sweep.style.opacity = '0';
-
-          setTimeout(function(){ if (done) done(); }, 360);
-        }, 220);
-      }, 90);
-    }, 220);
-  });
-}
-
-function backHomepage(btn){
-  if (!btn || btn.disabled) return false;
-
-  btn.disabled = true;
-
-  playJumpOverlay(function(){
-    callBackHome(function(){
-      setTimeout(function(){
-        hideOverlay();
-        btn.disabled = false;
-      }, 60);
-    });
-  });
-
-  return false;
-}
-</script>
 </body>
 </html>
 
