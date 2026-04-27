@@ -1,5 +1,5 @@
 ```html
-<!-- v2.7.2 -->
+<!-- v2.8.0 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2048,22 +2048,7 @@ function forceReflow(el){
 }
 
 function positionJumpOverlay(){
-  const overlay = document.getElementById('jumpOverlay');
-  if(!overlay) return;
-  const inner = overlay.querySelector('.jump-overlay-inner');
-  if(!inner) return;
-
-  const vv = window.visualViewport;
-  const viewportWidth = vv?.width || window.innerWidth || document.documentElement.clientWidth || 0;
-  const viewportHeight = vv?.height || window.innerHeight || document.documentElement.clientHeight || 0;
-  const viewportLeft = vv?.offsetLeft || 0;
-  const viewportTop = vv?.offsetTop || 0;
-
-  const centerX = viewportLeft + viewportWidth / 2;
-  const centerY = viewportTop + viewportHeight / 2;
-
-  inner.style.left = centerX + 'px';
-  inner.style.top = centerY + 'px';
+  return;
 }
 
 function ensureJumpOverlay(){
@@ -2074,85 +2059,100 @@ function ensureJumpOverlay(){
   overlay.className = 'jump-overlay';
   overlay.setAttribute('aria-hidden', 'true');
   overlay.innerHTML = `
-    <div class="jump-overlay-inner">
-      <div class="jump-overlay-kicker">Raymond Augustine</div>
-      <div class="jump-overlay-title">Augustine</div>
-      <div class="jump-overlay-sub">你已被他亲自选中。</div>
-    </div>`;
+    <div class="jump-curtain jump-curtain-left"></div>
+    <div class="jump-curtain jump-curtain-right"></div>
+    <div class="jump-vignette"></div>
+    <div class="jump-center-line"></div>
+    <div class="jump-center-glow"></div>
+    <div class="jump-sweep"></div>`;
   document.body.appendChild(overlay);
-
-  const inner = overlay.querySelector('.jump-overlay-inner');
-  const kicker = overlay.querySelector('.jump-overlay-kicker');
-  const title = overlay.querySelector('.jump-overlay-title');
-  const sub = overlay.querySelector('.jump-overlay-sub');
 
   overlay.style.cssText = [
     'position:fixed',
     'inset:0',
     'z-index:2147483647',
     'display:none',
-    'align-items:center',
-    'justify-content:center',
-    'padding:24px',
     'opacity:0',
     'visibility:hidden',
     'pointer-events:none',
-    'background:rgba(6,5,4,.78)',
-    '-webkit-backdrop-filter:blur(14px)',
-    'backdrop-filter:blur(14px)'
+    'overflow:hidden',
+    'background:rgba(6,5,4,.08)'
   ].join(';');
 
-  inner.style.cssText = [
-    'position:fixed',
+  const sharedLayer = [
+    'position:absolute',
+    'top:0',
+    'bottom:0',
+    'will-change:transform,opacity,filter'
+  ].join(';');
+
+  const left = overlay.querySelector('.jump-curtain-left');
+  const right = overlay.querySelector('.jump-curtain-right');
+  const vignette = overlay.querySelector('.jump-vignette');
+  const line = overlay.querySelector('.jump-center-line');
+  const glow = overlay.querySelector('.jump-center-glow');
+  const sweep = overlay.querySelector('.jump-sweep');
+
+  left.style.cssText = [
+    sharedLayer,
+    'left:0',
+    'width:52vw',
+    'background:linear-gradient(90deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%)',
+    'transform:translateX(-103%)'
+  ].join(';');
+
+  right.style.cssText = [
+    sharedLayer,
+    'right:0',
+    'width:52vw',
+    'background:linear-gradient(270deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%)',
+    'transform:translateX(103%)'
+  ].join(';');
+
+  vignette.style.cssText = [
+    'position:absolute',
+    'inset:0',
+    'background:radial-gradient(circle at center, rgba(215,188,127,.08) 0%, rgba(12,10,8,.24) 28%, rgba(6,5,4,.72) 72%, rgba(4,3,3,.92) 100%)',
+    'opacity:0'
+  ].join(';');
+
+  line.style.cssText = [
+    'position:absolute',
+    'left:50%',
+    'top:0',
+    'width:1px',
+    'height:100%',
+    'transform:translateX(-50%) scaleY(.18)',
+    'transform-origin:center',
+    'background:linear-gradient(180deg, rgba(215,188,127,0) 0%, rgba(215,188,127,.92) 18%, rgba(255,240,208,.98) 50%, rgba(215,188,127,.92) 82%, rgba(215,188,127,0) 100%)',
+    'box-shadow:0 0 18px rgba(215,188,127,.48), 0 0 34px rgba(215,188,127,.22)',
+    'opacity:0'
+  ].join(';');
+
+  glow.style.cssText = [
+    'position:absolute',
     'left:50%',
     'top:50%',
-    'width:min(86vw, 720px)',
-    'max-width:720px',
-    'padding:34px 28px',
-    'border-radius:24px',
-    'border:1px solid rgba(215,188,127,.42)',
-    'background:linear-gradient(180deg, rgba(20,15,12,.96), rgba(8,6,5,.98))',
-    'box-shadow:0 30px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05)',
-    'text-align:center',
-    'opacity:1',
-    'transform:translate(-50%, calc(-50% + 18px)) scale(.94)',
-    'filter:blur(0)',
-    'transition:none',
-    'z-index:2147483647'
+    'width:min(42vw, 420px)',
+    'height:min(42vw, 420px)',
+    'transform:translate(-50%, -50%) scale(.68)',
+    'border-radius:999px',
+    'background:radial-gradient(circle, rgba(255,236,188,.22) 0%, rgba(215,188,127,.14) 24%, rgba(215,188,127,.05) 46%, rgba(215,188,127,0) 72%)',
+    'filter:blur(10px)',
+    'opacity:0'
   ].join(';');
 
-  kicker.style.cssText = [
-    'margin:0 0 14px',
-    'font:700 12px/1.1 Inter,sans-serif',
-    'letter-spacing:.42em',
-    'text-transform:uppercase',
-    'color:rgba(247,231,196,.88)',
+  sweep.style.cssText = [
+    'position:absolute',
+    'left:50%',
+    'top:50%',
+    'width:min(120vw, 1600px)',
+    'height:28px',
+    'transform:translate(-50%, -50%) rotate(-12deg) scaleX(.35)',
+    'background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,244,214,.06) 36%, rgba(255,236,188,.78) 50%, rgba(255,244,214,.06) 64%, rgba(255,255,255,0) 100%)',
+    'filter:blur(8px)',
     'opacity:0',
-    'transform:translateY(10px)',
-    'text-shadow:0 2px 12px rgba(0,0,0,.42)'
-  ].join(';');
-
-  title.style.cssText = [
-    'margin:0',
-    'font-family:"Cormorant Garamond",serif',
-    'font-size:clamp(3.2rem, 7vw, 5.6rem)',
-    'line-height:1',
-    'letter-spacing:.18em',
-    'text-transform:uppercase',
-    'color:#f7e7c4',
-    'opacity:0',
-    'transform:translateY(14px) scale(.97)',
-    'text-shadow:0 8px 28px rgba(0,0,0,.58), 0 0 26px rgba(215,188,127,.20)'
-  ].join(';');
-
-  sub.style.cssText = [
-    'margin:16px 0 0',
-    'font:600 14px/1.85 "Noto Serif SC",serif',
-    'letter-spacing:.16em',
-    'color:rgba(247,231,196,.94)',
-    'opacity:0',
-    'transform:translateY(14px)',
-    'text-shadow:0 2px 14px rgba(0,0,0,.46)'
+    'mix-blend-mode:screen'
   ].join(';');
 
   return overlay;
@@ -2160,68 +2160,77 @@ function ensureJumpOverlay(){
 
 async function playJumpOverlay(){
   const overlay = ensureJumpOverlay();
-  const inner = overlay.querySelector('.jump-overlay-inner');
-  const kicker = overlay.querySelector('.jump-overlay-kicker');
-  const title = overlay.querySelector('.jump-overlay-title');
-  const sub = overlay.querySelector('.jump-overlay-sub');
   const reduceMotion = !!safeMatchMedia('(prefers-reduced-motion: reduce)')?.matches;
+  const left = overlay.querySelector('.jump-curtain-left');
+  const right = overlay.querySelector('.jump-curtain-right');
+  const vignette = overlay.querySelector('.jump-vignette');
+  const line = overlay.querySelector('.jump-center-line');
+  const glow = overlay.querySelector('.jump-center-glow');
+  const sweep = overlay.querySelector('.jump-sweep');
 
   document.body.classList.add('jump-overlay-active');
-  overlay.style.display = 'flex';
+  overlay.style.display = 'block';
   overlay.style.visibility = 'visible';
   overlay.style.opacity = '1';
-  overlay.style.background = 'rgba(6,5,4,.82)';
 
-  inner.style.transform = 'translate(-50%, calc(-50% + 18px)) scale(.94)';
-  kicker.style.opacity = '0';
-  kicker.style.transform = 'translateY(10px)';
-  title.style.opacity = '0';
-  title.style.transform = 'translateY(14px) scale(.97)';
-  sub.style.opacity = '0';
-  sub.style.transform = 'translateY(14px)';
+  left.style.transition = 'none';
+  right.style.transition = 'none';
+  vignette.style.transition = 'none';
+  line.style.transition = 'none';
+  glow.style.transition = 'none';
+  sweep.style.transition = 'none';
 
-  positionJumpOverlay();
+  left.style.transform = 'translateX(-103%)';
+  right.style.transform = 'translateX(103%)';
+  vignette.style.opacity = '0';
+  line.style.opacity = '0';
+  line.style.transform = 'translateX(-50%) scaleY(.18)';
+  glow.style.opacity = '0';
+  glow.style.transform = 'translate(-50%, -50%) scale(.68)';
+  sweep.style.opacity = '0';
+  sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(.35)';
+
   forceReflow(overlay);
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  positionJumpOverlay();
 
   if(reduceMotion){
-    inner.style.transition = 'none';
-    inner.style.transform = 'translate(-50%, -50%) scale(1)';
-    kicker.style.transition = 'none';
-    kicker.style.opacity = '1';
-    kicker.style.transform = 'translateY(0)';
-    title.style.transition = 'none';
-    title.style.opacity = '1';
-    title.style.transform = 'translateY(0) scale(1)';
-    sub.style.transition = 'none';
-    sub.style.opacity = '1';
-    sub.style.transform = 'translateY(0)';
-    await wait(900);
+    left.style.transform = 'translateX(0)';
+    right.style.transform = 'translateX(0)';
+    vignette.style.opacity = '1';
+    line.style.opacity = '.95';
+    line.style.transform = 'translateX(-50%) scaleY(1)';
+    glow.style.opacity = '.7';
+    glow.style.transform = 'translate(-50%, -50%) scale(1)';
+    await wait(700);
     return;
   }
 
-  inner.style.transition = 'transform 420ms cubic-bezier(.22,.8,.22,1), box-shadow 420ms ease';
-  kicker.style.transition = 'opacity 220ms ease, transform 220ms ease';
-  title.style.transition = 'opacity 320ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
-  sub.style.transition = 'opacity 260ms ease, transform 260ms ease';
+  left.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
+  right.style.transition = 'transform 420ms cubic-bezier(.76,0,.24,1)';
+  vignette.style.transition = 'opacity 300ms ease';
+  line.style.transition = 'opacity 180ms ease, transform 280ms cubic-bezier(.22,.8,.22,1)';
+  glow.style.transition = 'opacity 260ms ease, transform 360ms cubic-bezier(.22,.8,.22,1)';
+  sweep.style.transition = 'opacity 180ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
 
-  inner.style.transform = 'translate(-50%, -50%) scale(1)';
-  inner.style.boxShadow = '0 34px 100px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.05)';
+  left.style.transform = 'translateX(0)';
+  right.style.transform = 'translateX(0)';
+  vignette.style.opacity = '1';
 
-  await wait(120);
-  kicker.style.opacity = '1';
-  kicker.style.transform = 'translateY(0)';
+  await wait(220);
+  line.style.opacity = '.96';
+  line.style.transform = 'translateX(-50%) scaleY(1)';
+  glow.style.opacity = '.9';
+  glow.style.transform = 'translate(-50%, -50%) scale(1)';
 
   await wait(90);
-  title.style.opacity = '1';
-  title.style.transform = 'translateY(0) scale(1)';
+  sweep.style.opacity = '1';
+  sweep.style.transform = 'translate(-50%, -50%) rotate(-12deg) scaleX(1)';
 
-  await wait(90);
-  sub.style.opacity = '1';
-  sub.style.transform = 'translateY(0)';
+  await wait(220);
+  sweep.style.transition = 'opacity 220ms ease';
+  sweep.style.opacity = '0';
 
-  await wait(900);
+  await wait(360);
 }
 
 function cleanupJumpOverlay(){
