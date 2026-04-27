@@ -1,5 +1,5 @@
 ```html
-<!-- v2.6.9 -->
+<!-- v2.7.0 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2084,6 +2084,9 @@ function ensureJumpOverlay(){
   ].join(';');
 
   inner.style.cssText = [
+    'position:fixed',
+    'left:50%',
+    'top:50%',
     'width:min(86vw, 720px)',
     'max-width:720px',
     'padding:34px 28px',
@@ -2093,9 +2096,10 @@ function ensureJumpOverlay(){
     'box-shadow:0 30px 90px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05)',
     'text-align:center',
     'opacity:1',
-    'transform:translateY(18px) scale(.94)',
+    'transform:translate(-50%, calc(-50% + 18px)) scale(.94)',
     'filter:blur(0)',
-    'transition:none'
+    'transition:none',
+    'z-index:2147483647'
   ].join(';');
 
   kicker.style.cssText = [
@@ -2149,7 +2153,7 @@ async function playJumpOverlay(){
   overlay.style.opacity = '1';
   overlay.style.background = 'rgba(6,5,4,.82)';
 
-  inner.style.transform = 'translateY(18px) scale(.94)';
+  inner.style.transform = 'translate(-50%, calc(-50% + 18px)) scale(.94)';
   kicker.style.opacity = '0';
   kicker.style.transform = 'translateY(10px)';
   title.style.opacity = '0';
@@ -2162,7 +2166,7 @@ async function playJumpOverlay(){
 
   if(reduceMotion){
     inner.style.transition = 'none';
-    inner.style.transform = 'translateY(0) scale(1)';
+    inner.style.transform = 'translate(-50%, -50%) scale(1)';
     kicker.style.transition = 'none';
     kicker.style.opacity = '1';
     kicker.style.transform = 'translateY(0)';
@@ -2181,7 +2185,7 @@ async function playJumpOverlay(){
   title.style.transition = 'opacity 320ms ease, transform 320ms cubic-bezier(.22,.8,.22,1)';
   sub.style.transition = 'opacity 260ms ease, transform 260ms ease';
 
-  inner.style.transform = 'translateY(0) scale(1)';
+  inner.style.transform = 'translate(-50%, -50%) scale(1)';
   inner.style.boxShadow = '0 34px 100px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.05)';
 
   await wait(120);
