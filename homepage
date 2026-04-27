@@ -759,9 +759,9 @@ button{font:inherit}
   min-height:52px;
   padding:10px 12px;
   border-radius:14px;
-  border:1px dashed rgba(215,188,127,.18);
-  background:rgba(255,255,255,.02);
-  color:var(--text-3);
+  border:1px dashed rgba(215,188,127,.28);
+  background:rgba(255,255,255,.03);
+  color:#f6ddb0;
   font-size:.76rem;
   line-height:1.6;
   display:flex;
@@ -770,6 +770,20 @@ button{font:inherit}
   align-items:center;
   text-align:center;
   gap:3px;
+  text-shadow:0 0 8px rgba(215,188,127,.22);
+}
+.cnote span{
+  animation:noteBlink 1.45s ease-in-out infinite;
+}
+@keyframes noteBlink{
+  0%,100%{
+    opacity:1;
+    text-shadow:0 0 8px rgba(215,188,127,.18);
+  }
+  50%{
+    opacity:.42;
+    text-shadow:0 0 16px rgba(215,188,127,.42);
+  }
 }
 .jbtn{
   width:100%;
