@@ -804,6 +804,108 @@ button{font:inherit}
   transform:translateY(-1px);
   filter:brightness(1.03);
 }
+.jbtn.is-jumping{
+  pointer-events:none;
+  transform:scale(.985);
+  box-shadow:0 0 0 1px rgba(237,220,181,.28), 0 10px 28px rgba(202,155,84,.30);
+  filter:brightness(1.05);
+}
+.jump-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  opacity:0;
+  background:radial-gradient(circle at center, rgba(39,30,18,.18) 0%, rgba(10,8,7,.66) 52%, rgba(6,5,4,.92) 100%);
+  transition:opacity .22s ease;
+}
+.jump-overlay.show{
+  opacity:1;
+}
+.jump-overlay::before,
+.jump-overlay::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(72vw, 560px);
+  height:1px;
+  background:linear-gradient(90deg, rgba(215,188,127,0), rgba(215,188,127,.88), rgba(215,188,127,0));
+  box-shadow:0 0 18px rgba(215,188,127,.22);
+}
+.jump-overlay::before{ top:calc(50% - 52px); }
+.jump-overlay::after{ top:calc(50% + 52px); }
+.jump-overlay-inner{
+  position:relative;
+  width:min(78vw, 620px);
+  padding:34px 24px;
+  text-align:center;
+  color:#f4dfb4;
+}
+.jump-overlay-kicker{
+  font:600 11px/1 "Inter",sans-serif;
+  letter-spacing:.42em;
+  text-transform:uppercase;
+  color:rgba(244,223,180,.72);
+  margin-bottom:12px;
+  animation:rayLockPulse .72s ease-out both;
+}
+.jump-overlay-title{
+  font-family:"Cormorant Garamond",serif;
+  font-size:clamp(2.2rem, 5vw, 3.6rem);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  text-shadow:0 0 20px rgba(215,188,127,.16), 0 8px 32px rgba(0,0,0,.45);
+  animation:rayTitleEnter .7s cubic-bezier(.22,.8,.22,1) both;
+}
+.jump-overlay-sub{
+  margin-top:10px;
+  font:500 13px/1.6 "Noto Serif SC",serif;
+  letter-spacing:.18em;
+  color:rgba(244,223,180,.82);
+  animation:raySubFade .82s ease both;
+}
+.jump-overlay-sweep{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(100deg, rgba(255,255,255,0) 18%, rgba(244,223,180,.06) 46%, rgba(255,255,255,.22) 50%, rgba(244,223,180,.06) 54%, rgba(255,255,255,0) 82%);
+  transform:translateX(-72%) skewX(-18deg);
+  filter:blur(2px);
+  animation:raySweep .82s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes raySweep{
+  from{ transform:translateX(-72%) skewX(-18deg); opacity:0; }
+  18%{ opacity:1; }
+  to{ transform:translateX(72%) skewX(-18deg); opacity:0; }
+}
+@keyframes rayTitleEnter{
+  from{ opacity:0; transform:translateY(16px) scale(.97); letter-spacing:.3em; }
+  to{ opacity:1; transform:translateY(0) scale(1); letter-spacing:.16em; }
+}
+@keyframes raySubFade{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes rayLockPulse{
+  0%{ opacity:0; transform:scale(.96); }
+  55%{ opacity:1; transform:scale(1.02); }
+  100%{ opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion:reduce){
+  .cnote span,
+  .jump-overlay,
+  .jump-overlay-kicker,
+  .jump-overlay-title,
+  .jump-overlay-sub,
+  .jump-overlay-sweep,
+  .jbtn{
+    animation:none !important;
+    transition:none !important;
+  }
+}
 .spacer{height:42px}
 
 @media (max-width:1200px){
@@ -1863,16 +1965,52 @@ function toggleMore(btn){
   btn.textContent = hidden ? '收起' : '展开更多';
 }
 
+function ensureJumpOverlay(){
+  let overlay = document.getElementById('jumpOverlay');
+  if(overlay) return overlay;
+  overlay = document.createElement('div');
+  overlay.id = 'jumpOverlay';
+  overlay.className = 'jump-overlay';
+  overlay.innerHTML = `
+    <div class="jump-overlay-inner" aria-hidden="true">
+      <div class="jump-overlay-sweep"></div>
+      <div class="jump-overlay-kicker">Locked In</div>
+      <div class="jump-overlay-title">Augustine</div>
+      <div class="jump-overlay-sub">门已经开了。别让 Raymond 等太久。</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function playJumpOverlay(){
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduceMotion) return Promise.resolve();
+  const overlay = ensureJumpOverlay();
+  overlay.classList.remove('show');
+  void overlay.offsetWidth;
+  overlay.classList.add('show');
+  return new Promise(resolve=>setTimeout(resolve, 680));
+}
+
 async function jmp(i){
   if(typeof setChatMessages!=='function'){
     alert('请确保酒馆助手插件已开启。');
     return;
   }
+  const btn = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('jbtn')
+    ? document.activeElement
+    : null;
   try{
+    btn?.classList.add('is-jumping');
+    await playJumpOverlay();
     await setChatMessages([{message_id:0, swipe_id:i}]);
   }catch(e){
     alert('跳转失败，请检查开场白是否已正确设置。');
     console.error(e);
+  }finally{
+    btn?.classList.remove('is-jumping');
+    const overlay = document.getElementById('jumpOverlay');
+    overlay?.classList.remove('show');
   }
 }
 
