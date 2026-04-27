@@ -1,5 +1,5 @@
 ```
-<!-- v1.3.3 -->
+<!-- v1.3.4 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,8 +21,17 @@
     margin-bottom: 18px;
   }
 
+  .jump-wrap {
+    position: relative;
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
   .btn {
     position: relative;
+    z-index: 2;
     padding: 10px 44px;
     border-radius: 6px;
     cursor: pointer;
@@ -68,25 +77,51 @@
   }
   .btn:active { transform: scale(0.98); filter: brightness(0.95); }
 
-  #jumpOverlay {
-    position: fixed;
+  .jump-overlay {
+    position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(0,0,0,0.08) 0%, rgba(10,8,7,0.42) 58%, rgba(10,8,7,0.72) 100%);
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at center, rgba(255,245,220,0.14) 0%, rgba(120,90,60,0.18) 38%, rgba(18,14,12,0.52) 100%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 140ms ease;
+    transform: scale(0.92);
+    transition: opacity 280ms ease, transform 320ms cubic-bezier(.22,.8,.22,1);
   }
-  #jumpOverlay.show {
+
+  .jump-overlay::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 160%;
+    height: 22px;
+    transform: translate(-50%, -50%) rotate(-10deg) scaleX(.55);
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,240,208,.08) 36%, rgba(255,232,180,.72) 50%, rgba(255,240,208,.08) 64%, rgba(255,255,255,0) 100%);
+    filter: blur(7px);
+    opacity: 0;
+    transition: opacity 240ms ease 70ms, transform 320ms cubic-bezier(.22,.8,.22,1) 70ms;
+  }
+
+  .jump-overlay.show {
     opacity: 1;
+    transform: scale(1);
+  }
+
+  .jump-overlay.show::before {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-10deg) scaleX(1);
   }
 </style>
 </head>
 <body>
   <div class="divider"></div>
-  <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const o=document.getElementById('jumpOverlay');if(o){o.className='show';await new Promise(r=>setTimeout(r,140));}if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
-    返回剧情索引
-  </button>
-  <div id="jumpOverlay"></div>
+  <div class="jump-wrap">
+    <button class="btn" onclick="(async()=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;const o=document.getElementById('jumpOverlay');if(o){o.className='jump-overlay show';await new Promise(r=>setTimeout(r,320));}if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()" >
+      返回剧情索引
+    </button>
+    <div id="jumpOverlay" class="jump-overlay"></div>
+  </div>
 </body>
 </html>
 ```
