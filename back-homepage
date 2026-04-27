@@ -1,36 +1,27 @@
-<!-- v1.2.2 -->
+<!-- v1.3.0 -->
 <!DOCTYPE html>
 <html>
 <head>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%;
-    background: transparent;
-  }
   body {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 0 0 18px;
-    overflow: visible;
-  }
-
-  .wrap {
-    width: 100%;
-    text-align: center;
   }
 
   .divider {
     width: 60%;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(140,100,70,0.3), transparent);
-    margin: 1em auto 18px;
+    margin-top: 1em;
+    margin-bottom: 18px;
   }
 
   .btn {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
     padding: 10px 44px;
     border-radius: 6px;
     cursor: pointer;
@@ -75,126 +66,11 @@
       0 3px 10px rgba(120,85,55,0.15);
   }
   .btn:active { transform: scale(0.98); filter: brightness(0.95); }
-  .btn[disabled] { pointer-events: none; filter: brightness(1.05); }
-
-  #jumpOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 2147483647;
-    display: none;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    overflow: hidden;
-    background: rgba(6,5,4,.08);
-  }
-  #jumpOverlay .left,
-  #jumpOverlay .right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 52vw;
-  }
-  #jumpOverlay .left {
-    left: 0;
-    background: linear-gradient(90deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);
-    transform: translateX(-103%);
-  }
-  #jumpOverlay .right {
-    right: 0;
-    background: linear-gradient(270deg, rgba(3,2,2,.96) 0%, rgba(8,6,5,.92) 72%, rgba(34,24,14,.72) 100%);
-    transform: translateX(103%);
-  }
-  #jumpOverlay .vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(215,188,127,.08) 0%, rgba(12,10,8,.24) 28%, rgba(6,5,4,.72) 72%, rgba(4,3,3,.92) 100%);
-    opacity: 0;
-  }
-  #jumpOverlay .line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    transform: translateX(-50%) scaleY(.18);
-    transform-origin: center;
-    background: linear-gradient(180deg, rgba(215,188,127,0) 0%, rgba(215,188,127,.92) 18%, rgba(255,240,208,.98) 50%, rgba(215,188,127,.92) 82%, rgba(215,188,127,0) 100%);
-    box-shadow: 0 0 18px rgba(215,188,127,.48), 0 0 34px rgba(215,188,127,.22);
-    opacity: 0;
-  }
-  #jumpOverlay .glow {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: min(42vw, 420px);
-    height: min(42vw, 420px);
-    transform: translate(-50%, -50%) scale(.68);
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(255,236,188,.22) 0%, rgba(215,188,127,.14) 24%, rgba(215,188,127,.05) 46%, rgba(215,188,127,0) 72%);
-    filter: blur(10px);
-    opacity: 0;
-  }
-  #jumpOverlay .sweep {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: min(120vw, 1600px);
-    height: 28px;
-    transform: translate(-50%, -50%) rotate(-12deg) scaleX(.35);
-    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,244,214,.06) 36%, rgba(255,236,188,.78) 50%, rgba(255,244,214,.06) 64%, rgba(255,255,255,0) 100%);
-    filter: blur(8px);
-    opacity: 0;
-    mix-blend-mode: screen;
-  }
-
-  #jumpOverlay.fx {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-  }
-  #jumpOverlay.fx .left {
-    animation: jumpLeft 420ms cubic-bezier(.76,0,.24,1) forwards;
-  }
-  #jumpOverlay.fx .right {
-    animation: jumpRight 420ms cubic-bezier(.76,0,.24,1) forwards;
-  }
-  #jumpOverlay.fx .vignette {
-    animation: fadeIn 300ms ease forwards;
-  }
-  #jumpOverlay.fx .line {
-    animation: lineIn 280ms cubic-bezier(.22,.8,.22,1) 220ms forwards;
-  }
-  #jumpOverlay.fx .glow {
-    animation: glowIn 360ms cubic-bezier(.22,.8,.22,1) 220ms forwards;
-  }
-  #jumpOverlay.fx .sweep {
-    animation: sweepIn 320ms cubic-bezier(.22,.8,.22,1) 310ms forwards, sweepOut 220ms ease 530ms forwards;
-  }
-
-  @keyframes jumpLeft { from { transform: translateX(-103%); } to { transform: translateX(0); } }
-  @keyframes jumpRight { from { transform: translateX(103%); } to { transform: translateX(0); } }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes lineIn { from { opacity: 0; transform: translateX(-50%) scaleY(.18); } to { opacity: .96; transform: translateX(-50%) scaleY(1); } }
-  @keyframes glowIn { from { opacity: 0; transform: translate(-50%, -50%) scale(.68); } to { opacity: .9; transform: translate(-50%, -50%) scale(1); } }
-  @keyframes sweepIn { from { opacity: 0; transform: translate(-50%, -50%) rotate(-12deg) scaleX(.35); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-12deg) scaleX(1); } }
-  @keyframes sweepOut { from { opacity: 1; } to { opacity: 0; } }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="divider"></div>
-    <button class="btn" onclick='(async(btn)=>{try{const f=window.setChatMessages??window.parent?.setChatMessages;if(typeof f!=="function"){console.error("setChatMessages unavailable");return;}btn.disabled=true;const o=document.getElementById("jumpOverlay");if(o){o.className="fx";}await new Promise(x=>setTimeout(x,620));await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}finally{const o=document.getElementById("jumpOverlay");if(o){o.className="";o.style.display="none";o.style.opacity="0";o.style.visibility="hidden";}btn.disabled=false;}})(this)'>返回剧情索引</button>
-  </div>
-
-  <div id="jumpOverlay" aria-hidden="true">
-    <div class="left"></div>
-    <div class="right"></div>
-    <div class="vignette"></div>
-    <div class="line"></div>
-    <div class="glow"></div>
-    <div class="sweep"></div>
-  </div>
+  <div class="divider"></div>
+  <button class="btn" onclick="(async()=>{try{const p=window.parent||window;const f=window.setChatMessages??p.setChatMessages;const d=(p.document&&p.document.body)?p.document:p.document||document;if(d&&d.getElementById&&!d.getElementById('backJumpOverlay')){const o=d.createElement('div');o.id='backJumpOverlay';o.innerHTML='<div class=left></div><div class=right></div><div class=v></div><div class=line></div><div class=glow></div><div class=sweep></div>';const s=d.createElement('style');s.id='backJumpOverlayStyle';s.textContent='#backJumpOverlay{position:fixed;inset:0;z-index:2147483647;pointer-events:none;overflow:hidden;opacity:0;background:rgba(6,5,4,.08);transition:opacity .18s ease}#backJumpOverlay.show{opacity:1}#backJumpOverlay .left,#backJumpOverlay .right{position:absolute;top:0;bottom:0;width:52vw}#backJumpOverlay .left{left:0;background:linear-gradient(90deg,rgba(3,2,2,.96) 0%,rgba(8,6,5,.92) 72%,rgba(34,24,14,.72) 100%);transform:translateX(-103%)}#backJumpOverlay .right{right:0;background:linear-gradient(270deg,rgba(3,2,2,.96) 0%,rgba(8,6,5,.92) 72%,rgba(34,24,14,.72) 100%);transform:translateX(103%)}#backJumpOverlay .v{position:absolute;inset:0;background:radial-gradient(circle at center,rgba(215,188,127,.08) 0%,rgba(12,10,8,.24) 28%,rgba(6,5,4,.72) 72%,rgba(4,3,3,.92) 100%);opacity:0}#backJumpOverlay .line{position:absolute;left:50%;top:0;width:1px;height:100%;transform:translateX(-50%) scaleY(.18);transform-origin:center;background:linear-gradient(180deg,rgba(215,188,127,0) 0%,rgba(215,188,127,.92) 18%,rgba(255,240,208,.98) 50%,rgba(215,188,127,.92) 82%,rgba(215,188,127,0) 100%);box-shadow:0 0 18px rgba(215,188,127,.48),0 0 34px rgba(215,188,127,.22);opacity:0}#backJumpOverlay .glow{position:absolute;left:50%;top:50%;width:min(42vw,420px);height:min(42vw,420px);transform:translate(-50%,-50%) scale(.68);border-radius:999px;background:radial-gradient(circle,rgba(255,236,188,.22) 0%,rgba(215,188,127,.14) 24%,rgba(215,188,127,.05) 46%,rgba(215,188,127,0) 72%);filter:blur(10px);opacity:0}#backJumpOverlay .sweep{position:absolute;left:50%;top:50%;width:min(120vw,1600px);height:28px;transform:translate(-50%,-50%) rotate(-12deg) scaleX(.35);background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,244,214,.06) 36%,rgba(255,236,188,.78) 50%,rgba(255,244,214,.06) 64%,rgba(255,255,255,0) 100%);filter:blur(8px);opacity:0;mix-blend-mode:screen}#backJumpOverlay.show .left{transition:transform 420ms cubic-bezier(.76,0,.24,1);transform:translateX(0)}#backJumpOverlay.show .right{transition:transform 420ms cubic-bezier(.76,0,.24,1);transform:translateX(0)}#backJumpOverlay.show .v{transition:opacity 300ms ease;opacity:1}#backJumpOverlay.show .line{transition:opacity 180ms ease 220ms,transform 280ms cubic-bezier(.22,.8,.22,1) 220ms;opacity:.96;transform:translateX(-50%) scaleY(1)}#backJumpOverlay.show .glow{transition:opacity 260ms ease 220ms,transform 360ms cubic-bezier(.22,.8,.22,1) 220ms;opacity:.9;transform:translate(-50%,-50%) scale(1)}#backJumpOverlay.show .sweep{transition:opacity 180ms ease 310ms,transform 320ms cubic-bezier(.22,.8,.22,1) 310ms;opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scaleX(1)}';d.head&&d.head.appendChild(s);d.body.appendChild(o);}const o=d&&d.getElementById?d.getElementById('backJumpOverlay'):null;if(o){o.classList.remove('show');void o.offsetWidth;o.classList.add('show');}if(typeof f==='function')await f([{message_id:0,swipe_id:0}]);}catch(e){console.error(e);}})()">返回剧情索引</button>
 </body>
 </html>
 
