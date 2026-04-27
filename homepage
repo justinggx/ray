@@ -1,5 +1,5 @@
 ```html
-<!-- v2.8.0 -->
+<!-- v2.8.1 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2201,7 +2201,13 @@ async function playJumpOverlay(){
     line.style.transform = 'translateX(-50%) scaleY(1)';
     glow.style.opacity = '.7';
     glow.style.transform = 'translate(-50%, -50%) scale(1)';
-    await wait(700);
+    await wait(220);
+    left.style.transform = 'translateX(-103%)';
+    right.style.transform = 'translateX(103%)';
+    vignette.style.opacity = '0';
+    line.style.opacity = '0';
+    glow.style.opacity = '0';
+    await wait(320);
     return;
   }
 
@@ -2230,7 +2236,22 @@ async function playJumpOverlay(){
   sweep.style.transition = 'opacity 220ms ease';
   sweep.style.opacity = '0';
 
-  await wait(360);
+  await wait(140);
+  left.style.transition = 'transform 360ms cubic-bezier(.22,.8,.22,1)';
+  right.style.transition = 'transform 360ms cubic-bezier(.22,.8,.22,1)';
+  vignette.style.transition = 'opacity 260ms ease';
+  line.style.transition = 'opacity 180ms ease, transform 220ms ease';
+  glow.style.transition = 'opacity 220ms ease, transform 280ms ease';
+
+  left.style.transform = 'translateX(-103%)';
+  right.style.transform = 'translateX(103%)';
+  vignette.style.opacity = '0';
+  line.style.opacity = '0';
+  line.style.transform = 'translateX(-50%) scaleY(.3)';
+  glow.style.opacity = '0';
+  glow.style.transform = 'translate(-50%, -50%) scale(.84)';
+
+  await wait(380);
 }
 
 function cleanupJumpOverlay(){
