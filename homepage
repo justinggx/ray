@@ -1,5 +1,5 @@
 ```html
-<!-- v2.6.7 -->
+<!-- v2.6.8 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -837,12 +837,16 @@ body.jump-overlay-active{
 }
 .jump-overlay-inner{
   position:relative;
-  width:min(78vw, 620px);
-  padding:30px 26px;
+  width:min(82vw, 680px);
+  padding:34px 30px;
   text-align:center;
   color:#f4dfb4;
   opacity:0;
   transform:translateY(10px) scale(.985);
+  border:1px solid rgba(215,188,127,.30);
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(18,14,11,.88), rgba(10,8,7,.94));
+  box-shadow:0 24px 80px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.04);
   transition:opacity .34s ease, transform .44s cubic-bezier(.22,.8,.22,1);
 }
 .jump-overlay.show .jump-overlay-inner{
@@ -881,32 +885,34 @@ body.jump-overlay-active{
   animation:jumpSweep .9s cubic-bezier(.22,.8,.22,1) .08s forwards;
 }
 .jump-overlay-kicker{
-  font:600 11px/1 "Inter",sans-serif;
+  font:700 12px/1.1 "Inter",sans-serif;
   letter-spacing:.42em;
   text-transform:uppercase;
-  color:rgba(244,223,180,.72);
+  color:rgba(244,223,180,.82);
   margin-bottom:14px;
   opacity:0;
   transform:translateY(8px);
+  text-shadow:0 2px 12px rgba(0,0,0,.38);
 }
 .jump-overlay-title{
   font-family:"Cormorant Garamond",serif;
-  font-size:clamp(2.6rem, 5.8vw, 4.2rem);
+  font-size:clamp(3.2rem, 7vw, 5.4rem);
   line-height:1;
   letter-spacing:.18em;
   text-transform:uppercase;
-  color:#f5e4bf;
-  text-shadow:0 4px 24px rgba(0,0,0,.35);
+  color:#f7e7c4;
+  text-shadow:0 6px 28px rgba(0,0,0,.55), 0 0 24px rgba(215,188,127,.18);
   opacity:0;
   transform:translateY(10px) scale(.985);
 }
 .jump-overlay-sub{
-  margin-top:12px;
-  font:500 13px/1.7 "Noto Serif SC",serif;
+  margin-top:14px;
+  font:600 14px/1.8 "Noto Serif SC",serif;
   letter-spacing:.16em;
-  color:rgba(244,223,180,.82);
+  color:rgba(244,223,180,.92);
   opacity:0;
   transform:translateY(12px);
+  text-shadow:0 2px 14px rgba(0,0,0,.45);
 }
 .jump-overlay.show .jump-overlay-kicker{
   animation:jumpTextIn .34s ease .06s forwards;
@@ -1010,6 +1016,10 @@ body.jump-overlay-active{
   .jbtn{font-size:.8rem;padding:10px 12px}
   .log-header{padding:14px}
   .log-details{padding-left:14px !important}
+  .jump-overlay-inner{width:min(88vw, 520px);padding:28px 20px;border-radius:20px}
+  .jump-overlay-kicker{font-size:11px;letter-spacing:.32em}
+  .jump-overlay-title{font-size:min(16vw, 4rem);letter-spacing:.12em}
+  .jump-overlay-sub{font-size:13px;letter-spacing:.10em;line-height:1.7}
 
   /* ── PE Fix 1: 主图无缝过渡，消除分界线 ── */
   .hero{
@@ -2070,14 +2080,22 @@ async function playJumpOverlay(){
   overlay.style.visibility = 'hidden';
   overlay.style.display = 'flex';
   if(inner){
-    inner.style.opacity = '0';
-    inner.style.transform = 'translateY(10px) scale(.985)';
+    inner.style.opacity = '1';
+    inner.style.transform = 'translateY(8px) scale(.985)';
+    inner.style.filter = 'blur(1px)';
   }
-  [kicker, title, sub].forEach(el=>{
-    if(!el) return;
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(12px) scale(.985)';
-  });
+  if(kicker){
+    kicker.style.opacity = '1';
+    kicker.style.transform = 'translateY(8px)';
+  }
+  if(title){
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(10px) scale(.985)';
+  }
+  if(sub){
+    sub.style.opacity = '1';
+    sub.style.transform = 'translateY(12px)';
+  }
   forceReflow(overlay);
 
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -2098,32 +2116,32 @@ async function playJumpOverlay(){
       jobs.push(
         inner.animate(
           [
-            { opacity: 0, transform: 'translateY(10px) scale(.985)' },
-            { opacity: 1, transform: 'translateY(0) scale(1)' }
+            { transform: 'translateY(8px) scale(.985)', filter: 'blur(1px)' },
+            { transform: 'translateY(0) scale(1)', filter: 'blur(0)' }
           ],
-          { duration: reduceMotion ? 160 : 380, easing: 'cubic-bezier(.22,.8,.22,1)', fill: 'forwards' }
+          { duration: reduceMotion ? 140 : 420, easing: 'cubic-bezier(.22,.8,.22,1)', fill: 'forwards' }
         ).finished.catch(()=>{})
       );
     }
     const textTargets = [
-      [kicker, reduceMotion ? 120 : 240, 40],
-      [title, reduceMotion ? 150 : 320, 110],
-      [sub, reduceMotion ? 140 : 260, 180]
+      [kicker, reduceMotion ? 120 : 260, 40, 'translateY(8px)'],
+      [title, reduceMotion ? 150 : 360, 110, 'translateY(10px) scale(.985)'],
+      [sub, reduceMotion ? 140 : 300, 180, 'translateY(12px)']
     ];
-    textTargets.forEach(([el, duration, delay])=>{
+    textTargets.forEach(([el, duration, delay, fromTransform])=>{
       if(!el) return;
       jobs.push(
         el.animate(
           [
-            { opacity: 0, transform: 'translateY(12px) scale(.985)' },
-            { opacity: 1, transform: 'translateY(0) scale(1)' }
+            { transform: fromTransform },
+            { transform: 'translateY(0) scale(1)' }
           ],
           { duration, delay: reduceMotion ? 0 : delay, easing: 'ease-out', fill: 'forwards' }
         ).finished.catch(()=>{})
       );
     });
     await Promise.all(jobs);
-    await wait(reduceMotion ? 420 : 520);
+    await wait(reduceMotion ? 520 : 760);
     return;
   }
 
@@ -2132,13 +2150,12 @@ async function playJumpOverlay(){
   if(inner){
     inner.style.opacity = '1';
     inner.style.transform = 'translateY(0) scale(1)';
+    inner.style.filter = 'blur(0)';
   }
-  [kicker, title, sub].forEach(el=>{
-    if(!el) return;
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0) scale(1)';
-  });
-  await wait(reduceMotion ? 700 : 1250);
+  if(kicker){ kicker.style.opacity = '1'; kicker.style.transform = 'translateY(0)'; }
+  if(title){ title.style.opacity = '1'; title.style.transform = 'translateY(0) scale(1)'; }
+  if(sub){ sub.style.opacity = '1'; sub.style.transform = 'translateY(0)'; }
+  await wait(reduceMotion ? 800 : 1450);
 }
 
 function cleanupJumpOverlay(){
