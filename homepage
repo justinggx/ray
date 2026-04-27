@@ -1,5 +1,5 @@
 ```html
-<!-- v2.6.6 -->
+<!-- v2.6.7 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2057,22 +2057,88 @@ function ensureJumpOverlay(){
 
 async function playJumpOverlay(){
   const overlay = ensureJumpOverlay();
+  const inner = overlay.querySelector('.jump-overlay-inner');
+  const kicker = overlay.querySelector('.jump-overlay-kicker');
+  const title = overlay.querySelector('.jump-overlay-title');
+  const sub = overlay.querySelector('.jump-overlay-sub');
   const reduceMotion = !!safeMatchMedia('(prefers-reduced-motion: reduce)')?.matches;
+  const canAnimate = typeof Element !== 'undefined' && typeof overlay.animate === 'function';
 
   document.body.classList.add('jump-overlay-active');
   overlay.classList.remove('show');
+  overlay.style.opacity = '0';
+  overlay.style.visibility = 'hidden';
+  overlay.style.display = 'flex';
+  if(inner){
+    inner.style.opacity = '0';
+    inner.style.transform = 'translateY(10px) scale(.985)';
+  }
+  [kicker, title, sub].forEach(el=>{
+    if(!el) return;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px) scale(.985)';
+  });
   forceReflow(overlay);
 
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  overlay.style.visibility = 'visible';
   overlay.classList.add('show');
   forceReflow(overlay);
 
-  if(reduceMotion){
-    await wait(260);
+  if(canAnimate){
+    const jobs = [];
+    jobs.push(
+      overlay.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: reduceMotion ? 120 : 220, easing: 'ease-out', fill: 'forwards' }
+      ).finished.catch(()=>{})
+    );
+    if(inner){
+      jobs.push(
+        inner.animate(
+          [
+            { opacity: 0, transform: 'translateY(10px) scale(.985)' },
+            { opacity: 1, transform: 'translateY(0) scale(1)' }
+          ],
+          { duration: reduceMotion ? 160 : 380, easing: 'cubic-bezier(.22,.8,.22,1)', fill: 'forwards' }
+        ).finished.catch(()=>{})
+      );
+    }
+    const textTargets = [
+      [kicker, reduceMotion ? 120 : 240, 40],
+      [title, reduceMotion ? 150 : 320, 110],
+      [sub, reduceMotion ? 140 : 260, 180]
+    ];
+    textTargets.forEach(([el, duration, delay])=>{
+      if(!el) return;
+      jobs.push(
+        el.animate(
+          [
+            { opacity: 0, transform: 'translateY(12px) scale(.985)' },
+            { opacity: 1, transform: 'translateY(0) scale(1)' }
+          ],
+          { duration, delay: reduceMotion ? 0 : delay, easing: 'ease-out', fill: 'forwards' }
+        ).finished.catch(()=>{})
+      );
+    });
+    await Promise.all(jobs);
+    await wait(reduceMotion ? 420 : 520);
     return;
   }
 
-  await wait(1180);
+  overlay.style.opacity = '1';
+  overlay.style.visibility = 'visible';
+  if(inner){
+    inner.style.opacity = '1';
+    inner.style.transform = 'translateY(0) scale(1)';
+  }
+  [kicker, title, sub].forEach(el=>{
+    if(!el) return;
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0) scale(1)';
+  });
+  await wait(reduceMotion ? 700 : 1250);
 }
 
 function cleanupJumpOverlay(){
@@ -2080,6 +2146,17 @@ function cleanupJumpOverlay(){
   const overlay = document.getElementById('jumpOverlay');
   if(!overlay) return;
   overlay.classList.remove('show');
+  overlay.style.opacity = '0';
+  overlay.style.visibility = 'hidden';
+  const inner = overlay.querySelector('.jump-overlay-inner');
+  if(inner){
+    inner.style.opacity = '';
+    inner.style.transform = '';
+  }
+  overlay.querySelectorAll('.jump-overlay-kicker, .jump-overlay-title, .jump-overlay-sub').forEach(el=>{
+    el.style.opacity = '';
+    el.style.transform = '';
+  });
 }
 
 async function jmp(i, btnEl){
