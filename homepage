@@ -1270,9 +1270,9 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>需关闭正常世界观 · 背景地位</span>
-              <span>需开启中世纪世界观 · 背景地位</span>
-              <span>需关闭目标体系</span>
+              <span>需关闭正常世界书</span>
+              <span>需开启中世纪线世界书</span>
+              <span>需关闭目标体系世界书</span>
             </div>
             <button class="jbtn" onclick="jmp(6)">点击进入 · 处刑前夜</button>
           </div>
@@ -1296,10 +1296,10 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>需关闭正常世界观 · 背景地位</span>
-              <span>需开启中世纪世界观 · 背景地位</span>
-              <span>需开启战败王女线</span>
-              <span>需关闭目标体系</span>
+              <span>需关闭正常世界书</span>
+              <span>需开启中世纪线世界书</span>
+              <span>需开启战败王女线世界书</span>
+              <span>需关闭目标体系世界书</span>
             </div>
             <button class="jbtn" onclick="jmp(7)">点击进入 · 战败的耻辱</button>
           </div>
@@ -1329,7 +1329,7 @@ button{font:inherit}
             "你跟他，平时是什么关系？"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启养父线 · char 主动</span></div>
+            <div class="cnote"><span>需开启养父线 · char 主动世界书</span></div>
             <button class="jbtn" onclick="jmp(8)">点击进入 · 谎言还是实话</button>
           </div>
         </div>
@@ -1353,7 +1353,7 @@ button{font:inherit}
             "我在等你的解释。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启养父线 · user 主动</span></div>
+            <div class="cnote"><span>需开启养父线 · user 主动世界书</span></div>
             <button class="jbtn" onclick="jmp(9)">点击进入 · 门禁后的黄昏</button>
           </div>
         </div>
@@ -1373,7 +1373,7 @@ button{font:inherit}
             "你可以叫我 Papa，或者 Dad。如果这些都不习惯……先生也可以。我们可以慢慢来。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启养父线 · 童养媳</span></div>
+            <div class="cnote"><span>需开启养父线 · 童养媳世界书</span></div>
             <button class="jbtn" onclick="jmp(10)">点击进入 · 名分之前</button>
           </div>
         </div>
@@ -1392,7 +1392,7 @@ button{font:inherit}
             而你父亲，最擅长替别人收尸。
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启亲父女线</span></div>
+            <div class="cnote"><span>需开启亲父女线世界书</span></div>
             <button class="jbtn" onclick="jmp(23)">点击进入 · 实习的执行总监</button>
           </div>
         </div>
@@ -1411,7 +1411,7 @@ button{font:inherit}
             唯独在你和 Gaspard de Valois 这件事上，Raymond 失了态。<br>
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启亲父女线</span></div>
+            <div class="cnote"><span>需开启亲父女线世界书</span></div>
             <button class="jbtn" onclick="jmp(24)">点击进入 · 越界的人</button>
           </div>
         </div>
@@ -1433,7 +1433,7 @@ button{font:inherit}
             "既然是重要的人，为什么之前没听你提起过？……嗯？"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启兄妹骨科线</span></div>
+            <div class="cnote"><span>需开启兄妹骨科线世界书</span></div>
             <button class="jbtn" onclick="jmp(11)">点击进入 · 错位来客</button>
           </div>
         </div>
@@ -1453,7 +1453,7 @@ button{font:inherit}
             你仔细对比了一会儿，不赞同地开口："是吗？可是我觉得哥哥就不凶。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启兄妹骨科线</span></div>
+            <div class="cnote"><span>需开启兄妹骨科线世界书</span></div>
             <button class="jbtn" onclick="jmp(12)">点击进入 · 书脊与阳光</button>
           </div>
         </div>
@@ -1474,7 +1474,7 @@ button{font:inherit}
             "我想你总不会愿意听一个比你年长的人，叫你母亲的。"
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启小妈线</span></div>
+            <div class="cnote"><span>需开启小妈线世界书</span></div>
             <button class="jbtn" onclick="jmp(15)">点击进入 · 烟与月光</button>
           </div>
         </div>
@@ -1495,7 +1495,7 @@ button{font:inherit}
             你脸上的笑僵住了。金丝眼镜，黑手套。香槟吊灯下映出的，是同一张脸。
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启小妈线</span></div>
+            <div class="cnote"><span>需开启小妈线世界书</span></div>
             <button class="jbtn" onclick="jmp(16)">点击进入 · 掉码现场</button>
           </div>
         </div>
@@ -1523,7 +1523,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>需开启竞业对手线</span>
+              <span>需开启竞业对手线世界书</span>
             </div>
             <button class="jbtn" onclick="jmp(19)">点击进入 · 另一面窥探</button>
           </div>
@@ -1545,7 +1545,7 @@ button{font:inherit}
           </div>
           <div class="cft">
             <div class="cnote">
-              <span>需开启竞业对手线</span>
+              <span>需开启竞业对手线世界书</span>
             </div>
             <button class="jbtn" onclick="jmp(20)">点击进入 · 苏黎世金库</button>
           </div>
@@ -1635,7 +1635,7 @@ button{font:inherit}
             他以前觉得，这个概念是 Omega 言情小说里的垃圾桥段。而现在，这个垃圾桥段正在他的身体里引爆。
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启 ABO 世界观</span></div>
+            <div class="cnote"><span>需开启ABO线世界书</span></div>
             <button class="jbtn" onclick="jmp(13)">点击进入 · 未被允许的反应</button>
           </div>
         </div>
@@ -1656,7 +1656,7 @@ button{font:inherit}
             你的信息素穿透了香水层，穿透了晚宴大厅里气味的混杂掩护，像炸弹一样爆开。
           </div>
           <div class="cft">
-            <div class="cnote"><span>需开启 ABO 世界观</span></div>
+            <div class="cnote"><span>需开启ABO线世界书</span></div>
             <button class="jbtn" onclick="jmp(14)">点击进入 · 被覆盖的你</button>
           </div>
         </div>
